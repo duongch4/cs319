@@ -33,7 +33,8 @@ namespace Web.API
                     builder => builder.WithOrigins(Configuration["AllowedOrigins"])
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials());
+                    .AllowCredentials()
+                );
             });
 
             var connectionString = Configuration["ConnectionString"];
