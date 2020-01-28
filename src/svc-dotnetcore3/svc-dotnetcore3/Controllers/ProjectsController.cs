@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Application.Communication;
+using Web.API.Resources;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsRepository projectsRepository;
@@ -22,11 +25,16 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/projects")]
+        [ProducesResponseType(typeof(IEnumerable<ProjectResource>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
-            var response = await projectsRepository.GetAllProjects();
-            var viewModel = mapper.Map<IEnumerable<Project>>(response);
-            return Ok(viewModel);
+            var projects = await projectsRepository.GetAllProjects();
+            var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectResource>>(projects);
+            var response = new Response(StatusCodes.Status200OK, "OK", resource, "Everything is good");
+            return StatusCode(StatusCodes.Status200OK, response);
+            
+            // var response = new CustomException(StatusCodes.Status404NotFound, "Not Found", "Not even there");
+            // return StatusCode(StatusCodes.Stat`us404NotFound, response);
         }
 
         [HttpGet]
