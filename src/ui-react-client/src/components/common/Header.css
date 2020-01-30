@@ -1,3 +1,12 @@
 .sidenav {
-    /* background: #000; */
+    background: #87C34B;
+    width: 25%;
+    float: left;
+    height: 100vh;
+    position: relative;
+    top: -22px; 
+    left: -10px;
+    padding-left: 10px;
+    margin-right: 10px;
+
 }
