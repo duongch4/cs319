@@ -9,6 +9,9 @@ using Web.API.Application.Repository;
 using Web.API.Application.Communication;
 using Web.API.Resources;
 
+using System;
+using Newtonsoft.Json;
+
 namespace Web.API.Controllers
 {
     // [Authorize]
@@ -25,25 +28,27 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/projects")]
-        [ProducesResponseType(typeof(IEnumerable<ProjectResource>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
             var projects = await projectsRepository.GetAllProjects();
             var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectResource>>(projects);
-            var response = new Response(StatusCodes.Status200OK, "OK", resource, "Everything is good");
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Everything is good");
             return StatusCode(StatusCodes.Status200OK, response);
-            
+
             // var response = new CustomException(StatusCodes.Status404NotFound, "Not Found", "Not even there");
             // return StatusCode(StatusCodes.Status404NotFound, response);
         }
 
         [HttpGet]
         [Route("/projects/{projectNumber}", Name = "GetAProject")]
+        [ProducesResponseType(typeof(IEnumerable<ProjectResource>), StatusCodes.Status200OK)]
         public async Task<ActionResult<Project>> GetAProject(string projectNumber)
         {
-            var response = await projectsRepository.GetAProject(projectNumber);
-            var viewModel = mapper.Map<Project>(response);
-            return Ok(viewModel);
+            var project = await projectsRepository.GetAProject(projectNumber);
+            var resource = mapper.Map<Project, ProjectResource>(project);
+            var response = new Response(resource);
+            return StatusCode(StatusCodes.Status200OK, response);
         }
 
         [HttpGet]
@@ -59,9 +64,19 @@ namespace Web.API.Controllers
         [Route("/projects")]
         public async Task<ActionResult<Project>> CreateAProject([FromBody] Project project)
         {
-            var response = await projectsRepository.CreateAProject(project);
-            var viewModel = mapper.Map<Project>(response);
-            return Created("GetAProject", viewModel);
+            // string json = JsonConvert.SerializeObject(project, Formatting.Indented);
+            // Console.WriteLine(json);
+            var created = await projectsRepository.CreateAProject(project);
+            var resource = mapper.Map<Project, ProjectResource>(created);
+
+            // Console.WriteLine(nameof(GetAProject));
+            // Console.WriteLine(this.HttpContext.Request.Scheme);
+            // Console.WriteLine(this.Request.Host.ToString());
+
+            var url = Url.Link(nameof(GetAProject), new { projectNumber = created.Number });
+            Console.WriteLine(url);
+            var response = new Response(resource, StatusCodes.Status201Created, default, default, new { url = url });
+            return StatusCode(StatusCodes.Status201Created, response);
         }
 
         [HttpPut]

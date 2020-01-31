@@ -7,7 +7,7 @@ namespace Web.API.Application.Communication
         public object payload { get; }
         public string message { get; }
         public object extra { get; }
-        public Response(int code=200, string status="OK", object payload=null, string message="Successful", object extra=null)
+        public Response(object payload=null, int code=200, string status="OK", string message="Successful", object extra=null)
         {
             this.code = code;
             this.status = status;
