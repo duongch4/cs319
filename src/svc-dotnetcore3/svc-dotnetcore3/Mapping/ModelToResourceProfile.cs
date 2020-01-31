@@ -8,16 +8,22 @@ namespace Web.API.Mapping
     {
         public ModelToResourceProfile()
         {
-            ProjectProfile();
+            SetProjectProfile();
+            SetLocationProfile();
         }
 
-        private void ProjectProfile()
+        private void SetProjectProfile()
         {
             CreateMap<Project, ProjectResource>(
             ).ForMember(
                 destinationMember => destinationMember.TitleResource,
                 opt => opt.MapFrom(sourceMember => sourceMember.Title)
             ).ReverseMap();
+        }
+
+        private void SetLocationProfile()
+        {
+            CreateMap<Location, LocationResource>();
         }
     }
 }

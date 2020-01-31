@@ -34,7 +34,7 @@ namespace Web.API.Controllers
             return StatusCode(StatusCodes.Status200OK, response);
             
             // var response = new CustomException(StatusCodes.Status404NotFound, "Not Found", "Not even there");
-            // return StatusCode(StatusCodes.Stat`us404NotFound, response);
+            // return StatusCode(StatusCodes.Status404NotFound, response);
         }
 
         [HttpGet]
