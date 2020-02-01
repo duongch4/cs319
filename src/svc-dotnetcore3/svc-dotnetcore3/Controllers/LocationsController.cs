@@ -5,6 +5,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
+using Web.API.Resources;
+
+using System;
+using Newtonsoft.Json;
 
 namespace Web.API.Controllers
 {
@@ -22,20 +27,24 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/locations")]
-        public async Task<ActionResult<IEnumerable<Location>>> GetAllLocations()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllLocations()
         {
-            var response = await locationsRepository.GetAllLocations();
-            var viewModel = mapper.Map<IEnumerable<Location>>(response);
-            return Ok(viewModel);
+            var locations = await locationsRepository.GetAllLocations();
+            var resource = mapper.Map<IEnumerable<Location>>(locations);
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Everything is good");
+            return StatusCode(StatusCodes.Status200OK, response);
         }
 
         [HttpGet]
         [Route("locations/{locationCode}")]
-        public async Task<ActionResult<Location>> GetALocation(string locationCode)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetALocation(string locationCode)
         {
-            var response = await locationsRepository.GetALocation(locationCode);
-            var viewModel = mapper.Map<Location>(response);
-            return Ok(viewModel);
+            var location = await locationsRepository.GetALocation(locationCode);
+            var resource = mapper.Map<Location>(response);
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Everything is good");
+            return StatusCode(StatusCodes.Status200OK, response);
         }
     }
 }
