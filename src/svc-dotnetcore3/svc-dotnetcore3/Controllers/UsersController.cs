@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace Web.API.Controllers
 {
-    // [Authorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUsersRepository usersRepository;

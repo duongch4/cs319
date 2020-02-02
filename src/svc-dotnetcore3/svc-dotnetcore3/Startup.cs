@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,17 +8,32 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Web.API.Application.Repository;
 using Web.API.Infrastructure.Config;
 using Web.API.Infrastructure.Data;
 
 namespace Web.API
 {
+    public class AllowAnonymous : IAuthorizationHandler
+    {
+        public Task HandleAsync(AuthorizationHandlerContext context)
+        {
+            foreach (IAuthorizationRequirement requirement in context.PendingRequirements.ToList())
+                context.Succeed(requirement); //Simply pass all requirements
+
+            return Task.CompletedTask;
+        }
+    }
+
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment environment;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            environment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -56,6 +72,12 @@ namespace Web.API
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            //Allows auth to be bypassed for LocalDev
+            if (environment.IsDevelopment())
+            {
+                services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,7 +95,6 @@ namespace Web.API
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
