@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace Web.API.Controllers
 {
-    // [Authorize]
+    [Authorize]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsRepository projectsRepository;
@@ -29,7 +29,7 @@ namespace Web.API.Controllers
         [HttpGet]
         [Route("/projects")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
+        public async Task<IActionResult> GetAllProjects()
         {
             var projects = await projectsRepository.GetAllProjects();
             var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectResource>>(projects);
@@ -42,8 +42,8 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/projects/{projectNumber}", Name = "GetAProject")]
-        [ProducesResponseType(typeof(IEnumerable<ProjectResource>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<Project>> GetAProject(string projectNumber)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAProject(string projectNumber)
         {
             var project = await projectsRepository.GetAProject(projectNumber);
             var resource = mapper.Map<Project, ProjectResource>(project);
@@ -53,19 +53,22 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/projects/most-recent")]
-        public async Task<ActionResult<IEnumerable<Project>>> GetMostRecentProjects()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMostRecentProjects()
         {
-            var response = await projectsRepository.GetMostRecentProjects();
-            var viewModel = mapper.Map<IEnumerable<Project>>(response);
-            return Ok(viewModel);
+            var mostRecentProjects = await projectsRepository.GetMostRecentProjects();
+            var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectResource>>(mostRecentProjects);
+            var response = new Response(resource);
+            return StatusCode(StatusCodes.Status200OK, response);
         }
 
         [HttpPost]
         [Route("/projects")]
-        public async Task<ActionResult<Project>> CreateAProject([FromBody] Project project)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateAProject([FromBody] Project project)
         {
-            // string json = JsonConvert.SerializeObject(project, Formatting.Indented);
-            // Console.WriteLine(json);
+            string json = JsonConvert.SerializeObject(project, Formatting.Indented);
+            Console.WriteLine(json);
             var created = await projectsRepository.CreateAProject(project);
             var resource = mapper.Map<Project, ProjectResource>(created);
 
@@ -75,26 +78,30 @@ namespace Web.API.Controllers
 
             var url = Url.Link(nameof(GetAProject), new { projectNumber = created.Number });
             Console.WriteLine(url);
-            var response = new Response(resource, StatusCodes.Status201Created, default, default, new { url = url });
+            var response = new Response(resource, StatusCodes.Status201Created, "OK", "Successfully created", new { url = url });
             return StatusCode(StatusCodes.Status201Created, response);
         }
 
         [HttpPut]
         [Route("/projects")]
-        public async Task<ActionResult<Project>> UpdateAProject([FromBody] Project project)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateAProject([FromBody] Project project)
         {
-            var response = await projectsRepository.UpdateAProject(project);
-            var viewModel = mapper.Map<Project>(response);
-            return Ok(viewModel);
+            var updated = await projectsRepository.UpdateAProject(project);
+            var resource = mapper.Map<Project, ProjectResource>(updated);
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Successfully updated");
+            return StatusCode(StatusCodes.Status200OK, response);
         }
 
         [HttpDelete]
         [Route("/projects/{number}")]
-        public async Task<ActionResult<Project>> DeleteAProject([FromRoute] string number)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteAProject([FromRoute] string number)
         {
-            var response = await projectsRepository.DeleteAProject(number);
-            var viewModel = mapper.Map<Project>(response);
-            return Ok(viewModel);
+            var deleted = await projectsRepository.DeleteAProject(number);
+            var resource = mapper.Map<Project, ProjectResource>(deleted);
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Successfully deleted");
+            return StatusCode(StatusCodes.Status200OK, response);
         }
     }
 }
