@@ -10,6 +10,7 @@ namespace Web.API.Mapping
         {
             SetProjectProfile();
             SetLocationProfile();
+            SetUserProfile();
         }
 
         private void SetProjectProfile()
@@ -24,6 +25,11 @@ namespace Web.API.Mapping
         private void SetLocationProfile()
         {
             CreateMap<Location, LocationResource>();
+        }
+
+        private void SetUserProfile()
+        {
+            CreateMap<User, UserResource>();
         }
     }
 }

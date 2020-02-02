@@ -5,10 +5,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
+using Web.API.Application.Communication;
+using Web.API.Resources;
+
+using System;
+using Newtonsoft.Json;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUsersRepository usersRepository;
@@ -22,20 +28,24 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/users")]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllUsers()
         {
-            var response = await usersRepository.GetAllUsers();
-            var viewModel = mapper.Map<IEnumerable<User>>(response);
-            return Ok(viewModel);
+            var users = await usersRepository.GetAllUsers();
+            var resource = mapper.Map<IEnumerable<User>, IEnumerable<UserResource>>(users);
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Everything is good");
+            return StatusCode(StatusCodes.Status200OK, response);
         }
 
         [HttpGet]
         [Route("/users/{username}")]
-        public async Task<ActionResult<User>> GetAUser(string username)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAUser(string username)
         {
-            var response = await usersRepository.GetAUser(username);
-            var viewModel = mapper.Map<User>(response);
-            return Ok(viewModel);
+            var user = await usersRepository.GetAUser(username);
+            var resource = mapper.Map<User, UserResource>(user);
+            var response = new Response(resource, StatusCodes.Status200OK, "OK", "Everything is good");
+            return StatusCode(StatusCodes.Status200OK, response);
         }
     }
 }
