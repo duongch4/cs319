@@ -8,11 +8,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.API.Application.Repository;
 using Web.API.Infrastructure.Config;
 using Web.API.Infrastructure.Data;
+using Serilog;
 
 namespace Web.API
 {
@@ -24,6 +26,20 @@ namespace Web.API
                 context.Succeed(requirement); //Simply pass all requirements
 
             return Task.CompletedTask;
+        }
+    }
+
+    public static class LoggerExtensions
+    {
+        public static ILogger Here(this ILogger logger,
+            [CallerMemberName] string memberName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
+        {
+            return logger
+                .ForContext("MemberName", memberName)
+                .ForContext("FilePath", sourceFilePath)
+                .ForContext("LineNumber", sourceLineNumber);
         }
     }
 
@@ -83,10 +99,41 @@ namespace Web.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var outputTemplate = "[{Timestamp:HH:mm:ss} {Level}]:{NewLine}  {SourceContext}{NewLine}  {Message}{NewLine}  Method: [{MemberName}] at [{FilePath}:{LineNumber}]:{NewLine}  {Exception}{NewLine}";
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .WriteTo.File(@"Logs\log_.txt", rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate)
+                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: outputTemplate)
+                // .WriteTo.MSSqlServer(
+                //     loggingConnectionStringBuilder.ConnectionString, 
+                //     "Ibex", 
+                //     Serilog.Events.LogEventLevel.Information)
+                // .WriteTo.AzureAnalytics(
+                //     workspaceId: Configuration["AZUREANALYTICS_WORKSPACEID"],
+                //     authenticationId: Configuration["AZUREANALYTICS_AUTHENTICATIONID"],
+                //     logName: "ibex",
+                //     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, 
+                //     batchSize: 10)
+                // .WriteTo.Email( 
+                //     //notice that we should only email the most urgent messages
+                //     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Fatal, 
+                //     connectionInfo: new EmailConnectionInfo()
+                //     {
+                //         MailServer = "mercury.nbsuply.com",
+                //         FromEmail = "serilog@hmwallace.com",
+                //         ToEmail = "",
+                //         EmailSubject = "Serilog subject",
+                //     })
+                .CreateLogger();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseSerilogRequestLogging(); // <-- Add this line
 
             app.UseHttpsRedirection();
 

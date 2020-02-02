@@ -10,7 +10,7 @@ using Web.API.Application.Communication;
 using Web.API.Resources;
 
 using System;
-using Newtonsoft.Json;
+using Serilog;
 
 namespace Web.API.Controllers
 {
@@ -67,8 +67,8 @@ namespace Web.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateAProject([FromBody] Project project)
         {
-            string json = JsonConvert.SerializeObject(project, Formatting.Indented);
-            Console.WriteLine(json);
+            Log.Logger.Here().Information("{@Project}", project);
+            
             var created = await projectsRepository.CreateAProject(project);
             var resource = mapper.Map<Project, ProjectResource>(created);
 
