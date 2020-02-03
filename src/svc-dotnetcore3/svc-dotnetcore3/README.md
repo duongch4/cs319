@@ -9,3 +9,6 @@ dotnet watch run --launch-profile dev
 ```[cmd]
 dotnet run --launch-profile prod
 ```
+
+## View full API version with Swagger UI
+Go to `http(s)://<domain>/swagger` to view the API's
