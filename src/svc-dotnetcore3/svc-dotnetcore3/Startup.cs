@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System;
+using System.Reflection;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,6 +62,36 @@ namespace Web.API
         {
             services.AddControllers();
 
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Resource Utilization API",
+                    Description = "Detailed layout of Resource Utilization API with ASP.NET Core Web API",
+                    TermsOfService = new Uri("https://example.com/terms"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Bang Chi Duong",
+                        Email = "bangchi.duong.20193@outlook.com",
+                        Url = new Uri("https://bangchi.tk"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "Use under LICX",
+                        Url = new Uri("https://example.com/license"),
+                    }
+                });
+
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "My API - V2", Version = "v2" });
+                
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -100,7 +133,6 @@ namespace Web.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var outputTemplate = "[{Timestamp:HH:mm:ss} {Level}]:{NewLine}  {SourceContext}{NewLine}  {Message}{NewLine}  Method: [{MemberName}] at [{FilePath}:{LineNumber}]:{NewLine}  {Exception}{NewLine}";
-
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
@@ -129,10 +161,22 @@ namespace Web.API
                 //     })
                 .CreateLogger();
 
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
+                // c.RoutePrefix = string.Empty;
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseSerilogRequestLogging(); // <-- Add this line
 
             app.UseHttpsRedirection();
