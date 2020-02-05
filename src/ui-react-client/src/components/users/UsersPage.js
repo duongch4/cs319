@@ -13,15 +13,16 @@ const UsersPage = ({
 }) => {
   useEffect(() => {
     if (users.length === 0) {
-      loadUsers().catch(error => {
-        alert('Loading users failed' + error);
-      });
+      loadUsers()
+      // loadUsers().catch(error => {
+      //   alert('Loading users failed' + error);
+      // });
     }
 
     if (locations.length === 0) {
-      loadLocations().catch(error => {
-        alert('Loading locations failed' + error);
-      });
+      // loadLocations().catch(error => {
+      //   alert('Loading locations failed' + error);
+      // });
     }
   }, [users, locations, loadUsers, loadLocations]);
 
@@ -42,17 +43,17 @@ UsersPage.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    users:
-      state.locations.length === 0
-        ? []
-        : state.users.map(user => {
-            return {
-              ...user,
-              locationName: state.locations.find(
-                element => element.id === user.locationId,
-              ).name,
-            };
-          }),
+    users: state.users,
+      // state.locations.length === 0
+      //   ? []
+      //   : state.users.map(user => {
+      //       return {
+      //         ...user,
+      //         locationName: state.locations.find(
+      //           element => element.id === user.locationId,
+      //         ).name,
+      //       };
+      //     }),
     locations: state.locations,
   };
 };
