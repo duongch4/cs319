@@ -102,9 +102,9 @@ namespace Web.API.Infrastructure.Data
             int result = await connection.ExecuteAsync(sql, new
             {
                 project.Id,
-                project.Number,
-                project.Title,
-                project.LocationId
+                Number = project.Number,
+                Title = project.Title,
+                LocationId = project.LocationId
             });
             return result == 1 ? project : null;
         }
