@@ -48,7 +48,7 @@ const mapStateToProps = state => {
         : state.users.map(user => {
             return {
               ...user,
-              locationName: state.locations.find(
+              location: state.locations.find(
                 element => element.id === user.locationId,
               ).name,
             };

@@ -1,0 +1,13 @@
+.sidenav {
+    background: #87C34B;
+    width: 30%;
+    float: left;
+    height: 100vh;
+    position: relative;
+    top: -22px; 
+    left: -25vw; 
+    padding-left: 10px;
+    margin-right: 10px;
+    text-align:center;
+
+}

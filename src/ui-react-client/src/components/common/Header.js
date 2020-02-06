@@ -1,31 +1,37 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import UserHeaderMenu from './UserHeaderMenu';
+import './Header.css';
 
 const Header = () => {
-  const activeStyle = { color: '#F15B2A' };
-
+  const activeStyle = { color: '#ffffff' };
+  const style={ color: '#ffffff', fontSize: '20px'};
   return (
-    <>
+    <div className="sidenav">
       <UserHeaderMenu />
       <nav>
-        <NavLink to="/" activeStyle={activeStyle} exact>
+        <div>
+        <NavLink to="/" style={style} activeStyle={activeStyle} exact>
           Home
         </NavLink>
-        {' | '}
-        <NavLink to="/users" activeStyle={activeStyle}>
+        </div>
+        <div>
+        <NavLink to="/users" style={style} activeStyle={activeStyle} exact>
           Users
         </NavLink>
-        {' | '}
-        <NavLink to="/projects" activeStyle={activeStyle}>
+        </div>
+        <div>
+        <NavLink to="/projects" style={style} activeStyle={activeStyle} exact>
           Projects
         </NavLink>
-        {' | '}
-        <NavLink to="/locations" activeStyle={activeStyle}>
+        </div>
+        <div>
+        <NavLink to="/locations" style={style} activeStyle={activeStyle} exact>
           Locations
         </NavLink>
+        </div>
       </nav>
-    </>
+    </div>
   );
 };
 
