@@ -5,6 +5,9 @@ import { loadProjects } from '../../redux/actions/projectsActions';
 import { loadLocations } from '../../redux/actions/locationsActions.js';
 import ProjectList from './ProjectList';
 import './ProjectStyles.css'
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import { Link } from 'react-router-dom'
 
 const _ProjectsPage = ({
   projects,
@@ -29,9 +32,18 @@ const _ProjectsPage = ({
     }
   }, [projects, locations, loadProjects, loadLocations]);
 
+
+  // function nextPath(path) {
+  //   this.props.history.push(path);
+  // }
+
   return (
     <>
       <h2 className="greenHeader">Manage Projects</h2>
+      {/* <Fab color="primary" aria-label="add" onClick={() => nextPath('/add_project')}> */}
+      <Fab color="primary" aria-label="add" component={Link} to="/add_project">
+       <AddIcon />
+      </Fab>
       <ProjectList projects={projects} locations={locations} />
     </>
   );

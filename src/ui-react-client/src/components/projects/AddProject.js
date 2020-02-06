@@ -1,6 +1,4 @@
 import React,{ Component } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
 import TeamRequirements from './TeamRequirements'
@@ -25,10 +23,6 @@ class AddProject extends Component {
       </>
     );
   }
-};
-
-AddProject.propTypes = {
-  projects: PropTypes.array.isRequired,
 };
 
 export default AddProject;
