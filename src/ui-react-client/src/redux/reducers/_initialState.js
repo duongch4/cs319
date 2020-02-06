@@ -76,7 +76,10 @@ export default {
   locations: [
     {
       city: "Vancouver", 
-      province: "BC"
+      province: "British Columbia"
+    },{
+      city: "Toronto", 
+      province: "Ontario"
     }
-  ],
+  ]
 };

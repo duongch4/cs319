@@ -33,6 +33,7 @@ class CreateEditProjectDetails extends Component {
 
     handleSubmit = (e) =>{
       e.preventDefault();
+      // this.props.addOpening(this.state)
     }
   render(){
     return (
@@ -74,7 +75,7 @@ class CreateEditProjectDetails extends Component {
 };
 
 CreateEditProjectDetails.propTypes = {
-  projectDetails: PropTypes.object.isRequired,
+  addOpening: PropTypes.object.isRequired,
 };
 
 export default CreateEditProjectDetails;
