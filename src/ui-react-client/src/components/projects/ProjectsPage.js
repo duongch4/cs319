@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { loadProjects } from '../../redux/actions/projectsActions';
 import { loadLocations } from '../../redux/actions/locationsActions.js';
 import ProjectList from './ProjectList';
+import './ProjectStyles.css'
 
 const _ProjectsPage = ({
   projects,
@@ -13,21 +14,24 @@ const _ProjectsPage = ({
 }) => {
   useEffect(() => {
     if (projects.length === 0) {
-      loadProjects().catch(error => {
-        alert('Loading projects failed' + error);
-      });
+      loadProjects()
+      // XXX TODO: need to uncomment this once the full-stack is finished
+      // .catch(error => {
+      //   alert('Loading projects failed' + error);
+      // });
     }
 
     if (locations.length === 0) {
-      loadLocations().catch(error => {
-        alert('Loading locations failed' + error);
-      });
+      // XXX TODO: need to uncomment this once the full-stack is finished
+      // loadLocations().catch(error => {
+      //   alert('Loading locations failed' + error);
+      // });
     }
   }, [projects, locations, loadProjects, loadLocations]);
 
   return (
     <>
-      <h2>Projects</h2>
+      <h2 className="greenHeader">Manage Projects</h2>
       <ProjectList projects={projects} locations={locations} />
     </>
   );
@@ -42,17 +46,18 @@ _ProjectsPage.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    projects:
-      state.locations.length === 0
-        ? []
-        : state.projects.map(project => {
-            return {
-              ...project,
-              locationName: state.locations.find(
-                element => element.id === project.locationId,
-              ).name,
-            };
-          }),
+    projects: state.projects,
+    // XXX TODO: uncomment in the future when we have done locations
+      // state.locations.length === 0
+      //   ? []
+      //   : state.projects.map(project => {
+      //       return {
+      //         ...project,
+      //         location: state.locations.find(
+      //           element => element.id === project.locationId,
+      //         ).name,
+      //       };
+      //     }),
     locations: state.locations,
   };
 };

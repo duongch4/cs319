@@ -5,6 +5,7 @@ import Header from './common/Header';
 import HomePage from './home/HomePage';
 import UsersPage from './users/UsersPage';
 import ProjectsPage from './projects/ProjectsPage';
+import ProjectDetails from './projects/ProjectDetails';
 import LocationsPage from './locations/LocationsPage';
 import PageNotFound from './PageNotFound';
 
@@ -16,8 +17,9 @@ const App = () => {
         {/*All our Routes goes here!*/}
         <Route exact path="/" component={HomePage} />
         <Route path="/users" component={UsersPage} />
-        <Route path="/projects" component={ProjectsPage} />
+        <Route exact path="/projects" component={ProjectsPage} />
         <Route path="/locations" component={LocationsPage} />
+        <Route path="/projects/:project_id" component={ProjectDetails} />
         <Route component={PageNotFound} />
       </Switch>
     </>
