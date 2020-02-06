@@ -71,7 +71,7 @@ export const loadProjects = () => {
 
 // export const loadSingleProject = (id) => {
 //   return dispatch => {
- 
+
 //     dispatch(loadSingleProjectData(id));
 //   };
 // };

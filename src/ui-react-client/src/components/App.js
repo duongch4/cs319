@@ -8,6 +8,7 @@ import ProjectsPage from './projects/ProjectsPage';
 import ProjectDetails from './projects/ProjectDetails';
 import LocationsPage from './locations/LocationsPage';
 import PageNotFound from './PageNotFound';
+import AddProject from './projects/AddProject.js';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route exact path="/projects" component={ProjectsPage} />
         <Route path="/locations" component={LocationsPage} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
+        <Route path="/add_project" component={AddProject} />
         <Route component={PageNotFound} />
       </Switch>
     </>
