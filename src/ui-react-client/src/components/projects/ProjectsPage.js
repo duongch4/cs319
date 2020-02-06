@@ -32,15 +32,9 @@ const _ProjectsPage = ({
     }
   }, [projects, locations, loadProjects, loadLocations]);
 
-
-  // function nextPath(path) {
-  //   this.props.history.push(path);
-  // }
-
   return (
     <>
       <h2 className="greenHeader">Manage Projects</h2>
-      {/* <Fab color="primary" aria-label="add" onClick={() => nextPath('/add_project')}> */}
       <Fab color="primary" aria-label="add" component={Link} to="/add_project">
        <AddIcon />
       </Fab>
