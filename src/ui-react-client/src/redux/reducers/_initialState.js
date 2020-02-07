@@ -81,5 +81,30 @@ export default {
       city: "Toronto", 
       province: "Ontario"
     }
-  ]
+  ],
+  disciplines: new Map([
+    ["Discipline: Environmental Planning", 
+    "Skill 1", "Skill 2", "Skill 3"],
+    ["Discipline: Sustainable Design", 
+    "Skill 1", "Skill 2", "Skill 3"],
+    ["Discipline: Parks and Recreation", 
+    "Skill 1", "Skill 2", "Skill 3"],
+  ]),
+  // [
+  //   {
+  //     name: "Discipline: Environmental Planning",
+  //     skills: ["Skill 1", "Skill 2", "Skill 3"],
+  //     yearsOfExperience: "3-5 years",
+  //   },
+  //   {
+  //     name: "Discipline: Sustainable Design",
+  //     skills: ["Skill 1", "Skill 2", "Skill 3"],
+  //     yearsOfExperience: "3-5 years",
+  //   },
+  //   {
+  //     name: "Discipline: Parks and Recreation",
+  //     skills: ["Skill 1", "Skill 2", "Skill 3"],
+  //     yearsOfExperience: "3-5 years",
+  //   }
+  // ]
 };

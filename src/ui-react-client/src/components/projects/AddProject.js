@@ -1,21 +1,14 @@
 import React,{ Component } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
 import TeamRequirements from './TeamRequirements'
+import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
+import { createProject } from '../../redux/actions/projectsActions.js';
+import { loadLocations} from '../../redux/actions/locationsActions.js';
+import { connect } from 'react-redux';
 
 class AddProject extends Component {
-  // createProject(project)
-  // openings: [{
-    //     openingID: 111,
-    //     discipline: {
-    //       name: "Discipline: Parks and Recreation",
-    //       skills: ["Skill 1", "Skill 2", "Skill 3"],
-    //       yearsOfExperience: "3-5 years",
-    //     },
-    //     commitment: 160
-    //   }
   state = {
     project: {
       projID: null,
@@ -30,6 +23,13 @@ class AddProject extends Component {
     }
   }
 
+  componentDidMount(){
+    this.props.loadDisciplines();
+    // this.props.disciplines holds the master disciplines Map now
+    this.props.loadLocations();
+    // this.props.locations hold the master locations now
+  }
+
   addOpening = (opening) => {
     const openings = [...this.state.project.openings, opening]
     this.setState({
@@ -37,6 +37,10 @@ class AddProject extends Component {
         openings
       }
     })
+  }
+
+  onSubmit = () => {
+     // this.props.createProject(this.state.project)
   }
 
   render(){
@@ -48,15 +52,27 @@ class AddProject extends Component {
       <>
       <h2 className="greenHeader">Create new project</h2>
         <CreateEditProjectDetails addOpening={() => this.addOpening()} />
-        <TeamRequirements/>
+        <TeamRequirements disciplines={this.props.disciplines}/>
         {openings}
       </>
     );
   }
 };
 
-AddProject.propTypes = {
-  projects: PropTypes.array.isRequired,
+const mapStateToProps = state => {
+  return {
+    disciplines: state.disciplines,
+    locations: state.locations
+  };
 };
 
-export default AddProject;
+const mapDispatchToProps = {
+  loadDisciplines,
+  loadLocations,
+  createProject,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AddProject);
