@@ -6,6 +6,7 @@ import TeamRequirements from './TeamRequirements'
 import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
 import { createProject } from '../../redux/actions/projectsActions.js';
 import { loadLocations} from '../../redux/actions/locationsActions.js';
+import { loadExperiences } from '../../redux/actions/experienceActions.js';
 import { connect } from 'react-redux';
 
 class AddProject extends Component {
@@ -28,6 +29,8 @@ class AddProject extends Component {
     // this.props.disciplines holds the master disciplines Map now
     this.props.loadLocations();
     // this.props.locations hold the master locations now
+    this.props.loadExperiences();
+    // this.props.masterYearsOfExperience holds the master list of experiences
   }
 
   addOpening = (opening) => {
@@ -62,7 +65,8 @@ class AddProject extends Component {
 const mapStateToProps = state => {
   return {
     disciplines: state.disciplines,
-    locations: state.locations
+    locations: state.locations,
+    masterYearsOfExperience: state.masterYearsOfExperience,
   };
 };
 
@@ -70,6 +74,7 @@ const mapDispatchToProps = {
   loadDisciplines,
   loadLocations,
   createProject,
+  loadExperiences,
 };
 
 export default connect(

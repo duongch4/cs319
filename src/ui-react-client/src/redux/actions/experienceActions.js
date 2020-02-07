@@ -6,16 +6,16 @@ import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}projects/`;
 
-export const loadDisciplinesData = disciplines => {
+export const loadExperienceData = masterYearsOfExperience => {
   return {
-    type: types.LOAD_DISCIPLINES,
-    disciplines: disciplines
+    type: types.LOAD_EXPERIENCES,
+    masterYearsOfExperience: masterYearsOfExperience
   }
 }
 
-export const loadDisciplines = () => {
+export const loadExperiences = () => {
   return dispatch => {
-    dispatch(loadDisciplinesData(_initialState.disciplines));
-    // Ready for DB call
+    dispatch(loadExperienceData(_initialState.masterYearsOfExperience));
   }
 }
+

@@ -5,7 +5,6 @@ const executeLoadDisciplines = (state, action) => {
   return action.disciplines;
 }
 
-
 export const disciplineReducer = (
   state = initialState.disciplines,
   action,

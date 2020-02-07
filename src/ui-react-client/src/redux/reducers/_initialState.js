@@ -90,6 +90,12 @@ export default {
     ["Discipline: Parks and Recreation", 
     "Skill 1", "Skill 2", "Skill 3"],
   ]),
+  masterYearsOfExperience: [
+    "less than 1 year",
+    "1-3 years",
+    "3-5 years",
+    "5+ years"
+  ]
   // [
   //   {
   //     name: "Discipline: Environmental Planning",
