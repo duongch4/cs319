@@ -9,6 +9,7 @@ import ProjectDetails from './projects/ProjectDetails';
 import LocationsPage from './locations/LocationsPage';
 import PageNotFound from './PageNotFound';
 import AddProject from './projects/AddProject.js';
+import UserDetails from './users/UserDetails.js';
 
 const App = () => {
   return (
@@ -17,10 +18,11 @@ const App = () => {
       <Switch>
         {/*All our Routes goes here!*/}
         <Route exact path="/" component={HomePage} />
-        <Route path="/users" component={UsersPage} />
+        <Route exact path="/users" component={UsersPage} />
         <Route exact path="/projects" component={ProjectsPage} />
         <Route path="/locations" component={LocationsPage} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
+        <Route path="/users/:user_id" component={UserDetails} />
         <Route path="/add_project" component={AddProject} />
         <Route component={PageNotFound} />
       </Switch>
