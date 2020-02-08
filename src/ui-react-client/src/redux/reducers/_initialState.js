@@ -8,7 +8,7 @@ export default {
       yearsOfExperience: "15+"
     },
     position: "Rogue",
-    utilization: 0,
+    utilization: 80,
     location: {city: "Vancouver", province: "BC"},
   }, {
     userID: 432,
@@ -19,8 +19,8 @@ export default {
       yearsOfExperience: "3-5 years"
     },
     position: "Contact",
-    utilization: 0,
-    location: "Europe",
+    utilization: 10,
+    location: {city: "Toronto", province: "ON"},
   }],
   projects: [
     {

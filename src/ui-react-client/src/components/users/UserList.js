@@ -1,31 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import UserCard from './UserCard';
+import { Link } from 'react-router-dom';
 
 const UserList = ({ users }) => {
+  const userCards =[]
+  users.forEach(user => {
+    userCards.push(<Link to={'/users/' + user.userID} key={userCards.length}><UserCard user={user} key={userCards.length}/></Link>)
+    
+  });
+  
   return (
     <>
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Username</th>
-            <th>Location</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.firstName}</td>
-              <td>{user.lastName}</td>
-              <td>{user.username}</td>
-              <td>{user.locationName}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {userCards}
     </>
   );
 };

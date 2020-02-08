@@ -1,6 +1,7 @@
 import React,{ Component } from 'react';
 import './ProjectStyles.css';
 import DatePicker from "react-datepicker";
+import PropTypes from 'prop-types';
 import "react-datepicker/dist/react-datepicker.css";
 
 class CreateEditProjectDetails extends Component {
