@@ -87,8 +87,4 @@ class TeamRequirements extends Component {
 }
 };
 
-TeamRequirements.propTypes = {
-  projectDetails: PropTypes.object.isRequired,
-};
-
 export default TeamRequirements;
