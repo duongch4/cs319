@@ -76,7 +76,41 @@ export default {
   locations: [
     {
       city: "Vancouver", 
-      province: "BC"
+      province: "British Columbia"
+    },{
+      city: "Toronto", 
+      province: "Ontario"
     }
   ],
+  disciplines: new Map([
+    ["Discipline: Environmental Planning", 
+    "Skill 1", "Skill 2", "Skill 3"],
+    ["Discipline: Sustainable Design", 
+    "Skill 1", "Skill 2", "Skill 3"],
+    ["Discipline: Parks and Recreation", 
+    "Skill 1", "Skill 2", "Skill 3"],
+  ]),
+  masterYearsOfExperience: [
+    "less than 1 year",
+    "1-3 years",
+    "3-5 years",
+    "5+ years"
+  ]
+  // [
+  //   {
+  //     name: "Discipline: Environmental Planning",
+  //     skills: ["Skill 1", "Skill 2", "Skill 3"],
+  //     yearsOfExperience: "3-5 years",
+  //   },
+  //   {
+  //     name: "Discipline: Sustainable Design",
+  //     skills: ["Skill 1", "Skill 2", "Skill 3"],
+  //     yearsOfExperience: "3-5 years",
+  //   },
+  //   {
+  //     name: "Discipline: Parks and Recreation",
+  //     skills: ["Skill 1", "Skill 2", "Skill 3"],
+  //     yearsOfExperience: "3-5 years",
+  //   }
+  // ]
 };

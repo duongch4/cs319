@@ -27,6 +27,7 @@ const Openings = ({ opening, index }) => {
 
 Openings.propTypes = {
   opening: PropTypes.object.isRequired,
+  index: PropTypes.number.isRequired,
 };
 
 export default Openings;
