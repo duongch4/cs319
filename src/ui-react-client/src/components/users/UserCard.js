@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import './UserStyles.css'
-import { Link } from 'react-router-dom'
-import Button from '@material-ui/core/Button';
 
 class UserCard extends Component {
 

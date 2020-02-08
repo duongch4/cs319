@@ -4,6 +4,7 @@ import projects from './projectsReducer';
 import locations from './locationsReducer';
 import disciplines from './disciplinesReducer';
 import masterYearsOfExperience from './experienceReducer'
+import usersProfile from './userProfileReducer'
 
 const rootReducer = combineReducers({
   users: users,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   locations: locations,
   disciplines: disciplines,
   masterYearsOfExperience: masterYearsOfExperience,
+  usersProfile: usersProfile,
 });
 
 export default rootReducer;

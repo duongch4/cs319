@@ -2,24 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ProjectStyles.css';
 
-const Openings = ({ opening, index }) => {
+const Openings = ({ opening, index, commitment }) => {
 
     const skills = []
-    const discipline = opening.discipline;
-    if(discipline.skills){
-        discipline.skills.forEach((skill, index) => {
+    if(opening.skills){
+        opening.skills.forEach((skill, index) => {
             skills.push(<span key={skills.length}> {skill} </span>)
-            if(discipline.skills.length - 1 != index) {
+            if(opening.skills.length - 1 != index) {
                 skills.push("·")
             }
         })
     }
   return (
     <div>
-        <h4 className="darkGreenHeader">{index + 1}. {discipline.name}</h4>
+        <h4 className="darkGreenHeader">{index + 1}. {opening.name}</h4>
         <p>Skills: {skills}</p>
-        <p>Experience: {discipline.yearsOfExperience}</p>
-        <p>Expected Hourly Commitment per Month: {opening.commitment}</p>
+        <p>Experience: {opening.yearsOfExperience}</p>
+        <p>Expected Hourly Commitment per Month: {commitment}</p>
       </div>
 
       );
@@ -28,6 +27,7 @@ const Openings = ({ opening, index }) => {
 Openings.propTypes = {
   opening: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
+  commitment: PropTypes.number
 };
 
 export default Openings;

@@ -23,7 +23,7 @@ class ProjectDetails extends Component {
     render(){
         var openingsRender = []
         this.state.openings.forEach((opening, index) => {
-            openingsRender.push(<Openings opening={opening} index={index} key={openingsRender.length} />)
+            openingsRender.push(<Openings opening={opening.discipline} index={index} commitment={opening.commitment} key={openingsRender.length} />)
             if(this.state.openings.length - 1 != index){
                 openingsRender.push(<hr key={openingsRender.length}></hr>)
             }
