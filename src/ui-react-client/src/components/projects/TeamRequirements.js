@@ -29,6 +29,11 @@ class TeamRequirements extends Component {
       e.preventDefault();
     }
 
+    componentDidMount(){
+// db call to get the list of disciplines and skills
+
+    }
+
   render(){
     let all_disciplines = new Map();
     all_disciplines.set("Discipline1", ["Skill_1", "Skill_2", "Skill_3"]);

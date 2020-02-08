@@ -76,8 +76,9 @@ export const loadProjects = () => {
 //   };
 // };
 
-export const createProject = () => {
+export const createProject = (project) => {
   return dispatch => {
+    dispatch(createProjectData(project))
     // dispatch(createProjectData(response.data));
     // return axios
     //   .post(baseURL, { headers })
