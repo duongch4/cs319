@@ -62,7 +62,7 @@ namespace Web.API
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "../../ui-react-client/build";
+                configuration.RootPath = "ui-react-client/build";
             });
         }
 
@@ -93,7 +93,7 @@ namespace Web.API
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "../../ui-react-client/";
+                spa.Options.SourcePath = "ui-react-client/";
 
                 if (env.IsDevelopment())
                 {
