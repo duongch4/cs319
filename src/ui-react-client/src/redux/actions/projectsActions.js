@@ -91,9 +91,9 @@ export const createProject = (project) => {
   };
 };
 
-export const updateProject = () => {
+export const updateProject = (project) => {
   return dispatch => {
-    // dispatch(updateProjectData(response.data));
+    dispatch(updateProjectData(project));
     // return axios
     //   .put(baseURL, { headers })
     //   .then(response => {
