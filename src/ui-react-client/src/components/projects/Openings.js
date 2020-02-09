@@ -5,14 +5,15 @@ import './ProjectStyles.css';
 const Openings = ({ opening, index, commitment }) => {
 
     const skills = []
-    if(opening.skills){
-        opening.skills.forEach((skill, index) => {
-            skills.push(<span key={skills.length}> {skill} </span>)
-            if(opening.skills.length - 1 != index) {
-                skills.push("·")
-            }
-        })
-    }
+    if (opening){
+      if(opening.skills){
+          opening.skills.forEach((skill, index) => {
+              skills.push(<span key={skills.length}> {skill} </span>)
+              if(opening.skills.length - 1 != index) {
+                  skills.push("·")
+              }
+          })
+      }
   return (
     <div>
         <h4 className="darkGreenHeader">{index + 1}. {opening.name}</h4>
@@ -22,6 +23,8 @@ const Openings = ({ opening, index, commitment }) => {
       </div>
 
       );
+    }
+    return null;
 };
 
 Openings.propTypes = {

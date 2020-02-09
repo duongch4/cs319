@@ -27,23 +27,28 @@ class CreateEditProjectDetails extends Component {
           [e.target.id]: e.target.value
         })
       }
+      this.props.addProjDetails(this.state)
     }
 
     handleChangeStartDate = (date) => {
       this.setState({
         startDate: date
       })
+      this.props.addProjDetails(this.state)
     }
 
     handleChangeEndDate = (date) => {
       this.setState({
         endDate: date
       })
+      this.props.addProjDetails(this.state)
     }
 
     handleSubmit = (e) =>{
       e.preventDefault();
-      this.props.addProjDetails(this.state)
+      //TODO this is going to have to be moved... no more handle submit
+      //maybe parent has to do this but that would be weird..?
+      //this.props.addProjDetails(this.state)
       this.setState({
             projID: this.state.projID + 1,
             name: null,
@@ -76,7 +81,6 @@ class CreateEditProjectDetails extends Component {
       <div>
           <h4 className="darkGreenHeader">Project Details</h4>
 
-          <form onSubmit={this.handleSubmit}>
             <label htmlFor= "name">Name</label>
             <input type = "text" id="name" onChange={this.handleChange}/>
 
@@ -98,10 +102,6 @@ class CreateEditProjectDetails extends Component {
             <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
             <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
             </label>
-
-            <input type="submit" value="submit"/>
-
-            </form>
       </div>
     );
 }

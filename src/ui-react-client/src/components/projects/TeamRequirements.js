@@ -44,12 +44,6 @@ class TeamRequirements extends Component {
     }
     }
 
-    handleChangeDate = (date) => {
-      this.setState({
-        start_date: date
-      })
-    }
-
     handleSubmit = (e) =>{
       e.preventDefault();
       this.props.addOpening(this.state.opening)
@@ -113,6 +107,7 @@ class TeamRequirements extends Component {
             {skill_render}
           </select>
 
+
             <label htmlFor= "yearsOfExperience">
             Years of Experience
             <select id="yearsOfExperience" onChange={this.handleChange}>
@@ -124,7 +119,7 @@ class TeamRequirements extends Component {
             <label htmlFor= "commitment">Expected Hourly Commitment Per Month</label>
             <input type = "text" id="commitment" onChange={this.handleChange}/>
 
-            <input type="submit" value="submit"/>
+            <input type="submit" value="+"/>
 
             </form>
       </div>

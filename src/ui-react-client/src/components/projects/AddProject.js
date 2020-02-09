@@ -34,7 +34,7 @@ class AddProject extends Component {
   }
 
   addOpening = (opening) => {
-    const openings = [...this.state.project.openings, opening]
+    var openings = [...this.state.project.openings, opening]
     this.setState({
       project:{
         ...this.state.project,
@@ -58,8 +58,10 @@ class AddProject extends Component {
 
   onSubmit = () => {
      this.props.createProject(this.state.project)
+     //here reset child states somehow?
   }
   render(){
+    console.log(this.state)
     const openings = []
     this.state.project.openings.forEach((opening, index) => {
       openings.push(<Openings opening={opening.discipline}
