@@ -20,7 +20,7 @@ class AddProject extends Component {
       },
       startDate: "",
       endDate: "",
-      openings: [],      
+      openings: [],
     }
   }
 
@@ -37,25 +37,43 @@ class AddProject extends Component {
     const openings = [...this.state.project.openings, opening]
     this.setState({
       project:{
+        ...this.state.project,
         openings
       }
+    })
+  }
+
+  addProjDetails = (project) => {
+    this.setState({
+       project: {
+         ...this.state.project,
+         name: project.name,
+         projID: project.projID,
+         startDate: project.startDate,
+         endDate: project.endDate,
+         location: project.location
+       }
     })
   }
 
   onSubmit = () => {
      this.props.createProject(this.state.project)
   }
-
   render(){
     const openings = []
     this.state.project.openings.forEach((opening, index) => {
-      openings.push(<Openings opening={opening} index={index}/>)
+      openings.push(<Openings opening={opening.discipline}
+                              commitment={opening.commitment}
+                              index={index}/>)
     });
     return (
       <>
       <h2 className="greenHeader">Create new project</h2>
-        <CreateEditProjectDetails addOpening={() => this.addOpening()} />
-        <TeamRequirements disciplines={this.props.disciplines}/>
+        <CreateEditProjectDetails locations={this.props.locations}
+                          addProjDetails={(project) => this.addProjDetails(project)}/>
+        <TeamRequirements disciplines={this.props.disciplines}
+                          masterYearsOfExperience={this.props.masterYearsOfExperience}
+                          addOpening={(opening) => this.addOpening(opening)}/>
         {openings}
         <button onClick={() => this.onSubmit()}></button>
       </>
