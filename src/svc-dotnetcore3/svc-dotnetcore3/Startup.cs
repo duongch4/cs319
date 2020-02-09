@@ -49,6 +49,9 @@ namespace Web.API
             {
                 var authSettings = Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
 
+                Console.WriteLine(authSettings.ClientId);
+                Console.WriteLine(authSettings.Tenant);
+
                 options.Audience = authSettings.ClientId;
                 options.Authority = authSettings.Authority;
             });

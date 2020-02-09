@@ -5,12 +5,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Web.API.Controllers
 {
     // [Authorize]
     public class ProjectsController : ControllerBase
     {
+        public IConfiguration Configuration { get; }
+
         private readonly IProjectsRepository projectsRepository;
         private readonly IMapper mapper;
 
@@ -22,11 +26,21 @@ namespace Web.API.Controllers
 
         [HttpGet]
         [Route("/projects")]
-        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
+        public async Task<IActionResult> GetAllProjects()
         {
-            var response = await projectsRepository.GetAllProjects();
-            var viewModel = mapper.Map<IEnumerable<Project>>(response);
-            return Ok(viewModel);
+            // var response = await projectsRepository.GetAllProjects();
+            // var viewModel = mapper.Map<IEnumerable<Project>>(response);
+            // return Ok(viewModel);
+            try
+            {
+                string[] payload = { Configuration["REACT_APP_CLIENT_ID"], Configuration["REACT_APP_TENANT_ID"], Configuration["REACT_APP_SVC_ROOT"] };
+                return Ok(new { payload = payload });
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                return BadRequest(new { payload = errMessage });
+            }
         }
 
         [HttpGet]
