@@ -75,20 +75,20 @@ export default {
   ],
   locations: [
     {
-      city: "Vancouver", 
+      city: "Vancouver",
       province: "British Columbia"
     },{
-      city: "Toronto", 
+      city: "Toronto",
       province: "Ontario"
     }
   ],
   disciplines: new Map([
-    ["Discipline: Environmental Planning", 
-    "Skill 1", "Skill 2", "Skill 3"],
-    ["Discipline: Sustainable Design", 
-    "Skill 1", "Skill 2", "Skill 3"],
-    ["Discipline: Parks and Recreation", 
-    "Skill 1", "Skill 2", "Skill 3"],
+    ["Discipline: Environmental Planning",
+    ["Skill 1", "Skill 2", "Skill 3"]],
+    ["Discipline: Sustainable Design",
+    ["Skill A", "Skill B", "Skill C"]],
+    ["Discipline: Parks and Recreation",
+    ["Skill 1A", "Skill 2B", "Skill 3C"]],
   ]),
   masterYearsOfExperience: [
     "less than 1 year",

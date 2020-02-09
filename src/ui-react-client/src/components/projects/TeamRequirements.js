@@ -7,16 +7,41 @@ import "react-datepicker/dist/react-datepicker.css";
 
 class TeamRequirements extends Component {
     state = {
-      discipline: null,
-      skills: null,
-      years_of_experience: null,
-      expected_hourly_commitment_per_month: null
+      opening: {
+        openingID: 1,
+        discipline: {
+          name: null,
+          skills: [],
+          yearsOfExperience: null,
+        },
+        commitment: null
+      }
     }
 
     handleChange = (e) => {
+      if (e.target.id == "commitment"){
+          this.setState({ opening: { ...this.state.opening, commitment: e.target.value} });
+      }
+      else if (e.target.id == "skills"){
+        var skills_arr = [...this.state.opening.discipline.skills, e.target.value];
+          this.setState({
+            opening: {
+              ...this.state.opening,
+            discipline: {
+              ...this.state.opening.discipline,
+              skills: skills_arr
+            }
+           }
+         });
+      }
+    else{
       this.setState({
-        [e.target.id]: e.target.value
-      })
+          opening: {
+            ...this.state.opening,
+          discipline: { ...this.state.opening.discipline, [e.target.id]: e.target.value}
+         }
+        })
+    }
     }
 
     handleChangeDate = (date) => {
@@ -27,42 +52,58 @@ class TeamRequirements extends Component {
 
     handleSubmit = (e) =>{
       e.preventDefault();
+      this.props.addOpening(this.state.opening)
+      this.setState({
+          opening: {
+            openingID: this.state.opening.openingID + 1,
+            discipline: {
+              name: null,
+              skills: [],
+              yearsOfExperience: null,
+            },
+            commitment: null
+          }
+      })
     }
 
     componentDidMount(){
 // db call to get the list of disciplines and skills
 
-    }
+}
 
   render(){
-    let all_disciplines = new Map();
-    all_disciplines.set("Discipline1", ["Skill_1", "Skill_2", "Skill_3"]);
-    all_disciplines.set("Discipline2", ["Skill_A", "Skill_B", "Skill_C"]);
+    var disciplines = this.props.disciplines;
+    var yearsOfExperience = this.props.masterYearsOfExperience;
 
     var discipline_render = [];
-    var all_disciplines_keys = Array.from(all_disciplines.keys());
+    var all_disciplines_keys = Array.from(disciplines.keys());
     all_disciplines_keys.forEach((discipline) => {
         discipline_render.push(<option value={discipline}>{discipline}</option>)
     })
 
     var skills = [];
     var skill_render = [];
-    if (this.state.discipline === null){
+    if (this.state.opening.discipline.name === null){
       skill_render = <option disabled>Please select a discipline</option>
     }
     else {
-      skills = all_disciplines.get(this.state.discipline);
-      skills.forEach((skill, i) => {
-        var option_value = "skill" + "_" + i;
-          skill_render.push(<option value={option_value}>{skill}</option>)
+      skills = disciplines.get(this.state.opening.discipline.name);
+      skills.forEach((skill) => {
+          skill_render.push(<option value={skill}>{skill}</option>)
       })
     }
+
+    var range_render = [];
+    yearsOfExperience.forEach((yearsOfExperience) => {
+        range_render.push(<option value={yearsOfExperience}>{yearsOfExperience}</option>)
+    })
+
     return (
       <div>
           <h4 className="darkGreenHeader">Team Requirements</h4>
 
           <form onSubmit={this.handleSubmit}>
-          <select id="discipline" onChange={this.handleChange}>
+          <select id="name" onChange={this.handleChange}>
           <option selected disabled>Discipline</option>
             {discipline_render}
           </select>
@@ -72,17 +113,16 @@ class TeamRequirements extends Component {
             {skill_render}
           </select>
 
-            <label htmlFor= "years_of_experience">
+            <label htmlFor= "yearsOfExperience">
             Years of Experience
-            <select id="years_of_experience" onChange={this.handleChange}>
+            <select id="yearsOfExperience" onChange={this.handleChange}>
               <option selected disabled>Select a range</option>
-              <option value="range_ex_1">range example 1</option>
-              <option value="range_ex_2">range example 2</option>
+              {range_render}
             </select>
             </label>
 
-            <label htmlFor= "expected_hourly_commitment_per_month">Expected Hourly Commitment Per Month</label>
-            <input type = "text" id="expected_hourly_commitment_per_month" onChange={this.handleChange}/>
+            <label htmlFor= "commitment">Expected Hourly Commitment Per Month</label>
+            <input type = "text" id="commitment" onChange={this.handleChange}/>
 
             <input type="submit" value="submit"/>
 

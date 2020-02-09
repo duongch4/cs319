@@ -4,11 +4,12 @@ import './ProjectStyles.css';
 
 const ProjectCard = (props) => {
   const { number, project } = props;
+  //TODO fix weird react object error with dates
   return (
-    <div className="projectCard">    
+    <div className="projectCard">
         <h1>{number}. {project.name}</h1>
         <p>Location: {project.location.city}, {project.location.province}</p>
-        <p>Duration: {project.startDate} - {project.endDate}</p>
+        {/*//<p>Duration: {project.startDate} - {project.endDate}</p>*/}
     </div>
   );
 };
