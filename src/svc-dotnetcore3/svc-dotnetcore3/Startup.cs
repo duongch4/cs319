@@ -11,6 +11,9 @@ using Web.API.Application.Repository;
 using Web.API.Infrastructure.Config;
 using Web.API.Infrastructure.Data;
 
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+
+
 namespace Web.API
 {
     public class Startup
@@ -55,6 +58,12 @@ namespace Web.API
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "../../ui-react-client/build";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +78,8 @@ namespace Web.API
 
             app.UseCors("CorsPolicy");
 
+            app.UseSpaStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -79,6 +90,18 @@ namespace Web.API
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "../../ui-react-client/";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    // spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                }
+            });
+
         }
     }
 }
