@@ -7,5 +7,6 @@
         public string LastName { get; set; }
         public string Username { get; set; }
         public int LocationId { get; set; }
+        public bool isAdmin {get; set;}
     }
 }
