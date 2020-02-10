@@ -18,6 +18,7 @@ using Web.API.Application.Repository;
 using Web.API.Infrastructure.Config;
 using Web.API.Infrastructure.Data;
 using Serilog;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 
 namespace Web.API
 {
@@ -85,7 +86,7 @@ namespace Web.API
                 });
 
                 c.SwaggerDoc("v2", new OpenApiInfo { Title = "My API - V2", Version = "v2" });
-                
+
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -119,6 +120,7 @@ namespace Web.API
             services.AddScoped<ILocationsRepository>(sp => new LocationsRepository(connectionString));
             services.AddScoped<IProjectsRepository>(sp => new ProjectsRepository(connectionString));
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
+            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -127,40 +129,21 @@ namespace Web.API
             {
                 services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
             }
+
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ui-react-client/build";
+                if (!environment.IsProduction())
+                {
+                    configuration.RootPath = "../../ui-react-client/build";
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var outputTemplate = "[{Timestamp:HH:mm:ss} {Level}]:{NewLine}  {SourceContext}{NewLine}  {Message}{NewLine}  Method: [{MemberName}] at [{FilePath}:{LineNumber}]:{NewLine}  {Exception}{NewLine}";
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
-                .Enrich.FromLogContext()
-                .WriteTo.File(@"Logs\log_.txt", rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate)
-                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: outputTemplate)
-                // .WriteTo.MSSqlServer(
-                //     loggingConnectionStringBuilder.ConnectionString, 
-                //     "Ibex", 
-                //     Serilog.Events.LogEventLevel.Information)
-                // .WriteTo.AzureAnalytics(
-                //     workspaceId: Configuration["AZUREANALYTICS_WORKSPACEID"],
-                //     authenticationId: Configuration["AZUREANALYTICS_AUTHENTICATIONID"],
-                //     logName: "ibex",
-                //     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, 
-                //     batchSize: 10)
-                // .WriteTo.Email( 
-                //     //notice that we should only email the most urgent messages
-                //     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Fatal, 
-                //     connectionInfo: new EmailConnectionInfo()
-                //     {
-                //         MailServer = "mercury.nbsuply.com",
-                //         FromEmail = "serilog@hmwallace.com",
-                //         ToEmail = "",
-                //         EmailSubject = "Serilog subject",
-                //     })
-                .CreateLogger();
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
@@ -183,6 +166,8 @@ namespace Web.API
 
             app.UseCors("CorsPolicy");
 
+            app.UseSpaStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -191,6 +176,22 @@ namespace Web.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ui-react-client/";
+
+                if (env.IsDevelopment())
+                {
+                    spa.Options.SourcePath = "../../ui-react-client/";
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    // spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                }
+                else if (env.IsStaging())
+                {
+                    spa.Options.SourcePath = "../../ui-react-client/";
+                }
             });
         }
     }
