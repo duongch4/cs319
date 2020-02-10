@@ -18,10 +18,13 @@ namespace Web.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment environment;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            environment = env;
         }
+
 
         public IConfiguration Configuration { get; }
 
@@ -63,6 +66,9 @@ namespace Web.API
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ui-react-client/build";
+                if (environment.IsStaging()) {
+                    configuration.RootPath = "../../ui-react-client/build";
+                }
             });
         }
 
@@ -100,8 +106,10 @@ namespace Web.API
                     spa.UseReactDevelopmentServer(npmScript: "start");
                     // spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
+                else if (env.IsStaging()) {
+                    spa.Options.SourcePath = "../../ui-react-client/";
+                }
             });
-
         }
     }
 }
