@@ -18,10 +18,11 @@ namespace Web.API.Controllers
         private readonly IProjectsRepository projectsRepository;
         private readonly IMapper mapper;
 
-        public ProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
+        public ProjectsController(IProjectsRepository projectsRepository, IMapper mapper, IConfiguration configuration)
         {
             this.projectsRepository = projectsRepository;
             this.mapper = mapper;
+            this.Configuration = configuration;
         }
 
         [HttpGet]
