@@ -6,9 +6,8 @@ import "react-datepicker/dist/react-datepicker.css";
 
 class CreateEditProjectDetails extends Component {
     state = {
-      projID: 1,
-      name: null,
-      location: {city: null, province: null},
+      name: "",
+      location: {city: "City", province: "Province"},
       startDate: new Date(),
       endDate: new Date(),
     }
@@ -16,42 +15,54 @@ class CreateEditProjectDetails extends Component {
     handleChange = (e) => {
       if (e.target.id == "city"){
           this.setState({ location: { ...this.state.location, city: e.target.value}
-        })
+        }, () => this.props.addProjDetails(this.state))
       }
       else if (e.target.id == "province"){
         this.setState({ location: { ...this.state.location, province: e.target.value}
-        })
+        }, () => this.props.addProjDetails(this.state))
       }
       else {
         this.setState({
           [e.target.id]: e.target.value
-        })
+        }, () => this.props.addProjDetails(this.state))
       }
     }
 
     handleChangeStartDate = (date) => {
       this.setState({
         startDate: date
-      })
+      }, () => this.props.addProjDetails(this.state))
     }
 
     handleChangeEndDate = (date) => {
       this.setState({
         endDate: date
-      })
+      }, () => this.props.addProjDetails(this.state))
     }
 
     handleSubmit = (e) =>{
       e.preventDefault();
-      this.props.addProjDetails(this.state)
       this.setState({
-            projID: this.state.projID + 1,
             name: null,
             location: {city: null, province: null},
             startDate: new Date(),
             endDate: new Date(),
       })
     }
+
+    componentWillReceiveProps(existing_project){
+      if (existing_project.currentProject){
+        var project = existing_project.currentProject.project;
+        this.setState({
+          projID: project.projID,
+          name: project.name,
+          location: project.location,
+          startDate: project.startDate,
+          endDate: project.endDate,
+        })
+      }
+    }
+
   render(){
     var cities = [];
     var provinces = [];
@@ -63,31 +74,29 @@ class CreateEditProjectDetails extends Component {
     })
 
     var city_render = [];
-    cities.forEach((city) => {
-        city_render.push(<option value={city}>{city}</option>)
+    cities.forEach((city, i) => {
+        city_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
     })
 
     var province_render = [];
-    provinces.forEach((province) => {
-        province_render.push(<option value={province}>{province}</option>)
+    provinces.forEach((province, i) => {
+        province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
     })
 
     return (
       <div>
           <h4 className="darkGreenHeader">Project Details</h4>
-
-          <form onSubmit={this.handleSubmit}>
             <label htmlFor= "name">Name</label>
-            <input type = "text" id="name" onChange={this.handleChange}/>
+            <input type = "text" id="name" onChange={this.handleChange} value= {this.state.name}/>
 
-            <label htmlFor= "location">
+           <label htmlFor= "location">
             Location
-            <select id="province" onChange={this.handleChange}>
-              <option selected disabled>Province</option>
+            <select defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
+              <option value="DEFAULT" disabled>{this.state.location.province}</option>
               {province_render}
             </select>
-            <select id="city" onChange={this.handleChange}>
-              <option selected disabled>City</option>
+            <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+              <option value="DEFAULT" disabled>{this.state.location.city}</option>
               {city_render}
             </select>
 
@@ -99,16 +108,15 @@ class CreateEditProjectDetails extends Component {
             <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
             </label>
 
-            <input type="submit" value="submit"/>
 
-            </form>
       </div>
     );
 }
 };
 
 CreateEditProjectDetails.propTypes = {
-  addOpening: PropTypes.object.isRequired,
+  addOpening: PropTypes.object,
+  currentProject: PropTypes.object
 };
 
 export default CreateEditProjectDetails;

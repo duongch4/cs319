@@ -10,18 +10,17 @@ import { connect } from 'react-redux';
 
 class EditProject extends Component {
   state = {
-      // TODO: Depending how you implement this, you may or may not need the following lines:
-    // project: {
-    //   projID: null,
-    //   name: "",
-    //   location: {
-    //     city: "",
-    //     province: ""
-    //   },
-    //   startDate: "",
-    //   endDate: "",
-    //   openings: [],      
-    // }
+    project: {
+      projID: null,
+      name: "",
+      location: {
+        city: "",
+        province: ""
+      },
+      startDate: "",
+      endDate: "",
+      openings: [],
+    }
   }
 
   componentDidMount(){
@@ -44,11 +43,48 @@ class EditProject extends Component {
   onSubmit = () => {
      this.props.updateProject(this.state.project)
   }
-  
+
+    addOpening = (opening) => {
+      const openings = [...this.state.project.openings, opening]
+      this.setState({
+        project:{
+          ...this.state.project,
+          openings
+        }
+      })
+    }
+
+    addProjDetails = (project) => {
+      this.setState({
+         project: {
+           ...this.state.project,
+           name: project.name,
+           projID: project.projID,
+           startDate: project.startDate,
+           endDate: project.endDate,
+           location: project.location
+         }
+      })
+    }
   render(){
+    const openings = []
+      this.state.project.openings.forEach((opening, index) => {
+        openings.push(<Openings opening={opening.discipline}
+                                commitment={opening.commitment}
+                                index={index}/>)
+    });
       return (
-      <>
-      </>
+          <>
+            <h2 className="greenHeader">Edit project</h2>
+            <CreateEditProjectDetails locations={this.props.locations}
+                              addProjDetails={(project) => this.addProjDetails(project)}
+                              currentProject={this.state}/>
+            <TeamRequirements disciplines={this.props.disciplines}
+                              masterYearsOfExperience={this.props.masterYearsOfExperience}
+                              addOpening={(opening) => this.addOpening(opening)}/>
+            {openings}
+            <button onClick={() => this.onSubmit()}></button>
+          </>
     );
   }
 };

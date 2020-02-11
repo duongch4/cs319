@@ -63,6 +63,8 @@ export default {
       location: {city: "Vancouver", province: "BC"},
       startDate: 9876,
       endDate:6789,
+      openings: []
+
   },
   {
     projID: 1235,
@@ -70,6 +72,7 @@ export default {
     location: {city: "Vancouver", province: "BC"},
     startDate: 9876,
     endDate:6789,
+    openings: []
 }
 
   ],

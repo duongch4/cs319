@@ -15,7 +15,7 @@ const executeCreateProjectData = (state, action) => {
 
 const executeUpdateProjectData = (state, action) => {
   return state.map(project =>
-    project.id === action.project.id ? action.project : project,
+    project.projID === action.project.projID ? action.project : project,
   );
 };
 
