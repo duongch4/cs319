@@ -44,12 +44,6 @@ class TeamRequirements extends Component {
     }
     }
 
-    handleChangeDate = (date) => {
-      this.setState({
-        start_date: date
-      })
-    }
-
     handleSubmit = (e) =>{
       e.preventDefault();
       this.props.addOpening(this.state.opening)
@@ -77,8 +71,8 @@ class TeamRequirements extends Component {
 
     var discipline_render = [];
     var all_disciplines_keys = Array.from(disciplines.keys());
-    all_disciplines_keys.forEach((discipline) => {
-        discipline_render.push(<option value={discipline}>{discipline}</option>)
+    all_disciplines_keys.forEach((discipline, i) => {
+        discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
     })
 
     var skills = [];
@@ -88,14 +82,14 @@ class TeamRequirements extends Component {
     }
     else {
       skills = disciplines.get(this.state.opening.discipline.name);
-      skills.forEach((skill) => {
-          skill_render.push(<option value={skill}>{skill}</option>)
+      skills.forEach((skill, i) => {
+          skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
     }
 
     var range_render = [];
-    yearsOfExperience.forEach((yearsOfExperience) => {
-        range_render.push(<option value={yearsOfExperience}>{yearsOfExperience}</option>)
+    yearsOfExperience.forEach((yearsOfExperience, i) => {
+        range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
     })
 
     return (
@@ -103,20 +97,20 @@ class TeamRequirements extends Component {
           <h4 className="darkGreenHeader">Team Requirements</h4>
 
           <form onSubmit={this.handleSubmit}>
-          <select id="name" onChange={this.handleChange}>
-          <option selected disabled>Discipline</option>
+          <select defaultValue={'DEFAULT'} id="name" onChange={this.handleChange}>
+          <option value="DEFAULT" disabled>Discipline</option>
             {discipline_render}
           </select>
 
-          <select id="skills" onChange={this.handleChange}>
-            <option selected disabled>Skills</option>
+          <select defaultValue={'DEFAULT'} id="skills" onChange={this.handleChange}>
+            <option value="DEFAULT" disabled>Skills</option>
             {skill_render}
           </select>
 
             <label htmlFor= "yearsOfExperience">
             Years of Experience
-            <select id="yearsOfExperience" onChange={this.handleChange}>
-              <option selected disabled>Select a range</option>
+            <select defaultValue={'DEFAULT'} id="yearsOfExperience" onChange={this.handleChange}>
+              <option value="DEFAULT" disabled>Select a range</option>
               {range_render}
             </select>
             </label>
@@ -124,7 +118,7 @@ class TeamRequirements extends Component {
             <label htmlFor= "commitment">Expected Hourly Commitment Per Month</label>
             <input type = "text" id="commitment" onChange={this.handleChange}/>
 
-            <input type="submit" value="submit"/>
+            <input type="submit" value="+"/>
 
             </form>
       </div>
