@@ -17,7 +17,7 @@ using Serilog;
 namespace Web.API.Controllers
 {
     [Authorize]
-    [Route("/api")]
+    [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
     public class ProjectsController : ControllerBase
@@ -91,7 +91,7 @@ namespace Web.API.Controllers
         /// <response code="404">If the requested project cannot found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("/projects/{projectNumber}", Name = "GetAProject")]
+        [Route("projects/{projectNumber}", Name = "GetAProject")]
         [ProducesResponseType(typeof(OkResponse<ProjectResource>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -142,7 +142,7 @@ namespace Web.API.Controllers
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("/projects/most-recent")]
+        [Route("projects/most-recent")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectResource>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -195,7 +195,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Route("/projects")]
+        [Route("projects")]
         [ProducesResponseType(typeof(OkResponse<ProjectResource>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -250,7 +250,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
-        [Route("/projects")]
+        [Route("projects")]
         [ProducesResponseType(typeof(OkResponse<ProjectResource>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -298,7 +298,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
-        [Route("/projects/{number}")]
+        [Route("projects/{number}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAProject([FromRoute] string number)
         {
@@ -331,6 +331,28 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
+        }
+    }
+
+    [Authorize]
+    public class OldProjectsController : ControllerBase
+    {
+        private readonly IProjectsRepository projectsRepository;
+        private readonly IMapper mapper;
+
+        public OldProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
+        {
+            this.projectsRepository = projectsRepository;
+            this.mapper = mapper;
+        }
+
+        [HttpGet]
+        [Route("/projects")]
+        public async Task<IActionResult> GetAllProjects()
+        {
+            var response = await projectsRepository.GetAllProjects();
+            var viewModel = mapper.Map<IEnumerable<Project>>(response);
+            return Ok(viewModel);
         }
     }
 }
