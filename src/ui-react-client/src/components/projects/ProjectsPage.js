@@ -5,7 +5,7 @@ import { loadProjects } from '../../redux/actions/projectsActions';
 import { loadLocations } from '../../redux/actions/locationsActions.js';
 import ProjectList from './ProjectList';
 import './ProjectStyles.css'
-import Fab from '@material-ui/core/Fab';
+// import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { Link } from 'react-router-dom'
 
@@ -35,9 +35,10 @@ const _ProjectsPage = ({
   return (
     <>
       <h2 className="greenHeader">Manage Projects</h2>
-      <Fab color="primary" aria-label="add" component={Link} to="/add_project">
+      <Link to={'/add_project'}><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a></Link>
+      {/* <Fab color="primary" aria-label="add" component={Link} to="/add_project">
        <AddIcon />
-      </Fab>
+      </Fab> */}
       <ProjectList projects={projects} locations={locations} />
     </>
   );
