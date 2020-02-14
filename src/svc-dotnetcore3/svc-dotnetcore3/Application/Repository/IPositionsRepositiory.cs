@@ -1,14 +1,14 @@
-﻿using Web.API.Application.Models;
+using Web.API.Application.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Web.API.Application.Repository
 {
-    public interface IProjectsRepository
+    public interface IPositionsRepository
     {
         // GET
-        Task<IEnumerable<Project>> GetAllProjects();
-        Task<IEnumerable<Project>> GetMostRecentProjects();
+        Task<IEnumerable<Position>> GetPositionsOfUser(User user);
+        Task<IEnumerable<Position>> GetAllUnassignedPositionOfProject(Project project);
         Task<Project> GetAProject(string projectNumber);
         Task<IEnumerable<Project>> GetAllProjectsOfUser(User user);
 
