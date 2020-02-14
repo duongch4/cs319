@@ -34,11 +34,13 @@ const _ProjectsPage = ({
 
   return (
     <>
-      <h2 className="greenHeader">Manage Projects</h2>
-      <Fab color="primary" aria-label="add" component={Link} to="/add_project">
-       <AddIcon />
-      </Fab>
-      <ProjectList projects={projects} locations={locations} />
+      <div className="activity-container">
+        <h2 className="greenHeader">Manage Projects</h2>
+        <Fab color="primary" aria-label="add" component={Link} to="/add_project">
+         <AddIcon />
+        </Fab>
+        <ProjectList projects={projects} locations={locations} />
+      </div>
     </>
   );
 };

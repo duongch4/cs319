@@ -37,16 +37,18 @@ class ProjectDetails extends Component {
         }
         const projectDetails = this.state.project[0]
         return (
-            <div className="ProjectDetails">
-                <h1 className="blueHeader">{projectDetails.name}</h1>
-                <p>Location: {projectDetails.location.city}, {projectDetails.location.province}</p>   
-                <p>Total Hours: </p>
-                <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ullamcorper aliquam enim in fermentum. Pellentesque placerat augue sit amet leo pretium, eget volutpat turpis fringilla. Integer imperdiet nec augue sed mollis. Phasellus at lectus porttitor, vestibulum nulla sed, tristique nunc.
-                </p>
-                <h2 className="greenHeader">The Team</h2>
-                <h3>PlaceHolder for Profile Brief from Kaye's People pages</h3>
-                <h2 className="greenHeader">Openings</h2>
-                {openingsRender}
+            <div className="activity-container">
+                <div className="ProjectDetails">
+                    <h1 className="blueHeader">{projectDetails.name}</h1>
+                    <p>Location: {projectDetails.location.city}, {projectDetails.location.province}</p>
+                    <p>Total Hours: </p>
+                    <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ullamcorper aliquam enim in fermentum. Pellentesque placerat augue sit amet leo pretium, eget volutpat turpis fringilla. Integer imperdiet nec augue sed mollis. Phasellus at lectus porttitor, vestibulum nulla sed, tristique nunc.
+                    </p>
+                    <h2 className="greenHeader">The Team</h2>
+                    <h3>PlaceHolder for Profile Brief from Kaye's People pages</h3>
+                    <h2 className="greenHeader">Openings</h2>
+                    {openingsRender}
+                </div>
             </div>
         );
     }

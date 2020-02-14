@@ -8,6 +8,11 @@ const Header = () => {
   const style={ color: '#ffffff', fontSize: '20px'};
   return (
     <div className="sidenav">
+      <p className="ae-logo">AE</p>
+      <p className="ae-subtitle">Associated Engineering</p>
+      <svg width={80} height={80}>
+        <circle r={40} cx={40} cy={40}></circle>
+      </svg>
       <UserHeaderMenu />
       <nav>
         <div>

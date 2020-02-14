@@ -46,16 +46,18 @@ class UserDetails extends Component {
             }) 
         }
         return (
-            <div className="UserDetails">
-                <h1 className="blueHeader">{userDetails.name}</h1>
-                <p>Utilization: {userDetails.utilization}</p>
-                <p>Location: {userDetails.location.city}, {userDetails.location.province}</p>  
-                <h2 className="greenHeader">Discipline & Skills</h2>
-                {disciplines}
-                <h2 className="greenHeader">Current Projects</h2>
-                {currentProjects}
-                <h2 className="greenHeader">Unavailability</h2>
-                {unavailability}
+            <div className="activity-container">
+                <div className="UserDetails">
+                    <h1 className="blueHeader">{userDetails.name}</h1>
+                    <p>Utilization: {userDetails.utilization}</p>
+                    <p>Location: {userDetails.location.city}, {userDetails.location.province}</p>
+                    <h2 className="greenHeader">Discipline & Skills</h2>
+                    {disciplines}
+                    <h2 className="greenHeader">Current Projects</h2>
+                    {currentProjects}
+                    <h2 className="greenHeader">Unavailability</h2>
+                    {unavailability}
+                </div>
             </div>
         );
     }

@@ -30,8 +30,10 @@ const UsersPage = ({
 
   return (
     <>
-      <h1>Users</h1>
-      <UserList users={users} />
+      <div className="activity-container">
+        <h1>Users</h1>
+        <UserList users={users} />
+      </div>
     </>
   );
 };
