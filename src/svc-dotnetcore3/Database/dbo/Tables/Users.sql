@@ -4,8 +4,8 @@
 	[LastName] [nvarchar](50) NOT NULL,
 	[Username] [nvarchar](50) NOT NULL,
 	[LocationId] [int] NOT NULL,
-	[IsAdmin] [boolean] NOT NULL,
-	[IsManager] [boolean] NOT NULL,
+	[IsAdmin] [bit] NOT NULL,
+	[IsManager] [bit] NOT NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id]),
  CONSTRAINT [UK_Users_Username] UNIQUE ([Username]),
  CONSTRAINT [FK_Users_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([Id])
