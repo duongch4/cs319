@@ -16,7 +16,7 @@ using Serilog;
 namespace Web.API.Controllers
 {
     [Authorize]
-    [Route("/api")]
+    [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
     public class LocationsController : ControllerBase
@@ -126,6 +126,28 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
+        }
+    }
+
+    [Authorize]
+    public class OldLocationsController : ControllerBase
+    {
+        private readonly ILocationsRepository locationsRepository;
+        private readonly IMapper mapper;
+
+        public OldLocationsController(ILocationsRepository locationsRepository, IMapper mapper)
+        {
+            this.locationsRepository = locationsRepository;
+            this.mapper = mapper;
+        }
+
+        [HttpGet]
+        [Route("/locations")]
+        public async Task<ActionResult<IEnumerable<Location>>> GetAllLocations()
+        {
+            var response = await locationsRepository.GetAllLocations();
+            var viewModel = mapper.Map<IEnumerable<Location>>(response);
+            return Ok(viewModel);
         }
     }
 }

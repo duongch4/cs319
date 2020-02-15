@@ -17,7 +17,7 @@ using Serilog;
 namespace Web.API.Controllers
 {
     [Authorize]
-    [Route("/api")]
+    [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
     public class UsersController : ControllerBase
@@ -44,7 +44,7 @@ namespace Web.API.Controllers
         /// <response code="404">If no users are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("/users")]
+        [Route("users")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<UserResource>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -92,7 +92,7 @@ namespace Web.API.Controllers
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("/users/{username}")]
+        [Route("users/{username}")]
         [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -128,6 +128,28 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
+        }
+    }
+
+    [Authorize]
+    public class OldUsersController : ControllerBase
+    {
+        private readonly IUsersRepository usersRepository;
+        private readonly IMapper mapper;
+
+        public OldUsersController(IUsersRepository usersRepository, IMapper mapper)
+        {
+            this.usersRepository = usersRepository;
+            this.mapper = mapper;
+        }
+
+        [HttpGet]
+        [Route("/users")]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersOld()
+        {
+            var response = await usersRepository.GetAllUsers();
+            var viewModel = mapper.Map<IEnumerable<User>>(response);
+            return Ok(viewModel);
         }
     }
 }
