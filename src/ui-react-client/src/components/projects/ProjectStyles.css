@@ -1,14 +1,17 @@
-.projectCard{
-    border-style: solid;
-    border-width: thin;
-    margin: 5px;
+.title-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
-.greenHeader{
-    color: #87C34B;
+
+.fab-container {
+    margin-left: 16px;
 }
-.blueHeader{
-    color: #00569c;
+
+a {
+    text-decoration: none;
 }
-.darkGreenHeader{
-    color: #2c6232;
+
+p {
+    color: #333333;
 }

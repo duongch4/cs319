@@ -36,7 +36,7 @@ class UserDetails extends Component {
         const currentProjects = []
         if(userDetails.currentProjects){
             userDetails.currentProjects.forEach((project, index) => {
-                currentProjects.push(<ProjectCard number={index} project={project} key={currentProjects.length}/>)
+                currentProjects.push(<ProjectCard number={index} project={project} isProjectList={false} key={currentProjects.length}/>)
             }) 
         }
         const unavailability = []

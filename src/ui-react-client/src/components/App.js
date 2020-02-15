@@ -14,7 +14,7 @@ import EditProject from './projects/EditProject';
 
 const App = () => {
   return (
-    <>
+    <div>
       <Header />
       <Switch>
         {/*All our Routes goes here!*/}
@@ -28,7 +28,7 @@ const App = () => {
         <Route path="/editproject/:project_id" component={EditProject} />
         <Route component={PageNotFound} />
       </Switch>
-    </>
+    </div>
   );
 };
 

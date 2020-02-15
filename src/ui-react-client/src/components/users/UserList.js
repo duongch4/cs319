@@ -11,9 +11,7 @@ const UserList = ({ users }) => {
   });
   
   return (
-    <>
       {userCards}
-    </>
   );
 };
 

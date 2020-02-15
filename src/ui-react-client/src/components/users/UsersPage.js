@@ -29,12 +29,10 @@ const UsersPage = ({
   }, [users, locations, loadUsers, loadLocations]);
 
   return (
-    <>
-      <div className="activity-container">
+    <div className="activity-container">
         <h1>Users</h1>
         <UserList users={users} />
       </div>
-    </>
   );
 };
 

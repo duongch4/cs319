@@ -3,6 +3,7 @@ import './ProjectStyles.css';
 import PropTypes from 'prop-types';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {TextField, FormControl, Select, InputLabel, MenuItem} from "@material-ui/core";
 
 class CreateEditProjectDetails extends Component {
     state = {
@@ -72,36 +73,46 @@ class CreateEditProjectDetails extends Component {
         province_render.push(<option value={province}>{province}</option>)
     })
 
+    var province_render2 = [];
+    provinces.forEach((province) => {
+        province_render2.push(<MenuItem value={province}>{province}</MenuItem>)
+    })
+
     return (
-      <div>
-          <h4 className="darkGreenHeader">Project Details</h4>
-
+      <div className="form-section">
+          <h2 className="darkGreenHeader">Project Details</h2>
           <form onSubmit={this.handleSubmit}>
-            <label htmlFor= "name">Name</label>
-            <input type = "text" id="name" onChange={this.handleChange}/>
+            <div className="form-section">
+                <div className="form-row">
+                    <TextField label="Title" fullWidth inputLabelProps={{shrink: true}}/>
+                </div>
+                <div className="form-row">
+                    <FormControl className="form-field">
+                        <InputLabel>Province</InputLabel>
+                        <Select value="Province" onChange={this.handleChange} displayEmpty >
+                            {province_render2}
+                        </Select>
+                    </FormControl>
 
-            <label htmlFor= "location">
-            Location
-            <select id="province" onChange={this.handleChange}>
-              <option selected disabled>Province</option>
-              {province_render}
-            </select>
-            <select id="city" onChange={this.handleChange}>
-              <option selected disabled>City</option>
-              {city_render}
-            </select>
-
-            </label>
-
-            <label htmlFor= "project_duration">
-            Project Duration
-            <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
-            <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
-            </label>
-
-            <input type="submit" value="submit"/>
-
-            </form>
+                    <label htmlFor= "location">Location
+                        <select id="province" onChange={this.handleChange}>
+                          <option selected disabled>Province</option>
+                          {province_render}
+                        </select>
+                        <select id="city" onChange={this.handleChange}>
+                          <option selected disabled>City</option>
+                          {city_render}
+                        </select>
+                    </label>
+                </div>
+                <label htmlFor= "project_duration">
+                Project Duration
+                <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
+                <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+                </label>
+                <input type="submit" value="submit"/>
+            </div>
+          </form>
       </div>
     );
 }
