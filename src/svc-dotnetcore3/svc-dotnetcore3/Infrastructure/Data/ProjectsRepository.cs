@@ -121,5 +121,9 @@ namespace Web.API.Infrastructure.Data
             await connection.ExecuteAsync(sql, new { number });
             return project;
         }
+
+        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
+            return null;
+        }
     }
 }

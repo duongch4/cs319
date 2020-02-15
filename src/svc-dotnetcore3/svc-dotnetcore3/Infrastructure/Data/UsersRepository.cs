@@ -46,5 +46,32 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Username = username });
         }
+        public async Task<IEnumerable<User>> GetAllUsersAtLocation(Location location) {
+            return null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsersWithDiscipline(Discipline discipline) {
+            return null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsersWithSkill(Skill skill) {
+            return null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability) {
+            return null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil) {
+            return null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsersOnProject(Project project) {
+            return null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline) {
+            return null;
+        }
+        
+        //PUT
+        public async Task<User> UpdateAUser(User user) {
+            return null;
+        }
+
     }
 }
