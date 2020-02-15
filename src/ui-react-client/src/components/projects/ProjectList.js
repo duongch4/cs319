@@ -1,34 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import ProjectCard from './ProjectCard';
+import Button from '@material-ui/core/Button';
 
 const ProjectList = ({ projects }) => {
+  var projectList = []
+  projects.forEach((project, index) => {
+    projectList.push(
+      <div key={projectList.length} className="card">
+        <Link to={'/projects/' + project.projID}>
+          <ProjectCard number={index + 1} project={project} isProjectList={true} key={projectList.length}/>
+        </Link>
+      </div>
+    )
+  })
   return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Number</th>
-            <th>Title</th>
-            <th>Location</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map(project => (
-            <tr key={project.id}>
-              <td>{project.id}</td>
-              <td>{project.number}</td>
-              <td>{project.title}</td>
-              <td>{project.locationName}</td>
-              <td>{project.createdAt}</td>
-              <td>{project.updatedAt}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
+    <div>
+    {projectList}
+    </div>
   );
 };
 

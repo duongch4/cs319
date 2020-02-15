@@ -1,8 +1,5 @@
 #root {
-  max-width: 850px;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
-}
-
-nav {
-  padding: 20px 0 20px 0;
 }

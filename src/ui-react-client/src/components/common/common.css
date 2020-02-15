@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap');
+
+html, body {
+    font-family: 'Roboto', Helvetica, Arial, sans-serif;
+    margin: 0px;
+    line-height: 1em;
+    color: #333;
+    height: 100%;
+}
+
+/* margin of activity container is the width of the navigation menu + 20px */
+.activity-container {
+    margin-left: 220px;
+    padding-top: 24px;
+    padding-right: 24px;
+}
+
+h1 {
+    font-size: 2em;
+    margin: 10px 0px;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 8px 0px;
+}
+
+h3 {
+    font-size: 1.25em;
+    margin: 6px 0px;
+}
+
+p {
+    font-size: 0.9em;
+    margin: 4px 0px;
+}
+
+.action-button {
+    border-radius: 3px;
+    background-color: #2c6232;
+    font-weight: bold;
+    color: #fff;
+    padding: 16px 16px 8px 16px
+}
+
+.greenHeader {
+    color: #87C34B;
+}
+
+.blueHeader {
+    color: #00569c;
+}
+
+.darkGreenHeader {
+    color: #2c6232;
+}
+
+.card {
+    margin: 32px 0px;
+}
+.card-summary {
+    margin: 16px 0px 0px 0px;
+    display: flex;
+    flex-direction: row;
+}
+
+.card-summary-title {
+    margin: 0px 8px;
+}
+
+.action-link {
+    font-size: 0.75em;
+    color: #87C34B;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.action-link:hover {
+    text-decoration: underline;
+}
+
+.action-link svg {
+    margin: 0px 4px;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    margin: 16px 0px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 8px 0px;
+}
+
+.form-field {
+    display: flex;
+    flex-grow: 1;
+}

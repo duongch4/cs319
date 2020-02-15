@@ -9,7 +9,7 @@ const UserHeaderMenu = () => {
         className="logout-button"
         onClick={() => authContext.logOut()}
       >
-        Log Out
+        Log out
       </button>
     </nav>
   );
