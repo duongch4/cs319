@@ -1,3 +1,5 @@
+import 'core-js/stable';
+
 import { runWithAdal } from 'react-adal';
 import { authContext } from './config/adalConfig';
 
