@@ -4,8 +4,8 @@ namespace Web.API.Application.Models
 {
     public class OutOfOffice
     {
-        public int UserId {get; set;}
-        public DateTime FromDateTime {get; set;}
-        public DateTime ToDateTime {get; set;}
+        public int ResourceId {get; set;}
+        public DateTime FromDate {get; set;}
+        public DateTime ToDate {get; set;}
     }
 }
