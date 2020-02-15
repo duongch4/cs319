@@ -8,5 +8,6 @@
         public string Username { get; set; }
         public int LocationId { get; set; }
         public bool IsAdmin {get; set;}
+        public bool IsManager {get; set;}
     }
 }
