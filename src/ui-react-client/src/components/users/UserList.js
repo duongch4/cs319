@@ -11,7 +11,9 @@ const UserList = ({ users }) => {
   });
   
   return (
+    <div>
       {userCards}
+    </div>
   );
 };
 
