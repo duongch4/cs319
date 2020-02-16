@@ -1,6 +1,6 @@
 CREATE TABLE [dbo].Positions
 (
-		[PositionId] INT NOT NULL PRIMARY KEY,
+		[Id] INT NOT NULL PRIMARY KEY,
 		[DisciplineId] INT NOT NULL, 
 		[ProjectId] INT NOT NULL,
 		[ProjectedMonthlyHours] INT NOT NULL,
