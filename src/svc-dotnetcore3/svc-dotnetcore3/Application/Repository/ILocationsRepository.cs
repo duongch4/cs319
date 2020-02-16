@@ -10,6 +10,7 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<Location>> GetAllLocations();
         Task<Location> GetALocation(string locationCode);
 
+        Task<Location> GetUserLocation(User user);
         //POST 
         Task<Location> CreateALocation(Location location);
 

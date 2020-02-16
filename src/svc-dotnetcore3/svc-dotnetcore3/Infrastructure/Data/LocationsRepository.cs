@@ -47,6 +47,18 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Code = locationCode });
         }
 
+        public async Task<Location> GetUserLocation(User user) {
+            var sql = @"
+                select
+                    Id, Code, [Name]
+                from
+                    Locations
+                where 
+                    Id = "+ user.LocationId + ";";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = user.LocationId });
+        }
         //POST 
         public async Task<Location> CreateALocation(Location location) {
             return null;
