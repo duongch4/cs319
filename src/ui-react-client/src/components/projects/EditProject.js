@@ -1,7 +1,7 @@
 import React,{ Component } from 'react';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
-import TeamRequirements from './TeamRequirements'
+import Disciplines from './Disciplines'
 import { updateProject, loadProjects } from '../../redux/actions/projectsActions.js';
 import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
 import { loadLocations} from '../../redux/actions/locationsActions.js';
@@ -79,7 +79,7 @@ class EditProject extends Component {
             <CreateEditProjectDetails locations={this.props.locations}
                               addProjDetails={(project) => this.addProjDetails(project)}
                               currentProject={this.state}/>
-            <TeamRequirements disciplines={this.props.disciplines}
+            <Disciplines disciplines={this.props.disciplines}
                               masterYearsOfExperience={this.props.masterYearsOfExperience}
                               addOpening={(opening) => this.addOpening(opening)}/>
             {openings}

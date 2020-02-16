@@ -1,11 +1,9 @@
 import React,{ Component } from 'react';
-import PropTypes from 'prop-types';
 import './ProjectStyles.css';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
-class TeamRequirements extends Component {
+class Disciplines extends Component {
     state = {
       opening: {
         openingID: 1,
@@ -20,7 +18,15 @@ class TeamRequirements extends Component {
 
     handleChange = (e) => {
       if (e.target.id == "commitment"){
-          this.setState({ opening: { ...this.state.opening, commitment: e.target.value} });
+          this.setState({ 
+            opening: { ...this.state.opening, commitment: e.target.value} 
+          }, () => 
+          {
+            if(this.props.search){
+              this.props.addOpening(this.state.opening)
+            }
+          }
+        );
       }
       else if (e.target.id == "skills"){
         var skills_arr = [...this.state.opening.discipline.skills, e.target.value];
@@ -32,16 +38,30 @@ class TeamRequirements extends Component {
               skills: skills_arr
             }
            }
-         });
-      }
-    else{
-      this.setState({
-          opening: {
-            ...this.state.opening,
-          discipline: { ...this.state.opening.discipline, [e.target.id]: e.target.value}
          }
-        })
-    }
+        , () => 
+        {
+          if(this.props.search){
+            this.props.addOpening(this.state.opening)
+          }
+        }
+      );
+      }
+      else{
+        this.setState({
+            opening: {
+              ...this.state.opening,
+            discipline: { ...this.state.opening.discipline, [e.target.id]: e.target.value}
+          }
+        }, () => 
+        {
+          if(this.props.search){
+            this.props.addOpening(this.state.opening)
+          }
+        }
+      )
+      }
+
     }
 
     handleSubmit = (e) =>{
@@ -59,11 +79,6 @@ class TeamRequirements extends Component {
           }
       })
     }
-
-    componentDidMount(){
-// db call to get the list of disciplines and skills
-
-}
 
   render(){
     var disciplines = this.props.disciplines;
@@ -92,6 +107,31 @@ class TeamRequirements extends Component {
         range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
     })
 
+    if(this.props.search){
+      return (
+        <div>
+            <form onSubmit={this.handleSubmit}>
+              <select defaultValue={'DEFAULT'} id="name" onChange={this.handleChange}>
+              <option value="DEFAULT" disabled>Discipline</option>
+                {discipline_render}
+              </select>
+    
+              <select defaultValue={'DEFAULT'} id="skills" onChange={this.handleChange}>
+                <option value="DEFAULT" disabled>Skills</option>
+                {skill_render}
+              </select>
+    
+                <label htmlFor= "yearsOfExperience">
+                  Years of Experience
+                  <select defaultValue={'DEFAULT'} id="yearsOfExperience" onChange={this.handleChange}>
+                    <option value="DEFAULT" disabled>Select a range</option>
+                    {range_render}
+                  </select>
+                </label>
+              </form>
+        </div>
+      );
+    }
     return (
       <div>
           <h4 className="darkGreenHeader">Team Requirements</h4>
@@ -126,4 +166,4 @@ class TeamRequirements extends Component {
 }
 };
 
-export default TeamRequirements;
+export default Disciplines;

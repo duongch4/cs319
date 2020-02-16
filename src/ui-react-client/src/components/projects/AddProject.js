@@ -2,7 +2,7 @@ import React,{ Component } from 'react';
 import { Link } from 'react-router-dom';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
-import TeamRequirements from './TeamRequirements'
+import Disciplines from './Disciplines'
 import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
 import { createProject } from '../../redux/actions/projectsActions.js';
 import { loadLocations} from '../../redux/actions/locationsActions.js';
@@ -82,7 +82,7 @@ class AddProject extends Component {
       <h2 className="greenHeader">Create new project</h2>
         <CreateEditProjectDetails locations={this.props.locations}
                           addProjDetails={(project) => this.addProjDetails(project)}/>
-        <TeamRequirements disciplines={this.props.disciplines}
+        <Disciplines disciplines={this.props.disciplines}
                           masterYearsOfExperience={this.props.masterYearsOfExperience}
                           addOpening={(opening) => this.addOpening(opening)}/>
         {openings}
