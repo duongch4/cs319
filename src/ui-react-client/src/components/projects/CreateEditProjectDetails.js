@@ -78,30 +78,26 @@ class CreateEditProjectDetails extends Component {
         province_render2.push(<MenuItem value={province}>{province}</MenuItem>)
     })
 
+    //<TextField label="Title" fullWidth inputLabelProps={{shrink: true}}/>
     return (
       <div className="form-section">
           <h2 className="darkGreenHeader">Project Details</h2>
           <form onSubmit={this.handleSubmit}>
             <div className="form-section">
                 <div className="form-row">
-                    <TextField label="Title" fullWidth inputLabelProps={{shrink: true}}/>
+                    <label htmlFor= "name">Name</label>
+                    <input type = "text" id="name" onChange={this.handleChange} value= {this.state.name}/>
                 </div>
                 <div className="form-row">
-                    <FormControl className="form-field">
-                        <InputLabel>Province</InputLabel>
-                        <Select value="Province" onChange={this.handleChange} displayEmpty >
-                            {province_render2}
-                        </Select>
-                    </FormControl>
-
-                    <label htmlFor= "location">Location
-                        <select id="province" onChange={this.handleChange}>
-                          <option selected disabled>Province</option>
-                          {province_render}
+                    <label htmlFor= "location">
+                        Location
+                        <select defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
+                            <option value="DEFAULT" disabled>{this.state.location.province}</option>
+                            {province_render}
                         </select>
-                        <select id="city" onChange={this.handleChange}>
-                          <option selected disabled>City</option>
-                          {city_render}
+                        <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+                            <option value="DEFAULT" disabled>{this.state.location.city}</option>
+                            {city_render}
                         </select>
                     </label>
                 </div>

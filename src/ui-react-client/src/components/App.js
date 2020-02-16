@@ -11,6 +11,7 @@ import PageNotFound from './PageNotFound';
 import AddProject from './projects/AddProject.js';
 import UserDetails from './users/UserDetails.js';
 import EditProject from './projects/EditProject';
+import EditUser from './users/EditUser.js';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/users/:user_id" component={UserDetails} />
         <Route path="/add_project" component={AddProject} />
         <Route path="/editproject/:project_id" component={EditProject} />
+        <Route path="/edituser/:user_id" component={EditUser} />
         <Route component={PageNotFound} />
       </Switch>
     </div>

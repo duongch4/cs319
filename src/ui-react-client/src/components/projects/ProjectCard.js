@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 import EditIcon from '@material-ui/icons/Edit';
 
 const ProjectCard = (props) => {
-  const { number, project, isProjectList} = props;
+  const { number, project, canEditProject} = props;
   //TODO fix weird react object error with dates
 
   return (
@@ -16,7 +16,7 @@ const ProjectCard = (props) => {
         <div className="card-summary-title">
             <h2 className="blueHeader">{project.name}</h2>
             <p><strong>Location:</strong> {project.location.city}, {project.location.province}</p>
-            {isProjectList && (
+            {canEditProject && (
                 <Link to={'/editproject/' + project.projID} className="action-link">
                     <EditIcon style={{fontSize: 'small'}}/> Edit
                 </Link>
@@ -30,7 +30,7 @@ const ProjectCard = (props) => {
 ProjectCard.propTypes = {
   project: PropTypes.object.isRequired,
   number: PropTypes.number.isRequired,
-  isProjectList: PropTypes.bool.isRequired
+  canEditProject: PropTypes.bool.isRequired
 };
 
 export default ProjectCard;

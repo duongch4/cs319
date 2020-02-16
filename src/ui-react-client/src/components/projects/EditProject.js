@@ -51,7 +51,7 @@ class EditProject extends Component {
       </div>
     );
   }
-};
+}
 
 const mapStateToProps = state => {
   return {

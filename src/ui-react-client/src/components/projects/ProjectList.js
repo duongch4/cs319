@@ -10,7 +10,8 @@ const ProjectList = ({ projects }) => {
     projectList.push(
       <div key={projectList.length} className="card">
         <Link to={'/projects/' + project.projID}>
-          <ProjectCard number={index + 1} project={project} isProjectList={true} key={projectList.length}/>
+          <ProjectCard number={index + 1} project={project}
+                       canEditProject={true} key={projectList.length}/>
         </Link>
       </div>
     )

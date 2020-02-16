@@ -6,12 +6,19 @@ import { Link } from 'react-router-dom';
 const UserList = ({ users }) => {
   const userCards =[]
   users.forEach(user => {
-    userCards.push(<Link to={'/users/' + user.userID} key={userCards.length}><UserCard user={user} key={userCards.length}/></Link>)
+    userCards.push(
+        <div className="card">
+          <Link to={'/users/' + user.userID} key={userCards.length}>
+            <UserCard user={user} key={userCards.length} canEdit={true}/>
+          </Link>
+        </div>)
     
   });
   
   return (
+      <div>
       {userCards}
+      </div>
   );
 };
 
