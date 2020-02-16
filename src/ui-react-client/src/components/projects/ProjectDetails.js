@@ -40,7 +40,7 @@ class ProjectDetails extends Component {
                 if(this.state.openings.length - 1 != index){
                     openingsRender.push(<hr key={openingsRender.length}></hr>)
                 }
-            });
+            })
         } else {
             openingsRender.push(<p className="empty-statements">There are currently no openings for this project.</p>);
         }
@@ -52,7 +52,7 @@ class ProjectDetails extends Component {
                     <Link to={'/users/' + userProfile.userID}>
                         <UserCard user={userProfile} canEdit={false} key={teamMembersRender.length} />
                     </Link>)
-            });
+            })
         } else {
             teamMembersRender.push(
                 <p className="empty-statements">There are currently no resources assigned to this project.</p>
@@ -92,7 +92,7 @@ class ProjectDetails extends Component {
                 {openingsRender}
                 </div>
             </div>
-        );
+        )
     }
 }
 
@@ -104,13 +104,13 @@ const mapStateToProps = state => {
     return {
       projects: state.projects,
       locations: state.locations,
-    };
-  };
+    }
+  }
 
 const mapDispatchToProps = {
-  };
+  }
   
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(ProjectDetails);
+  )(ProjectDetails)

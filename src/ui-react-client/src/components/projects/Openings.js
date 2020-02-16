@@ -38,14 +38,14 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
             </div>)}
     </div>
 
-      );
-};
+      )
+}
 
 Openings.propTypes = {
   opening: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
   commitment: PropTypes.number,
-  isAssignable: PropTypes.bool.isRequired
-};
+  isAssignable: PropTypes.bool
+}
 
 export default Openings;

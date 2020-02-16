@@ -16,11 +16,11 @@ const AvailabilityCard = ({availability}) => {
             <p>{availability.reason}</p>
         </div>
     </div>
-  );
-};
+  )
+}
 
 AvailabilityCard.propTypes = {
     availability: PropTypes.object
-};
+}
 
-export default AvailabilityCard;
+export default AvailabilityCard

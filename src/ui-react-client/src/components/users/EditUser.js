@@ -11,7 +11,7 @@ class EditUser extends Component {
         return (
             <div>
             </div>
-        );
+        )
     }
 }
 

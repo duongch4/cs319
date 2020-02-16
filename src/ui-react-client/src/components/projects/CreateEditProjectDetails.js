@@ -73,11 +73,6 @@ class CreateEditProjectDetails extends Component {
         province_render.push(<option value={province}>{province}</option>)
     })
 
-    var province_render2 = [];
-    provinces.forEach((province) => {
-        province_render2.push(<MenuItem value={province}>{province}</MenuItem>)
-    })
-
     //<TextField label="Title" fullWidth inputLabelProps={{shrink: true}}/>
     return (
       <div className="form-section">
@@ -110,12 +105,12 @@ class CreateEditProjectDetails extends Component {
             </div>
           </form>
       </div>
-    );
+    )
 }
-};
+}
 
 CreateEditProjectDetails.propTypes = {
   addOpening: PropTypes.object.isRequired,
-};
+}
 
 export default CreateEditProjectDetails;

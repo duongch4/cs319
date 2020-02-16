@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 class UserDetails extends Component {
     state = {
         usersProfile: []
-    };
+    }
  
     // XXX TODO: These (below) will eventually be sent in from the database XXX
 
@@ -19,8 +19,8 @@ class UserDetails extends Component {
         this.props.loadSpecificUser(this.props.match.params.user_id);
         this.setState({
             usersProfile: this.props.usersProfile
-        });
-    };
+        })
+    }
 
     render(){
         if(this.state.usersProfile.length == 0) {
@@ -34,7 +34,7 @@ class UserDetails extends Component {
         const disciplines = [];
         userDetails.disciplines.forEach((discipline, index) => {
             disciplines.push(<Openings opening={discipline} index={index} isAssignable={false} key={disciplines.length} />)
-        });
+        })
         const currentProjects = [];
         if(userDetails.currentProjects){
             userDetails.currentProjects.forEach((project, index) => {
@@ -50,8 +50,7 @@ class UserDetails extends Component {
                 unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
             }) 
         }
-        return (
-            <div className="activity-container">
+        return (<div className="activity-container">
                 <div className="title-bar">
                     <h1 className="blueHeader">{userDetails.name}</h1>
                     <Button variant="contained"
@@ -76,8 +75,7 @@ class UserDetails extends Component {
                     <h2 className="greenHeader">Unavailability</h2>
                     {unavailability}
                 </div>
-            </div>
-        );
+            </div>)
     }
 }
 
@@ -93,19 +91,19 @@ class UserDetails extends Component {
 
 UserDetails.propTypes = {
     usersProfile: PropTypes.array.isRequired,
-};
+}
 
 const mapStateToProps = state => {
     return {
         usersProfile: state.usersProfile,
-    };
-  };
+    }
+  }
 
 const mapDispatchToProps = {
     loadSpecificUser,
-  };
+  }
   
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(UserDetails);
+  )(UserDetails)
