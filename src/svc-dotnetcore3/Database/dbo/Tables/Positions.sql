@@ -5,7 +5,7 @@ CREATE TABLE [dbo].Positions
 		[ProjectId] INT NOT NULL,
 		[ProjectedMonthlyHours] INT NOT NULL,
 		[ResourceId] INT NULL,
-		[PositionName] nvarchar NOT NULL,
+		[PositionName] nvarchar(100) NOT NULL,
 		[IsConfirmed] [bit] NOT NULL,
 	CONSTRAINT [FK_Positions_Projects] FOREIGN KEY (ProjectId) REFERENCES Projects([Id]),
 	CONSTRAINT [FK_Poisitions_Disciplines] FOREIGN KEY (DisciplinesId) REFERENCES Disciplines([Id]),
