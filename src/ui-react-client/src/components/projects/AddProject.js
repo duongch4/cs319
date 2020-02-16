@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 class AddProject extends Component {
   state = {
     project: {
-      projID: null,
+      projID: 1,
       name: "",
       location: {
         city: "",
@@ -48,7 +48,6 @@ class AddProject extends Component {
        project: {
          ...this.state.project,
          name: project.name,
-         projID: project.projID,
          startDate: project.startDate,
          endDate: project.endDate,
          location: project.location
@@ -58,11 +57,23 @@ class AddProject extends Component {
 
   onSubmit = () => {
      this.props.createProject(this.state.project)
+     this.setState({
+       project: {
+         projID: this.state.project.projID + 1,
+         name: "",
+         location: {
+           city: "",
+           province: ""
+         },
+         startDate: "",
+         endDate: "",
+         openings: [],
+       }})
   }
   render(){
     const openings = []
     this.state.project.openings.forEach((opening, index) => {
-      openings.push(<Openings opening={opening.discipline}
+      openings.push(<Openings key={"openings" + index} opening={opening.discipline}
                               commitment={opening.commitment}
                               index={index}/>)
     });

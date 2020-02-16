@@ -3,13 +3,11 @@ import './ProjectStyles.css';
 import PropTypes from 'prop-types';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {TextField, FormControl, Select, InputLabel, MenuItem} from "@material-ui/core";
 
 class CreateEditProjectDetails extends Component {
     state = {
-      projID: 1,
-      name: null,
-      location: {city: null, province: null},
+      name: "",
+      location: {city: "City", province: "Province"},
       startDate: new Date(),
       endDate: new Date(),
     }
@@ -17,42 +15,54 @@ class CreateEditProjectDetails extends Component {
     handleChange = (e) => {
       if (e.target.id == "city"){
           this.setState({ location: { ...this.state.location, city: e.target.value}
-        })
+        }, () => this.props.addProjDetails(this.state))
       }
       else if (e.target.id == "province"){
         this.setState({ location: { ...this.state.location, province: e.target.value}
-        })
+        }, () => this.props.addProjDetails(this.state))
       }
       else {
         this.setState({
           [e.target.id]: e.target.value
-        })
+        }, () => this.props.addProjDetails(this.state))
       }
     }
 
     handleChangeStartDate = (date) => {
       this.setState({
         startDate: date
-      })
+      }, () => this.props.addProjDetails(this.state))
     }
 
     handleChangeEndDate = (date) => {
       this.setState({
         endDate: date
-      })
+      }, () => this.props.addProjDetails(this.state))
     }
 
     handleSubmit = (e) =>{
       e.preventDefault();
-      this.props.addProjDetails(this.state)
       this.setState({
-            projID: this.state.projID + 1,
             name: null,
             location: {city: null, province: null},
             startDate: new Date(),
             endDate: new Date(),
       })
     }
+
+    componentWillReceiveProps(existing_project){
+      if (existing_project.currentProject){
+        var project = existing_project.currentProject.project;
+        this.setState({
+          projID: project.projID,
+          name: project.name,
+          location: project.location,
+          startDate: project.startDate,
+          endDate: project.endDate,
+        })
+      }
+    }
+
   render(){
     var cities = [];
     var provinces = [];
@@ -64,20 +74,18 @@ class CreateEditProjectDetails extends Component {
     })
 
     var city_render = [];
-    cities.forEach((city) => {
-        city_render.push(<option value={city}>{city}</option>)
+    cities.forEach((city, i) => {
+        city_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
     })
 
     var province_render = [];
-    provinces.forEach((province) => {
-        province_render.push(<option value={province}>{province}</option>)
+    provinces.forEach((province, i) => {
+        province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
     })
 
-    //<TextField label="Title" fullWidth inputLabelProps={{shrink: true}}/>
     return (
       <div className="form-section">
           <h2 className="darkGreenHeader">Project Details</h2>
-          <form onSubmit={this.handleSubmit}>
             <div className="form-section">
                 <div className="form-row">
                     <label htmlFor= "name">Name</label>
@@ -103,14 +111,14 @@ class CreateEditProjectDetails extends Component {
                 </label>
                 <input type="submit" value="submit"/>
             </div>
-          </form>
       </div>
     )
 }
 }
 
 CreateEditProjectDetails.propTypes = {
-  addOpening: PropTypes.object.isRequired,
+  addOpening: PropTypes.object,
+  currentProject: PropTypes.object
 }
 
 export default CreateEditProjectDetails;
