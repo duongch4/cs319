@@ -49,12 +49,9 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<Skill>> GetSkillsWithName(string skillName)
         {
             var sql = @"
-                select
-                    s.Id, s.DisciplineId, s.Name
-                from
-                    Skills s
-                where
-                    s.Name = @SkillName
+                select *
+                from Skills
+                where Name = @SkillName
             ;";
 
             using var connection = new SqlConnection(connectionString);
@@ -64,12 +61,9 @@ namespace Web.API.Infrastructure.Data
         public async Task<Skill> GetASkill(int skillId)
         {
             var sql = @"
-                select
-                    s.Id, s.DisciplineId, s.Name
-                from
-                    Skills s
-                where
-                    s.Id = @SkillId
+                select *
+                from Skills
+                where Id = @SkillId
             ;";
 
             using var connection = new SqlConnection(connectionString);
@@ -121,7 +115,6 @@ namespace Web.API.Infrastructure.Data
             return (result == 1) ? skill : null;
         }
         //DELETE
-        //TODO: Not sure if we can get skillId from just frontend?
         public async Task<Skill> DeleteASkill(int skillId)
         {
             var skill = await GetASkill(skillId);
