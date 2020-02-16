@@ -33,7 +33,7 @@ class UserDetails extends Component {
         const userDetails = this.state.usersProfile[0];
         const disciplines = [];
         userDetails.disciplines.forEach((discipline, index) => {
-            disciplines.push(<Openings opening={discipline} index={index}  key={disciplines.length} />)
+            disciplines.push(<Openings opening={discipline} index={index} isAssignable={false} key={disciplines.length} />)
         });
         const currentProjects = [];
         if(userDetails.currentProjects){
