@@ -17,8 +17,8 @@ namespace Web.API.Mapping
         {
             CreateMap<Project, ProjectResource>(
             ).ForMember(
-                destinationMember => destinationMember.TitleResource,
-                opt => opt.MapFrom(sourceMember => sourceMember.Title)
+                destinationMember => destinationMember.ProjectSummary,
+                opt => opt.MapFrom(sourceMember => sourceMember)
             ).ReverseMap();
         }
 

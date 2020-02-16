@@ -46,5 +46,20 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Code = locationCode });
         }
+
+        //POST 
+        public async Task<Location> CreateALocation(Location location) {
+            return null;
+        }
+
+        //PUT
+        public async Task<Location> UpdateALocation(Location location) {
+            return null;
+        }
+
+        //DELETE
+        public async Task<Location> DeleteALocation(Location locationCode) {
+            return null;
+        }
     }
 }

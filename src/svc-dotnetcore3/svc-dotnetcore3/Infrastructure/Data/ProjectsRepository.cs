@@ -63,6 +63,23 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryFirstOrDefaultAsync<Project>(sql, new { Number = projectNumber });
         }
 
+        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
+            
+            var sql = @"
+                select 
+                    p.Id, p.Number, p.Title, p.LocationId, 
+                    p.CreatedAt, p.UpdateAt, p.ManagerId, 
+                    p.ProjectStartDate, p.ProjectEndDate
+                from Positions as pos, Projects as p
+                where pos.ResourceId = @UserId
+                    and pos.ProjectId = p.projectId
+                ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<Project>(sql, new {UserId = user.Id});
+        }
+
         public async Task<Project> CreateAProject(Project project)
         {
             var sql = @"
@@ -120,6 +137,10 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             await connection.ExecuteAsync(sql, new { number });
             return project;
+        }
+
+        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
+            return null;
         }
     }
 }
