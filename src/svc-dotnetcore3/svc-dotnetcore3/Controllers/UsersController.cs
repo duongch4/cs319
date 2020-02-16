@@ -23,11 +23,24 @@ namespace Web.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersRepository usersRepository;
+        private readonly IProjectsRepository projectsRepository;
+        private readonly IPositionsRepository positionsRepository;
+        private readonly ILocationsRepository locationsRepository;
+        private readonly IDisciplinesRepository disciplinesRepository;
+        private readonly ISkillsRepository skillsRepository;
+        private readonly IOutOfOfficeRepository outOfOfficeRepository;
         private readonly IMapper mapper;
 
-        public UsersController(IUsersRepository usersRepository, IMapper mapper)
+        public UsersController(IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository, 
+            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository, IMapper mapper)
         {
             this.usersRepository = usersRepository;
+            this.projectsRepository = projectsRepository;
+            this.positionsRepository = positionsRepository;
+            this.locationsRepository = locationsRepository;
+            this.disciplinesRepository = disciplinesRepository;
+            this.skillsRepository = skillsRepository;
+            this.outOfOfficeRepository = outOfOfficeRepository;
             this.mapper = mapper;
         }
 
@@ -78,40 +91,48 @@ namespace Web.API.Controllers
             }
         }
 
-        /// <summary>Get a specific user based on a given username</summary>
+        /// <summary>Get a specific user based on a given userId</summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/users/schoenz
+        ///     GET /api/users/5
         ///
         /// </remarks>
-        /// <param name="username"></param>
+        /// <param name="userId"></param>
         /// <returns>The requested user</returns>
         /// <response code="200">Returns the requested user</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("users/{username}")]
+        [Route("users/{userId}")]
         [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAUser(string username)
+        public async Task<IActionResult> GetAUser(string userId)
         {
-            if (username == null)
+            if (userId == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given username is null"));
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given userId is null"));
             }
             try
             {
-                var user = await usersRepository.GetAUser(username);
+                var userIdInt = Int32.Parse(userId);
+                var user = await usersRepository.GetAUser(userIdInt);
                 if (user == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No users with username '{username}' found"));
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No users with userId '{userId}' found"));
                 }
-                var resource = mapper.Map<User, UserResource>(user);
-                var response = new OkResponse<UserResource>(resource, "Everything is good");
+
+                var userResource = mapper.Map<User, UserResource>(user);
+                var projects = await projectsRepository.GetAllProjectsOfUser(user);
+                var positions = await positionsRepository.GetPositionsOfUser(user);
+                var disciplines = await disciplinesRepository.GetUserDisciplines(user);
+                var skills = await skillsRepository.GetUserSkills(user);
+                var location = await locationsRepository.GetUserLocation(user);
+                var availability = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
+                var response = skills; /* new OkResponse<UserResource>(resource, "Everything is good"); */
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)

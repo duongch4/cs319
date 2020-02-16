@@ -6,6 +6,7 @@ namespace Web.API.Application.Models
         public int ResourceDisciplineId { get; set; }
         public int SkillDisciplineId {get; set;}
         public int SkillId {get; set;}
+        public string Name {get; set;}
 
     }
 }

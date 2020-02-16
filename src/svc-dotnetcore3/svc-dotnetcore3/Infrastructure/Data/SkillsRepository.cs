@@ -128,5 +128,15 @@ namespace Web.API.Infrastructure.Data
             await connection.ExecuteAsync(sql, new { SkillId = skillId });
             return skill;
         }
+    
+        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(User user) {
+            var sql = @"Select rs.ResourceId, rs.ResourceDisciplineId, s.Id, s.Name
+            from ResourceSkill as rs, Skills as s
+            where rs.SkillId = s.Id and rs.ResourceId = " + user.Id + ";";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ResourceSkill>(sql);
+        }
     }
 }

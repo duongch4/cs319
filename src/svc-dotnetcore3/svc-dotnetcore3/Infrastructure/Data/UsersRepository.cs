@@ -31,7 +31,7 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<User>(sql);
         }
 
-        public async Task<User> GetAUser(string username)
+        public async Task<User> GetAUser(int userId)
         {
             var sql = @"
                 select
@@ -39,12 +39,11 @@ namespace Web.API.Infrastructure.Data
                 from
                     Users
                 where 
-                    Username = @Username
-            ;";
+                    Id = "+ userId + ";";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Username = username });
+            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId });
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAtLocation(Location location) 

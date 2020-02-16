@@ -20,5 +20,7 @@ namespace Web.API.Application.Repository
 
         // DELETE
         Task<Discipline> DeleteADiscipline(int disciplineId);
+
+        Task<IEnumerable<ResourceDisciplines>> GetUserDisciplines(User user);
     }
 }

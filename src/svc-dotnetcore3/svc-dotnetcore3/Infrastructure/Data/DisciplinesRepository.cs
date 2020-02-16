@@ -100,5 +100,16 @@ namespace Web.API.Infrastructure.Data
             await connection.ExecuteAsync(sql, new { DisciplineId = disciplineId });
             return discipline;
         }
+    
+        public async Task<IEnumerable<ResourceDisciplines>> GetUserDisciplines(User user) {
+            var sql = @"
+                select rd.ResourceId, d.Id, d.Name, rd.YearsOfExperience
+                from ResourceDiscipline as rd, Disciplines as d
+                where d.Id = rd.DisciplineId and rd.ResourceId = "+ user.Id + ";";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ResourceDisciplines>(sql);
+        }
     }
 }
