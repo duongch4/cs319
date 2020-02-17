@@ -73,7 +73,8 @@ class EditProject extends Component {
         openings.push(<Openings key = {index} opening={opening.discipline}
                                 commitment={opening.commitment}
                                 index={index}/>)
-    });
+    }
+  );
       return (
           <div className="activity-container">
             <h1 className="greenHeader">Edit project</h1>
