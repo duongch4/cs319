@@ -1,5 +1,6 @@
 ﻿using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -60,8 +61,27 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryFirstOrDefaultAsync<Project>(sql, new { Number = projectNumber });
         }
 
-        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
-            
+        public async Task<ProjectResource> GetAProjectResource(string projectNumber)
+        {
+            var sql = @"
+                select
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate, p.LocationId,
+                    l.Province, l.City 
+                from
+                    Projects p, Locations l
+                where
+                    p.LocationId = l.Id
+                    AND p.Number = @Number
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<ProjectResource>(sql, new { Number = projectNumber });
+        }
+
+        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user)
+        {
+
             var sql = @"
                 select 
                     p.Id, p.Number, p.Title, p.LocationId, 
@@ -74,7 +94,7 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<Project>(sql, new {UserId = user.Id});
+            return await connection.QueryAsync<Project>(sql, new { UserId = user.Id });
         }
 
         public async Task<Project> CreateAProject(Project project)
@@ -89,7 +109,8 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            var id = await connection.QuerySingleAsync<int>(sql, new {
+            var id = await connection.QuerySingleAsync<int>(sql, new
+            {
                 project.Number,
                 project.Title,
                 project.LocationId

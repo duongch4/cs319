@@ -20,7 +20,7 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<string>> GetAllYearsOfExp()
         {
             var sql = @"
-                select YearsOfExperience
+                select distinct YearsOfExperience
                 from ResourceDiscipline
             ;";
 

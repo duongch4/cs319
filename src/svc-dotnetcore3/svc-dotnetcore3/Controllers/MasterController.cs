@@ -76,7 +76,6 @@ namespace Web.API.Controllers
                 }
 
                 Dictionary<string, string[]> disciplinesResource = new Dictionary<string, string[]>();
-
                 foreach (var discipline in disciplines)
                 {
                     var skills = await skillsRepository.GetSkillsWithDiscipline(discipline.Name);
@@ -86,8 +85,13 @@ namespace Web.API.Controllers
 
                 var locations = locationsRepository.GetStaticLocations();
                 var yearsOfExp = await resourceDisciplineRepository.GetAllYearsOfExp();
+                if (yearsOfExp == null || !yearsOfExp.Any())
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No yearsOfExp data found"));
+                }
 
-                var resource = new MasterResource {
+                var resource = new MasterResource
+                {
                     disciplines = disciplinesResource,
                     locations = locations,
                     yearsOfExp = yearsOfExp

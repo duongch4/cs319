@@ -42,12 +42,9 @@ namespace Web.API.Infrastructure.Data
         public async Task<Location> GetALocation(int locationId)
         {
             var sql = @"
-                select
-                    Id, Code, [Name]
-                from
-                    Locations
-                where 
-                    Id = @Id
+                select *
+                from Locations
+                where Id = @Id
             ;";
 
             using var connection = new SqlConnection(connectionString);

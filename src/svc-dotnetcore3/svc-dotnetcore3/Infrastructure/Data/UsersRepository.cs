@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -89,16 +90,16 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<User>(sql, new { SkillId = skill.Id});
         }
 
-        //TODO: @Chi plz
-        public async Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability)
-        {
-            return null;
-        }
+        // //TODO: @Chi plz
+        // public async Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability)
+        // {
+        //     return null;
+        // }
 
-        public async Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil) 
-        {
-            return null;
-        }
+        // public async Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil) 
+        // {
+        //     return null;
+        // }
 
         public async Task<IEnumerable<User>> GetAllUsersOnProject(Project project) 
         {
@@ -115,10 +116,29 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<User>(sql, new { ProjectId = project.Id});
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp)
+        public async Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId)
         {
-            return null;
+            var sql = @"
+                select
+                    u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
+                    l.Province, l.City
+                from
+                    Users u, Positions p, Locations l
+                where
+                    p.ProjectId = @ProjectId
+                    AND p.ResourceId = u.Id
+                    AND u.LocationId = l.Id
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<UserResource>(sql, new { ProjectId = projectId });
         }
+
+        // public async Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp)
+        // {
+        //     return null;
+        // }
 
         public async Task<User> GetPMOfProject(Project project)
         {

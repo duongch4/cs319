@@ -26,18 +26,20 @@ namespace Web.API.Controllers
         private readonly IUsersRepository usersRepository;
         private readonly IPositionsRepository positionsRepository;
         private readonly ILocationsRepository locationsRepository;
+        private readonly ISkillsRepository skillsRepository;
         private readonly IMapper mapper;
 
         public ProjectsController(
             IProjectsRepository projectsRepository, IUsersRepository usersRepository,
             IPositionsRepository positionsRepository, ILocationsRepository locationsRepository,
-            IMapper mapper
+            ISkillsRepository skillsRepository, IMapper mapper
         )
         {
             this.projectsRepository = projectsRepository;
             this.usersRepository = usersRepository;
             this.positionsRepository = positionsRepository;
             this.locationsRepository = locationsRepository;
+            this.skillsRepository = skillsRepository;
             this.mapper = mapper;
         }
 
@@ -92,7 +94,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/projects/2006-7H4V-72
+        ///     GET /api/projects/2005-KJS4-46
         ///
         /// </remarks>
         /// <param name="projectNumber"></param>
@@ -115,32 +117,35 @@ namespace Web.API.Controllers
             }
             try
             {
-                var project = await projectsRepository.GetAProject(projectNumber);
+                var project = await projectsRepository.GetAProjectResource(projectNumber);
                 if (project == null)
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No project at projectNumber '{projectNumber}' found"));
                 }
-
-                Log.Logger.Here().Information("{@Project}", project);
-
-                var location = await locationsRepository.GetALocation(project.LocationId);
-
-                var users = await usersRepository.GetAllUsersOnProject(project);
-                Log.Logger.Here().Information("{@Users}", users);
-
-                var positions = await positionsRepository.GetAllUnassignedPositionOfProject(project);
-                Log.Logger.Here().Information("{@Pos}", positions);
-
-                // var source = new {
-                //     project, users, positions
-                // };
+                var projectSummary = mapper.Map<ProjectResource, ProjectSummary>(project);
 
 
+                var users = await usersRepository.GetAllUsersResourceOnProject(project.Id);
+                if (users == null || !users.Any())
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No User at projectNumber '{projectNumber}' found"));
+                }
+                var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
 
+                var openingPositions = await positionsRepository.GetAllUnassignedPositionsResourceOfProject(project.Id);
+                if (openingPositions == null || !openingPositions.Any())
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
+                }
+                var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
 
-                // var resource = mapper.Map<Project, ProjectProfile>(project);
-                // var response = new OkResponse<ProjectProfile>(resource, "Everything is good");
-                var response = new OkResponse<Project>(project, "Everything is good");
+                var projectProfile = new ProjectProfile {
+                    ProjectSummary = projectSummary,
+                    UsersSummary = usersSummary,
+                    Openings = openingPositionsSummary
+                };
+
+                var response = new OkResponse<ProjectProfile>(projectProfile, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -340,6 +345,11 @@ namespace Web.API.Controllers
         // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         // public async Task<IActionResult> UpdateAProject(int projectId, int openingId, [FromBody] RequestProjectAssign req)
         // {
+        //     Log.Information("{@a}", req);
+        //     Log.Information("{@a}", projectId);
+        //     Log.Information("{@a}", openingId);
+        //     // Log.Information("{@a}", openingId);
+
         //     if (req == null)
         //     {
         //         return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given Request Body cannot be read"));
@@ -347,16 +357,17 @@ namespace Web.API.Controllers
 
         //     try
         //     {
-        //         Log.Logger.Here().Information("{@Req}", req);
-        //         User user = new {
-        //             Id = req.userId,
-        //             FirstName 
-        //         };
-        //         var assginedUser = await usersRepository.UpdateAUser();
-        //         var updated = await projectsRepository.UpdateAProject(project);
-        //         var resource = mapper.Map<Project, ProjectResource>(updated);
-        //         var response = new OkResponse<ProjectResource>(resource, "Successfully updated");
-        //         return StatusCode(StatusCodes.Status200OK, response);
+        //         // Log.Logger.Here().Information("{@Req}", req);
+        //         // User user = new {
+        //         //     Id = req.userId,
+        //         //     FirstName 
+        //         // };
+        //         // var assginedUser = await usersRepository.UpdateAUser();
+        //         // var updated = await projectsRepository.UpdateAProject(project);
+        //         // var resource = mapper.Map<Project, ProjectResource>(updated);
+        //         // var response = new OkResponse<ProjectResource>(resource, "Successfully updated");
+        //         // return StatusCode(StatusCodes.Status200OK, response);
+        //         return Ok(req);
         //     }
         //     catch (Exception err)
         //     {

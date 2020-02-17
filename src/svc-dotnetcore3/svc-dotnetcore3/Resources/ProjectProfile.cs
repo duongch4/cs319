@@ -4,8 +4,8 @@ namespace Web.API.Resources
 {
     public class ProjectProfile
     {
-        public ProjectSummary ProjectSummary {get; set;}
-        public IEnumerable<UserResource> UserSummary {get; set;}
-        public IEnumerable<PositionResource> Positions {get; set;}
+        public ProjectSummary ProjectSummary { get; set; }
+        public IEnumerable<UserSummary> UsersSummary { get; set; }
+        public IEnumerable<OpeningPositionsSummary> Openings { get; set; }
     }
 }
