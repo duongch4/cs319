@@ -346,7 +346,7 @@ namespace Web.API.Controllers
         ///     PUT api/projects/2009-VD9D-15/assign/1
         ///
         /// </remarks>
-        /// <param name= "reqBody">The requestBody Contents</param>
+        /// <param name= "reqBody">The requestBody</param>
         /// <returns>The old deleted project</returns>
         /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
         /// <response code="400">Bad Request</response>
