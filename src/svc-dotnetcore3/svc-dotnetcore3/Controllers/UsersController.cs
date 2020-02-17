@@ -128,34 +128,36 @@ namespace Web.API.Controllers
                 // var userResource = mapper.Map<User, UserResource>(user);
 
                 var projects = await projectsRepository.GetAllProjectsOfUser(user);
-                 var projectResources = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects);
                 var positions = await positionsRepository.GetPositionsOfUser(user);
                 var disciplines = await disciplinesRepository.GetUserDisciplines(user);
                 var skills = await skillsRepository.GetUserSkills(user);
-                var skillNames = skills.Select(x => x.Name);
                 var utilization = positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours);
                 var location = await locationsRepository.GetUserLocation(user);
                 var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
-                var availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice);
-                var userSummary = new {
-                    name = user.FirstName + " " + user.LastName,
-                    discipline = "none",
-                    position = "none",
-                    utilization,
-                    location = location,
-                    userID = user.Id
-                };
-                var userProfile = new {
-                    UserSummary = userSummary,
-                    currentProjects = projectResources,
-                    availability,
-                    disciplines,
-                    skills
-                };
-                // var tmpuserSummary = new UserSummaryResource(user, null, null, positions, location, mapper);
-                // var tmpuserProfile = new UserProfileResource(null, projects, outOfOffice, disciplines, skills, mapper);
-                // var tmp = new {tmpuserSummary, tmpuserProfile};
-                var response = userProfile; /* new OkResponse<UserProfileResource>(userProfile, "Everything is good"); */
+                IEnumerable<RDisciplineResource> disciplineResources = Enumerable.Empty<RDisciplineResource>();
+                foreach (var discipline in disciplines)
+                {
+                    var disc = new RDisciplineResource();
+                    disc.Name = discipline.DisciplineName;
+                    disc.YearsOfExperience = discipline.YearsOfExperience;
+                    var discSkills = skills.Where(x => x.ResourceDisciplineName == discipline.DisciplineName);
+                    disc.Skills = discSkills.Select(x => x.Name).ToList();
+                    disciplineResources = disciplineResources.Append(disc);
+                }
+                var userSummary = new UserSummaryResource(); 
+                    userSummary.Name = user.FirstName + " " + user.LastName;
+                    userSummary.Discipline = null;
+                    userSummary.Position = null;
+                    userSummary.Utilization = utilization;
+                    userSummary.Location = mapper.Map<Location, LocationResource>(location);
+                    userSummary.UserId = user.Id;
+                var userProfile = new UserProfileResource();
+                    userProfile.UserSummary = userSummary;
+                    userProfile.Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice);
+                    userProfile.CurrentProjects = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects);
+                    userProfile.Disciplines = disciplineResources;
+
+                var response = new OkResponse<UserProfileResource>(userProfile, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
