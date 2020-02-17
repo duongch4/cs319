@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './UserStyles.css'
-import {PropTypes} from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import {Link} from "react-router-dom";
 

@@ -6,10 +6,16 @@ const executeLoadSpecificUserData = (state, action) => {
   return state.filter(user => user.userID == action.userID);
 };
 
+const executeUpdateSpecificUserData = (state, action) => {
+  return state.map(user => user.userID === action.user.userID ? action.user : user);
+};
+
 export const userProfileReducer = (state = initialState.usersProfile, action) => {
   switch (action.type) {
     case types.LOAD_USERS_SPECIFIC:
       return executeLoadSpecificUserData(state, action);
+    case types.UPDATE_USERS_SPECIFIC:
+      return executeUpdateSpecificUserData(state, action);
     default:
       return state;
   }

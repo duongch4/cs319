@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './UserStyles.css';
 import { connect } from 'react-redux';
 import Openings from '../projects/Openings';
-import { loadSpecificUser } from '../../redux/actions/userProfileActions';
+import { loadSpecificUser, updateSpecificUser } from '../../redux/actions/userProfileActions';
 import ProjectCard from '../projects/ProjectCard'
 import AvailabilityCard from './AvailabilityCard';
 import {Button} from "@material-ui/core";
@@ -101,7 +101,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
     loadSpecificUser,
-  }
+    updateSpecificUser,
+  };
   
 export default connect(
     mapStateToProps,

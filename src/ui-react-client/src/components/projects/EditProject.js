@@ -67,7 +67,7 @@ class EditProject extends Component {
       })
     }
   render(){
-    const openings = []
+    const openings = [];
       this.state.project.openings.forEach((opening, index) => {
         openings.push(<Openings opening={opening.discipline}
                                 commitment={opening.commitment}
@@ -87,7 +87,7 @@ class EditProject extends Component {
           </div>
     );
   }
-};
+}
 
 const mapStateToProps = state => {
   return {

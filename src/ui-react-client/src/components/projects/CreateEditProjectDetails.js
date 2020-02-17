@@ -40,16 +40,6 @@ class CreateEditProjectDetails extends Component {
       }, () => this.props.addProjDetails(this.state))
     }
 
-    handleSubmit = (e) =>{
-      e.preventDefault();
-      this.setState({
-            name: null,
-            location: {city: null, province: null},
-            startDate: new Date(),
-            endDate: new Date(),
-      })
-    }
-
     componentWillReceiveProps(existing_project){
       if (existing_project.currentProject){
         var project = existing_project.currentProject.project;
