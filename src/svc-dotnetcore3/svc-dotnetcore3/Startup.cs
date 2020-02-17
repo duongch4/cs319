@@ -148,6 +148,7 @@ namespace Web.API
             services.AddScoped<ILocationsRepository>(sp => new LocationsRepository(connectionString));
             services.AddScoped<IProjectsRepository>(sp => new ProjectsRepository(connectionString));
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
+            services.AddScoped<IPositionsRepository>(sp => new PositionsRepository(connectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

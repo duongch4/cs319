@@ -15,11 +15,11 @@ namespace Web.API.Mapping
 
         private void SetProjectProfile()
         {
-            CreateMap<Project, ProjectResource>(
-            ).ForMember(
-                destinationMember => destinationMember.ProjectSummary,
-                opt => opt.MapFrom(sourceMember => sourceMember)
-            ).ReverseMap();
+            CreateMap<Project, ProjectResource>();
+            // .ForMember(
+            //     destinationMember => destinationMember.ProjectSummary,
+            //     opt => opt.MapFrom(sourceMember => sourceMember)
+            // ).ReverseMap();
         }
 
         private void SetLocationProfile()
