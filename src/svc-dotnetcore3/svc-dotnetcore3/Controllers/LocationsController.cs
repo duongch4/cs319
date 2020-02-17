@@ -15,7 +15,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -83,7 +83,7 @@ namespace Web.API.Controllers
         ///     GET /api/locations/wpg
         ///
         /// </remarks>
-        /// <param name="locationId"></param>
+        /// <param name="city"></param>
         /// <returns>The requested location</returns>
         /// <response code="200">Returns the requested location</response>
         /// <response code="400">Bad Request</response>
@@ -95,18 +95,18 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetALocation(int locationId)
+        public async Task<IActionResult> GetALocation(string city)
         {
-            // if (locationCode == null)
-            // {
-            //     return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given location code is null"));
-            // }
+            if (city == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given city is null"));
+            }
             try
             {
-                var location = await locationsRepository.GetALocation(locationId);
+                var location = await locationsRepository.GetALocation(city);
                 if (location == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No location at locationId '{locationId}' found"));
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No location at city '{city}' found"));
                 }
                 var resource = mapper.Map<Location, LocationResource>(location);
                 var response = new OkResponse<LocationResource>(resource, "Everything is good");

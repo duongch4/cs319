@@ -39,17 +39,17 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<Location>(sql);
         }
 
-        public async Task<Location> GetALocation(int locationId)
+        public async Task<Location> GetALocation(string city)
         {
             var sql = @"
                 select *
                 from Locations
-                where Id = @Id
+                where City = @City
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = locationId });
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
         }
 
         private void SetStaticLocations()
