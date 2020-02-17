@@ -7,6 +7,7 @@ import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
 import { loadLocations} from '../../redux/actions/locationsActions.js';
 import { loadExperiences } from '../../redux/actions/experienceActions.js';
 import { connect } from 'react-redux';
+import { Button } from "@material-ui/core";
 
 class EditProject extends Component {
   state = {
@@ -67,27 +68,37 @@ class EditProject extends Component {
       })
     }
   render(){
-    const openings = []
+    const openings = [];
       this.state.project.openings.forEach((opening, index) => {
-        openings.push(<Openings opening={opening.discipline}
+        openings.push(<Openings key = {index} opening={opening.discipline}
                                 commitment={opening.commitment}
                                 index={index}/>)
     });
       return (
           <div className="activity-container">
             <h1 className="greenHeader">Edit project</h1>
-            <CreateEditProjectDetails locations={this.props.locations}
-                              addProjDetails={(project) => this.addProjDetails(project)}
-                              currentProject={this.state}/>
-            <TeamRequirements disciplines={this.props.disciplines}
-                              masterYearsOfExperience={this.props.masterYearsOfExperience}
-                              addOpening={(opening) => this.addOpening(opening)}/>
-            {openings}
-            <button onClick={() => this.onSubmit()}>Save</button>
+            <div className="section-container">
+              <CreateEditProjectDetails locations={this.props.locations}
+                                addProjDetails={(project) => this.addProjDetails(project)}
+                                currentProject={this.state}/>
+            </div>
+            <div className="section-container">
+              <TeamRequirements disciplines={this.props.disciplines}
+                                masterYearsOfExperience={this.props.masterYearsOfExperience}
+                                addOpening={(opening) => this.addOpening(opening)}/>
+              <hr />
+              {openings}
+            </div>
+            <Button variant="contained"
+                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                    disableElevation
+                    onClick={() => this.onSubmit()}>
+              Save
+            </Button>
           </div>
     );
   }
-};
+}
 
 const mapStateToProps = state => {
   return {

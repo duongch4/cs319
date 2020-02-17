@@ -10,9 +10,25 @@ export const loadUserProfileData = userID => {
   return { type: types.LOAD_USERS_SPECIFIC, userID: userID };
 };
 
+export const updateUserProfileData = userID => {
+  return {
+    type: types.UPDATE_USERS_SPECIFIC,
+    userID: userID
+  }
+};
+
 export const loadSpecificUser = (userID) => {
   return dispatch => {
     dispatch(loadUserProfileData(userID));
     // XXX TODO: Uncomment this for full-stack integration
   };
 };
+
+export const updateSpecificUser = (user) => {
+  return dispatch => {
+    dispatch(updateUserProfileData(user));
+    // TODO: updating a user profile
+  }
+};
+
+

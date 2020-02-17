@@ -40,16 +40,6 @@ class CreateEditProjectDetails extends Component {
       }, () => this.props.addProjDetails(this.state))
     }
 
-    handleSubmit = (e) =>{
-      e.preventDefault();
-      this.setState({
-            name: null,
-            location: {city: null, province: null},
-            startDate: new Date(),
-            endDate: new Date(),
-      })
-    }
-
     componentWillReceiveProps(existing_project){
       if (existing_project.currentProject){
         var project = existing_project.currentProject.project;
@@ -88,28 +78,25 @@ class CreateEditProjectDetails extends Component {
           <h2 className="darkGreenHeader">Project Details</h2>
             <div className="form-section">
                 <div className="form-row">
-                    <label htmlFor= "name">Name</label>
-                    <input type = "text" id="name" onChange={this.handleChange} value= {this.state.name}/>
+                    <label htmlFor= "name"><p className="form-label">Name</p></label>
+                    <input className="input-box" type = "text" id="name" onChange={this.handleChange} value= {this.state.name}/>
                 </div>
-                <div className="form-row">
-                    <label htmlFor= "location">
-                        Location
-                        <select defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
-                            <option value="DEFAULT" disabled>{this.state.location.province}</option>
-                            {province_render}
-                        </select>
-                        <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
-                            <option value="DEFAULT" disabled>{this.state.location.city}</option>
-                            {city_render}
-                        </select>
-                    </label>
-                </div>
-                <label htmlFor= "project_duration">
-                Project Duration
-                <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
-                <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+                <label htmlFor= "location" className="form-row">
+                    <p className="form-label">Location</p>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{this.state.location.province}</option>
+                        {province_render}
+                    </select>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{this.state.location.city}</option>
+                        {city_render}
+                    </select>
                 </label>
-                <input type="submit" value="submit"/>
+                <label htmlFor= "project_duration" className="form-row">
+                    <p className="form-label">Project Duration</p>
+                <DatePicker className="input-box" id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
+                <DatePicker className="input-box" id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+                </label>
             </div>
       </div>
     )

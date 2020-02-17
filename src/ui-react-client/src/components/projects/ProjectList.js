@@ -8,10 +8,8 @@ const ProjectList = ({ projects }) => {
   projects.forEach((project, index) => {
     projectList.push(
       <div key={projectList.length} className="card">
-        <Link to={'/projects/' + project.projID}>
           <ProjectCard number={index + 1} project={project}
                        canEditProject={true} key={projectList.length}/>
-        </Link>
       </div>
     )
   })

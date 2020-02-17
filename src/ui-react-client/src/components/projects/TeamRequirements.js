@@ -68,6 +68,7 @@ class TeamRequirements extends Component {
   render(){
     var disciplines = this.props.disciplines;
     var yearsOfExperience = this.props.masterYearsOfExperience;
+    var isUserPage = this.props.isUserPage;
 
     var discipline_render = [];
     var all_disciplines_keys = Array.from(disciplines.keys());
@@ -90,36 +91,54 @@ class TeamRequirements extends Component {
     var range_render = [];
     yearsOfExperience.forEach((yearsOfExperience, i) => {
         range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
-    })
+    });
+
+    var header = [];
+    if (isUserPage) {
+        header.push(<h2 key={header.length} className="darkGreenHeader">Disciplines & Skills</h2>);
+    } else {
+        header.push(<h2 key={header.length} className="darkGreenHeader">Team Requirements</h2>);
+    }
 
     return (
       <div className="form-section">
-          <h2 className="darkGreenHeader">Team Requirements</h2>
+          { header }
           <form onSubmit={this.handleSubmit}>
-          <select defaultValue={'DEFAULT'} id="name" onChange={this.handleChange}>
-          <option value="DEFAULT" disabled>Discipline</option>
-            {discipline_render}
-          </select>
-
-          <select defaultValue={'DEFAULT'} id="skills" onChange={this.handleChange}>
-            <option value="DEFAULT" disabled>Skills</option>
-            {skill_render}
-          </select>
-
-            <label htmlFor= "yearsOfExperience">
-            Years of Experience
-            <select defaultValue={'DEFAULT'} id="yearsOfExperience" onChange={this.handleChange}>
-              <option value="DEFAULT" disabled>Select a range</option>
-              {range_render}
-            </select>
-            </label>
-
-            <label htmlFor= "commitment">Expected Hourly Commitment Per Month</label>
-            <input type = "text" id="commitment" onChange={this.handleChange}/>
-
-            <input type="submit" value="+"/>
-
-            </form>
+              <div className="form-row">
+                  <input className="add" type="submit" value="+"/>
+                  <div className="form-section opening">
+                      <div className="form-row">
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="name" onChange={this.handleChange}>
+                              <option value="DEFAULT" disabled>Discipline</option>
+                              {discipline_render}
+                          </select>
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="skills" onChange={this.handleChange}>
+                              <option value="DEFAULT" disabled>Skills</option>
+                              {skill_render}
+                          </select>
+                      </div>
+                      <label className="form-row" htmlFor= "yearsOfExperience">
+                          <p className="form-label">Years of Experience</p>
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="yearsOfExperience" onChange={this.handleChange}>
+                              <option value="DEFAULT" disabled>Select a range</option>
+                              {range_render}
+                          </select>
+                      </label>
+                      {!isUserPage && (
+                          <div className="form-row">
+                              <label htmlFor= "commitment">
+                                  <p className="form-label">Expected Hourly Commitment Per Month</p>
+                              </label>
+                              <input className="input-box" type = "text"
+                                     id="commitment" onChange={this.handleChange}/>
+                          </div>
+                      )}
+                  </div>
+              </div>
+          </form>
       </div>
     );
 }
