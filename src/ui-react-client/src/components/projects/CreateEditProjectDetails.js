@@ -10,7 +10,28 @@ class CreateEditProjectDetails extends Component {
       location: {city: "City", province: "Province"},
       startDate: new Date(),
       endDate: new Date(),
+      city_options: [],
+      province_options: [],
+      location_options: {},
     }
+
+    componentDidMount(){
+    var locations = {}
+
+    this.props.locations.forEach(element =>{
+      if(locations[element.province]){
+        locations[element.province] = [...locations[element.province], element.city]
+      } else {
+        locations[element.province] = [element.city]
+      }
+    })
+
+    this.setState({
+      location: locations,
+      province_options: Object.keys(locations),
+      location_options: this.props.locations
+    })
+  }
 
     handleChange = (e) => {
       if (e.target.id == "city"){
@@ -18,7 +39,24 @@ class CreateEditProjectDetails extends Component {
         }, () => this.props.addProjDetails(this.state))
       }
       else if (e.target.id == "province"){
-        this.setState({ location: { ...this.state.location, province: e.target.value}
+        var all_locations = {};
+        var city_options = [];
+
+        if (this.state.location_options){
+          this.props.locations.forEach(element =>{
+            if(all_locations[element.province]){
+              all_locations[element.province] = [...all_locations[element.province], element.city]
+            } else {
+              all_locations[element.province] = [element.city]
+            }
+          })
+          var city_options = Object.values(all_locations[e.target.value])
+        }
+        else{
+          var city_options = Object.values(this.state.location[e.target.value])
+        }
+        this.setState({ location: { ...this.state.location, province: e.target.value},
+          city_options: city_options
         }, () => this.props.addProjDetails(this.state))
       }
       else {
@@ -54,22 +92,13 @@ class CreateEditProjectDetails extends Component {
     }
 
   render(){
-    var cities = [];
-    var provinces = [];
-    var locations_map = this.props.locations;
-
-    locations_map.forEach(element =>{
-      cities.push(element["city"])
-      provinces.push(element["province"])
-    })
-
     var city_render = [];
-    cities.forEach((city, i) => {
+    this.state.city_options.forEach((city, i) => {
         city_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
     })
 
     var province_render = [];
-    provinces.forEach((province, i) => {
+    this.state.province_options.forEach((province, i) => {
         province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
     })
 
