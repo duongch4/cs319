@@ -84,6 +84,7 @@ class EditUser extends Component {
                                   masterYearsOfExperience={this.props.masterYearsOfExperience}
                                   addOpening={(opening) => this.addDisciplines(opening)}
                                   isUserPage={true}/>
+                <hr />
                 {disciplines}
                 </div>
                 <Button variant="contained"

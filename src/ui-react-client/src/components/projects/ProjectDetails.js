@@ -71,11 +71,13 @@ class ProjectDetails extends Component {
             <div className="activity-container">
                 <div className="title-bar">
                     <h1 className="blueHeader">{projectDetails.name}</h1>
-                    <Button variant="contained"
-                            style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                            disableElevation>
-                        Edit
-                    </Button>
+                    <Link to={'/editproject/' + projectDetails.projID}>
+                        <Button variant="contained"
+                                style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                disableElevation>
+                            Edit
+                        </Button>
+                    </Link>
                 </div>
                 <div className="section-container">
                     <p><b>Location:</b> {projectDetails.location.city}, {projectDetails.location.province}</p>

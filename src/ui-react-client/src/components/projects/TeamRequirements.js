@@ -95,9 +95,9 @@ class TeamRequirements extends Component {
 
     var header = [];
     if (isUserPage) {
-        header.push(<h2 className="darkGreenHeader">Disciplines & Skills</h2>);
+        header.push(<h2 key={header.length} className="darkGreenHeader">Disciplines & Skills</h2>);
     } else {
-        header.push(<h2 className="darkGreenHeader">Team Requirements</h2>);
+        header.push(<h2 key={header.length} className="darkGreenHeader">Team Requirements</h2>);
     }
 
     return (

@@ -14,7 +14,9 @@ const ProjectCard = (props) => {
             <h2 className="blueHeader">{number}</h2>
         </div>
         <div className="card-summary-title">
-            <h2 className="blueHeader">{project.name}</h2>
+            <Link to={'/projects/' + project.projID}>
+                <h2 className="blueHeader">{project.name}</h2>
+            </Link>
             <p><strong>Location:</strong> {project.location.city}, {project.location.province}</p>
             {canEditProject && (<Link to={'/editproject/' + project.projID} className="action-link">
                 <EditIcon style={{fontSize: 'small'}}/> Edit </Link>)}

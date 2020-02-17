@@ -10,7 +10,9 @@ class UserCard extends Component {
         return(
             <div className="card-summary">
                 <div className="card-summary-title">
-                    <h2 className="blueHeader">{user.name}</h2>
+                    <Link to={'/users/' + user.userID}>
+                        <h2 className="blueHeader">{user.name}</h2>
+                    </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
                     {canEdit && (
                         <Link to={'/edituser/' + user.userID} className="action-link">

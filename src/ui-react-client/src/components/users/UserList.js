@@ -8,9 +8,7 @@ const UserList = ({ users }) => {
   users.forEach(user => {
     userCards.push(
         <div className="card" key={userCards.length}>
-          <Link to={'/users/' + user.userID}>
             <UserCard user={user} key={userCards.length} canEdit={true}/>
-          </Link>
         </div>)
     
   });
