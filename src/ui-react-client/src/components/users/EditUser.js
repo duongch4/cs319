@@ -59,7 +59,7 @@ class EditUser extends Component {
                 location: userProfile.location
             }
         })
-    }
+    };
 
     render() {
         const disciplines = [];
@@ -74,14 +74,18 @@ class EditUser extends Component {
         return (
             <div className="activity-container">
                 <h1 className="greenHeader">Edit user</h1>
+                <div className="section-container">
                 <EditUserDetails userProfile={this.state.usersProfile}
                                  addUserDetails={(userProfile) => this.addUserDetails(userProfile)}
                                  locations={this.props.locations}/>
+                </div>
+                <div className="section-container">
                 <TeamRequirements disciplines={this.props.disciplines}
                                   masterYearsOfExperience={this.props.masterYearsOfExperience}
                                   addOpening={(opening) => this.addDisciplines(opening)}
                                   isUserPage={true}/>
                 {disciplines}
+                </div>
                 <Button variant="contained"
                         style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                         disableElevation

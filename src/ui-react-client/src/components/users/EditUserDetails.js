@@ -4,12 +4,19 @@ import PropTypes from 'prop-types';
 
 class EditUserDetails extends Component {
     state = {
-        name: this.props.userProfile.name,
+        name: "",
         location: {
-            city: this.props.userProfile.location.city,
-            province: this.props.userProfile.location.province
+            city: "",
+            province: ""
         }
     };
+
+    componentDidMount() {
+        this.setState({
+            name: this.props.userProfile.name,
+            location: this.props.userProfile.location
+        })
+    }
 
     handleChange = (e) => {
         if (e.target.id == "city") {
@@ -58,7 +65,7 @@ class EditUserDetails extends Component {
                 <h2 className="darkGreenHeader">Personal Details</h2>
                 <div className="form-row">
                     <label htmlFor= "name"><p className="form-label">Name</p></label>
-                    <input type = "text" id="name" onChange={this.handleChange} value= {userProfile.name}/>
+                    <input className="input-box" type="text" id="name" onChange={this.handleChange} value= {userProfile.name}/>
                 </div>
                 <label htmlFor= "location" className="form-row">
                     <p className="form-label">Location</p>
@@ -66,7 +73,7 @@ class EditUserDetails extends Component {
                         <option value="DEFAULT" disabled>{userProfile.location.province}</option>
                         {province_render}
                     </select>
-                    <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
                         <option value="DEFAULT" disabled>{userProfile.location.city}</option>
                         {city_render}
                     </select>

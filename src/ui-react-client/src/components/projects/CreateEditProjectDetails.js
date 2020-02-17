@@ -97,7 +97,6 @@ class CreateEditProjectDetails extends Component {
                 <DatePicker className="input-box" id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
                 <DatePicker className="input-box" id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
                 </label>
-                <input type="submit" value="submit"/>
             </div>
       </div>
     )

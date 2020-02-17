@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './UserStyles.css';
 import { connect } from 'react-redux';
 import Openings from '../projects/Openings';
-import { loadSpecificUser, updateSpecificUser } from '../../redux/actions/userProfileActions';
 import ProjectCard from '../projects/ProjectCard'
 import AvailabilityCard from './AvailabilityCard';
 import {Button} from "@material-ui/core";
@@ -11,7 +10,7 @@ import { Link } from 'react-router-dom';
 class UserDetails extends Component {
     state = {
         usersProfile: []
-    }
+    };
  
     // XXX TODO: These (below) will eventually be sent in from the database XXX
 
@@ -20,7 +19,7 @@ class UserDetails extends Component {
         this.setState({
             usersProfile: this.props.usersProfile
         })
-    }
+    };
 
     render(){
         if(this.state.usersProfile.length == 0) {
@@ -34,7 +33,7 @@ class UserDetails extends Component {
         const disciplines = [];
         userDetails.disciplines.forEach((discipline, index) => {
             disciplines.push(<Openings opening={discipline} index={index} isAssignable={false} key={disciplines.length} />)
-        })
+        });
         const currentProjects = [];
         if(userDetails.currentProjects){
             userDetails.currentProjects.forEach((project, index) => {
@@ -90,21 +89,16 @@ class UserDetails extends Component {
 
 
 UserDetails.propTypes = {
-    usersProfile: PropTypes.array.isRequired,
+    usersProfile: PropTypes.array.isRequired
 }
 
 const mapStateToProps = state => {
     return {
         usersProfile: state.usersProfile,
     }
-  }
-
-const mapDispatchToProps = {
-    loadSpecificUser,
-    updateSpecificUser,
   };
+
   
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
+    mapStateToProps
   )(UserDetails)
