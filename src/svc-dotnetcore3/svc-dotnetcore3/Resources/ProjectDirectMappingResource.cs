@@ -9,7 +9,7 @@ namespace Web.API.Resources
         public int Id { get; set; }
         /// <summary>Project Name</summary>
         /// <example>Designing the new Pawnee Commons</example>
-        public string Name { get; set; }
+        public string Title { get; set; }
         /// <summary>Location ID</summary>
         /// <example>5</example>
         public int LocationId {get; set;}        

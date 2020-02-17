@@ -125,14 +125,37 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No users with userId '{userId}' found"));
                 }
 
-                var userResource = mapper.Map<User, UserResource>(user);
+                // var userResource = mapper.Map<User, UserResource>(user);
+
                 var projects = await projectsRepository.GetAllProjectsOfUser(user);
+                 var projectResources = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects);
                 var positions = await positionsRepository.GetPositionsOfUser(user);
                 var disciplines = await disciplinesRepository.GetUserDisciplines(user);
                 var skills = await skillsRepository.GetUserSkills(user);
+                var skillNames = skills.Select(x => x.Name);
+                var utilization = positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours);
                 var location = await locationsRepository.GetUserLocation(user);
-                var availability = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
-                var response = skills; /* new OkResponse<UserResource>(resource, "Everything is good"); */
+                var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
+                var availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice);
+                var userSummary = new {
+                    name = user.FirstName + " " + user.LastName,
+                    discipline = "none",
+                    position = "none",
+                    utilization,
+                    location = location,
+                    userID = user.Id
+                };
+                var userProfile = new {
+                    UserSummary = userSummary,
+                    currentProjects = projectResources,
+                    availability,
+                    disciplines,
+                    skills
+                };
+                // var tmpuserSummary = new UserSummaryResource(user, null, null, positions, location, mapper);
+                // var tmpuserProfile = new UserProfileResource(null, projects, outOfOffice, disciplines, skills, mapper);
+                // var tmp = new {tmpuserSummary, tmpuserProfile};
+                var response = userProfile; /* new OkResponse<UserProfileResource>(userProfile, "Everything is good"); */
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -150,6 +173,28 @@ namespace Web.API.Controllers
                 }
             }
         }
+
+        // /// <summary>Update user</summary>
+        // /// <remarks>
+        // /// Sample request:
+        // ///
+        // ///     PUT /api/users/5
+        // ///
+        // /// </remarks>
+        // /// <returns>The id of the user that was updated</returns>
+        // /// <response code="200">Returns the userId</response>
+        // /// <response code="400">Bad Request</response>
+        // /// <response code="404">If the requested user cannot be found</response>
+        // /// <response code="500">Internal Server Error</response>
+        // [HttpPut]
+        // [Route("users/{userId}")]
+        // [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
+        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        // public async Task<IActionResult> UpdateUser([FromBody] UserProfile user) {
+
+        // }
     }
 
     [Authorize]

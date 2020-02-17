@@ -8,9 +8,13 @@ namespace Web.API.Mapping
     {
         public ModelToResourceProfile()
         {
-            SetProjectProfile();
-            SetLocationProfile();
+            // SetProjectProfile();
+            // SetLocationProfile();
+            SetProjectSummary();
             SetUserProfile();
+            SetOutOfOffice();
+            SetRDiscipline();
+            SetRSkill();
         }
 
         private void SetProjectProfile()
@@ -30,6 +34,21 @@ namespace Web.API.Mapping
         private void SetUserProfile()
         {
             CreateMap<User, UserResource>();
+        }
+
+        private void SetProjectSummary() {
+            CreateMap<Project, ProjectDirectMappingResource>();
+        }
+
+        private void SetOutOfOffice() {
+            CreateMap<OutOfOffice, OutOfOfficeResource>();
+        }
+
+        private void SetRDiscipline() {
+            CreateMap<ResourceDisciplines, RDisciplineResource>();
+        }
+        private void SetRSkill() {
+            CreateMap<ResourceSkill, RSkillResource>();
         }
     }
 }

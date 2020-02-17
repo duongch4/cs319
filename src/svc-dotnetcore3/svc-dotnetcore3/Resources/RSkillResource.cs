@@ -1,11 +1,9 @@
-namespace Web.API.Application.Models
+namespace Web.API.Resources
 {
-    public class ResourceSkill
+    public class RSkillResource
     {
-        public int ResourceId {get; set;}
         public int ResourceDisciplineId { get; set; }
         public int SkillId {get; set;}
         public string Name {get; set;}
-
     }
 }
