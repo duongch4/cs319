@@ -39,7 +39,7 @@ namespace Web.API.Infrastructure.Data
                 from
                     Users
                 where 
-                    Id = "+ userId + ";";
+                    Id = @Id";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -139,13 +139,9 @@ namespace Web.API.Infrastructure.Data
                 update
                     Users
                 set 
-                    Id = @Id,
                     FirstName = @FirstName,
                     LastName = @LastName,
-                    Username = @Username,
-                    LocationId = @LocationId,
-                    IsAdmin = @IsAdmin,
-                    IsManager = @IsManager
+                    LocationId = @LocationId
                 where 
                     Id = @Id
             ;";
@@ -154,12 +150,10 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             int result = await connection.ExecuteAsync(sql, new
             {
-                user.Id,
-                user.FirstName,
-                user.LastName,
-                user.LocationId,
-                user.IsAdmin,
-                user.IsManager
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                LocationId = user.LocationId
             });
             return result == 1 ? user : null;
         }

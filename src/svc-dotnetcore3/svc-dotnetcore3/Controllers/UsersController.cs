@@ -174,27 +174,59 @@ namespace Web.API.Controllers
             }
         }
 
-        // /// <summary>Update user</summary>
-        // /// <remarks>
-        // /// Sample request:
-        // ///
-        // ///     PUT /api/users/5
-        // ///
-        // /// </remarks>
-        // /// <returns>The id of the user that was updated</returns>
-        // /// <response code="200">Returns the userId</response>
-        // /// <response code="400">Bad Request</response>
-        // /// <response code="404">If the requested user cannot be found</response>
-        // /// <response code="500">Internal Server Error</response>
-        // [HttpPut]
-        // [Route("users/{userId}")]
-        // [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        // public async Task<IActionResult> UpdateUser([FromBody] UserProfile user) {
+        /// <summary>Update user</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT /api/users/5
+        ///
+        /// </remarks>
+        /// <returns>The id of the user that was updated</returns>
+        /// <response code="200">Returns the userId</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">If the requested user cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPut]
+        [Route("users/{userId}")]
+        [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateUser([FromBody] UserProfileResource user) {
+           if (user == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
+            }
 
-        // }
+            try
+            {
+                UserSummaryResource summary = user.UserSummary;
+                User updateUser = new User();
+                var Name = summary.Name.Split(" ", 2);
+                updateUser.LocationId = summary.Location.Id;
+                updateUser.Id = summary.UserId;
+                updateUser.FirstName = Name[0];
+                updateUser.LastName = Name[1];
+                
+                var resource = await usersRepository.UpdateAUser(updateUser);
+                var response = new OkResponse<User>(resource, "Successfully updated");
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
     }
 
     [Authorize]
