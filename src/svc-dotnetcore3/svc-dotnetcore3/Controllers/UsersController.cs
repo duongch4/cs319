@@ -205,23 +205,27 @@ namespace Web.API.Controllers
             {
                 UserSummaryResource summary = user.UserSummary;
                 User updateUser = createUserFromSummary(summary);
-                IEnumerable<ResourceDisciplines> profileDisciplines = createResourceDisciplinesFromProfile(user.Disciplines, summary.UserId);
-                var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
-                var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
-                IEnumerable<ResourceSkill> profileSkills = createResourceSkillsFromProfile(user.Disciplines, summary.UserId);
+                // IEnumerable<ResourceDisciplines> profileDisciplines = createResourceDisciplinesFromProfile(user.Disciplines, summary.UserId);
+                // IEnumerable<ResourceSkill> profileSkills = createResourceSkillsFromProfile(user.Disciplines, summary.UserId);
+                IEnumerable<OutOfOffice> profileAvailability = createOutOfOfficeFromProfile(user.Availability, summary.UserId);
+                // var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
+                // var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
+                var availabilitiesInDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(updateUser);
 
-                var areSame = disciplinesInDB.SequenceEqual(profileDisciplines);
-                if (!areSame)
-                {
-                    addMissingDisciplinesToDB(disciplinesInDB, profileDisciplines);
-                    removeDisciplinesFromDB(disciplinesInDB, profileDisciplines);
-                }
+                var hasSameAvail = availabilitiesInDB.SequenceEqual(profileAvailability);
+
+                // var areSame = disciplinesInDB.SequenceEqual(profileDisciplines);
+                // if (!areSame)
+                // {
+                //     addMissingDisciplinesToDB(disciplinesInDB, profileDisciplines);
+                //     removeDisciplinesFromDB(disciplinesInDB, profileDisciplines);
+                // }
                 // var addToDB = profileDisciplines.Except(disciplinesInDB);
                 // var deleteFromDB = disciplinesInDB.Except(profileDisciplines);
 
                 // var sameSkills = skillsInDB.SequenceEqual(profileSkills);
                 var resource = await usersRepository.UpdateAUser(updateUser);
-                var tmp = new { resource, profileDisciplines, profileSkills};
+                var tmp = new { resource, hasSameAvail, availabilitiesInDB, profileAvailability };
                 var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -285,7 +289,7 @@ namespace Web.API.Controllers
         private void addMissingDisciplinesToDB(IEnumerable<ResourceDisciplines> db, IEnumerable<ResourceDisciplines> profile)
         {
             var addToDB = profile.Except(db);
-            Log.Logger.Information("addMissingDisciplines");
+            Log.Logger.Information("addMissingDisciplines" + addToDB);
         }
 
         private void removeDisciplinesFromDB(IEnumerable<ResourceDisciplines> db, IEnumerable<ResourceDisciplines> profile)
@@ -293,6 +297,23 @@ namespace Web.API.Controllers
             var removeFromDB = db.Except(profile);
             Log.Logger.Information("removeDisciplines");
         }
+
+        private IEnumerable<OutOfOffice> createOutOfOfficeFromProfile(IEnumerable<OutOfOfficeResource> availabilities, int userId)
+        {
+            var result = Enumerable.Empty<OutOfOffice>();
+            foreach (var availability in availabilities)
+            {
+                var avail = new OutOfOffice();
+                avail.ResourceId = userId;
+                avail.FromDate = availability.FromDate;
+                avail.ToDate = availability.ToDate;
+                avail.Reason = availability.Reason;
+                result = result.Append(avail);
+            }
+            return result;
+        }
+    
+
     }
 
     [Authorize]

@@ -7,22 +7,17 @@ namespace Web.API.Resources
 {
     public class UserSummaryResource
     {
-        // private string name;
-        // private Discipline discipline;
-        // private Position position;
-        // private int utilization;
-        // private Location location;
-        // private int userId;
-        // private IMapper mapper;
-        // public UserSummaryResource(User user, Discipline discipline, Position position, IEnumerable<Position> positions, Location location, IMapper mapper){
-        //     this.mapper = mapper;
-        //     this.userId = user.Id;
-        //     this.name = user.FirstName + " " + user.LastName;
-        //     this.discipline = discipline;
-        //     this.position = position;
-        //     this.utilization = positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours);
-        //     this.location = location;
-        // }
+
+        // "firstName": "",
+        //     "lastName": "",
+        //     "id": 101,
+        //     "location": {
+        //         "province": "",
+        //         "city": ""
+        //     },
+        //     "utilization": 100,
+        //     "resourceDiscipline": { "discipline": "", "yearsOfExp": ""},
+        //     "isConfirmed": false
         public int UserId { get; set; }
 
         public string Name { get; set; }

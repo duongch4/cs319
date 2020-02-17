@@ -6,10 +6,10 @@ namespace Web.API.Resources
     {        
         /// <summary>Absence Start Date</summary>
         /// <example>05/29/2021 05:50:06</example>
-        public DateTime FromDateTime {get; set;}
+        public DateTime FromDate {get; set;}
         /// <summary>Project End Date</summary>
         /// <example>06/08/2021 05:50:06</example>
-        public DateTime ToDateTime {get; set;}
+        public DateTime ToDate {get; set;}
         public string Reason {get; set;}
     }
 }

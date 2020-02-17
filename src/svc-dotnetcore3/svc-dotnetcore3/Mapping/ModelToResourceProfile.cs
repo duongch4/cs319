@@ -50,5 +50,6 @@ namespace Web.API.Mapping
         private void SetRSkill() {
             CreateMap<ResourceSkill, RSkillResource>();
         }
+
     }
 }
