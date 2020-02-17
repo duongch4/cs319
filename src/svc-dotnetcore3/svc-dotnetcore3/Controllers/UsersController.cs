@@ -207,9 +207,20 @@ namespace Web.API.Controllers
                 updateUser.Id = summary.UserId;
                 updateUser.FirstName = Name[0];
                 updateUser.LastName = Name[1];
+
+                var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
+                var disciplines = user.Disciplines;
+
+                var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
+
                 
+                var newDisciplines = disciplinesInDB.OrderBy(x => x.DisciplineName);
+                disciplines.OrderBy(x => x.Name);
+
+
+                var tmp = new {newDisciplines, disciplines, skillsInDB};
                 var resource = await usersRepository.UpdateAUser(updateUser);
-                var response = new OkResponse<User>(resource, "Successfully updated");
+                var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
