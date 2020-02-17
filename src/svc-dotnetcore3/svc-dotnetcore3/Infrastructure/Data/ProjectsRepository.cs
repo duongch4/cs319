@@ -148,12 +148,13 @@ namespace Web.API.Infrastructure.Data
         {
             var project = await GetAProject(number);
             var sql = @"
-                delete from Projects where Number = @Number
+                delete from Projects
+                where Number = @Number
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.ExecuteAsync(sql, new { number });
+            await connection.ExecuteAsync(sql, new { Number = number });
             return project;
         }
     }

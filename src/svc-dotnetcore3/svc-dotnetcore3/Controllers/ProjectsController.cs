@@ -216,10 +216,56 @@ namespace Web.API.Controllers
         ///
         ///     POST /api/projects
         ///     {
-        ///        "Id": 9999,
-        ///        "Number": "2026-7H4V-72",
-        ///        "Title": "Deserunt eum earum neque voluptatem.",
-        ///        "LocationId": 81
+        ///         "ProjectSummary": {
+        ///             "Title": "",
+        ///             "Location": {
+        ///                 "Province": "",
+        ///                 "City": "",
+        ///                 "Id": 1
+        ///             },
+        ///             "ProjectStartDate": "",
+        ///             "ProjectEndDate": ""
+        ///         },
+        ///         "UsersSummary": [
+        ///             {
+        ///                 "FirstName": "",
+        ///                 "LastName": "",
+        ///                 "UserName": "",
+        ///                 "Location": {
+        ///                     "Province": "",
+        ///                     "City": "",
+        ///                     "Id": 1
+        ///                 },
+        ///                 "Utilization": 100
+        ///             },
+        ///             {
+        ///                 "FirstName": "",
+        ///                 "LastName": "",
+        ///                 "UserName": "",
+        ///                 "Location": {
+        ///                     "Province": "",
+        ///                     "City": "",
+        ///                     "Id": 1
+        ///                 },
+        ///                 "Utilization": 100
+        ///             }
+        ///         ],
+        ///         "Openings": [
+        ///             {
+        ///                 "Position": "",
+        ///                 "Discipline": "",
+        ///                 "Skills": [],
+        ///                 "YearsOfExp": "",
+        ///                 "CommitmentMonthlyHours": 160
+        ///             },
+        ///             {
+        ///                 "Position": "",
+        ///                 "Discipline": "",
+        ///                 "Skills": [],
+        ///                 "YearsOfExp": "",
+        ///                 "CommitmentMonthlyHours": 160
+        ///             }
+        ///         ]
         ///     }
         ///
         /// </remarks>
@@ -392,14 +438,14 @@ namespace Web.API.Controllers
         ///
         /// </remarks>
         /// <param name="projectNumber"></param>
-        /// <returns>The old deleted project</returns>
-        /// <response code="201">Returns the old deleted project</response>
+        /// <returns>The old deleted project number</returns>
+        /// <response code="200">Returns the old deleted project number</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
-        [Route("projects/{number}")]
-        [ProducesResponseType(typeof(DeletedResponse<ProjectProfile>), StatusCodes.Status200OK)]
+        [Route("projects/{projectNumber}")]
+        [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -417,8 +463,7 @@ namespace Web.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given project number cannot be found on database"));
                 }
-                var resource = mapper.Map<Project, ProjectProfile>(deleted);
-                var response = new DeletedResponse<ProjectProfile>(resource, "Successfully deleted");
+                var response = new DeletedResponse<string>(deleted.Number, $"Successfully deleted project with number '{deleted.Number}'");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
