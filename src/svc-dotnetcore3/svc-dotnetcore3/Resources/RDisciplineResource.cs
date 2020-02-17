@@ -1,13 +1,13 @@
+using System.Collections.Generic;
+
 namespace Web.API.Resources
 {
     public class RDisciplineResource
     {
-        /// <summary>Discipline ID</summary>
-        /// <example>5</example>
-        public int Id { get; set; }
         /// <summary>Discipline Name</summary>
         /// <example>Parks and Recreation</example>
         public string Name { get; set; }
-        public int YearsOfExperience {get; set;}
+        public string YearsOfExperience {get; set;}
+        public List<string> Skills {get; set;}
     }
 }

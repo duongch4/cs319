@@ -130,7 +130,7 @@ namespace Web.API.Infrastructure.Data
         }
     
         public async Task<IEnumerable<ResourceSkill>> GetUserSkills(User user) {
-            var sql = @"Select rs.ResourceId, rs.ResourceDisciplineId, rs.SkillId, s.Name
+            var sql = @"Select rs.ResourceId, rs.ResourceDisciplineName, rs.SkillId, s.Name
             from ResourceSkill as rs, Skills as s
             where rs.SkillId = s.Id and rs.ResourceId = " + user.Id + ";";
 
