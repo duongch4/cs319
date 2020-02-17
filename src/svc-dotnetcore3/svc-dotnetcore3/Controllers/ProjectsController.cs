@@ -132,14 +132,10 @@ namespace Web.API.Controllers
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
 
                 var openingPositions = await positionsRepository.GetAllUnassignedPositionsResourceOfProject(project.Id);
-                Log.Information("A");
-
                 if (openingPositions == null || !openingPositions.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
                 }
-                Log.Information("B");
-
                 var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
 
                 var projectProfile = new ProjectProfile {
@@ -147,8 +143,6 @@ namespace Web.API.Controllers
                     UsersSummary = usersSummary,
                     Openings = openingPositionsSummary
                 };
-                Log.Information("C");
-
 
                 var response = new OkResponse<ProjectProfile>(projectProfile, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
