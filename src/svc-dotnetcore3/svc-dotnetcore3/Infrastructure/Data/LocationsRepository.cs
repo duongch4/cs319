@@ -50,11 +50,11 @@ namespace Web.API.Infrastructure.Data
         public async Task<Location> GetUserLocation(User user) {
             var sql = @"
                 select
-                    Id, Code, [Name]
+                    Id, Province, City
                 from
                     Locations
                 where 
-                    Id = "+ user.LocationId + ";";
+                    Id = @Id";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = user.LocationId });

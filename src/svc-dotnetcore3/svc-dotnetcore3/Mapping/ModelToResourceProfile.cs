@@ -9,7 +9,7 @@ namespace Web.API.Mapping
         public ModelToResourceProfile()
         {
             // SetProjectProfile();
-            // SetLocationProfile();
+            SetLocationProfile();
             SetProjectSummary();
             SetUserProfile();
             SetOutOfOffice();
