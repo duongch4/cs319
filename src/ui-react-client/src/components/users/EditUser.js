@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 import TeamRequirements from "../projects/TeamRequirements";
 import Openings from "../projects/Openings";
 import EditUserDetails from "./EditUserDetails";
+import { Button } from "@material-ui/core";
 
 class EditUser extends Component {
     state = {
@@ -81,7 +82,12 @@ class EditUser extends Component {
                                   addOpening={(opening) => this.addDisciplines(opening)}
                                   isUserPage={true}/>
                 {disciplines}
-                <button onClick={() => this.onSubmit()}>Save</button>
+                <Button variant="contained"
+                        style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                        disableElevation
+                        onClick={() => this.onSubmit()}>
+                    Save
+                </Button>
             </div>
         );
     }

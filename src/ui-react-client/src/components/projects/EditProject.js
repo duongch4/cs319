@@ -7,6 +7,7 @@ import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
 import { loadLocations} from '../../redux/actions/locationsActions.js';
 import { loadExperiences } from '../../redux/actions/experienceActions.js';
 import { connect } from 'react-redux';
+import { Button } from "@material-ui/core";
 
 class EditProject extends Component {
   state = {
@@ -83,7 +84,12 @@ class EditProject extends Component {
                               masterYearsOfExperience={this.props.masterYearsOfExperience}
                               addOpening={(opening) => this.addOpening(opening)}/>
             {openings}
-            <button onClick={() => this.onSubmit()}>Save</button>
+            <Button variant="contained"
+                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                    disableElevation
+                    onClick={() => this.onSubmit()}>
+              Save
+            </Button>
           </div>
     );
   }

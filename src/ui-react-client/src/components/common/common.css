@@ -126,14 +126,14 @@ p {
 .form-section {
     display: flex;
     flex-direction: column;
-    margin: 16px 0px;
+    margin: 8px 0px;
 }
 
 .form-row {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 8px 0px;
+    margin: 4px 0px;
 }
 
 .form-field {
@@ -150,4 +150,32 @@ p {
 
 .section-container {
     margin-bottom: 24px;
+}
+
+.form-label {
+    margin-right: 16px;
+}
+
+input.input-box, select.input-box {
+    padding: 6px;
+    display: flex;
+    flex-grow: 1;
+    border-radius: 3px;
+    border-width: 0.5px;
+    border-color: #cdcdcd;
+}
+
+input.input-box:last-child, select.input-box:last-child {
+    margin-left: 8px;
+}
+
+input.add {
+    width: 20px;
+    height: 20px;
+}
+
+.opening {
+    display: flex;
+    flex-grow: 1;
+    margin-left: 16px;
 }

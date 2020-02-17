@@ -105,30 +105,35 @@ class TeamRequirements extends Component {
           { header }
           <form onSubmit={this.handleSubmit}>
               <div className="form-row">
-                  <input type="submit" value="+"/>
-                  <div className="form-section ">
+                  <input className="add" type="submit" value="+"/>
+                  <div className="form-section opening">
                       <div className="form-row">
-                          <select defaultValue={'DEFAULT'} id="name" onChange={this.handleChange}>
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="name" onChange={this.handleChange}>
                               <option value="DEFAULT" disabled>Discipline</option>
                               {discipline_render}
                           </select>
-                          <select defaultValue={'DEFAULT'} id="skills" onChange={this.handleChange}>
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="skills" onChange={this.handleChange}>
                               <option value="DEFAULT" disabled>Skills</option>
                               {skill_render}
                           </select>
                       </div>
-                      <div className="form-row">
-                          <label htmlFor= "yearsOfExperience">Years of Experience
-                              <select defaultValue={'DEFAULT'} id="yearsOfExperience" onChange={this.handleChange}>
-                                  <option value="DEFAULT" disabled>Select a range</option>
-                                  {range_render}
-                              </select>
-                          </label>
-                      </div>
+                      <label className="form-row" htmlFor= "yearsOfExperience">
+                          <p className="form-label">Years of Experience</p>
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="yearsOfExperience" onChange={this.handleChange}>
+                              <option value="DEFAULT" disabled>Select a range</option>
+                              {range_render}
+                          </select>
+                      </label>
                       {!isUserPage && (
                           <div className="form-row">
-                              <label htmlFor= "commitment">Expected Hourly Commitment Per Month</label>
-                              <input type = "text" id="commitment" onChange={this.handleChange}/>
+                              <label htmlFor= "commitment">
+                                  <p className="form-label">Expected Hourly Commitment Per Month</p>
+                              </label>
+                              <input className="input-box" type = "text"
+                                     id="commitment" onChange={this.handleChange}/>
                           </div>
                       )}
                   </div>

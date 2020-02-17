@@ -57,22 +57,20 @@ class EditUserDetails extends Component {
             <div className="form-section">
                 <h2 className="darkGreenHeader">Personal Details</h2>
                 <div className="form-row">
-                    <label htmlFor= "name">Name</label>
+                    <label htmlFor= "name"><p className="form-label">Name</p></label>
                     <input type = "text" id="name" onChange={this.handleChange} value= {userProfile.name}/>
                 </div>
-                <div className="form-row">
-                    <label htmlFor= "location">
-                        Location
-                        <select defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
-                            <option value="DEFAULT" disabled>{userProfile.location.province}</option>
-                            {province_render}
-                        </select>
-                        <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
-                            <option value="DEFAULT" disabled>{userProfile.location.city}</option>
-                            {city_render}
-                        </select>
-                    </label>
-                </div>
+                <label htmlFor= "location" className="form-row">
+                    <p className="form-label">Location</p>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{userProfile.location.province}</option>
+                        {province_render}
+                    </select>
+                    <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{userProfile.location.city}</option>
+                        {city_render}
+                    </select>
+                </label>
             </div>
         )
     }
