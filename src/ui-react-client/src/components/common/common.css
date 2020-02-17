@@ -155,12 +155,6 @@ p {
     margin-right: 16px;
 }
 
-.form-option {
-    font-family: 'Roboto', Helvetica, Arial, sans-serif;
-    font-size: 1em;
-    padding: 8px;
-}
-
 input.input-box, select.input-box {
     padding: 6px;
     display: flex;
