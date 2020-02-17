@@ -83,30 +83,30 @@ namespace Web.API.Controllers
         ///     GET /api/locations/wpg
         ///
         /// </remarks>
-        /// <param name="locationCode"></param>
+        /// <param name="locationId"></param>
         /// <returns>The requested location</returns>
         /// <response code="200">Returns the requested location</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">If the requested location cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("locations/{locationCode}")]
+        [Route("locations/{locationId}")]
         [ProducesResponseType(typeof(OkResponse<LocationResource>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetALocation(string locationCode)
+        public async Task<IActionResult> GetALocation(int locationId)
         {
-            if (locationCode == null)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given location code is null"));
-            }
+            // if (locationCode == null)
+            // {
+            //     return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given location code is null"));
+            // }
             try
             {
-                var location = await locationsRepository.GetALocation(locationCode);
+                var location = await locationsRepository.GetALocation(locationId);
                 if (location == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No location at locationCode '{locationCode}' found"));
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No location at locationId '{locationId}' found"));
                 }
                 var resource = mapper.Map<Location, LocationResource>(location);
                 var response = new OkResponse<LocationResource>(resource, "Everything is good");

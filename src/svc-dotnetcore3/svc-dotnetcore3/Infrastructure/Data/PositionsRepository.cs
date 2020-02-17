@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 
+using Serilog;
+
 namespace Web.API.Infrastructure.Data
 {
     public class PositionsRepository : IPositionsRepository
@@ -60,7 +62,7 @@ namespace Web.API.Infrastructure.Data
                     ProjectId = @ProjectId
                     AND ResourceId IS NOT NULL
             ;";
-
+            Log.Logger.Here().Debug(@"{@sql}", sql);
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryAsync<Position>(sql, new { ProjectId = project.Id });

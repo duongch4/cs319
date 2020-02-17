@@ -23,11 +23,21 @@ namespace Web.API.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsRepository projectsRepository;
+        private readonly IUsersRepository usersRepository;
+        private readonly IPositionsRepository positionsRepository;
+        private readonly ILocationsRepository locationsRepository;
         private readonly IMapper mapper;
 
-        public ProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
+        public ProjectsController(
+            IProjectsRepository projectsRepository, IUsersRepository usersRepository,
+            IPositionsRepository positionsRepository, ILocationsRepository locationsRepository,
+            IMapper mapper
+        )
         {
             this.projectsRepository = projectsRepository;
+            this.usersRepository = usersRepository;
+            this.positionsRepository = positionsRepository;
+            this.locationsRepository = locationsRepository;
             this.mapper = mapper;
         }
 
@@ -45,7 +55,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects")]
-        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectResource>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectProfile>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -58,8 +68,8 @@ namespace Web.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
                 }
-                var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectResource>>(projects);
-                var response = new OkResponse<IEnumerable<ProjectResource>>(resource, "Everything is good");
+                var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectProfile>>(projects);
+                var response = new OkResponse<IEnumerable<ProjectProfile>>(resource, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -78,13 +88,14 @@ namespace Web.API.Controllers
             }
         }
 
-        /// <summary>Get one project based on a given project number</summary>
+        /// <summary>Get one project</summary>
         /// <remarks>
         /// Sample request:
         ///
         ///     GET /api/projects/2006-7H4V-72
         ///
         /// </remarks>
+        /// <param name="projectNumber"></param>
         /// <returns>The requested project</returns>
         /// <response code="200">Returns the requested project</response>
         /// <response code="400">Bad Request</response>
@@ -92,7 +103,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects/{projectNumber}", Name = "GetAProject")]
-        [ProducesResponseType(typeof(OkResponse<ProjectResource>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<ProjectProfile>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -109,8 +120,27 @@ namespace Web.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No project at projectNumber '{projectNumber}' found"));
                 }
-                var resource = mapper.Map<Project, ProjectResource>(project);
-                var response = new OkResponse<ProjectResource>(resource, "Everything is good");
+
+                Log.Logger.Here().Information("{@Project}", project);
+
+                var location = await locationsRepository.GetALocation(project.LocationId);
+
+                var users = await usersRepository.GetAllUsersOnProject(project);
+                Log.Logger.Here().Information("{@Users}", users);
+
+                var positions = await positionsRepository.GetAllUnassignedPositionOfProject(project);
+                Log.Logger.Here().Information("{@Pos}", positions);
+
+                // var source = new {
+                //     project, users, positions
+                // };
+
+
+
+
+                // var resource = mapper.Map<Project, ProjectProfile>(project);
+                // var response = new OkResponse<ProjectProfile>(resource, "Everything is good");
+                var response = new OkResponse<Project>(project, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -143,7 +173,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects/most-recent")]
-        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectResource>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectProfile>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -156,8 +186,8 @@ namespace Web.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No projects found"));
                 }
-                var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectResource>>(mostRecentProjects);
-                var response = new OkResponse<IEnumerable<ProjectResource>>(resource, "Everything is good");
+                var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectProfile>>(mostRecentProjects);
+                var response = new OkResponse<IEnumerable<ProjectProfile>>(resource, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -196,7 +226,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Route("projects")]
-        [ProducesResponseType(typeof(OkResponse<ProjectResource>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreatedResponse<ProjectProfile>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAProject([FromBody] Project project)
@@ -210,9 +240,9 @@ namespace Web.API.Controllers
             {
                 Log.Logger.Here().Information("{@Project}", project);
                 var created = await projectsRepository.CreateAProject(project);
-                var resource = mapper.Map<Project, ProjectResource>(created);
+                var resource = mapper.Map<Project, ProjectProfile>(created);
                 var url = Url.Link(nameof(GetAProject), new { projectNumber = created.Number });
-                var response = new OkResponse<ProjectResource>(resource, "Successfully created", new { url = url });
+                var response = new CreatedResponse<ProjectProfile>(resource, "Successfully created", new { url = url });
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
@@ -251,7 +281,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("projects")]
-        [ProducesResponseType(typeof(OkResponse<ProjectResource>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(UpdatedResponse<ProjectProfile>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateAProject([FromBody] Project project)
@@ -265,9 +295,9 @@ namespace Web.API.Controllers
             {
                 Log.Logger.Here().Information("{@Project}", project);
                 var updated = await projectsRepository.UpdateAProject(project);
-                var resource = mapper.Map<Project, ProjectResource>(updated);
-                var response = new OkResponse<ProjectResource>(resource, "Successfully updated");
-                return StatusCode(StatusCodes.Status200OK, response);
+                var resource = mapper.Map<Project, ProjectProfile>(updated);
+                var response = new UpdatedResponse<ProjectProfile>(resource, "Successfully updated");
+                return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
             {
@@ -285,36 +315,100 @@ namespace Web.API.Controllers
             }
         }
 
+        // /// <summary>Assigns a user to an opening and modifies the project</summary>
+        // /// <remarks>
+        // /// Sample request:
+        // ///
+        // ///     PUT /api/projects/{projectId}/assign/{openingId}
+        // ///     {
+        // ///        "PositionId": 1,
+        // ///        "UserId": 2
+        // ///     }
+        // ///
+        // /// </remarks>
+        // /// <param name="projectId"></param>
+        // /// <param name="openingId"></param>
+        // /// <param name="req"></param>
+        // /// <returns>The newly updated project</returns>
+        // /// <response code="201">Returns the newly updated project</response>
+        // /// <response code="400">Bad Request</response>
+        // /// <response code="500">Internal Server Error</response>
+        // [HttpPut]
+        // [Route("projects/{projectId}/assign/{openingId}")]
+        // [ProducesResponseType(typeof(OkResponse<ProjectProfile>), StatusCodes.Status201Created)]
+        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        // public async Task<IActionResult> UpdateAProject(int projectId, int openingId, [FromBody] RequestProjectAssign req)
+        // {
+        //     if (req == null)
+        //     {
+        //         return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given Request Body cannot be read"));
+        //     }
+
+        //     try
+        //     {
+        //         Log.Logger.Here().Information("{@Req}", req);
+        //         User user = new {
+        //             Id = req.userId,
+        //             FirstName 
+        //         };
+        //         var assginedUser = await usersRepository.UpdateAUser();
+        //         var updated = await projectsRepository.UpdateAProject(project);
+        //         var resource = mapper.Map<Project, ProjectResource>(updated);
+        //         var response = new OkResponse<ProjectResource>(resource, "Successfully updated");
+        //         return StatusCode(StatusCodes.Status200OK, response);
+        //     }
+        //     catch (Exception err)
+        //     {
+        //         var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+        //         if (err is SqlException)
+        //         {
+        //             var error = new InternalServerException(errMessage);
+        //             return StatusCode(StatusCodes.Status500InternalServerError, error);
+        //         }
+        //         else
+        //         {
+        //             var error = new BadRequestException(errMessage);
+        //             return StatusCode(StatusCodes.Status400BadRequest, error);
+        //         }
+        //     }
+        // }
+
         /// <summary>Delete a project</summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     DELETE /api/projects/2026-7H4V-72
+        ///     DELETE /api/projects/2005-KJS4-46
         ///
         /// </remarks>
-        /// <param name="number"></param>
+        /// <param name="projectNumber"></param>
         /// <returns>The old deleted project</returns>
         /// <response code="201">Returns the old deleted project</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
         [Route("projects/{number}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteAProject([FromRoute] string number)
+        [ProducesResponseType(typeof(DeletedResponse<ProjectProfile>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAProject([FromRoute] string projectNumber)
         {
-            if (number == null)
+            if (projectNumber == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project number is null"));
             }
 
             try
             {
-                var deleted = await projectsRepository.DeleteAProject(number);
-                if (deleted == null) {
+                var deleted = await projectsRepository.DeleteAProject(projectNumber);
+                if (deleted == null)
+                {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given project number cannot be found on database"));
                 }
-                var resource = mapper.Map<Project, ProjectResource>(deleted);
-                var response = new OkResponse<ProjectResource>(resource, "Successfully deleted");
+                var resource = mapper.Map<Project, ProjectProfile>(deleted);
+                var response = new DeletedResponse<ProjectProfile>(resource, "Successfully deleted");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)

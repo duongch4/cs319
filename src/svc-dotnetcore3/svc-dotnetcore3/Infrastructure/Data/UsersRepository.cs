@@ -164,8 +164,5 @@ namespace Web.API.Infrastructure.Data
             });
             return result == 1 ? user : null;
         }
-
-
-
     }
 }

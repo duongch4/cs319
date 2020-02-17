@@ -50,12 +50,9 @@ namespace Web.API.Infrastructure.Data
         public async Task<Project> GetAProject(string projectNumber)
         {
             var sql = @"
-                select 
-                    Id, Number, Title, LocationId, CreatedAt, UpdatedAt
-                from
-                    Projects
-                where
-                    Number = @Number
+                select *
+                from Projects
+                where Number = @Number
             ;";
 
             using var connection = new SqlConnection(connectionString);
@@ -137,10 +134,6 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             await connection.ExecuteAsync(sql, new { number });
             return project;
-        }
-
-        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
-            return null;
         }
     }
 }

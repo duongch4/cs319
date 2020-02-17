@@ -8,19 +8,20 @@ namespace Web.API.Mapping
     {
         public ModelToResourceProfile()
         {
-            SetProjectProfile();
+            // SetProjectSummary();
             SetLocationProfile();
             SetUserProfile();
+            SetSkillProfile();
         }
 
-        private void SetProjectProfile()
-        {
-            CreateMap<Project, ProjectResource>(
-            ).ForMember(
-                destinationMember => destinationMember.ProjectSummary,
-                opt => opt.MapFrom(sourceMember => sourceMember)
-            ).ReverseMap();
-        }
+        // private void SetProjectSummary()
+        // {
+        //     CreateMap<Project, ProjectSummary>(
+        //     ).ForMember(
+        //         destinationMember => destinationMember,
+        //         opt => opt.MapFrom(sourceMember => sourceMember)
+        //     ).ReverseMap();
+        // }
 
         private void SetLocationProfile()
         {
@@ -31,5 +32,33 @@ namespace Web.API.Mapping
         {
             CreateMap<User, UserResource>();
         }
+
+        // private void SetUserSummary()
+        // {
+        //     CreateMap<User, UserSummary>();
+        // }
+
+        private void SetSkillProfile()
+        {
+            CreateMap<Skill, SkillResource>(
+            ).ForMember(
+                destinationMember => destinationMember.Name,
+                opt => opt.MapFrom(sourceMember => sourceMember.Name)
+            ).ReverseMap();
+        }
     }
 }
+
+//UserProfile { UserSummary, Disciplines[ ], Projects[ ], Availability[ ] },
+//ProjectProfile {  ProjectSummary, UserSummary[ ], Positions[ ] },
+
+// var config = new MapperConfiguration(cfg => {
+//                 cfg.CreateMap<AuthorDTO, AuthorModel>()
+//                    .ForMember(destination => destination.Address,
+//               map => map.MapFrom(
+//                   source => new Address
+//                   {
+//                       City = source .City,
+//                       State = source .State,
+//                       Country = source.Country
+//                   }));

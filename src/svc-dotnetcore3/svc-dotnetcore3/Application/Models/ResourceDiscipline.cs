@@ -1,6 +1,6 @@
 namespace Web.API.Application.Models
 {
-    public class ResourceDisciplines
+    public class ResourceDiscipline
     {
         public int ResourceId {get; set;}
         public int DisciplineId { get; set; }

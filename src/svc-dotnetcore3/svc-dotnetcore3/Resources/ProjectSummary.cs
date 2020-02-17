@@ -2,14 +2,14 @@ using System;
 
 namespace Web.API.Resources
 {
-    public class ProjectDirectMappingResource
+    public class ProjectSummary
     {
         /// <summary>Project ID</summary>
         /// <example>3570</example>
         public int Id { get; set; }
-        /// <summary>Project Name</summary>
+        /// <summary>Project Title</summary>
         /// <example>Designing the new Pawnee Commons</example>
-        public string Name { get; set; }
+        public string Title { get; set; }
         /// <summary>Location ID</summary>
         /// <example>5</example>
         public int LocationId {get; set;}        
