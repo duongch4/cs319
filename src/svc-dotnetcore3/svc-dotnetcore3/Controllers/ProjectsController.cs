@@ -24,11 +24,16 @@ namespace Web.API.Controllers
     {
         private readonly IProjectsRepository projectsRepository;
         private readonly IMapper mapper;
+        private readonly IUsersRepository usersRepository;
+        private readonly IPositionsRepository positionsRepository;
 
-        public ProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
+        public ProjectsController(IProjectsRepository projectsRepository, IMapper mapper, 
+                                  IUsersRepository usersRepository, IPositionsRepository positionsRepository)
         {
             this.projectsRepository = projectsRepository;
-            this.mapper = mapper;
+            this.mapper = mapper;   
+            this.usersRepository = usersRepository;
+            this.positionsRepository = positionsRepository;
         }
 
         /// <summary>Get all projects</summary>
@@ -316,6 +321,55 @@ namespace Web.API.Controllers
                 var resource = mapper.Map<Project, ProjectResource>(deleted);
                 var response = new OkResponse<ProjectResource>(resource, "Successfully deleted");
                 return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
+
+        
+        /// <summary>Assigning a Resource to a Project</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT api/projects/7751/assign/123
+        ///
+        /// </remarks>
+        /// <param name="positionId"></param>
+        /// <param name= "userId"></param>
+        /// <returns>The old deleted project</returns>
+        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpDelete]
+        [Route("projects/{projectNumber}/assign/{positionId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<IActionResult> AssignAResource([FromRoute] int positionId, int userId)
+        {
+            try
+            {
+                Position position = await positionsRepository.GetAPosition(positionId);
+                if (position == null) {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
+                }
+                position.Id = positionId; 
+
+                position = await positionsRepository.UpdateAPosition(position);
+                var posIdAndResourceId = new {PositionId = positionId, UserId = userId};
+                var resource = mapper.Map<Position, PositionResource>(position);
+                var response = new UpdatedResponse<PositionResource>(resource, "Successfully updated");
+                return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
             {
