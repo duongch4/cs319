@@ -48,7 +48,7 @@ namespace Web.API.Infrastructure.Data
             ";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.QuerySingleAsync(sql, new {
+            await connection.QueryFirstOrDefaultAsync(sql, new {
                 ResourceId = avail.ResourceId,
                 FromDate = avail.FromDate,
                 ToDate = avail.ToDate,

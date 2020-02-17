@@ -320,9 +320,9 @@ namespace Web.API.Controllers
             bool isSameAvail = profileAvailability.SequenceEqual(availabilityDB);
             if(!isSameAvail) {
                 Log.Logger.Information("avail function " + isSameAvail);
-                // var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
-                /* var inserted =  */ return await addAvailToDB(profileAvailability, availabilityDB);
-                // result = removed.Concat(inserted);
+                var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
+                var inserted = await addAvailToDB(profileAvailability, availabilityDB);
+                result = removed.Concat(inserted);
             }
             return result;
         }
