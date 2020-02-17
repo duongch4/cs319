@@ -25,7 +25,7 @@ namespace Web.API.Resources
 
         public IEnumerable<OutOfOfficeResource> Availability {get; set;}
 
-        public IEnumerable<DisciplineResource> Disciplines {get; set;}
+        public IEnumerable<RDisciplineResource> Disciplines {get; set;}
 
     }
 }
