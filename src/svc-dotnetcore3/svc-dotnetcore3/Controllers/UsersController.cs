@@ -189,7 +189,7 @@ namespace Web.API.Controllers
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
-        [Route("users/{userId}")]
+        [Route("users/")]
         [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
@@ -204,11 +204,11 @@ namespace Web.API.Controllers
             {
                 UserSummaryResource summary = user.UserSummary;
                 User updateUser = new User();
-                var Name = summary.Name.Split(" ", 2);
-                updateUser.LocationId = summary.Location.Id;
-                updateUser.Id = summary.UserId;
-                updateUser.FirstName = Name[0];
-                updateUser.LastName = Name[1];
+                    var Name = summary.Name.Split(" ", 2);
+                    updateUser.LocationId = summary.Location.Id;
+                    updateUser.Id = summary.UserId;
+                    updateUser.FirstName = Name[0];
+                    updateUser.LastName = Name[1];
 
                 var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
                 var disciplines = user.Disciplines;
