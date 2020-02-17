@@ -48,7 +48,7 @@ namespace Web.API.Application.Communication
 
     public class UpdatedResponse<T> : Response<T>
     {
-        public UpdatedResponse(T payload, string message, object extra = null, int code = StatusCodes.Status200OK, string status = "Updated") : base(payload, message, extra, code, status)
+        public UpdatedResponse(T payload, string message, object extra = null, int code = StatusCodes.Status201Created, string status = "Updated") : base(payload, message, extra, code, status)
         { }
     }
 }

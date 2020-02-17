@@ -5,15 +5,29 @@ namespace Web.API.Resources
         /// <summary>User ID</summary>
         /// <example>567</example>
         public int Id { get; set; }
+
         /// <summary>User First Name</summary>
         /// <example>Elissa</example>
         public string FirstName { get; set; }
+        
         /// <summary>User Last Name</summary>
         /// <example>Anderson</example>
         public string LastName { get; set; }
 
+        /// <summary>UserName</summary>
+        /// <example>eliander</example>
+        public string Username { get; set; }
+
         /// <summary>Location ID</summary>
-        /// <example>22</example>
-        public int LocationId {get; set;}
+        /// <example>5</example>
+        public int LocationId { get; set; }
+
+        /// <summary>Location Province</summary>
+        /// <example>Ontario</example>
+        public string Province { get; set; }
+
+        /// <summary>Location City</summary>
+        /// <example>Toronto</example>
+        public string City { get; set; }
     }
 }

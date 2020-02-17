@@ -33,10 +33,7 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 select
                     s.Id, s.DisciplineId, s.Name
-                from
-                    Skills s
-                inner join
-                    Disciplines d
+                from Skills s, Disciplines d
                 where
                     d.Id = s.DisciplineId
                     AND d.Name = @DisciplineName

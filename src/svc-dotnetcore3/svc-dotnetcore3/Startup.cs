@@ -145,8 +145,12 @@ namespace Web.API
                 options.Authority = authSettings.Authority;
             });
 
+            services.AddScoped<IDisciplinesRepository>(sp => new DisciplinesRespository(connectionString));
             services.AddScoped<ILocationsRepository>(sp => new LocationsRepository(connectionString));
+            services.AddScoped<IPositionsRepository>(sp => new PositionsRepository(connectionString));
             services.AddScoped<IProjectsRepository>(sp => new ProjectsRepository(connectionString));
+            services.AddScoped<IResourceDisciplineRepository>(sp => new ResourceDisciplineRepository(connectionString));
+            services.AddScoped<ISkillsRepository>(sp => new SkillsRepository(connectionString));
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
             services.AddScoped<IPositionsRepository>(sp => new PositionsRepository(connectionString));
 

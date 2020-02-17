@@ -15,11 +15,11 @@ Insert into Skills (DisciplineId, Id, [Name]) values (5, 50, N'False Identity Cr
 Insert into Skills (DisciplineId, Id, [Name]) values (5, 51, N'Deception');
 
 Set IDENTITY_INSERT [dbo].[Locations] ON
-INSERT [dbo].[Locations] ([Id], [Code], [Name]) VALUES (5, N'edm', N'Edmonton')
-INSERT [dbo].[Locations] ([Id], [Code], [Name]) VALUES (8, N'van', N'Vancouver')
-INSERT [dbo].[Locations] ([Id], [Code], [Name]) VALUES (19, N'sas', N'Saskatoon')
-INSERT [dbo].[Locations] ([Id], [Code], [Name]) VALUES (20, N'cgy', N'Calgary')
-INSERT [dbo].[Locations] ([Id], [Code], [Name]) VALUES (21, N'kel', N'Kelowna')
+INSERT [dbo].[Locations] ([Id], [Province], [City]) VALUES (5, N'Alberta', N'Edmonton')
+INSERT [dbo].[Locations] ([Id], [Province], [City]) VALUES (8, N'British Columbia', N'Vancouver')
+INSERT [dbo].[Locations] ([Id], [Province], [City]) VALUES (19, N'Saskatchewan', N'Saskatoon')
+INSERT [dbo].[Locations] ([Id], [Province], [City]) VALUES (20, N'Alberta', N'Calgary')
+INSERT [dbo].[Locations] ([Id], [Province], [City]) VALUES (21, N'British Columbia', N'Kelowna')
 Set IDENTITY_INSERT [dbo].[Locations] OFF
 
 Set IDENTITY_INSERT [dbo].[Users] ON
@@ -45,22 +45,24 @@ INSERT [dbo].[Projects] ([Id], [Number], [Title], [LocationId], [ManagerId], [Pr
 INSERT [dbo].[Projects] ([Id], [Number], [Title], [LocationId], [ManagerId], [ProjectStartDate], [ProjectEndDate]) VALUES (6, '2008-2TL3-77', 'Infiltrate and Dismantle Samaritan Operation', 19, 5, '2020-10-31', '2021-02-12');
 Set IDENTITY_INSERT [dbo].[Projects] OFF
 
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (1, 2, 10);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (5, 1, 15);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (2, 3, 4);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (3, 3, 35);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (4, 1, 7);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (5, 5, 9);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (1, 3, 3);
-Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (2, 2, 2);
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (1, 'Martial Arts', '1-3');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (5, 'Weapons', '10+');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (2, 'Language', '3-5');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (3, 'Language', '10+');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (4, 'Weapons', '5-10');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (5, 'Intel', '5-10');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (1, 'Language', '3-5');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (2, 'Martial Arts', '1-3');
+Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (3, 'Intel', '10+');
 
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (1, 2, 2, 21);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (5, 1, 1, 10);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (2, 3, 3, 31);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (3, 3, 3, 30);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (5, 5, 5, 50);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (1, 3, 3, 30);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (2, 2, 2, 20);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (1, 'Martial Arts', 2, 21);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (5, 'Weapons', 1, 10);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (2, 'Language', 3, 31);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (3, 'Language', 3, 30);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (5, 'Intel', 5, 50);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (1, 'Language', 3, 30);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (2, 'Martial Arts', 2, 20);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (3, 'Intel', 5, 51);
 
 Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (1, 4, 1, 90, null, 'Binger', 0 );
 Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (2, 1, 2, 170, 4, 'Mission Control', 1);

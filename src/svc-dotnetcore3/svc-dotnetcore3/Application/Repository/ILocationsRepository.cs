@@ -8,15 +8,17 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<Location>> GetAllLocations();
-        Task<Location> GetALocation(string locationCode);
+        Task<Location> GetALocation(int locationId);
+        
+        Dictionary<string, List<string>> GetStaticLocations();
 
         //POST 
-        Task<Location> CreateALocation(Location location);
+        // Task<Location> CreateALocation(Location location);
 
-        //PUT
-        Task<Location> UpdateALocation(Location location);
+        // //PUT
+        // Task<Location> UpdateALocation(Location location);
 
-        //DELETE
-        Task<Location> DeleteALocation(Location locationCode);
+        // //DELETE
+        // Task<Location> DeleteALocation(Location locationCode);
     }
 }

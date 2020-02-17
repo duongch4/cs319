@@ -5,6 +5,9 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
+
+using Serilog;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -51,7 +54,7 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<Position>(sql, new { UserId = user.Id });
         }
-        public async Task<IEnumerable<Position>> GetAllUnassignedPositionOfProject(Project project)
+        public async Task<IEnumerable<Position>> GetAllUnassignedPositionsOfProject(Project project)
         {
             var sql = @"
                 select *
@@ -65,6 +68,31 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<Position>(sql, new { ProjectId = project.Id });
         }
+
+        public async Task<IEnumerable<OpeningPositionsResource>> GetAllUnassignedPositionsResourceOfProject(int projectId)
+        {
+            var sql = @"
+                select
+                    p.ProjectedMonthlyHours AS CommitmentMonthlyHours, p.PositionName AS Position,
+                    d.Name AS Discipline, rd.YearsOfExperience, STRING_AGG (s.Name, ',') as Skills
+                from
+                    Positions p, ResourceDiscipline rd, Disciplines d, Skills s
+                where
+                    p.ProjectId = @ProjectId
+                    AND p.ResourceId IS NOT NULL
+                    AND p.DisciplineId = d.Id
+                    AND p.DisciplineId = s.DisciplineId
+                    AND d.Name = rd.DisciplineName
+                group by
+                    p.DisciplineId, p.ProjectedMonthlyHours, p.PositionName,
+                    d.Name, rd.YearsOfExperience
+            ;";
+            
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<OpeningPositionsResource>(sql, new { ProjectId = projectId });
+        }
+
         //POST
         public async Task<Position> CreateAPosition(Position position)
         {
