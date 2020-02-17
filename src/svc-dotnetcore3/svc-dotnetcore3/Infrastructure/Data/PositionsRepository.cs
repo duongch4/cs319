@@ -82,7 +82,7 @@ namespace Web.API.Infrastructure.Data
                     AND p.ResourceId IS NOT NULL
                     AND p.DisciplineId = d.Id
                     AND p.DisciplineId = s.DisciplineId
-                    AND p.DisciplineId = rd.DisciplineId
+                    AND d.Name = rd.DisciplineName
                 group by
                     p.DisciplineId, p.ProjectedMonthlyHours, p.PositionName,
                     d.Name, rd.YearsOfExperience
