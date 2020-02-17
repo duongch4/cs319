@@ -31,7 +31,7 @@ namespace Web.API.Controllers
         private readonly IOutOfOfficeRepository outOfOfficeRepository;
         private readonly IMapper mapper;
 
-        public UsersController(IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository, 
+        public UsersController(IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository,
             ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository, IMapper mapper)
         {
             this.usersRepository = usersRepository;
@@ -144,18 +144,18 @@ namespace Web.API.Controllers
                     disc.Skills = discSkills.Select(x => x.Name).ToList();
                     disciplineResources = disciplineResources.Append(disc);
                 }
-                var userSummary = new UserSummaryResource(); 
-                    userSummary.Name = user.FirstName + " " + user.LastName;
-                    userSummary.Discipline = null;
-                    userSummary.Position = null;
-                    userSummary.Utilization = utilization;
-                    userSummary.Location = mapper.Map<Location, LocationResource>(location);
-                    userSummary.UserId = user.Id;
+                var userSummary = new UserSummaryResource();
+                userSummary.Name = user.FirstName + " " + user.LastName;
+                userSummary.Discipline = null;
+                userSummary.Position = null;
+                userSummary.Utilization = utilization;
+                userSummary.Location = mapper.Map<Location, LocationResource>(location);
+                userSummary.UserId = user.Id;
                 var userProfile = new UserProfileResource();
-                    userProfile.UserSummary = userSummary;
-                    userProfile.Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice);
-                    userProfile.CurrentProjects = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects);
-                    userProfile.Disciplines = disciplineResources;
+                userProfile.UserSummary = userSummary;
+                userProfile.Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice);
+                userProfile.CurrentProjects = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects);
+                userProfile.Disciplines = disciplineResources;
 
                 var response = new OkResponse<UserProfileResource>(userProfile, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -194,8 +194,9 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateUser([FromBody] UserProfileResource user) {
-           if (user == null)
+        public async Task<IActionResult> UpdateUser([FromBody] UserProfileResource user)
+        {
+            if (user == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
             }
@@ -203,25 +204,24 @@ namespace Web.API.Controllers
             try
             {
                 UserSummaryResource summary = user.UserSummary;
-                User updateUser = new User();
-                    var Name = summary.Name.Split(" ", 2);
-                    updateUser.LocationId = summary.Location.Id;
-                    updateUser.Id = summary.UserId;
-                    updateUser.FirstName = Name[0];
-                    updateUser.LastName = Name[1];
-
+                User updateUser = createUserFromSummary(summary);
+                IEnumerable<ResourceDisciplines> profileDisciplines = createResourceDisciplinesFromProfile(user.Disciplines, summary.UserId);
                 var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
-                var disciplines = user.Disciplines;
-
                 var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
+                IEnumerable<ResourceSkill> profileSkills = createResourceSkillsFromProfile(user.Disciplines, summary.UserId);
 
-                
-                var newDisciplines = disciplinesInDB.OrderBy(x => x.DisciplineName);
-                disciplines.OrderBy(x => x.Name);
+                var areSame = disciplinesInDB.SequenceEqual(profileDisciplines);
+                if (!areSame)
+                {
+                    addMissingDisciplinesToDB(disciplinesInDB, profileDisciplines);
+                    removeDisciplinesFromDB(disciplinesInDB, profileDisciplines);
+                }
+                // var addToDB = profileDisciplines.Except(disciplinesInDB);
+                // var deleteFromDB = disciplinesInDB.Except(profileDisciplines);
 
-
-                var tmp = new {newDisciplines, disciplines, skillsInDB};
+                // var sameSkills = skillsInDB.SequenceEqual(profileSkills);
                 var resource = await usersRepository.UpdateAUser(updateUser);
+                var tmp = new { resource, profileDisciplines, profileSkills};
                 var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -239,6 +239,59 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
+        }
+        private User createUserFromSummary(UserSummaryResource summary)
+        {
+            var user = new User();
+            var Name = summary.Name.Split(" ", 2);
+            user.LocationId = summary.Location.Id;
+            user.Id = summary.UserId;
+            user.FirstName = Name[0];
+            user.LastName = Name[1];
+            return user;
+        }
+
+        private IEnumerable<ResourceDisciplines> createResourceDisciplinesFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        {
+            var result = Enumerable.Empty<ResourceDisciplines>();
+            foreach (var discipline in disciplines)
+            {
+                var disc = new ResourceDisciplines();
+                disc.ResourceId = userId;
+                disc.DisciplineName = discipline.Name;
+                disc.YearsOfExperience = discipline.YearsOfExperience;
+                result = result.Append(disc);
+            }
+            return result;
+        }
+
+        private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        {
+            var result = Enumerable.Empty<ResourceSkill>();
+            foreach (var disc in disciplines)
+            {
+                foreach (var skill in disc.Skills)
+                {
+                    var sk = new ResourceSkill();
+                    sk.ResourceId = userId;
+                    sk.ResourceDisciplineName = disc.Name;
+                    sk.Name = skill;
+                    result = result.Append(sk);
+                }
+            }
+            return result;
+        }
+
+        private void addMissingDisciplinesToDB(IEnumerable<ResourceDisciplines> db, IEnumerable<ResourceDisciplines> profile)
+        {
+            var addToDB = profile.Except(db);
+            Log.Logger.Information("addMissingDisciplines");
+        }
+
+        private void removeDisciplinesFromDB(IEnumerable<ResourceDisciplines> db, IEnumerable<ResourceDisciplines> profile)
+        {
+            var removeFromDB = db.Except(profile);
+            Log.Logger.Information("removeDisciplines");
         }
     }
 
