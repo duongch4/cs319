@@ -145,12 +145,14 @@ namespace Web.API.Controllers
                     disciplineResources = disciplineResources.Append(disc);
                 }
                 var userSummary = new UserSummaryResource();
-                userSummary.Name = user.FirstName + " " + user.LastName;
+                userSummary.firstName = user.FirstName;
+                userSummary.lastName = user.LastName;
                 userSummary.Discipline = null;
                 userSummary.Position = null;
                 userSummary.Utilization = utilization;
                 userSummary.Location = mapper.Map<Location, LocationResource>(location);
-                userSummary.UserId = user.Id;
+                userSummary.userID = user.Id;
+                userSummary.isConfirmed = false;
                 var userProfile = new UserProfileResource();
                 userProfile.UserSummary = userSummary;
                 userProfile.Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice);
@@ -205,29 +207,28 @@ namespace Web.API.Controllers
             {
                 UserSummaryResource summary = user.UserSummary;
                 User updateUser = createUserFromSummary(summary);
-                // IEnumerable<ResourceDisciplines> profileDisciplines = createResourceDisciplinesFromProfile(user.Disciplines, summary.UserId);
-                // IEnumerable<ResourceSkill> profileSkills = createResourceSkillsFromProfile(user.Disciplines, summary.UserId);
-                IEnumerable<OutOfOffice> profileAvailability = createOutOfOfficeFromProfile(user.Availability, summary.UserId);
-                // var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
-                // var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
-                var availabilitiesInDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(updateUser);
+                // // IEnumerable<ResourceDisciplines> profileDisciplines = createResourceDisciplinesFromProfile(user.Disciplines, summary.UserId);
+                // // IEnumerable<ResourceSkill> profileSkills = createResourceSkillsFromProfile(user.Disciplines, summary.UserId);
+                //IEnumerable<OutOfOffice> profileAvailability = createOutOfOfficeFromProfile(user.Availability, summary.userID);
+                // // var disciplinesInDB = await disciplinesRepository.GetUserDisciplines(updateUser);
+                // // var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
+                // var availabilitiesInDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(updateUser);
+                var avails = await processOutOfOfficeChanges(user.Availability, updateUser);
 
-                var hasSameAvail = availabilitiesInDB.SequenceEqual(profileAvailability);
+                // // var areSame = disciplinesInDB.SequenceEqual(profileDisciplines);
+                // // if (!areSame)
+                // // {
+                // //     addMissingDisciplinesToDB(disciplinesInDB, profileDisciplines);
+                // //     removeDisciplinesFromDB(disciplinesInDB, profileDisciplines);
+                // // }
+                // // var addToDB = profileDisciplines.Except(disciplinesInDB);
+                // // var deleteFromDB = disciplinesInDB.Except(profileDisciplines);
 
-                // var areSame = disciplinesInDB.SequenceEqual(profileDisciplines);
-                // if (!areSame)
-                // {
-                //     addMissingDisciplinesToDB(disciplinesInDB, profileDisciplines);
-                //     removeDisciplinesFromDB(disciplinesInDB, profileDisciplines);
-                // }
-                // var addToDB = profileDisciplines.Except(disciplinesInDB);
-                // var deleteFromDB = disciplinesInDB.Except(profileDisciplines);
-
-                // var sameSkills = skillsInDB.SequenceEqual(profileSkills);
-                var resource = await usersRepository.UpdateAUser(updateUser);
-                var tmp = new { resource, hasSameAvail, availabilitiesInDB, profileAvailability };
-                var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
-                return StatusCode(StatusCodes.Status200OK, response);
+                // // var sameSkills = skillsInDB.SequenceEqual(profileSkills);
+                // // var resource = await usersRepository.UpdateAUser(updateUser);
+                // var tmp = new { updateUser, hasSameAvail, availabilitiesInDB, profileAvailability };
+                // var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
+                return StatusCode(StatusCodes.Status200OK, avails);
             }
             catch (Exception err)
             {
@@ -247,11 +248,10 @@ namespace Web.API.Controllers
         private User createUserFromSummary(UserSummaryResource summary)
         {
             var user = new User();
-            var Name = summary.Name.Split(" ", 2);
             user.LocationId = summary.Location.Id;
-            user.Id = summary.UserId;
-            user.FirstName = Name[0];
-            user.LastName = Name[1];
+            user.Id = summary.userID;
+            user.FirstName =summary.firstName;
+            user.LastName = summary.lastName;
             return user;
         }
 
@@ -313,7 +313,39 @@ namespace Web.API.Controllers
             return result;
         }
     
+        private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, User user) {
+            var profileAvailability = createOutOfOfficeFromProfile(profile, user.Id);
+            var availabilityDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
+            var result = Enumerable.Empty<OutOfOffice>();
+            bool isSameAvail = profileAvailability.SequenceEqual(availabilityDB);
+            if(!isSameAvail) {
+                Log.Logger.Information("avail function " + isSameAvail);
+                // var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
+                /* var inserted =  */ return await addAvailToDB(profileAvailability, availabilityDB);
+                // result = removed.Concat(inserted);
+            }
+            return result;
+        }
 
+        private async Task<IEnumerable<OutOfOffice>> removeAvailFromDB(IEnumerable<OutOfOffice> profile, IEnumerable<OutOfOffice> db) {
+            var toBeRemoved = db.Except(profile);
+            var result = Enumerable.Empty<OutOfOffice>();
+            foreach(var avail in toBeRemoved) {
+                var removed = await outOfOfficeRepository.DeleteOutOfOffice(avail);
+                result = result.Append(removed);
+            }
+            return result;
+        }
+
+        private async Task<IEnumerable<OutOfOffice>> addAvailToDB(IEnumerable<OutOfOffice> profile, IEnumerable<OutOfOffice> db) {
+            var toBeRemoved = profile.Except(db);
+            var result = Enumerable.Empty<OutOfOffice>();
+            foreach(var avail in toBeRemoved) {
+                var removed = await outOfOfficeRepository.InsertOutOfOffice(avail);
+                result = result.Append(removed);
+            }
+            return result;
+        }
     }
 
     [Authorize]

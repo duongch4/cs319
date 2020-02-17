@@ -18,9 +18,10 @@ namespace Web.API.Resources
         //     "utilization": 100,
         //     "resourceDiscipline": { "discipline": "", "yearsOfExp": ""},
         //     "isConfirmed": false
-        public int UserId { get; set; }
+        public int userID { get; set; }
 
-        public string Name { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
 
         public DisciplineResource Discipline;
 
@@ -30,5 +31,6 @@ namespace Web.API.Resources
         /// <example>22</example>
         public LocationResource Location {get; set;}
         public int Utilization {get; set;}
+        public bool isConfirmed {get; set;}
     }
 }

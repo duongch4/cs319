@@ -8,5 +8,7 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(User user);
+        Task<OutOfOffice> DeleteOutOfOffice(OutOfOffice avail);
+        Task<OutOfOffice> InsertOutOfOffice(OutOfOffice avail);
     }
 }

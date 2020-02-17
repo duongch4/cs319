@@ -20,11 +20,41 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(User user)
         {
             var sql = @"
-                select * from OutOfOffice where ResourceId = "+user.Id+";";
+                select * from OutOfOffice where ResourceId = @Id;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<OutOfOffice>(sql);
+            return await connection.QueryAsync<OutOfOffice>(sql, new {Id = user.Id});
+        }
+
+        public async Task<OutOfOffice> DeleteOutOfOffice(OutOfOffice avail) {
+            var sql = @"
+                delete from OutOfOffice where ResourceId = @ResourceId AND FromDate = @FromDate AND ToDate = @ToDate";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.ExecuteAsync(sql, new {
+                ResourceId = avail.ResourceId,
+                FromDate = avail.FromDate,
+                ToDate = avail.ToDate
+            });
+            return avail;
+        }
+
+        public async Task<OutOfOffice> InsertOutOfOffice(OutOfOffice avail) {
+            var sql = @"
+                insert into OutOfOffice (ResourceId, FromDate, ToDate, Reason)
+                values
+                (@ResourceId, @FromDate, @ToDate, @Reason)
+            ";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.QuerySingleAsync(sql, new {
+                ResourceId = avail.ResourceId,
+                FromDate = avail.FromDate,
+                ToDate = avail.ToDate,
+                Reason = avail.Reason
+            });
+            return avail;
         }
     }
 }

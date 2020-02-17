@@ -21,7 +21,7 @@ namespace Web.API.Application.Models
             }
         }
 
-        public override bool Equals(object obj) => Equals(obj as ResourceDisciplines);
+        public override bool Equals(object obj) => Equals(obj as OutOfOffice);
         public override int GetHashCode() => (ResourceId, FromDate, ToDate, Reason).GetHashCode();
     }
 }
