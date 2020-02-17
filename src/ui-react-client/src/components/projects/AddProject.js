@@ -78,8 +78,8 @@ class AddProject extends Component {
                               index={index}/>)
     });
     return (
-      <>
-      <h2 className="greenHeader">Create new project</h2>
+      <div className="activity-container">
+        <h1 className="greenHeader">Create new project</h1>
         <CreateEditProjectDetails locations={this.props.locations}
                           addProjDetails={(project) => this.addProjDetails(project)}/>
         <TeamRequirements disciplines={this.props.disciplines}
@@ -87,7 +87,7 @@ class AddProject extends Component {
                           addOpening={(opening) => this.addOpening(opening)}/>
         {openings}
         <button onClick={() => this.onSubmit()}></button>
-      </>
+      </div>
     );
   }
 };

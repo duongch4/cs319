@@ -1,13 +1,67 @@
 .sidenav {
     background: #87C34B;
-    width: 30%;
-    float: left;
-    height: 100vh;
-    position: relative;
-    top: -22px; 
-    left: -25px; 
-    padding-left: 10px;
-    margin-right: 10px;
-    text-align:center;
+    width: 200px;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    z-index: 1;
+    padding-top: 50px;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
+.ae-logo {
+    font-size: 4em;
+    font-weight: bold;
+    color: #fff;
+    margin: 24px 0px;
+    line-height: 0em;
+}
+
+.ae-subtitle {
+    font-size: 1em;
+    font-weight: 300;
+    color: #fff;
+    margin-bottom: 24px;
+}
+
+circle {
+    fill: #999;
+}
+
+nav {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+nav a {
+    font-weight: 300;
+    text-decoration: none;
+    font-size: 0.5em;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+nav div {
+    margin: 8px 0px;
+}
+
+.logout-button {
+    background-color: #2c6232;
+    border-radius: 3px;
+    padding: 8px 16px;
+    color: #fff;
+    border: none;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+button:hover {
+    background-color: #333;
 }

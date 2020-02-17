@@ -55,7 +55,32 @@ export default {
           yearsOfExperience: "3-5 years",
         },
         commitment: 160
-      }]
+      }],
+      users: [
+        {
+          userID: 123,
+          name: "Jason Bourne",
+          discipline: {
+            name: "Covert Spy",
+            skills: ["skill 1", "skill 2"],
+            yearsOfExperience: "15+"
+          },
+          position: "Rogue",
+          utilization: 80,
+          location: {city: "Vancouver", province: "BC"},
+        }, {
+          userID: 432,
+          name: "Nicky Parsons",
+          discipline: {
+            name: "Logistical Operations and Mental Health Analysis",
+            skills: ["skill 1", "skill 2"],
+            yearsOfExperience: "3-5 years"
+          },
+          position: "Contact",
+          utilization: 10,
+          location: {city: "Toronto", province: "ON"},
+        }
+      ]
     },
     {
       projID: 1234,
@@ -74,7 +99,6 @@ export default {
     endDate:6789,
     openings: []
 }
-
   ],
   locations: [
     {

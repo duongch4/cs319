@@ -30,7 +30,7 @@ class EditProject extends Component {
     // this.props.locations hold the master locations now
     this.props.loadExperiences();
     // this.props.masterYearsOfExperience holds the master list of experiences
-    this.props.loadProjects()
+    this.props.loadProjects();
     var currentProject = this.props.projects.filter(project => project.projID == this.props.match.params.project_id)
     if(currentProject){
         this.setState({
@@ -74,8 +74,8 @@ class EditProject extends Component {
                                 index={index}/>)
     });
       return (
-          <>
-            <h2 className="greenHeader">Edit project</h2>
+          <div className="activity-container">
+            <h1 className="greenHeader">Edit project</h1>
             <CreateEditProjectDetails locations={this.props.locations}
                               addProjDetails={(project) => this.addProjDetails(project)}
                               currentProject={this.state}/>
@@ -83,8 +83,8 @@ class EditProject extends Component {
                               masterYearsOfExperience={this.props.masterYearsOfExperience}
                               addOpening={(opening) => this.addOpening(opening)}/>
             {openings}
-            <button onClick={() => this.onSubmit()}></button>
-          </>
+            <button onClick={() => this.onSubmit()}>Save</button>
+          </div>
     );
   }
 };

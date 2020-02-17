@@ -93,9 +93,8 @@ class TeamRequirements extends Component {
     })
 
     return (
-      <div>
-          <h4 className="darkGreenHeader">Team Requirements</h4>
-
+      <div className="form-section">
+          <h2 className="darkGreenHeader">Team Requirements</h2>
           <form onSubmit={this.handleSubmit}>
           <select defaultValue={'DEFAULT'} id="name" onChange={this.handleChange}>
           <option value="DEFAULT" disabled>Discipline</option>

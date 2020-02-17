@@ -84,39 +84,41 @@ class CreateEditProjectDetails extends Component {
     })
 
     return (
-      <div>
-          <h4 className="darkGreenHeader">Project Details</h4>
-            <label htmlFor= "name">Name</label>
-            <input type = "text" id="name" onChange={this.handleChange} value= {this.state.name}/>
-
-           <label htmlFor= "location">
-            Location
-            <select defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
-              <option value="DEFAULT" disabled>{this.state.location.province}</option>
-              {province_render}
-            </select>
-            <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
-              <option value="DEFAULT" disabled>{this.state.location.city}</option>
-              {city_render}
-            </select>
-
-            </label>
-
-            <label htmlFor= "project_duration">
-            Project Duration
-            <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
-            <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
-            </label>
-
-
+      <div className="form-section">
+          <h2 className="darkGreenHeader">Project Details</h2>
+            <div className="form-section">
+                <div className="form-row">
+                    <label htmlFor= "name">Name</label>
+                    <input type = "text" id="name" onChange={this.handleChange} value= {this.state.name}/>
+                </div>
+                <div className="form-row">
+                    <label htmlFor= "location">
+                        Location
+                        <select defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
+                            <option value="DEFAULT" disabled>{this.state.location.province}</option>
+                            {province_render}
+                        </select>
+                        <select defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+                            <option value="DEFAULT" disabled>{this.state.location.city}</option>
+                            {city_render}
+                        </select>
+                    </label>
+                </div>
+                <label htmlFor= "project_duration">
+                Project Duration
+                <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
+                <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+                </label>
+                <input type="submit" value="submit"/>
+            </div>
       </div>
-    );
+    )
 }
-};
+}
 
 CreateEditProjectDetails.propTypes = {
   addOpening: PropTypes.object,
   currentProject: PropTypes.object
-};
+}
 
 export default CreateEditProjectDetails;

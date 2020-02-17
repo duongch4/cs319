@@ -7,25 +7,21 @@ const ProjectList = ({ projects }) => {
   var projectList = []
   projects.forEach((project, index) => {
     projectList.push(
-      <div key={projectList.length}>
+      <div key={projectList.length} className="card">
         <Link to={'/projects/' + project.projID}>
-          <ProjectCard number={index + 1} project={project} key={projectList.length}/>
-        </Link>
-        <Link to={'/editproject/' + project.projID} className="btn btn-primary">
-          <button>Edit</button>
+          <ProjectCard number={index + 1} project={project}
+                       canEditProject={true} key={projectList.length}/>
         </Link>
       </div>
     )
   })
-  return (
-    <>
+  return (<div>
     {projectList}
-    </>
-  );
-};
+    </div>)
+}
 
 ProjectList.propTypes = {
   projects: PropTypes.array.isRequired,
-};
+}
 
-export default ProjectList;
+export default ProjectList
