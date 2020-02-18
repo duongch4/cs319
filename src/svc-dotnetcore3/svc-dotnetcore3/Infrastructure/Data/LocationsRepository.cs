@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -72,6 +73,15 @@ namespace Web.API.Infrastructure.Data
         //DELETE
         public async Task<Location> DeleteALocation(Location locationCode) {
             return null;
+        }
+
+        public async Task<Location> GetLocationIdByCityProvince(LocationResource location) {
+            var sql = @"
+                Select * from Locations
+                where City = @City and Province = @Province;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = location.City, Province = location.Province });
         }
     }
 }

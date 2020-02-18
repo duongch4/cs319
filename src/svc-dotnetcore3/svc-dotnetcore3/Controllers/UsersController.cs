@@ -183,221 +183,225 @@ namespace Web.API.Controllers
             }
         }
 
-        // /// <summary>Update user</summary>
-        // /// <remarks>
-        // /// Sample request:
-        // ///
-        // ///     PUT /api/users/5
-        // ///
-        // /// </remarks>
-        // /// <returns>The id of the user that was updated</returns>
-        // /// <response code="200">Returns the userId</response>
-        // /// <response code="400">Bad Request</response>
-        // /// <response code="404">If the requested user cannot be found</response>
-        // /// <response code="500">Internal Server Error</response>
-        // [HttpPut]
-        // [Route("users/")]
-        // [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        // public async Task<IActionResult> UpdateUser([FromBody] UserProfileResource user)
-        // {
-        //     if (user == null)
-        //     {
-        //         return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
-        //     }
+        /// <summary>Update user</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT /api/users/5
+        ///
+        /// </remarks>
+        /// <returns>The id of the user that was updated</returns>
+        /// <response code="200">Returns the userId</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">If the requested user cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPut]
+        [Route("users/")]
+        [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateUser([FromBody] UserProfileResource user)
+        {
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
+            }
 
-        //     try
-        //     {
-        //         UserSummary summary = user.UserSummary;
-        //         User updateUser = createUserFromSummary(summary);
-        //         var disciplines = await processDisciplineSkillChanges(user.Disciplines, updateUser);
-        //         var avails = await processOutOfOfficeChanges(user.Availability, updateUser);
-        //         var tmp = new { disciplines, avails };
-        //         var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
-        //         return StatusCode(StatusCodes.Status200OK, response);
-        //     }
-        //     catch (Exception err)
-        //     {
-        //         var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-        //         if (err is SqlException)
-        //         {
-        //             var error = new InternalServerException(errMessage);
-        //             return StatusCode(StatusCodes.Status500InternalServerError, error);
-        //         }
-        //         else
-        //         {
-        //             var error = new BadRequestException(errMessage);
-        //             return StatusCode(StatusCodes.Status400BadRequest, error);
-        //         }
-        //     }
-        // }
-        // private User createUserFromSummary(UserSummary summary)
-        // {
-        //     var user = new User();
-        //     // user.LocationId = summary.Location.Id;
-        //     user.Id = summary.UserID;
-        //     user.FirstName = summary.FirstName;
-        //     user.LastName = summary.LastName;
-        //     return user;
-        // }
+            try
+            {
+                UserSummary summary = user.UserSummary;
+                Location location = await locationsRepository.GetLocationIdByCityProvince(summary.Location);
+                User updateUser = createUserFromSummary(summary, location);
+                var disciplines = await processDisciplineSkillChanges(user.Disciplines, updateUser);
+                var avails = await processOutOfOfficeChanges(user.Availability, updateUser);
+                var tmp = new { disciplines, avails };
+                var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
+        private User createUserFromSummary(UserSummary summary, Location location)
+        {
+            var user = new User {
+                Id = summary.UserID,
+                FirstName = summary.FirstName,
+                LocationId = location.Id,
+                LastName = summary.LastName
+            };
+            return user;
+        }
 
-        // private IEnumerable<ResourceDisciplines> createResourceDisciplinesFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
-        // {
-        //     var result = Enumerable.Empty<ResourceDisciplines>();
-        //     foreach (var discipline in disciplines)
-        //     {
-        //         var disc = new ResourceDisciplines();
-        //         disc.ResourceId = userId;
-        //         disc.DisciplineName = discipline.Name;
-        //         disc.YearsOfExperience = discipline.YearsOfExperience;
-        //         result = result.Append(disc);
-        //     }
-        //     return result;
-        // }
+        private IEnumerable<ResourceDisciplines> createResourceDisciplinesFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        {
+            var result = Enumerable.Empty<ResourceDisciplines>();
+            foreach (var discipline in disciplines)
+            {
+                var disc = new ResourceDisciplines{
+                    ResourceId = userId,
+                    Name = discipline.Name,
+                    YearsOfExperience = discipline.YearsOfExperience
+                };
+                result = result.Append(disc);
+            }
+            return result;
+        }
 
-        // private async Task<Object> processDisciplineSkillChanges(IEnumerable<RDisciplineResource> profile, User user)
-        // {
-        //     var profileDisciplines = createResourceDisciplinesFromProfile(profile, user.Id);
-        //     var profileSkills = createResourceSkillsFromProfile(profile, user.Id);
-        //     // Log.Logger.Information("finish getting profile Skills" + profileSkills);
-        //     var disciplinesDB = await disciplinesRepository.GetUserDisciplines(user);
-        //     // Log.Logger.Information("finish getting Discipline DB");
-        //     var skillsDB = await skillsRepository.GetUserSkills(user);
-        //     // Log.Logger.Information("finish getting skill DB");
-        //     bool isSameDisc = disciplinesDB.SequenceEqual(profileDisciplines);
-        //     bool isSameSkill = skillsDB.SequenceEqual(profileSkills);
-        //     if (!isSameDisc || !isSameSkill)
-        //     {
-        //         var removedSkill = await removeSkillsFromDB(profileSkills, skillsDB);
-        //         var removed = await removeDisciplinesFromDB(profileDisciplines, disciplinesDB);
-        //         var inserted = await addDisciplinesToDB(profileDisciplines, disciplinesDB);
-        //         var insertedSkill = await addSkillsToDB(profileSkills, skillsDB);
-        //         return new {removed, removedSkill, insertedSkill, inserted};
-        //     }
-        //     return null;
-        // }
+        private async Task<Object> processDisciplineSkillChanges(IEnumerable<RDisciplineResource> profile, User user)
+        {
+            var profileDisciplines = createResourceDisciplinesFromProfile(profile, user.Id);
+            var profileSkills = createResourceSkillsFromProfile(profile, user.Id);
+            // Log.Logger.Information("finish getting profile Skills" + profileSkills);
+            var disciplinesDB = await disciplinesRepository.GetUserDisciplines(user);
+            // Log.Logger.Information("finish getting Discipline DB");
+            var skillsDB = await skillsRepository.GetUserSkills(user);
+            // Log.Logger.Information("finish getting skill DB");
+            bool isSameDisc = disciplinesDB.SequenceEqual(profileDisciplines);
+            bool isSameSkill = skillsDB.SequenceEqual(profileSkills);
+            if (!isSameDisc || !isSameSkill)
+            {
+                var removedSkill = await removeSkillsFromDB(profileSkills, skillsDB);
+                var removed = await removeDisciplinesFromDB(profileDisciplines, disciplinesDB);
+                var inserted = await addDisciplinesToDB(profileDisciplines, disciplinesDB);
+                var insertedSkill = await addSkillsToDB(profileSkills, skillsDB);
+                return new {removed, removedSkill, insertedSkill, inserted};
+            }
+            return null;
+        }
 
-        // private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
-        // {
-        //     var result = Enumerable.Empty<ResourceSkill>();
-        //     foreach (var disc in disciplines)
-        //     {
-        //         foreach (var skill in disc.Skills)
-        //         {
-        //             var sk = new ResourceSkill();
-        //             sk.ResourceId = userId;
-        //             sk.ResourceDisciplineName = disc.Name;
-        //             sk.Name = skill;
-        //             result = result.Append(sk);
-        //         }
-        //     }
-        //     // Log.Logger.Information("complete loop in skill creation");
-        //     return result;
-        // }
+        private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        {
+            var result = Enumerable.Empty<ResourceSkill>();
+            foreach (var disc in disciplines)
+            {
+                foreach (var skill in disc.Skills)
+                {
+                    var sk = new ResourceSkill();
+                    sk.ResourceId = userId;
+                    sk.ResourceDisciplineName = disc.Name;
+                    sk.Name = skill;
+                    result = result.Append(sk);
+                }
+            }
+            // Log.Logger.Information("complete loop in skill creation");
+            return result;
+        }
 
-        // private async Task<IEnumerable<ResourceSkill>> addSkillsToDB(IEnumerable<ResourceSkill> profile, IEnumerable<ResourceSkill> db)
-        // {
-        //     var toBeAdded = profile.Except(db);
-        //     var result = Enumerable.Empty<ResourceSkill>();
-        //     foreach (var skill in toBeAdded)
-        //     {
-        //         var added = await skillsRepository.InsertResourceSkill(skill);
-        //         result = result.Append(added);
-        //     }
-        //     return result;
-        // }
+        private async Task<IEnumerable<ResourceSkill>> addSkillsToDB(IEnumerable<ResourceSkill> profile, IEnumerable<ResourceSkill> db)
+        {
+            var toBeAdded = profile.Except(db);
+            var result = Enumerable.Empty<ResourceSkill>();
+            foreach (var skill in toBeAdded)
+            {
+                var added = await skillsRepository.InsertResourceSkill(skill);
+                result = result.Append(added);
+            }
+            return result;
+        }
 
-        // private async Task<IEnumerable<ResourceSkill>> removeSkillsFromDB(IEnumerable<ResourceSkill> profile, IEnumerable<ResourceSkill> db)
-        // {
-        //     var toBeRemoved = db.Except(profile);
-        //     var result = Enumerable.Empty<ResourceSkill>();
-        //     foreach (var skill in toBeRemoved)
-        //     {
-        //         var removed = await skillsRepository.DeleteResourceSkill(skill);
-        //         result = result.Append(removed);
-        //     }
-        //     return result;
-        // }
-        // private async Task<IEnumerable<ResourceDisciplines>> addDisciplinesToDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
-        // {
-        //     var toBeAdded = profile.Except(db);
-        //     var result = Enumerable.Empty<ResourceDisciplines>();
-        //     foreach (var disc in toBeAdded)
-        //     {
-        //         var added = await disciplinesRepository.InsertResourceDiscipline(disc);
-        //         result = result.Append(added);
-        //     }
-        //     return result;
-        // }
+        private async Task<IEnumerable<ResourceSkill>> removeSkillsFromDB(IEnumerable<ResourceSkill> profile, IEnumerable<ResourceSkill> db)
+        {
+            var toBeRemoved = db.Except(profile);
+            var result = Enumerable.Empty<ResourceSkill>();
+            foreach (var skill in toBeRemoved)
+            {
+                var removed = await skillsRepository.DeleteResourceSkill(skill);
+                result = result.Append(removed);
+            }
+            return result;
+        }
+        private async Task<IEnumerable<ResourceDisciplines>> addDisciplinesToDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
+        {
+            var toBeAdded = profile.Except(db);
+            var result = Enumerable.Empty<ResourceDisciplines>();
+            foreach (var disc in toBeAdded)
+            {
+                var added = await disciplinesRepository.InsertResourceDiscipline(disc);
+                result = result.Append(added);
+            }
+            return result;
+        }
 
-        // private async Task<IEnumerable<ResourceDisciplines>> removeDisciplinesFromDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
-        // {
-        //     var toBeRemoved = db.Except(profile);
-        //     var result = Enumerable.Empty<ResourceDisciplines>();
-        //     foreach (var disc in toBeRemoved)
-        //     {
-        //         var removed = await disciplinesRepository.DeleteResourceDiscipline(disc);
-        //         result = result.Append(removed);
-        //     }
-        //     return result;
-        // }
+        private async Task<IEnumerable<ResourceDisciplines>> removeDisciplinesFromDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
+        {
+            var toBeRemoved = db.Except(profile);
+            var result = Enumerable.Empty<ResourceDisciplines>();
+            foreach (var disc in toBeRemoved)
+            {
+                var removed = await disciplinesRepository.DeleteResourceDiscipline(disc);
+                result = result.Append(removed);
+            }
+            return result;
+        }
 
-        // private IEnumerable<OutOfOffice> createOutOfOfficeFromProfile(IEnumerable<OutOfOfficeResource> availabilities, int userId)
-        // {
-        //     var result = Enumerable.Empty<OutOfOffice>();
-        //     foreach (var availability in availabilities)
-        //     {
-        //         var avail = new OutOfOffice();
-        //         avail.ResourceId = userId;
-        //         avail.FromDate = availability.FromDate;
-        //         avail.ToDate = availability.ToDate;
-        //         avail.Reason = availability.Reason;
-        //         result = result.Append(avail);
-        //     }
-        //     return result;
-        // }
+        private IEnumerable<OutOfOffice> createOutOfOfficeFromProfile(IEnumerable<OutOfOfficeResource> availabilities, int userId)
+        {
+            var result = Enumerable.Empty<OutOfOffice>();
+            foreach (var availability in availabilities)
+            {
+                var avail = new OutOfOffice{
+                    ResourceId = userId,
+                    FromDate = availability.FromDate,
+                    ToDate = availability.ToDate,
+                    Reason = availability.Reason
+                };
+                result = result.Append(avail);
+            }
+            return result;
+        }
 
-        // private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, User user)
-        // {
-        //     var profileAvailability = createOutOfOfficeFromProfile(profile, user.Id);
-        //     var availabilityDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
-        //     var result = Enumerable.Empty<OutOfOffice>();
-        //     bool isSameAvail = profileAvailability.SequenceEqual(availabilityDB);
-        //     if (!isSameAvail)
-        //     {
-        //         Log.Logger.Information("avail function " + isSameAvail);
-        //         var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
-        //         var inserted = await addAvailToDB(profileAvailability, availabilityDB);
-        //         result = removed.Concat(inserted);
-        //     }
-        //     return result;
-        // }
+        private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, User user)
+        {
+            var profileAvailability = createOutOfOfficeFromProfile(profile, user.Id);
+            var availabilityDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
+            var result = Enumerable.Empty<OutOfOffice>();
+            bool isSameAvail = profileAvailability.SequenceEqual(availabilityDB);
+            if (!isSameAvail)
+            {
+                Log.Logger.Information("avail function " + isSameAvail);
+                var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
+                var inserted = await addAvailToDB(profileAvailability, availabilityDB);
+                result = removed.Concat(inserted);
+            }
+            return result;
+        }
 
-        // private async Task<IEnumerable<OutOfOffice>> removeAvailFromDB(IEnumerable<OutOfOffice> profile, IEnumerable<OutOfOffice> db)
-        // {
-        //     var toBeRemoved = db.Except(profile);
-        //     var result = Enumerable.Empty<OutOfOffice>();
-        //     foreach (var avail in toBeRemoved)
-        //     {
-        //         var removed = await outOfOfficeRepository.DeleteOutOfOffice(avail);
-        //         result = result.Append(removed);
-        //     }
-        //     return result;
-        // }
+        private async Task<IEnumerable<OutOfOffice>> removeAvailFromDB(IEnumerable<OutOfOffice> profile, IEnumerable<OutOfOffice> db)
+        {
+            var toBeRemoved = db.Except(profile);
+            var result = Enumerable.Empty<OutOfOffice>();
+            foreach (var avail in toBeRemoved)
+            {
+                var removed = await outOfOfficeRepository.DeleteOutOfOffice(avail);
+                result = result.Append(removed);
+            }
+            return result;
+        }
 
-        // private async Task<IEnumerable<OutOfOffice>> addAvailToDB(IEnumerable<OutOfOffice> profile, IEnumerable<OutOfOffice> db)
-        // {
-        //     var toBeAdded = profile.Except(db);
-        //     var result = Enumerable.Empty<OutOfOffice>();
-        //     foreach (var avail in toBeAdded)
-        //     {
-        //         var added = await outOfOfficeRepository.InsertOutOfOffice(avail);
-        //         result = result.Append(added);
-        //     }
-        //     return result;
-        // }
+        private async Task<IEnumerable<OutOfOffice>> addAvailToDB(IEnumerable<OutOfOffice> profile, IEnumerable<OutOfOffice> db)
+        {
+            var toBeAdded = profile.Except(db);
+            var result = Enumerable.Empty<OutOfOffice>();
+            foreach (var avail in toBeAdded)
+            {
+                var added = await outOfOfficeRepository.InsertOutOfOffice(avail);
+                result = result.Append(added);
+            }
+            return result;
+        }
     }
 
     [Authorize]
