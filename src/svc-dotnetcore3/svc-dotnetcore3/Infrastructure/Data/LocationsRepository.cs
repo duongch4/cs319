@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 
-using Newtonsoft.Json.Linq;
+using System.Linq;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 using Serilog;
 
 namespace Web.API.Infrastructure.Data
@@ -16,12 +15,12 @@ namespace Web.API.Infrastructure.Data
     public class LocationsRepository : ILocationsRepository
     {
         private readonly string connectionString = string.Empty;
-        private readonly Dictionary<string, List<string>> locations;
+        private readonly Dictionary<string, IEnumerable<string>> locations;
 
         public LocationsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
-            this.locations = new Dictionary<string, List<string>>();
+            this.locations = new Dictionary<string, IEnumerable<string>>();
             this.SetStaticLocations();
         }
 
@@ -74,19 +73,18 @@ namespace Web.API.Infrastructure.Data
                 string province = (string)json["admin_name"];
                 string country = (string)json["country"];
                 string city = (string)json["city"];
-                // Console.WriteLine(province.Equals("New York"));
                 if (country.Equals("Canada") && province != null && !this.locations.ContainsKey(province) && city != null)
                 {
                     this.locations.Add(province, new List<string>());
                 }
                 if (this.locations.ContainsKey(province))
                 {
-                    this.locations[province].Add(city);
+                    this.locations[province] = this.locations[province].Append(city);
                 }
             }
         }
 
-        public Dictionary<string, List<string>> GetStaticLocations()
+        public Dictionary<string, IEnumerable<string>> GetStaticLocations()
         {
             return this.locations;
         }

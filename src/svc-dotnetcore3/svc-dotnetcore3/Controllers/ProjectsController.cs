@@ -239,7 +239,7 @@ namespace Web.API.Controllers
         ///         {
         ///             "firstName": "test FirstName 1",
         ///             "lastName": "test LastName 1",
-        ///             "userID": "test UserName 1",
+        ///             "userID": 1,
         ///             "location": {
         ///                 "province": "test Province User 1",
         ///                 "city": "test City User 1"
@@ -254,7 +254,7 @@ namespace Web.API.Controllers
         ///         {
         ///             "firstName": "test FirstName 2",
         ///             "lastName": "test LastName 2",
-        ///             "userID": "test UserName 2",
+        ///             "userID": 2,
         ///             "location": {
         ///                 "province": "test Province User 2",
         ///                 "city": "test City User 2"

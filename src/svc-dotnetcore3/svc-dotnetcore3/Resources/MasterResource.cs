@@ -4,8 +4,8 @@ namespace Web.API.Resources
 {
     public class MasterResource
     {
-        public Dictionary<string, string[]> disciplines { get; set; }
-        public Dictionary<string, List<string>> locations { get; set; }
+        public Dictionary<string, IEnumerable<string>> disciplines { get; set; }
+        public Dictionary<string, IEnumerable<string>> locations { get; set; }
         public IEnumerable<string> yearsOfExp { get; set; }
     }
 }

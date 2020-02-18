@@ -11,7 +11,7 @@ namespace Web.API.Application.Repository
         Task<Location> GetALocation(int locationId);
         Task<Location> GetALocation(string city);
         
-        Dictionary<string, List<string>> GetStaticLocations();
+        Dictionary<string, IEnumerable<string>> GetStaticLocations();
 
         //POST 
         // Task<Location> CreateALocation(Location location);

@@ -75,12 +75,12 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No disciplines data found"));
                 }
 
-                Dictionary<string, string[]> disciplinesResource = new Dictionary<string, string[]>();
+                Dictionary<string, IEnumerable<string>> disciplinesResource = new Dictionary<string, IEnumerable<string>>();
                 foreach (var discipline in disciplines)
                 {
                     var skills = await skillsRepository.GetSkillsWithDiscipline(discipline.Name);
                     var skillsResource = mapper.Map<IEnumerable<Skill>, IEnumerable<SkillResource>>(skills);
-                    disciplinesResource.Add(discipline.Name, skillsResource.Select(skillsResource => skillsResource.Name).ToArray());
+                    disciplinesResource.Add(discipline.Name, skillsResource.Select(skillsResource => skillsResource.Name));
                 }
 
                 var locations = locationsRepository.GetStaticLocations();
