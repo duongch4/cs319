@@ -207,15 +207,8 @@ namespace Web.API.Controllers
             {
                 UserSummaryResource summary = user.UserSummary;
                 User updateUser = createUserFromSummary(summary);
-                // // IEnumerable<ResourceSkill> profileSkills = createResourceSkillsFromProfile(user.Disciplines, summary.UserId);
-                //IEnumerable<OutOfOffice> profileAvailability = createOutOfOfficeFromProfile(user.Availability, summary.userID);
-                // // var skillsInDB = await skillsRepository.GetUserSkills(updateUser);
-                // var availabilitiesInDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(updateUser);
-                var disciplines = await processDisciplineChanges(user.Disciplines, updateUser);
+                var disciplines = await processDisciplineSkillChanges(user.Disciplines, updateUser);
                 var avails = await processOutOfOfficeChanges(user.Availability, updateUser);
-
-                // // var sameSkills = skillsInDB.SequenceEqual(profileSkills);
-                // // var resource = await usersRepository.UpdateAUser(updateUser);
                 var tmp = new { disciplines, avails };
                 var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -259,19 +252,26 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<IEnumerable<ResourceDisciplines>> processDisciplineChanges(IEnumerable<RDisciplineResource> profile, User user)
+        private async Task<Object> processDisciplineSkillChanges(IEnumerable<RDisciplineResource> profile, User user)
         {
             var profileDisciplines = createResourceDisciplinesFromProfile(profile, user.Id);
+            var profileSkills = createResourceSkillsFromProfile(profile, user.Id);
+            // Log.Logger.Information("finish getting profile Skills" + profileSkills);
             var disciplinesDB = await disciplinesRepository.GetUserDisciplines(user);
-            var result = Enumerable.Empty<ResourceDisciplines>();
+            // Log.Logger.Information("finish getting Discipline DB");
+            var skillsDB = await skillsRepository.GetUserSkills(user);
+            // Log.Logger.Information("finish getting skill DB");
             bool isSameDisc = disciplinesDB.SequenceEqual(profileDisciplines);
-            if (!isSameDisc)
+            bool isSameSkill = skillsDB.SequenceEqual(profileSkills);
+            if (!isSameDisc || !isSameSkill)
             {
+                var removedSkill = await removeSkillsFromDB(profileSkills, skillsDB);
                 var removed = await removeDisciplinesFromDB(profileDisciplines, disciplinesDB);
                 var inserted = await addDisciplinesToDB(profileDisciplines, disciplinesDB);
-                result = removed.Concat(inserted);
+                var insertedSkill = await addSkillsToDB(profileSkills, skillsDB);
+                return new {removed, removedSkill, insertedSkill, inserted};
             }
-            return result;
+            return null;
         }
 
         private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
@@ -288,9 +288,33 @@ namespace Web.API.Controllers
                     result = result.Append(sk);
                 }
             }
+            // Log.Logger.Information("complete loop in skill creation");
             return result;
         }
 
+        private async Task<IEnumerable<ResourceSkill>> addSkillsToDB(IEnumerable<ResourceSkill> profile, IEnumerable<ResourceSkill> db)
+        {
+            var toBeAdded = profile.Except(db);
+            var result = Enumerable.Empty<ResourceSkill>();
+            foreach (var skill in toBeAdded)
+            {
+                var added = await skillsRepository.InsertResourceSkill(skill);
+                result = result.Append(added);
+            }
+            return result;
+        }
+
+        private async Task<IEnumerable<ResourceSkill>> removeSkillsFromDB(IEnumerable<ResourceSkill> profile, IEnumerable<ResourceSkill> db)
+        {
+            var toBeRemoved = db.Except(profile);
+            var result = Enumerable.Empty<ResourceSkill>();
+            foreach (var skill in toBeRemoved)
+            {
+                var removed = await skillsRepository.DeleteResourceSkill(skill);
+                result = result.Append(removed);
+            }
+            return result;
+        }
         private async Task<IEnumerable<ResourceDisciplines>> addDisciplinesToDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
         {
             var toBeAdded = profile.Except(db);

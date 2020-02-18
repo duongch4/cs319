@@ -21,5 +21,9 @@ namespace Web.API.Application.Repository
         Task<Skill> DeleteASkill(int skillId); //TODO: Not sure if we can get skillId from just frontend?
     
         Task<IEnumerable<ResourceSkill>> GetUserSkills(User user);
+
+        Task<ResourceSkill> DeleteResourceSkill(ResourceSkill skill);
+        Task<ResourceSkill> InsertResourceSkill(ResourceSkill skill);
+        Task<int> GetSkillByDisciplineAndName(ResourceSkill skill);
     }
 }

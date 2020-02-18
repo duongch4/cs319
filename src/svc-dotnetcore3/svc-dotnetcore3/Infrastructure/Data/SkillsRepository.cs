@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Serilog;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -128,15 +129,74 @@ namespace Web.API.Infrastructure.Data
             await connection.ExecuteAsync(sql, new { SkillId = skillId });
             return skill;
         }
-    
-        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(User user) {
+
+        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(User user)
+        {
             var sql = @"Select rs.ResourceId, rs.ResourceDisciplineName, rs.SkillId, s.Name
             from ResourceSkill as rs, Skills as s
-            where rs.SkillId = s.Id and rs.ResourceId = " + user.Id + ";";
+            where rs.SkillId = s.Id and rs.ResourceId = @Id";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ResourceSkill>(sql);
+            return await connection.QueryAsync<ResourceSkill>(sql, new
+            {
+                Id = user.Id
+            });
+        }
+
+        public async Task<ResourceSkill> DeleteResourceSkill(ResourceSkill skill)
+        {
+            var sql = @"
+                delete from ResourceSkill where ResourceId = @ResourceId 
+                AND ResourceDisciplineName = @ResourceDisciplineName
+                AND Name = @Name
+            ";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.QueryAsync<ResourceDisciplines>(sql, new
+            {
+                ResourceId = skill.ResourceId,
+                ResourceDisciplineName = skill.ResourceDisciplineName,
+                Name = skill.Name
+            });
+            return skill;
+        }
+        public async Task<ResourceSkill> InsertResourceSkill(ResourceSkill skill)
+        {
+            int Id = await GetSkillByDisciplineAndName(skill);
+            Log.Logger.Information("id" + Id);
+            var sql = @"
+                insert into ResourceSkill (ResourceId, ResourceDisciplineName, SkillId, Name)
+                values
+                (@ResourceId, @ResourceDisciplineName, @SkillId, @Name)
+            ";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.QueryFirstOrDefaultAsync(sql, new
+            {
+                ResourceId = skill.ResourceId,
+                ResourceDisciplineName = skill.ResourceDisciplineName,
+                SkillId = Id,
+                Name = skill.Name
+            });
+            return skill;
+        }
+
+        public async Task<int> GetSkillByDisciplineAndName(ResourceSkill skill)
+        {
+            var sql = @"select s.id
+                from Disciplines as d, Skills as s
+                where d.[Name] = @DisciplineName
+	            and d.id = s.DisciplineId
+	            and s.[Name] = @SkillName;";
+            
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QuerySingleAsync(sql, new {
+                DisciplineName = skill.ResourceDisciplineName,
+                SkillName = skill.Name
+            });
         }
     }
 }

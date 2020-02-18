@@ -15,7 +15,7 @@ namespace Web.API.Application.Models
             }
         }
 
-        public override bool Equals(object obj) => Equals(obj as ResourceDisciplines);
+        public override bool Equals(object obj) => Equals(obj as ResourceSkill);
         public override int GetHashCode() => (ResourceId, ResourceDisciplineName, Name).GetHashCode();
 
     }
