@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using Dapper;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -100,26 +101,89 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<Project>(sql, new { UserId = user.Id });
         }
 
-        public async Task<Project> CreateAProject(Project project)
+        public async Task<string> CreateAProject(ProjectProfile projectProfile, int locationId)
         {
-            var sql = @"
-                insert into Projects 
-                    (Number, Title, LocationId)
-                values 
-                    (@Number, @Title, @LocationId);
-                select cast(scope_identity() as int);
-            ;";
-
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            var id = await connection.QuerySingleAsync<int>(sql, new
+
+            var projectSummary = projectProfile.ProjectSummary;
+            var projectManager = projectProfile.ProjectManager;
+            var usersSummary = projectProfile.UsersSummary;
+            var openings = projectProfile.Openings;
+            List<HashSet<string>> openingsSkills = new List<HashSet<string>>();
+
+            var sql = @"
+                insert into Projects 
+                    ([Number], [Title], [LocationId], [ManagerId], [ProjectStartDate], [ProjectEndDate])
+                values 
+                    (@Number, @Title, @LocationId, @ManagerId, @ProjectStartDate, @ProjectEndDate);
+                select cast(scope_identity() as int);
+            ;";
+            var createdProjectId = await connection.QuerySingleAsync<int>(sql, new
             {
-                project.Number,
-                project.Title,
-                project.LocationId
+                Number = projectSummary.ProjectNumber,
+                Title = projectSummary.Title,
+                LocationId = locationId,
+                ManagerId = projectManager.UserID,
+                ProjectStartDate = projectSummary.ProjectStartDate,
+                ProjectEndDate = projectSummary.ProjectEndDate
             });
-            project.Id = id;
-            return project;
+
+            //TODO: For each user in usersSummary: create a position entry
+
+            List<int> createdPositionIds = new List<int>();
+            foreach (var opening in openings)
+            {
+                openingsSkills.Add(opening.Skills);
+
+                sql = @"
+                    insert into Positions
+                        ([DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed])
+                    values
+                        (
+                            (select Id from Disciplines where Name = @DisciplineName),
+                            @ProjectId, @ProjectedMonthlyHours,
+                            NULL, NULL, @YearsOfExperience, 0
+                        );
+                    select cast(scope_identity() as int);
+                ;";
+
+                var id = await connection.QuerySingleAsync<int>(sql, new
+                {
+                    DisciplineName = opening.Discipline,
+                    ProjectId = createdProjectId,
+                    ProjectedMonthlyHours = opening.CommitmentMonthlyHours,
+                    YearsOfExperience = opening.YearsOfExp,
+                });
+
+                createdPositionIds.Add(id);
+            }
+
+            for (int k = 0; k < openingsSkills.Count; k++)
+            {
+                if (openingsSkills[k].Count == 0) continue;
+
+                foreach (var skill in openingsSkills[k])
+                {
+                    sql = @"
+                        insert into PositionSkills 
+                        values
+                            (
+                                @PositionId,
+                                (select Id from Skills where Name = @SkillName),
+                                (select DisciplineId from Skills where Name = @SkillName)
+                            )
+                    ;";
+
+                    await connection.QueryFirstOrDefaultAsync(sql, new
+                    {
+                        PositionId = createdPositionIds[k],
+                        SkillName = skill,
+                    });
+                }
+
+            }
+            return projectSummary.ProjectNumber;
         }
 
         public async Task<Project> UpdateAProject(Project project)

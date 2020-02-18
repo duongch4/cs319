@@ -15,7 +15,7 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<Project>> GetAllProjectsOfUser(User user);
 
         // POST
-        Task<Project> CreateAProject(Project project);
+        Task<string> CreateAProject(ProjectProfile projectProfile, int locationId);
 
         // PUT
         Task<Project> UpdateAProject(Project project);

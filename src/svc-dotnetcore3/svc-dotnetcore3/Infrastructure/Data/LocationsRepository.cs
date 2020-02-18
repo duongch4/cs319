@@ -52,6 +52,19 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = locationId });
         }
 
+        public async Task<Location> GetALocation(string city)
+        {
+            var sql = @"
+                select *
+                from Locations
+                where City = @City
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
+        }
+        
         private void SetStaticLocations()
         {
             var jsonStr = System.IO.File.ReadAllText(@"Infrastructure/Data/Locations.json");

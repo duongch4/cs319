@@ -223,10 +223,11 @@ namespace Web.API.Controllers
         ///         "title": "test Title",
         ///         "location": {
         ///             "province": "test Province",
-        ///             "city": "test City"
+        ///             "city": "Vancouver"
         ///         },
         ///         "projectStartDate": "2020-10-31T00:00:00.0000000",
-        ///         "projectEndDate": "2021-02-12T00:00:00.0000000"
+        ///         "projectEndDate": "2021-02-12T00:00:00.0000000",
+        ///         "projectNumber": "0000"
         ///     },
         ///     "projectManager": {
         ///         "userID": 5,
@@ -267,14 +268,14 @@ namespace Web.API.Controllers
         ///     ],
         ///     "openings": [
         ///         {
-        ///             "discipline": "test D 1",
-        ///             "skills": ["S1", "S2"],
+        ///             "discipline": "Cryptography",
+        ///             "skills": ["Glock", "Kali"],
         ///             "yearsOfExp": "1-3",
         ///             "commitmentMonthlyHours": 160
         ///         },
         ///         {
-        ///             "discipline": "test D 2",
-        ///             "skills": ["S2.1", "S2.2"],
+        ///             "discipline": "Language",
+        ///             "skills": ["Mandarin", "False Identity Creation"],
         ///             "yearsOfExp": "3-5",
         ///             "commitmentMonthlyHours": 180
         ///         }
@@ -282,32 +283,29 @@ namespace Web.API.Controllers
         /// }
         ///
         /// </remarks>
-        /// <param name="project"></param>
+        /// <param name="projectProfile"></param>
         /// <returns>A newly created project</returns>
         /// <response code="201">Returns the newly created project</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Route("projects")]
-        [ProducesResponseType(typeof(CreatedResponse<ProjectProfile>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAProject([FromBody] ProjectProfile project)
+        public async Task<IActionResult> CreateAProject([FromBody] ProjectProfile projectProfile)
         {
-            if (project == null)
+            if (projectProfile == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project is null / Request Body cannot be read"));
             }
 
             try
             {
-                Log.Logger.Here().Information("{@Project}", project);
-                // var created = await projectsRepository.CreateAProject(project);
-                // var resource = mapper.Map<Project, ProjectProfile>(created);
-                // var url = Url.Link(nameof(GetAProject), new { projectNumber = created.Number });
-                // var response = new CreatedResponse<ProjectProfile>(resource, "Successfully created", new { url = url });
-                // return StatusCode(StatusCodes.Status201Created, response);
-                return Ok(project);
+                var location = await locationsRepository.GetALocation(projectProfile.ProjectSummary.Location.City);
+                var createdProjectNumber = await projectsRepository.CreateAProject(projectProfile, location.Id);
+                var response = new CreatedResponse<string>(createdProjectNumber, $"Successfully created project number '{createdProjectNumber}'");
+                return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
             {

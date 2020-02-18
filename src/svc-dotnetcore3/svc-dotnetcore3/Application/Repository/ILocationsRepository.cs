@@ -9,6 +9,7 @@ namespace Web.API.Application.Repository
         //GET
         Task<IEnumerable<Location>> GetAllLocations();
         Task<Location> GetALocation(int locationId);
+        Task<Location> GetALocation(string city);
         
         Dictionary<string, List<string>> GetStaticLocations();
 
