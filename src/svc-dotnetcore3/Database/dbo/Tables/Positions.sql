@@ -8,7 +8,7 @@ CREATE TABLE [dbo].Positions
 	[PositionName] nvarchar(100) NULL,
 	[YearsOfExperience] nvarchar(10),
 	[IsConfirmed] [bit] NOT NULL,
-	CONSTRAINT [FK_Positions_Projects] FOREIGN KEY (ProjectId) REFERENCES Projects([Id]),
+	CONSTRAINT [FK_Positions_Projects] FOREIGN KEY (ProjectId) REFERENCES Projects([Id]) ON DELETE CASCADE,
 	CONSTRAINT [FK_Positions_Disciplines] FOREIGN KEY (DisciplineId) REFERENCES Disciplines([Id]),
 	CONSTRAINT [FK_Positions_Users] FOREIGN KEY (ResourceId) REFERENCES [Users]([Id])
 )

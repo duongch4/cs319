@@ -14,7 +14,7 @@ CREATE TABLE [dbo].[Disciplines]
 	[Id] INT NOT NULL PRIMARY KEY,
 	[Name] NVARCHAR(100) NOT NULL UNIQUE
 )
-​
+
 CREATE TABLE [dbo].[Locations]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
@@ -22,7 +22,7 @@ CREATE TABLE [dbo].[Locations]
 	[City] [nvarchar](100) NOT NULL,
 	CONSTRAINT [PK_Locations] PRIMARY KEY CLUSTERED ([Id])
 )
-​
+
 CREATE TABLE [dbo].[Users]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
@@ -36,7 +36,7 @@ CREATE TABLE [dbo].[Users]
 	CONSTRAINT [UK_Users_Username] UNIQUE ([Username]),
 	CONSTRAINT [FK_Users_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([Id])
 )
-​
+
 CREATE TABLE [dbo].[Projects]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
@@ -53,7 +53,7 @@ CREATE TABLE [dbo].[Projects]
 	CONSTRAINT [FK_Projects_User] FOREIGN KEY ([ManagerId]) REFERENCES [Users]([Id]),
 	CONSTRAINT [UK_Projects_Number] UNIQUE ([Number])
 )
-​
+
 CREATE TABLE [dbo].[Skills]
 (
 	[Id] INT NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE [dbo].[Skills]
 	CONSTRAINT [FK_Skills_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE CASCADE,
 	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id])
 )
-​
+
 CREATE TABLE [dbo].Positions
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
@@ -73,11 +73,11 @@ CREATE TABLE [dbo].Positions
 	[PositionName] nvarchar(100) NULL,
 	[YearsOfExperience] nvarchar(10),
 	[IsConfirmed] [bit] NOT NULL,
-	CONSTRAINT [FK_Positions_Projects] FOREIGN KEY (ProjectId) REFERENCES Projects([Id]),
+	CONSTRAINT [FK_Positions_Projects] FOREIGN KEY (ProjectId) REFERENCES Projects([Id]) ON DELETE CASCADE,
 	CONSTRAINT [FK_Positions_Disciplines] FOREIGN KEY (DisciplineId) REFERENCES Disciplines([Id]),
 	CONSTRAINT [FK_Positions_Users] FOREIGN KEY (ResourceId) REFERENCES [Users]([Id])
 )
-​
+
 CREATE TABLE [dbo].[ResourceDiscipline]
 (
 	[ResourceId] [int] NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE [dbo].[ResourceDiscipline]
 	CONSTRAINT [FK_ResourceDiscipline_Users] FOREIGN KEY ([ResourceId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE,
 	CONSTRAINT [PK_ResourceDiscipline] PRIMARY KEY ([ResourceId], [DisciplineId])
 )
-​
+
 CREATE TABLE [dbo].[ResourceSkill]
 (
 	[ResourceId] [int] Not Null,
@@ -101,17 +101,17 @@ CREATE TABLE [dbo].[ResourceSkill]
 	CONSTRAINT [PK_ResourseSkill] PRIMARY KEY ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]),
 	CONSTRAINT [CK_DisciplinesMatch] CHECK ([ResourceDisciplineId] = [SkillDisciplineId])
 )
-​
+
 CREATE TABLE [dbo].PositionSkills
 (
 	[PositionId] INT NOT NULL,
 	[SkillId] INT NOT NULL,
 	[SkillDisciplineId] INT NOT NULL,
 	CONSTRAINT [FK_PositionSkills_Skills] FOREIGN KEY (SkillDisciplineId, SkillId) REFERENCES Skills([DisciplineId], [Id]),
-	CONSTRAINT [FK_PositionSkills_Positions] FOREIGN KEY (PositionId) REFERENCES Positions([Id]),
+	CONSTRAINT [FK_PositionSkills_Positions] FOREIGN KEY (PositionId) REFERENCES Positions([Id]) ON DELETE CASCADE,
 	CONSTRAINT [PK_PositionSkills] PRIMARY KEY ([SkillId], [SkillDisciplineId], [PositionId]),
 )
-​
+
 CREATE TABLE [dbo].[OutOfOffice]
 (
 	[ResourceId][int] NOT NULL,
