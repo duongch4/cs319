@@ -10,7 +10,7 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<Skill>> GetAllSkills();
         Task<IEnumerable<Skill>> GetSkillsWithDiscipline(string disciplineName);
         Task<IEnumerable<Skill>> GetSkillsWithName(string skillName);
-        Task<Skill> GetASkill(int skillID);
+        Task<Skill> GetASkill(int skillId);
 
         //POST
         Task<Skill> CreateASkill(Skill skill);
