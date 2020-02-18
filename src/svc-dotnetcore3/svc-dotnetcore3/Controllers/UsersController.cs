@@ -58,7 +58,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("users")]
-        [ProducesResponseType(typeof(OkResponse<IEnumerable<UserResourceGeneral>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<IEnumerable<UserSummary>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -161,7 +161,8 @@ namespace Web.API.Controllers
                     UserSummary = userSummary,
                     Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice),
                     CurrentProjects = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects),
-                    Disciplines = disciplineResources
+                    Disciplines = disciplineResources,
+                    Positions = positions
                 };
 
                 var response = new OkResponse<UserProfileResource>(userProfile, "Everything is good");
@@ -213,10 +214,11 @@ namespace Web.API.Controllers
                 UserSummary summary = user.UserSummary;
                 Location location = await locationsRepository.GetLocationIdByCityProvince(summary.Location);
                 User updateUser = createUserFromSummary(summary, location);
+                var changedUser = await usersRepository.UpdateAUser(updateUser);
                 var disciplines = await processDisciplineSkillChanges(user.Disciplines, updateUser);
                 var avails = await processOutOfOfficeChanges(user.Availability, updateUser);
-                var tmp = new { disciplines, avails };
-                var response = tmp;/* new OkResponse<int>(summary.UserId, "Successfully updated"); */
+                var tmp = new { changedUser, disciplines, avails };
+                var response = new OkResponse<int>(updateUser.Id, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)

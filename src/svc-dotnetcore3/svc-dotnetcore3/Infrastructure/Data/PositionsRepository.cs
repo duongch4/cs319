@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -39,17 +40,17 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Position>(sql, new { PositionId = positionId });
         }
-        public async Task<IEnumerable<Position>> GetPositionsOfUser(User user)
+        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(User user)
         {
             var sql = @"
-                select *
-                from Positions
-                where ResourceId = @UserId
+                select d.Name as DisciplineName, pos.ProjectedMonthlyHours, p.Title as ProjectTitle
+                from Disciplines as d, Positions as pos, Projects as p
+                where pos.DisciplineId = d.Id and pos.ProjectId = p.Id and pos.ResourceId = @UserId;
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<Position>(sql, new { UserId = user.Id });
+            return await connection.QueryAsync<PositionResource>(sql, new { UserId = user.Id });
         }
         public async Task<IEnumerable<Position>> GetAllUnassignedPositionOfProject(Project project)
         {
