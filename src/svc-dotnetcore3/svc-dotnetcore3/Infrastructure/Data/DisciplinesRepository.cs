@@ -104,9 +104,9 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<ResourceDisciplines>> GetUserDisciplines(User user)
         {
             var sql = @"
-                select rd.ResourceId, rd.DisciplineName, rd.YearsOfExperience
+                select rd.ResourceId, d.Name, rd.YearsOfExperience
                 from ResourceDiscipline as rd, Disciplines as d
-                where d.Name = rd.DisciplineName and rd.ResourceId = " + user.Id + ";";
+                where d.Id = rd.DisciplineId and rd.ResourceId = " + user.Id + ";";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -116,8 +116,12 @@ namespace Web.API.Infrastructure.Data
         public async Task<ResourceDisciplines> DeleteResourceDiscipline(ResourceDisciplines discipline)
         {
             var sql = @"
-                delete from ResourceDiscipline where ResourceId = @ResourceId AND DisciplineName = @DisciplineName
-            ";
+               delete from ResourceDiscipline 
+                where ResourceId = @ResourceId
+                AND DisciplineId = (select Id	
+                                    from Disciplines
+                                    where Name = @DisciplineName)
+                                    ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -132,10 +136,11 @@ namespace Web.API.Infrastructure.Data
         public async Task<ResourceDisciplines> InsertResourceDiscipline(ResourceDisciplines discipline)
         {
             var sql = @"
-                insert into ResourceDiscipline (ResourceId, DisciplineName, YearsOfExperience)
-                values
-                (@ResourceId, @DisciplineName, @YearsOfExperience)
-            ";
+                insert into ResourceDiscipline 
+	                values (@ResourceId, 
+                           (select Id from Disciplines where Name = @DisciplineName), 
+                           @YearsOfExperience)
+            ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.QueryFirstOrDefaultAsync(sql, new

@@ -132,9 +132,17 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<IEnumerable<ResourceSkill>> GetUserSkills(User user)
         {
-            var sql = @"Select rs.ResourceId, rs.ResourceDisciplineName, rs.SkillId, s.Name
-            from ResourceSkill as rs, Skills as s
-            where rs.SkillId = s.Id and rs.ResourceId = @Id";
+            var sql = @"
+            select 
+                rs.ResourceId, d.Name, s.Id, s.Name
+            from 
+                ResourceSkill as rs, Disciplines as d, Skills as s
+            where
+                rs.ResourceId = @Id
+                and rs.ResourceDisciplineId = d.Id
+                and rs.SkillDisciplineId = s.DisciplineId
+                and rs.SkillId = s.Id;
+                ";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -147,9 +155,16 @@ namespace Web.API.Infrastructure.Data
         public async Task<ResourceSkill> DeleteResourceSkill(ResourceSkill skill)
         {
             var sql = @"
-                delete from ResourceSkill where ResourceId = @ResourceId 
-                AND ResourceDisciplineName = @ResourceDisciplineName
-                AND Name = @Name
+                delete from ResourceSkill
+                where ResourceId = @ResourceId
+                and SkillDisciplineId = (select Id 
+                                        from Disciplines 
+                                        where Name = @ResourceDisciplineName)
+                and ResourceDisciplineID = SkillDisciplineID
+                and SkillId = (select Id
+                                from Skills
+                                where Name = @Name);
+
             ";
 
             using var connection = new SqlConnection(connectionString);
@@ -164,20 +179,20 @@ namespace Web.API.Infrastructure.Data
         }
         public async Task<ResourceSkill> InsertResourceSkill(ResourceSkill skill)
         {
-            int Id = await GetSkillByDisciplineAndName(skill);
-            Log.Logger.Information("id" + Id);
             var sql = @"
-                insert into ResourceSkill (ResourceId, ResourceDisciplineName, SkillId, Name)
-                values
-                (@ResourceId, @ResourceDisciplineName, @SkillId, @Name)
-            ";
+                insert into ResourceSkill
+                values 
+                    (@ResourceId, 
+                    (select Id from Disciplines where Name = @ResourceDisciplineName), 
+                    (select Id from Disciplines where Name = @ResourceDisciplineName), 
+                    (select Id from Skills where Name = @Name))
+                ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.QueryFirstOrDefaultAsync(sql, new
             {
                 ResourceId = skill.ResourceId,
                 ResourceDisciplineName = skill.ResourceDisciplineName,
-                SkillId = Id,
                 Name = skill.Name
             });
             return skill;
@@ -193,10 +208,12 @@ namespace Web.API.Infrastructure.Data
             
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QuerySingleAsync(sql, new {
+            var result = await connection.QuerySingleAsync(sql, new {
                 DisciplineName = skill.ResourceDisciplineName,
                 SkillName = skill.Name
             });
+            Log.Information(result);
+            return result;
         }
     }
 }
