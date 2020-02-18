@@ -131,12 +131,22 @@ namespace Web.API.Infrastructure.Data
 
             //TODO: For each user in usersSummary: create a position entry
 
+            List<int> createdPositionIds = await this.CreatePositionsForAProject(connection, createdProjectId, openings, openingsSkills);
+            await this.CreatePositionSkillsForPositions(connection, openingsSkills, createdPositionIds);
+            return projectSummary.ProjectNumber;
+        }
+
+        private async Task<List<int>> CreatePositionsForAProject(
+            SqlConnection connection, int projectId,
+            IEnumerable<OpeningPositionsSummary> openings, List<HashSet<string>> openingsSkills
+        )
+        {
             List<int> createdPositionIds = new List<int>();
             foreach (var opening in openings)
             {
                 openingsSkills.Add(opening.Skills);
 
-                sql = @"
+                var sql = @"
                     insert into Positions
                         ([DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed])
                     values
@@ -151,21 +161,27 @@ namespace Web.API.Infrastructure.Data
                 var id = await connection.QuerySingleAsync<int>(sql, new
                 {
                     DisciplineName = opening.Discipline,
-                    ProjectId = createdProjectId,
+                    ProjectId = projectId,
                     ProjectedMonthlyHours = opening.CommitmentMonthlyHours,
                     YearsOfExperience = opening.YearsOfExp,
                 });
 
                 createdPositionIds.Add(id);
             }
+            return createdPositionIds;
+        }
 
+        private async Task CreatePositionSkillsForPositions(
+            SqlConnection connection, List<HashSet<string>> openingsSkills, List<int> positionIds
+        )
+        {
             for (int k = 0; k < openingsSkills.Count; k++)
             {
                 if (openingsSkills[k].Count == 0) continue;
 
                 foreach (var skill in openingsSkills[k])
                 {
-                    sql = @"
+                    var sql = @"
                         insert into PositionSkills 
                         values
                             (
@@ -177,38 +193,100 @@ namespace Web.API.Infrastructure.Data
 
                     await connection.QueryFirstOrDefaultAsync(sql, new
                     {
-                        PositionId = createdPositionIds[k],
+                        PositionId = positionIds[k],
                         SkillName = skill,
                     });
                 }
-
             }
-            return projectSummary.ProjectNumber;
         }
 
-        public async Task<Project> UpdateAProject(Project project)
+        public async Task<string> UpdateAProject(ProjectProfile projectProfile, int locationId)
         {
-            var sql = @"
-                update
-                    Projects
-                set 
-                    Number = @Number,
-                    Title = @Title,
-                    LocationId = @LocationId
-                where 
-                    Id = @Id
-            ;";
-
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            int result = await connection.ExecuteAsync(sql, new
+
+            var projectSummary = projectProfile.ProjectSummary;
+            var projectManager = projectProfile.ProjectManager;
+            var usersSummary = projectProfile.UsersSummary;
+            var openings = projectProfile.Openings;
+            List<HashSet<string>> openingsSkills = new List<HashSet<string>>();
+
+            var sql1 = @"
+                select *
+                from Projects
+                where Number = @Number
+            ;";
+            var project = await connection.QueryFirstOrDefaultAsync<Project>(sql1, new { Number = projectSummary.ProjectNumber });
+            Log.Information("{@old}", project);
+
+            var sql = @"
+                update Projects 
+                set 
+                    Title = @Title,
+                    LocationId = @LocationId,
+                    ManagerId = @ManagerId,
+                    ProjectStartDate = @ProjectStartDate,
+                    ProjectEndDate = @ProjectEndDate
+                where
+                    Number = @Number
+            ;";
+            int success = await connection.ExecuteAsync(sql, new
             {
-                project.Id,
-                Number = project.Number,
-                Title = project.Title,
-                LocationId = project.LocationId
+                Number = projectSummary.ProjectNumber,
+                Title = projectSummary.Title,
+                LocationId = locationId,
+                ManagerId = projectManager.UserID,
+                ProjectStartDate = projectSummary.ProjectStartDate,
+                ProjectEndDate = projectSummary.ProjectEndDate
             });
-            return result == 1 ? project : null;
+
+            var sql2 = @"
+                select *
+                from Projects
+                where Number = @Number
+            ;";
+            var projectnew = await connection.QueryFirstOrDefaultAsync<Project>(sql2, new { Number = projectSummary.ProjectNumber });
+            Log.Information("{@new}", projectnew);
+
+            var sqlGetProjectId = @"
+                select Id from Projects where Number = @Number
+            ";
+            var projectId = await connection.QueryFirstOrDefaultAsync<int>(sqlGetProjectId, new { Number = projectSummary.ProjectNumber });
+
+            if (success == 1)
+            {
+                List<int> createdPositionIds = await this.CreatePositionsForAProject(connection, projectId, openings, openingsSkills);
+                await this.CreatePositionSkillsForPositions(connection, openingsSkills, createdPositionIds);
+                return projectSummary.ProjectNumber;
+            }
+            else
+            {
+                return null;
+            }
+
+            // return projectSummary.ProjectNumber;
+
+            // var sql = @"
+            //     update
+            //         Projects
+            //     set 
+            //         Number = @Number,
+            //         Title = @Title,
+            //         LocationId = @LocationId
+            //     where 
+            //         Id = @Id
+            // ;";
+
+            // using var connection = new SqlConnection(connectionString);
+            // connection.Open();
+            // int result = await connection.ExecuteAsync(sql, new
+            // {
+            //     project.Id,
+            //     Number = project.Number,
+            //     Title = project.Title,
+            //     LocationId = project.LocationId
+            // });
+            // return result == 1 ? project : null;
         }
 
         public async Task<Project> DeleteAProject(string number)
