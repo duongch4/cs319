@@ -57,7 +57,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects")]
-        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectProfile>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectSummary>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -70,8 +70,8 @@ namespace Web.API.Controllers
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
                 }
-                var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectProfile>>(projects);
-                var response = new OkResponse<IEnumerable<ProjectProfile>>(resource, "Everything is good");
+                var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
+                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)

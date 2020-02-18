@@ -19,18 +19,23 @@ namespace Web.API.Infrastructure.Data
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<IEnumerable<Project>> GetAllProjects()
+        public async Task<IEnumerable<ProjectResource>> GetAllProjects()
         {
             var sql = @"
                 select
-                    Id, Number, Title, LocationId, CreatedAt, UpdatedAt
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City 
                 from
-                    Projects
+                    Projects p, Locations l, Users u
+                where
+                    p.LocationId = l.Id
+                    AND p.ManagerId = u.Id
             ;";
-
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<Project>(sql);
+            return await connection.QueryAsync<ProjectResource>(sql);
         }
 
         public async Task<IEnumerable<Project>> GetMostRecentProjects()
