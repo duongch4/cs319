@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
+using Web.API.Resources;
 
 namespace Web.API.Application.Repository
 {
@@ -20,5 +21,6 @@ namespace Web.API.Application.Repository
 
         //PUT
         Task<User> UpdateAUser(User user);
+        Task<IEnumerable<UserResource>> GetAllUsersGeneral();
     }
 }

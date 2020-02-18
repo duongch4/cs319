@@ -58,7 +58,7 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("users")]
-        [ProducesResponseType(typeof(OkResponse<IEnumerable<UserResource>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<IEnumerable<UserResourceGeneral>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
@@ -66,13 +66,13 @@ namespace Web.API.Controllers
         {
             try
             {
-                var users = await usersRepository.GetAllUsers();
+                var users = await usersRepository.GetAllUsersGeneral();
                 if (users == null || !users.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
                 }
-                var resource = mapper.Map<IEnumerable<User>, IEnumerable<UserResource>>(users);
-                var response = new OkResponse<IEnumerable<UserResource>>(resource, "Everything is good");
+                var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
+                var response = new OkResponse<IEnumerable<UserSummary>>(resource, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
