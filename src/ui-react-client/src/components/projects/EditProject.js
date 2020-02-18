@@ -8,6 +8,8 @@ import { loadLocations} from '../../redux/actions/locationsActions.js';
 import { loadExperiences } from '../../redux/actions/experienceActions.js';
 import { connect } from 'react-redux';
 import { Button } from "@material-ui/core";
+import UserCard from "../users/UserCard";
+import { Link } from 'react-router-dom';
 
 class EditProject extends Component {
   state = {
@@ -21,7 +23,8 @@ class EditProject extends Component {
       startDate: "",
       endDate: "",
       openings: [],
-    }
+    },
+    users: []
   }
 
   componentDidMount(){
@@ -33,10 +36,17 @@ class EditProject extends Component {
     // this.props.masterYearsOfExperience holds the master list of experiences
     this.props.loadProjects();
     var currentProject = this.props.projects.filter(project => project.projID == this.props.match.params.project_id)
+
     if(currentProject){
         this.setState({
             project: currentProject[0]
             // state now holds the current project
+        })
+    }
+
+    if(currentProject[0].users) {
+        this.setState({
+            users: currentProject[0].users
         })
     }
   }
@@ -68,6 +78,20 @@ class EditProject extends Component {
       })
     }
   render(){
+    var teamMembersRender = [];
+    if (this.state.users.length > 0) {
+        this.state.users.forEach(userProfile => {
+            teamMembersRender.push(
+                <Link to={'/users/' + userProfile.userID}>
+                    <UserCard user={userProfile} canEdit={false} key={teamMembersRender.length} />
+                </Link>)
+        })
+    } else {
+        teamMembersRender.push(
+            <p className="empty-statements">There are currently no resources assigned to this project.</p>
+        )
+    }
+
     const openings = [];
       this.state.project.openings.forEach((opening, index) => {
         openings.push(<Openings key = {index} opening={opening.discipline}
@@ -89,6 +113,10 @@ class EditProject extends Component {
                                 addOpening={(opening) => this.addOpening(opening)}/>
               <hr />
               {openings}
+            </div>
+            <div className="section-container">
+            <h2 className="greenHeader">The Team</h2>
+            {teamMembersRender}
             </div>
             <Button variant="contained"
                     style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
