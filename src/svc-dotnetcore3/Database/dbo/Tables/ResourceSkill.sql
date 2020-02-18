@@ -8,6 +8,6 @@ CREATE TABLE [dbo].[ResourceSkill]
 		REFERENCES [ResourceDiscipline] ([ResourceId], [DisciplineId]) ON DELETE CASCADE,
 	CONSTRAINT [FK_ResourceSkill_Skills] FOREIGN KEY ([SkillDisciplineId], [SkillId]) 
 		REFERENCES [Skills] ([DisciplineId], [Id]),
-	CONSTRAINT [CK_DisciplinesMatch] CHECK ([ResourceDisciplineId] = [SkillDisciplineId]),
 	CONSTRAINT [PK_ResourseSkill] PRIMARY KEY ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]),
+	CONSTRAINT [CK_DisciplinesMatch] CHECK ([ResourceDisciplineId] = [SkillDisciplineId])
 )
