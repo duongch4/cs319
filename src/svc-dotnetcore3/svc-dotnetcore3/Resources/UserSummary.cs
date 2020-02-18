@@ -4,9 +4,9 @@ namespace Web.API.Resources
 {
     public class UserSummary
     {
-        /// <summary>UserName</summary>
-        /// <example>eliander</example>
-        public string UserID { get; set; }
+        /// <summary>User ID</summary>
+        /// <example>1</example>
+        public int UserID { get; set; }
 
         /// <summary>User First Name</summary>
         /// <example>Elissa</example>

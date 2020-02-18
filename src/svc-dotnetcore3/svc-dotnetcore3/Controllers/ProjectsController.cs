@@ -140,7 +140,8 @@ namespace Web.API.Controllers
                 }
                 var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
 
-                var projectProfile = new ProjectProfile {
+                var projectProfile = new ProjectProfile
+                {
                     ProjectSummary = projectSummary,
                     ProjectManager = projectManager,
                     UsersSummary = usersSummary,

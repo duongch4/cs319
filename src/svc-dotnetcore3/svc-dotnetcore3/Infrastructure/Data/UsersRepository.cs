@@ -121,17 +121,17 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 select
                     u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
-                    p.IsConfirmed,
-                    l.Province, l.City,
-                    rd.DisciplineName, rd.YearsOfExperience
+                    p.IsConfirmed, d.Name AS DisciplineName, rd.YearsOfExperience,
+                    l.Province, l.City
                 from
-                    Users u, Positions p, Locations l, ResourceDiscipline rd
+                    Users u, Positions p, Locations l, ResourceDiscipline rd, Disciplines d
                 where
                     p.ProjectId = @ProjectId
                     AND p.ResourceId = u.Id
                     AND u.Id != @ProjectManagerId
                     AND u.LocationId = l.Id
                     AND rd.ResourceId = u.Id
+                    AND rd.DisciplineId = d.Id
             ;";
 
             using var connection = new SqlConnection(connectionString);

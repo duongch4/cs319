@@ -60,6 +60,11 @@ namespace Web.API.Mapping
                 opt => opt.MapFrom(
                     sourceMember => new HashSet<string>(sourceMember.Skills.Split(sep))
                 )
+            ).ForMember(
+                destinationMember => destinationMember.YearsOfExp,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.YearsOfExperience
+                )
             ).ReverseMap();
         }
 

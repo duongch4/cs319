@@ -32,7 +32,7 @@ namespace Web.API.Resources
 
         /// <summary>Position Confirmation Status</summary>
         /// <example>true</example>
-        public string IsConfirmed { get; set; }
+        public bool IsConfirmed { get; set; }
 
         /// <summary>Discipline</summary>
         /// <example>AAA</example>
