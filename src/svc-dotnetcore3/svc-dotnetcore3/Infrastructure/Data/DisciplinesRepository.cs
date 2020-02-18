@@ -128,7 +128,7 @@ namespace Web.API.Infrastructure.Data
             await connection.QueryAsync<ResourceDisciplines>(sql, new
             {
                 ResourceId = discipline.ResourceId,
-                DisciplineName = discipline.DisciplineName
+                DisciplineName = discipline.Name
             });
             return discipline;
         }
@@ -146,7 +146,7 @@ namespace Web.API.Infrastructure.Data
             await connection.QueryFirstOrDefaultAsync(sql, new
             {
                 ResourceId = discipline.ResourceId,
-                DisciplineName = discipline.DisciplineName,
+                DisciplineName = discipline.Name,
                 YearsOfExperience = discipline.YearsOfExperience
             });
             return discipline;

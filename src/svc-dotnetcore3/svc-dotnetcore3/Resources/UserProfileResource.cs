@@ -20,7 +20,7 @@ namespace Web.API.Resources
         //     this.disciplines = mapper.Map<IEnumerable<ResourceDisciplines>, IEnumerable<RDisciplineResource>>(disciplines);
         //     this.skills = mapper.Map<IEnumerable<ResourceSkill>, IEnumerable<RSkillResource>>(skills);
         // }
-        public UserSummaryResource UserSummary {get; set;}
+        public UserSummary UserSummary {get; set;}
         public IEnumerable<ProjectDirectMappingResource> CurrentProjects {get; set;}
 
         public IEnumerable<OutOfOfficeResource> Availability {get; set;}

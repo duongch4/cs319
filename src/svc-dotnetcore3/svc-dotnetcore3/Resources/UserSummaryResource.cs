@@ -7,17 +7,6 @@ namespace Web.API.Resources
 {
     public class UserSummaryResource
     {
-
-        // "firstName": "",
-        //     "lastName": "",
-        //     "id": 101,
-        //     "location": {
-        //         "province": "",
-        //         "city": ""
-        //     },
-        //     "utilization": 100,
-        //     "resourceDiscipline": { "discipline": "", "yearsOfExp": ""},
-        //     "isConfirmed": false
         public int userID { get; set; }
 
         public string firstName { get; set; }

@@ -134,7 +134,7 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
             select 
-                rs.ResourceId, d.Name, s.Id, s.Name
+                rs.ResourceId, d.Name as ResourceDisciplineName, s.Id, s.Name
             from 
                 ResourceSkill as rs, Disciplines as d, Skills as s
             where
