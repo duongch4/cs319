@@ -65,13 +65,15 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 select
-                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate, p.LocationId,
-                    l.Province, l.City 
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, u.FirstName, u.LastName,
+                    p.LocationId, l.Province, l.City 
                 from
-                    Projects p, Locations l
+                    Projects p, Locations l, Users u
                 where
                     p.LocationId = l.Id
                     AND p.Number = @Number
+                    AND p.ManagerId = u.Id
             ;";
 
             using var connection = new SqlConnection(connectionString);

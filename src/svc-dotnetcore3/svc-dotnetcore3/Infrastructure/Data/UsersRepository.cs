@@ -116,23 +116,27 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<User>(sql, new { ProjectId = project.Id});
         }
 
-        public async Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId)
+        public async Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId, int projectManagerId)
         {
             var sql = @"
                 select
                     u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
-                    l.Province, l.City
+                    p.IsConfirmed,
+                    l.Province, l.City,
+                    rd.DisciplineName, rd.YearsOfExperience
                 from
-                    Users u, Positions p, Locations l
+                    Users u, Positions p, Locations l, ResourceDiscipline rd
                 where
                     p.ProjectId = @ProjectId
                     AND p.ResourceId = u.Id
+                    AND u.Id != @ProjectManagerId
                     AND u.LocationId = l.Id
+                    AND rd.ResourceId = u.Id
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<UserResource>(sql, new { ProjectId = projectId });
+            return await connection.QueryAsync<UserResource>(sql, new { ProjectId = projectId, ProjectManagerId = projectManagerId });
         }
 
         // public async Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp)

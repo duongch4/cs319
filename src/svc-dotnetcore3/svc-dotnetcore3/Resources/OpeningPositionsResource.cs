@@ -6,10 +6,6 @@ namespace Web.API.Resources
         /// <example>160</example>
         public int CommitmentMonthlyHours { get; set; }
 
-        /// <summary>Position Name</summary>
-        /// <example>Intel</example>
-        public string Position { get; set; }
-
         /// <summary>Discipline Name</summary>
         /// <example>Intel</example>
         public string Discipline { get; set; }

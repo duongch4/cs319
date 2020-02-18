@@ -29,5 +29,17 @@ namespace Web.API.Resources
         /// <summary>Location City</summary>
         /// <example>Toronto</example>
         public string City { get; set; }
+
+        /// <summary>Position Confirmation Status</summary>
+        /// <example>true</example>
+        public string IsConfirmed { get; set; }
+
+        /// <summary>Discipline</summary>
+        /// <example>AAA</example>
+        public string DisciplineName { get; set; }
+
+        /// <summary>Years of Experience</summary>
+        /// <example>10+</example>
+        public string YearsOfExperience { get; set; }
     }
 }

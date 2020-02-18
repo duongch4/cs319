@@ -124,7 +124,9 @@ namespace Web.API.Controllers
                 }
                 var projectSummary = mapper.Map<ProjectResource, ProjectSummary>(project);
 
-                var users = await usersRepository.GetAllUsersResourceOnProject(project.Id);
+                var projectManager = mapper.Map<ProjectResource, ProjectManagerResource>(project);
+
+                var users = await usersRepository.GetAllUsersResourceOnProject(project.Id, project.ManagerId);
                 if (users == null || !users.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No User at projectNumber '{projectNumber}' found"));
@@ -140,6 +142,7 @@ namespace Web.API.Controllers
 
                 var projectProfile = new ProjectProfile {
                     ProjectSummary = projectSummary,
+                    ProjectManager = projectManager,
                     UsersSummary = usersSummary,
                     Openings = openingPositionsSummary
                 };
@@ -279,8 +282,10 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(CreatedResponse<ProjectProfile>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAProject([FromBody] Project project)
+        public async Task<IActionResult> CreateAProject([FromBody] object project)
         {
+            var projectProfile = (ProjectProfile)project;
+            Console.WriteLine(projectProfile);
             if (project == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project is null / Request Body cannot be read"));
@@ -289,11 +294,12 @@ namespace Web.API.Controllers
             try
             {
                 Log.Logger.Here().Information("{@Project}", project);
-                var created = await projectsRepository.CreateAProject(project);
-                var resource = mapper.Map<Project, ProjectProfile>(created);
-                var url = Url.Link(nameof(GetAProject), new { projectNumber = created.Number });
-                var response = new CreatedResponse<ProjectProfile>(resource, "Successfully created", new { url = url });
-                return StatusCode(StatusCodes.Status201Created, response);
+                // var created = await projectsRepository.CreateAProject(project);
+                // var resource = mapper.Map<Project, ProjectProfile>(created);
+                // var url = Url.Link(nameof(GetAProject), new { projectNumber = created.Number });
+                // var response = new CreatedResponse<ProjectProfile>(resource, "Successfully created", new { url = url });
+                // return StatusCode(StatusCodes.Status201Created, response);
+                return Ok(project);
             }
             catch (Exception err)
             {

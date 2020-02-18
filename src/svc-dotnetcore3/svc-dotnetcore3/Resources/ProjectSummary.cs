@@ -11,7 +11,7 @@ namespace Web.API.Resources
 
         /// <summary>Location ID</summary>
         /// <example>5</example>
-        public Location Location {get; set;}        
+        public LocationResource Location {get; set;}        
 
         /// <summary>Project Start Date</summary>
         /// <example>05/29/2021 05:50:06</example>
