@@ -218,58 +218,68 @@ namespace Web.API.Controllers
         /// Sample request:
         ///
         ///     POST /api/projects
-        ///     {
-        ///         "ProjectSummary": {
-        ///             "Title": "",
-        ///             "Location": {
-        ///                 "Province": "",
-        ///                 "City": "",
-        ///                 "Id": 1
-        ///             },
-        ///             "ProjectStartDate": "",
-        ///             "ProjectEndDate": ""
+        /// {
+        ///     "projectSummary": {
+        ///         "title": "test Title",
+        ///         "location": {
+        ///             "province": "test Province",
+        ///             "city": "test City"
         ///         },
-        ///         "UsersSummary": [
-        ///             {
-        ///                 "FirstName": "",
-        ///                 "LastName": "",
-        ///                 "UserName": "",
-        ///                 "Location": {
-        ///                     "Province": "",
-        ///                     "City": "",
-        ///                     "Id": 1
-        ///                 },
-        ///                 "Utilization": 100
+        ///         "projectStartDate": "2020-10-31T00:00:00.0000000",
+        ///         "projectEndDate": "2021-02-12T00:00:00.0000000"
+        ///     },
+        ///     "projectManager": {
+        ///         "userID": 5,
+        ///         "lastName": "Lulu",
+        ///         "firstName": "Lala"
+        ///     },
+        ///     "usersSummary": [
+        ///         {
+        ///             "firstName": "test FirstName 1",
+        ///             "lastName": "test LastName 1",
+        ///             "userID": "test UserName 1",
+        ///             "location": {
+        ///                 "province": "test Province User 1",
+        ///                 "city": "test City User 1"
         ///             },
-        ///             {
-        ///                 "FirstName": "",
-        ///                 "LastName": "",
-        ///                 "UserName": "",
-        ///                 "Location": {
-        ///                     "Province": "",
-        ///                     "City": "",
-        ///                     "Id": 1
-        ///                 },
-        ///                 "Utilization": 100
-        ///             }
-        ///         ],
-        ///         "Openings": [
-        ///             {
-        ///                 "Position": "",
-        ///                 "Discipline": "",
-        ///                 "Skills": [],
-        ///                 "YearsOfExp": "",
-        ///                 "CommitmentMonthlyHours": 160
+        ///             "utilization": 100,
+        ///             "resourceDiscipline": {
+        ///                 "discipline": "test d1",
+        ///                 "yearsOfExp": "3-5"
         ///             },
-        ///             {
-        ///                 "Position": "",
-        ///                 "Discipline": "",
-        ///                 "Skills": [],
-        ///                 "YearsOfExp": "",
-        ///                 "CommitmentMonthlyHours": 160
-        ///             }
-        ///         ]
-        ///     }
+        ///             "isConfirmed": true
+        ///         },
+        ///         {
+        ///             "firstName": "test FirstName 2",
+        ///             "lastName": "test LastName 2",
+        ///             "userID": "test UserName 2",
+        ///             "location": {
+        ///                 "province": "test Province User 2",
+        ///                 "city": "test City User 2"
+        ///             },
+        ///             "utilization": 90,
+        ///             "resourceDiscipline": {
+        ///                 "discipline": "test d1",
+        ///                 "yearsOfExp": "3-5"
+        ///             },
+        ///             "isConfirmed": true
+        ///         }
+        ///     ],
+        ///     "openings": [
+        ///         {
+        ///             "discipline": "test D 1",
+        ///             "skills": ["S1", "S2"],
+        ///             "yearsOfExp": "1-3",
+        ///             "commitmentMonthlyHours": 160
+        ///         },
+        ///         {
+        ///             "discipline": "test D 2",
+        ///             "skills": ["S2.1", "S2.2"],
+        ///             "yearsOfExp": "3-5",
+        ///             "commitmentMonthlyHours": 180
+        ///         }
+        ///     ]
+        /// }
         ///
         /// </remarks>
         /// <param name="project"></param>
@@ -282,10 +292,8 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(CreatedResponse<ProjectProfile>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAProject([FromBody] object project)
+        public async Task<IActionResult> CreateAProject([FromBody] ProjectProfile project)
         {
-            var projectProfile = (ProjectProfile)project;
-            Console.WriteLine(projectProfile);
             if (project == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project is null / Request Body cannot be read"));

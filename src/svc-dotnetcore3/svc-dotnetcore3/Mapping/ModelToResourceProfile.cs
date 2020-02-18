@@ -31,6 +31,11 @@ namespace Web.API.Mapping
                         City = sourceMember.City
                     }
                 )
+            ).ForMember(
+                destinationMember => destinationMember.ProjectNumber,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.Number
+                )
             ).ReverseMap();
         }
 

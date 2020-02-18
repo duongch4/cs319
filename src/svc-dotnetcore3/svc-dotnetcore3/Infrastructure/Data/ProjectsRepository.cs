@@ -66,8 +66,9 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 select
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
-                    p.ManagerId, u.FirstName, u.LastName,
-                    p.LocationId, l.Province, l.City 
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City 
                 from
                     Projects p, Locations l, Users u
                 where
