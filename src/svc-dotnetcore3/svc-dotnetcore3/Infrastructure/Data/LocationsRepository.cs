@@ -29,7 +29,7 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 select
-                    Id, Code, [Name]
+                    Id, Province, City
                 from
                     Locations
             ;";
@@ -39,17 +39,30 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<Location>(sql);
         }
 
-        public async Task<Location> GetALocation(string city)
-        {
-            var sql = @"
-                select *
+        // public async Task<Location> GetALocationWithCity(string city)
+        // {
+        //     var sql = @"
+        //         select Province, City
+        //         from Locations
+        //         where City = @City
+        //     ;";
+
+        //     using var connection = new SqlConnection(connectionString);
+        //     connection.Open();
+        //     return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
+        // }
+
+        public async Task<Location> GetALocation(int locationId) {
+
+             var sql = @"
+                select Id, Province, City
                 from Locations
-                where City = @City
+                where Id = @Id
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = locationId });
         }
 
         private void SetStaticLocations()
