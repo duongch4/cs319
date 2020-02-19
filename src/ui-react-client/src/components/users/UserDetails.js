@@ -23,14 +23,14 @@ class UserDetails extends Component {
     };
 
     render(){
-        if(this.state.userProfile.length == 0) {
+        if(this.props.userProfile.length == 0) {
             return(
                 <div className="UserDetails">
                 No User Available
                 </div>
             )
         }
-        let userDetails = this.state.userProfile;
+        let userDetails = this.props.userProfile;
         let disciplines = [];
         if (userDetails.disciplines) {
             userDetails.disciplines.forEach((discipline, index) => {
@@ -55,7 +55,7 @@ class UserDetails extends Component {
         }
         return (<div className="activity-container">
                 <div className="title-bar">
-                    <h1 className="blueHeader">{userDetails.firstName + " " + userDetails.lastName}</h1>
+                    <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
                     <Button variant="contained"
                             style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                             disableElevation>
@@ -83,12 +83,12 @@ class UserDetails extends Component {
 }
 
 UserDetails.propTypes = {
-    userProfile: PropTypes.array.isRequired
+    userProfile: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => {
     return {
-        userProfile: state.userProfile,
+        userProfile: state.users.userProfile,
     }
   };
 

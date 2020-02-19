@@ -20,7 +20,7 @@ const executeUpdateSpecificUserData = (state, action) => {
   let indexOfUserSummary = state.userSummaries.indexOf(userSummary => {
     return userSummary.userID === profile.userSummary.userID;
   });
-  let newUserSummaries = state.userSummaries
+  let newUserSummaries = state.userSummaries;
   if (indexOfUserSummary >= 0) {
     newUserSummaries = JSON.parse(JSON.stringify(state.userSummaries));
     newUserSummaries[indexOfUserSummary] = profile.userSummary;

@@ -66,8 +66,7 @@ class TeamRequirements extends Component {
     var skill_render = [];
     if (this.state.opening.discipline === null){
       skill_render = <option disabled>Please select a discipline</option>
-    }
-    else {
+    } else {
       skills = disciplines[this.state.opening.discipline];
       skills.forEach((skill, i) => {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)

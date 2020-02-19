@@ -1,4 +1,4 @@
-import React, { Component, useEffect }  from 'react';
+import React, { Component }  from 'react';
 import PropTypes from 'prop-types';
 import Openings from './Openings'
 import './ProjectStyles.css';
@@ -11,7 +11,7 @@ import {formatDate} from "../../util/dateFormatter";
 
 class ProjectDetails extends Component {
     state = {
-        project: {}
+        projectProfile: {}
     };
  
     // XXX TODO: These (below) will eventually be sent in from the database XXX
@@ -23,7 +23,7 @@ class ProjectDetails extends Component {
 
         if(currentProject){
             this.setState({
-                project: currentProject
+                projects: currentProject
                 // state now holds the current project
             })
         }
@@ -58,7 +58,7 @@ class ProjectDetails extends Component {
             )
         }
 
-        if(this.state.project === null){
+        if (this.state.project === null) {
             return(
                 <div className="activity-container">
                     <h1 className="blueHeader">No Project Available</h1>
@@ -104,8 +104,7 @@ ProjectDetails.propTypes = {
 
 const mapStateToProps = state => {
     return {
-      projects: state.projects,
-      locations: state.locations,
+      projectProfile: state.projects.projectProfile,
     }
 };
 

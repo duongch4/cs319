@@ -34,10 +34,6 @@ class EditUserDetails extends Component {
             this.setState(
                 { location: { ...this.state.location, province: e.target.value}},
                 () => this.props.addUserDetails(this.state));
-        } else if (e.target.id === "firstName") {
-            this.setState(
-                { [e.target.id]: e.target.value },
-                () => this.props.addUserDetails(this.state));
         } else {
             this.setState(
                 { [e.target.id]: e.target.value },
@@ -70,10 +66,9 @@ class EditUserDetails extends Component {
             <div className="form-section">
                 <h2 className="darkGreenHeader">Personal Details</h2>
                 <div className="form-row">
-                    <label htmlFor= "name"><p className="form-label">First Name</p></label>
-                    <input className="input-box" type="text" id="firstName" onChange={this.handleChange} value= {userProfile.firstName}/>
-                    <label htmlFor= "name"><p className="form-label">First Name</p></label>
-                    <input className="input-box" type="text" id="lastName" onChange={this.handleChange} value= {userProfile.lastName}/>
+                    <label htmlFor= "name"><p className="form-label">Name</p></label>
+                    <input className="input-box" type="text" id="firstName" placeholder="First Name" onChange={this.handleChange} value= {userProfile.firstName}/>
+                    <input className="input-box" type="text" id="lastName" placeholder="Last Name" onChange={this.handleChange} value= {userProfile.lastName}/>
                 </div>
                 <label htmlFor= "location" className="form-row">
                     <p className="form-label">Location</p>

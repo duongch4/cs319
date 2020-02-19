@@ -8,8 +8,8 @@ class CreateEditProjectDetails extends Component {
     state = {
       title: "",
       location: {city: "City", province: "Province"},
-      projectStartDate: new Date(),
-      projectEndDate: new Date(),
+      projectStartDate: "",
+      projectEndDate: "",
       city_options: [],
       province_options: [],
       location_options: {},

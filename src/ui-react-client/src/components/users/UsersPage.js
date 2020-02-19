@@ -25,7 +25,7 @@ const UsersPage = ({
 };
 
 UsersPage.propTypes = {
-  users: PropTypes.array.isRequired,
+  users: PropTypes.object.isRequired,
   loadUsers: PropTypes.func.isRequired,
 };
 
