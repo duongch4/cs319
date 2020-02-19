@@ -13,23 +13,26 @@ const UsersPage = ({
 }) => {
   useEffect(() => {
     if (users.length === 0) {
-      loadUsers().catch(error => {
-        alert('Loading users failed' + error);
-      });
+      loadUsers()
+      // XXX TODO: Uncomment this once the database is added
+      // loadUsers().catch(error => {
+      //   alert('Loading users failed' + error);
+      // });
     }
 
     if (locations.length === 0) {
-      loadLocations().catch(error => {
-        alert('Loading locations failed' + error);
-      });
+      // XXX TODO: Uncomment this once the database is added
+      // loadLocations().catch(error => {
+      //   alert('Loading locations failed' + error);
+      // });
     }
   }, [users, locations, loadUsers, loadLocations]);
 
   return (
-    <>
-      <h1>Users</h1>
-      <UserList users={users} />
-    </>
+    <div className="activity-container">
+        <h1 className="greenHeader">Users</h1>
+        <UserList users={users} />
+    </div>
   );
 };
 
@@ -42,17 +45,18 @@ UsersPage.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    users:
-      state.locations.length === 0
-        ? []
-        : state.users.map(user => {
-            return {
-              ...user,
-              locationName: state.locations.find(
-                element => element.id === user.locationId,
-              ).name,
-            };
-          }),
+    users: state.users,
+    // XXX TODO: Uncomment this once the database is added
+      // state.locations.length === 0
+      //   ? []
+      //   : state.users.map(user => {
+      //       return {
+      //         ...user,
+      //         locationName: state.locations.find(
+      //           element => element.id === user.locationId,
+      //         ).name,
+      //       };
+      //     }),
     locations: state.locations,
   };
 };
