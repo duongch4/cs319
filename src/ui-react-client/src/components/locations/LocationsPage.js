@@ -14,10 +14,10 @@ const LocationsPage = ({ locations, loadLocations }) => {
   }, [locations, loadLocations]);
 
   return (
-    <>
+    <div className="activity-container">
       <h1>Locations</h1>
       <LocationList locations={locations} />
-    </>
+    </div>
   );
 };
 
