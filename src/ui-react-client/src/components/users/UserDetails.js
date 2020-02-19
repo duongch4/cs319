@@ -11,62 +11,54 @@ import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 
 class UserDetails extends Component {
     state = {
-        userProfile: {
-            userSummary: {
-                userID: 0,
-                firstName: "",
-                lastName: "",
-                location: {
-                    city: "",
-                    state: ""
-                },
-                utilization: 0,
-                resourceDiscipline: {
-                    discipline: "",
-                    yearsOfExp: ""
-                },
-                isConfirmed: false
-            },
-            currentProjects:[],
-            availability: [],
-            disciplines: []
-        }
+        userProfile: {}
     };
 
     componentDidMount() {
         if (Object.keys(this.props.userProfile).length === 0) {
+            console.log('making API call');
             this.props.loadSpecificUser(this.props.match.params.user_id)
-                .then(
-                    this.setState({ userProfile: this.props.userProfile })
-                )
+                .then(() => {
+                    this.setState({ userProfile: this.props.userProfile });
+                })
         }
     };
 
-    render(){
+    render() {
         let userDetails = this.state.userProfile;
-        let disciplines = [];
-        if (userDetails.disciplines) {
-            userDetails.disciplines.forEach((discipline, index) => {
-                disciplines.push(<Openings opening={discipline} index={index} isAssignable={false} key={disciplines.length} />)
-            });
-        }
+        if (Object.keys(userDetails).length === 0) {
+            return (
+                <div className="activity-container">
+                    <h1>Loading User Data...</h1>
+                </div>
+            )
+        } else {
+            let disciplines = [];
+            if (userDetails.disciplines) {
+                userDetails.disciplines.forEach((discipline, index) => {
+                    disciplines.push(<Openings opening={discipline} index={index} isAssignable={false} key={disciplines.length} />)
+                });
+            }
 
-        const currentProjects = [];
-        if(userDetails.currentProjects){
-            userDetails.currentProjects.forEach((project, index) => {
-                currentProjects.push(
-                    <Link to={'/projects/' + project.projectNumber}>
-                        <ProjectCard number={index} project={project} canEditProject={false} key={currentProjects.length}/>
-                    </Link>)
-            }) 
-        }
-        let unavailability = [];
-        if(userDetails.availability) {
-            userDetails.availability.forEach(currentAvailability => {
-                unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
-            }) 
-        }
-        return (<div className="activity-container">
+            const currentProjects = [];
+            if(userDetails.currentProjects){
+                userDetails.currentProjects.forEach((project, index) => {
+                    let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
+                    console.log(projectRole[0]);
+                    currentProjects.push(
+                        <Link to={'/projects/' + project.projectNumber}>
+                            <ProjectCard number={index} project={project} canEditProject={false}
+                                         onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
+                        </Link>)
+                })
+            }
+            let unavailability = [];
+            if(userDetails.availability) {
+                userDetails.availability.forEach(currentAvailability => {
+                    unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
+                })
+            }
+            return (<div className="activity-container">
                 <div className="title-bar">
                     <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
                     <Button variant="contained"
@@ -92,6 +84,7 @@ class UserDetails extends Component {
                     {unavailability}
                 </div>
             </div>)
+        }
     }
 }
 
