@@ -13,7 +13,7 @@ class TeamRequirements extends Component {
           yearsOfExp: null,
           commitmentMonthlyHours: 1
       }
-    }
+    };
 
     handleChange = (e) => {
       if (e.target.id == "commitment") {

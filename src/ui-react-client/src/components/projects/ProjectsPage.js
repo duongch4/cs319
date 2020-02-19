@@ -15,9 +15,9 @@ const _ProjectsPage = ({
   useEffect(() => {
     if (projects.length === 0) {
       loadProjects()
-       // .catch(error => {
-       //   alert('Loading projects failed' + error);
-       // });
+       .catch(error => {
+         alert('Loading projects failed' + error);
+       });
     }
   }, [projects, loadProjects]);
 

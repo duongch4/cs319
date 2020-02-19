@@ -4,11 +4,7 @@ import { headers } from '../../config/adalConfig';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
 
-const baseURL = `${SVC_ROOT}`;
-
-export const loadMasterlistsPending = () => {
-    return { type: types.LOAD_MASTERLIST_PENDING }
-};
+const baseURL = `${SVC_ROOT}api/`;
 
 export const loadMasterlistsData = masterlist => {
     return {
@@ -22,7 +18,6 @@ export const loadMasterlists = () => {
         if (CLIENT_DEV_ENV) {
             dispatch(loadMasterlistsData(_initialState.masterlist));
         } else {
-            dispatch(loadMasterlistsPending());
             return axios
                 .get(`${baseURL}masterlists/`, { headers })
                 .then (response => {

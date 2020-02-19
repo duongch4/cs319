@@ -21,7 +21,7 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
         </div>
         <div className="card-summary-title">
             <h3 className="darkGreenHeader">{opening.discipline}</h3>
-            <p><b>Skills:</b> {skills}</p>
+            {(skills.length > 0) && (<p><b>Skills:</b> {skills}</p>)}
             <p><b>Experience:</b> {opening.yearsOfExp}</p>
             {(commitment) &&
             (<p><b>Expected Hourly Commitment per Month:</b> {commitment}</p>)}
@@ -39,7 +39,7 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
     </div>
 
       )
-}
+};
 
 Openings.propTypes = {
   opening: PropTypes.object.isRequired,

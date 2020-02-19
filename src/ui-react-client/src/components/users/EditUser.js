@@ -9,31 +9,21 @@ import { Button } from "@material-ui/core";
 
 class EditUser extends Component {
     state = {
-        userProfile: {
-            userSummary: {
-                userID: null,
-                firstName: "",
-                lastName: "",
-                location: {city: "", province: ""},
-                utilization: 0,
-                resourceDiscipline: {},
-                isConfirmed: true
-            },
-            currentProjects: [],
-            availability: [],
-            disciplines:[]
-        }
+        userProfile: {},
+        pending: true
     };
 
     componentDidMount() {
         this.props.loadMasterlists();
-        this.props.loadSpecificUser();
-        var currentUser = this.props.userProfile;
-        if (currentUser) {
-            this.setState({
-                userProfile: currentUser
-            })
-        }
+        this.props.loadSpecificUser(this.props.match.params.user_id)
+            .then(() => {
+                console.log(this.props);
+                this.setState({
+                    ...this.state,
+                    userProfile: this.props.userProfile,
+                    pending: false
+                })
+            });
     }
 
     onSubmit = () => {
@@ -42,15 +32,15 @@ class EditUser extends Component {
 
     addDisciplines = (opening) => {
         let discipline = {
-            name: opening.discipline,
+            discipline: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills
         };
         const disciplines = [...this.state.userProfile.disciplines, discipline];
         this.setState({
-            userProfile:{
+            userProfile: {
                 ...this.state.userProfile,
-                disciplines
+                disciplines: disciplines
             }
         })
     };
@@ -70,39 +60,45 @@ class EditUser extends Component {
     };
 
     render() {
-        const disciplines = [];
-        if (this.state.userProfile) {
-            this.state.userProfile.disciplines.forEach((discipline, index) => {
-                disciplines.push(<Openings opening={discipline}
-                                           index={index}
-                                           key={disciplines.length} />)
-            });
+        if (this.state.pending) {
+            return (<div className="activity-container">
+                <h1>Loading user data...</h1>
+            </div>);
+        } else {
+            let disciplines = [];
+            console.log(this.props);
+            if (this.props.userProfile) {
+                this.state.userProfile.disciplines.forEach((discipline, index) => {
+                    disciplines.push(<Openings opening={discipline}
+                                               index={index}
+                                               key={disciplines.length} />)
+                });
+            }
+            return (
+                <div className="activity-container">
+                    <h1 className="greenHeader">Edit user</h1>
+                    <div className="section-container">
+                        <EditUserDetails userProfile={this.state.userProfile.userSummary}
+                                         addUserDetails={(userProfile) => this.addUserDetails(userProfile)}
+                                         locations={this.props.masterlist.locations}/>
+                    </div>
+                    <div className="section-container">
+                        <TeamRequirements disciplines={this.props.masterlist.disciplines}
+                                          masterYearsOfExperience={this.props.masterlist.yearsOfExp}
+                                          addOpening={(opening) => this.addDisciplines(opening)}
+                                          isUserPage={true}/>
+                        <hr />
+                        {disciplines}
+                    </div>
+                    <Button variant="contained"
+                            style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                            disableElevation
+                            onClick={() => this.onSubmit()}>
+                        Save
+                    </Button>
+                </div>
+            );
         }
-
-        return (
-            <div className="activity-container">
-                <h1 className="greenHeader">Edit user</h1>
-                <div className="section-container">
-                <EditUserDetails userProfile={this.state.userProfile.userSummary}
-                                 addUserDetails={(userProfile) => this.addUserDetails(userProfile)}
-                                 locations={this.props.masterlist.locations}/>
-                </div>
-                <div className="section-container">
-                <TeamRequirements disciplines={this.props.masterlist.disciplines}
-                                  masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                  addOpening={(opening) => this.addDisciplines(opening)}
-                                  isUserPage={true}/>
-                <hr />
-                {disciplines}
-                </div>
-                <Button variant="contained"
-                        style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                        disableElevation
-                        onClick={() => this.onSubmit()}>
-                    Save
-                </Button>
-            </div>
-        );
     }
 }
 
