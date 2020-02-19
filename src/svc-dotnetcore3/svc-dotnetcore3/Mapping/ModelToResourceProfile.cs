@@ -131,7 +131,13 @@ private void SetUserSummary()
             ).ReverseMap();
         }
         private void SetProject() {
-            CreateMap<Project, ProjectDirectMappingResource>();
+            CreateMap<Project, ProjectDirectMappingResource>(                
+            ).ForMember(
+                destinationMember => destinationMember.ProjectNumber,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.Number
+                )
+            );
         }
 
         private void SetOutOfOffice() {

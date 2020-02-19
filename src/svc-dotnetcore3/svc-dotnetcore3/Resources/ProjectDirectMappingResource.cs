@@ -6,7 +6,7 @@ namespace Web.API.Resources
     {
         /// <summary>Project ID</summary>
         /// <example>3570</example>
-        public int Id { get; set; }
+        public string ProjectNumber { get; set; }
         /// <summary>Project Name</summary>
         /// <example>Designing the new Pawnee Commons</example>
         public string Title { get; set; }
