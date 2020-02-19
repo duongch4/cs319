@@ -95,12 +95,10 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 select 
                     p.Id, p.Number, p.Title, p.LocationId, 
-                    p.CreatedAt, p.UpdateAt, p.ManagerId, 
+                    p.CreatedAt, p.UpdatedAt, p.ManagerId, 
                     p.ProjectStartDate, p.ProjectEndDate
                 from Positions as pos, Projects as p
-                where pos.ResourceId = @UserId
-                    and pos.ProjectId = p.projectId
-                ;";
+                where pos.ResourceId = "+ user.Id + "and pos.ProjectId = p.Id;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();

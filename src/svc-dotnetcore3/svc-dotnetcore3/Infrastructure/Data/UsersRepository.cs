@@ -32,7 +32,7 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<User>(sql);
         }
 
-        public async Task<User> GetAUser(string username)
+        public async Task<User> GetAUser(int userId)
         {
             var sql = @"
                 select
@@ -40,12 +40,11 @@ namespace Web.API.Infrastructure.Data
                 from
                     Users
                 where 
-                    Username = @Username
-            ;";
+                    Id = @Id";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Username = username });
+            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId });
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAtLocation(Location location) 
@@ -164,13 +163,9 @@ namespace Web.API.Infrastructure.Data
                 update
                     Users
                 set 
-                    Id = @Id,
                     FirstName = @FirstName,
                     LastName = @LastName,
-                    Username = @Username,
-                    LocationId = @LocationId,
-                    IsAdmin = @IsAdmin,
-                    IsManager = @IsManager
+                    LocationId = @LocationId
                 where 
                     Id = @Id
             ;";
@@ -179,14 +174,28 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             int result = await connection.ExecuteAsync(sql, new
             {
-                user.Id,
-                user.FirstName,
-                user.LastName,
-                user.LocationId,
-                user.IsAdmin,
-                user.IsManager
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                LocationId = user.LocationId
             });
             return result == 1 ? user : null;
+        }
+
+        public async Task<IEnumerable<UserResource>> GetAllUsersGeneral()
+        {
+            var sql = @"
+                select
+                    u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, l.City, l.Province
+                from
+                    Users as u, Locations as l
+                where
+                    u.LocationId = l.Id
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<UserResource>(sql);
         }
     }
 }

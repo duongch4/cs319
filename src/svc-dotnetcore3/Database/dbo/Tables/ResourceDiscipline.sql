@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[ResourceDiscipline]
+  CREATE TABLE [dbo].[ResourceDiscipline]
 (
 	[ResourceId] [int] NOT NULL,
 	[DisciplineId] [int] NOT NULL,

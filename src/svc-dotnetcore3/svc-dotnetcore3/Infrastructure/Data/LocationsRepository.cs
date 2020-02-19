@@ -1,10 +1,11 @@
-﻿using Dapper;
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 
 using System.Linq;
 using Newtonsoft.Json;
@@ -28,7 +29,7 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 select
-                    Id, Code, [Name]
+                    Id, Province, City
                 from
                     Locations
             ;";
@@ -38,10 +39,10 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<Location>(sql);
         }
 
-        public async Task<Location> GetALocation(int locationId)
-        {
-            var sql = @"
-                select *
+        public async Task<Location> GetALocation(int locationId) {
+
+             var sql = @"
+                select Id, Province, City
                 from Locations
                 where Id = @Id
             ;";
@@ -49,6 +50,19 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = locationId });
+        }
+
+        public async Task<Location> GetUserLocation(User user) {
+            var sql = @"
+                select
+                    Id, Province, City
+                from
+                    Locations
+                where 
+                    Id = @Id";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = user.LocationId });
         }
 
         public async Task<Location> GetALocation(string city)
@@ -93,6 +107,19 @@ namespace Web.API.Infrastructure.Data
         //     return null;
         // }
 
+        //DELETE
+        public async Task<Location> DeleteALocation(Location locationCode) {
+            return null;
+        }
+
+        public async Task<Location> GetLocationIdByCityProvince(LocationResource location) {
+            var sql = @"
+                Select * from Locations
+                where City = @City and Province = @Province;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = location.City, Province = location.Province });
+        }
         // //PUT
         // public async Task<Location> UpdateALocation(Location location) {
         //     return null;

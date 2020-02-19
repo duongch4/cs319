@@ -10,4 +10,5 @@ namespace Web.API.Resources
         /// <example>Toronto</example>
         public string City { get; set; }
     }
+
 }

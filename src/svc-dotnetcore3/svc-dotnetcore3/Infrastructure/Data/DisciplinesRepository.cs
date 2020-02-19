@@ -14,7 +14,7 @@ namespace Web.API.Infrastructure.Data
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
-        public async Task<Discipline> GetADiscipline(int disciplineId) 
+        public async Task<Discipline> GetADiscipline(int disciplineId)
         {
             var sql = @"
                 select *
@@ -37,7 +37,7 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<Discipline>(sql);
         }
-        public async Task<IEnumerable<Discipline>> GetDisciplinesByName(string disciplineName) 
+        public async Task<IEnumerable<Discipline>> GetDisciplinesByName(string disciplineName)
         {
             var sql = @"
                 select *
@@ -50,7 +50,7 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<Discipline>(sql, new { DisciplineName = disciplineName });
         }
         // POST
-        public async Task<Discipline> CreateADiscipline(Discipline discipline) 
+        public async Task<Discipline> CreateADiscipline(Discipline discipline)
         {
             var sql = @"
                 insert into Disciplines
@@ -87,7 +87,7 @@ namespace Web.API.Infrastructure.Data
             return (result == 1) ? discipline : null;
         }
         // DELETE
-        public async Task<Discipline> DeleteADiscipline(int disciplineId) 
+        public async Task<Discipline> DeleteADiscipline(int disciplineId)
         {
             var discipline = await GetADiscipline(disciplineId);
             var sql = @"
@@ -98,6 +98,57 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.ExecuteAsync(sql, new { DisciplineId = disciplineId });
+            return discipline;
+        }
+
+        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(User user)
+        {
+            var sql = @"
+                select rd.ResourceId, d.Name, rd.YearsOfExperience
+                from ResourceDiscipline as rd, Disciplines as d
+                where d.Id = rd.DisciplineId and rd.ResourceId = " + user.Id + ";";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ResourceDiscipline>(sql);
+        }
+
+        public async Task<ResourceDiscipline> DeleteResourceDiscipline(ResourceDiscipline discipline)
+        {
+            var sql = @"
+               delete from ResourceDiscipline 
+                where ResourceId = @ResourceId
+                AND DisciplineId = (select Id	
+                                    from Disciplines
+                                    where Name = @DisciplineName)
+                                    ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.QueryAsync<ResourceDiscipline>(sql, new
+            {
+                ResourceId = discipline.ResourceId,
+                DisciplineName = discipline.Name
+            });
+            return discipline;
+        }
+
+        public async Task<ResourceDiscipline> InsertResourceDiscipline(ResourceDiscipline discipline)
+        {
+            var sql = @"
+                insert into ResourceDiscipline 
+	                values (@ResourceId, 
+                           (select Id from Disciplines where Name = @DisciplineName), 
+                           @YearsOfExperience)
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.QueryFirstOrDefaultAsync(sql, new
+            {
+                ResourceId = discipline.ResourceId,
+                DisciplineName = discipline.Name,
+                YearsOfExperience = discipline.YearsOfExperience
+            });
             return discipline;
         }
     }

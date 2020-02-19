@@ -17,6 +17,11 @@ namespace Web.API.Mapping
             SetLocationProfile();
             SetUserProfile();
             SetSkillProfile();
+            // SetProjectProfile();
+            SetOutOfOffice();
+            SetRDiscipline();
+            SetRSkill();
+            SetProject();
         }
 
         private void SetProjectSummary()
@@ -78,7 +83,7 @@ namespace Web.API.Mapping
             CreateMap<User, UserResource>();
         }
 
-        private void SetUserSummary()
+private void SetUserSummary()
         {
             CreateMap<UserResource, UserSummary>(
             ).ForMember(
@@ -124,6 +129,20 @@ namespace Web.API.Mapping
                 destinationMember => destinationMember.Name,
                 opt => opt.MapFrom(sourceMember => sourceMember.Name)
             ).ReverseMap();
+        }
+        private void SetProject() {
+            CreateMap<Project, ProjectDirectMappingResource>();
+        }
+
+        private void SetOutOfOffice() {
+            CreateMap<OutOfOffice, OutOfOfficeResource>();
+        }
+
+        private void SetRDiscipline() {
+            CreateMap<ResourceDiscipline, RDisciplineResource>();
+        }
+        private void SetRSkill() {
+            CreateMap<ResourceSkill, RSkillResource>();
         }
     }
 }

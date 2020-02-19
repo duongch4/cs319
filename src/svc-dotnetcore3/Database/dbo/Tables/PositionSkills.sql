@@ -4,6 +4,6 @@ CREATE TABLE [dbo].PositionSkills
 	[SkillId] INT NOT NULL,
 	[SkillDisciplineId] INT NOT NULL,
 	CONSTRAINT [FK_PositionSkills_Skills] FOREIGN KEY (SkillDisciplineId, SkillId) REFERENCES Skills([DisciplineId], [Id]),
-	CONSTRAINT [FK_PositionSkills_Positions] FOREIGN KEY (PositionId) REFERENCES Positions([Id]) ON DELETE CASCADE,
+	CONSTRAINT [FK_PositionSkills_Positions] FOREIGN KEY (PositionId) REFERENCES Positions([Id]) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT [PK_PositionSkills] PRIMARY KEY ([SkillId], [SkillDisciplineId], [PositionId]),
 )

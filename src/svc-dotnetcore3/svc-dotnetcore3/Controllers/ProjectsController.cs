@@ -16,7 +16,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -542,6 +542,54 @@ namespace Web.API.Controllers
                 }
                 var response = new DeletedResponse<string>(deleted.Number, $"Successfully deleted project with number '{deleted.Number}'");
                 return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
+
+        
+        /// <summary>Assigning a Resource to a Project</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT api/projects/2009-VD9D-15/assign/1
+        ///
+        /// </remarks>
+        /// <param name= "reqBody">The requestBody</param>
+        /// <returns>The old deleted project</returns>
+        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPut]
+        [Route("projects/{projectNumber}/assign/{positionId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<IActionResult> AssignAResource([FromBody] RequestProjectAssign reqBody)
+        {
+            try
+            {
+                Position position = await positionsRepository.GetAPosition(reqBody.positionId);
+                if (position == null) {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
+                }
+                position.Id = reqBody.positionId; 
+                position.ResourceId = reqBody.userId;
+
+                position = await positionsRepository.UpdateAPosition(position);
+                var posIdAndResourceId = new {reqBody.positionId, reqBody.userId};
+                var response = new UpdatedResponse<object>(posIdAndResourceId, "Successfully updated");
+                return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
             {

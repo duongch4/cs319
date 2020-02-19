@@ -4,9 +4,11 @@ namespace Web.API.Application.Communication
     {
         /// <summary>Position ID</summary>
         /// <example>1</example>
-        public int positionId { get; set; }
+        public int positionId { get; set;}
         /// <summary>User ID</summary>
         /// <example>1</example>
-        public string userId { get; set; }
+        public int userId { get; set;}
+        
     }
+
 }

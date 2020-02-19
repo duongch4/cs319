@@ -9,7 +9,7 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<User>> GetAllUsers();
-        Task<User> GetAUser(string username);
+        Task<User> GetAUser(int userId);
         Task<IEnumerable<User>> GetAllUsersAtLocation(Location location);
         Task<IEnumerable<User>> GetAllUsersWithDiscipline(Discipline discipline);
         Task<IEnumerable<User>> GetAllUsersWithSkill(Skill skill);
@@ -26,5 +26,6 @@ namespace Web.API.Application.Repository
 
         //PUT
         Task<User> UpdateAUser(User user);
+        Task<IEnumerable<UserResource>> GetAllUsersGeneral();
     }
 }
