@@ -15,9 +15,9 @@ const _ProjectsPage = ({
   useEffect(() => {
     if (projects.length === 0) {
       loadProjects()
-       .catch(error => {
-         alert('Loading projects failed' + error);
-       });
+       // .catch(error => {
+       //   alert('Loading projects failed' + error);
+       // });
     }
   }, [projects, loadProjects]);
 
@@ -34,13 +34,13 @@ const _ProjectsPage = ({
             </Fab>
           </div>
         </div>
-        <ProjectList projects={projects.projectSummaries}/>
+        <ProjectList projects={projects}/>
     </div>
   );
 };
 
 _ProjectsPage.propTypes = {
-  projects: PropTypes.object.isRequired,
+  projects: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = state => {

@@ -7,22 +7,18 @@ import ProjectCard from '../projects/ProjectCard'
 import AvailabilityCard from './AvailabilityCard';
 import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
-import {loadSpecificUser} from "../../redux/actions/usersActions";
+import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 class UserDetails extends Component {
     state = {
         userProfile: {}
     };
- 
-    // XXX TODO: These (below) will eventually be sent in from the database XXX
 
-    componentDidMount = () => {
+    componentWillMount() {
         this.props.loadSpecificUser(this.props.match.params.user_id);
-        this.setState({
-            userProfile: this.props.userProfile
-        })
     };
 
     render(){
+        console.log(this.props);
         let userDetails = this.props.userProfile;
         let disciplines = [];
         if (userDetails.disciplines) {
@@ -77,13 +73,13 @@ class UserDetails extends Component {
 
 UserDetails.propTypes = {
     userProfile: PropTypes.object.isRequired
-}
+};
 
 const mapStateToProps = state => {
     return {
-        userProfile: state.users.userProfile,
+        userProfile: state.userProfile,
     }
-  };
+};
 
 const mapDispatchToProps = {
     loadSpecificUser,
@@ -92,4 +88,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(UserDetails)
+)(UserDetails)

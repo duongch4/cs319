@@ -2,9 +2,9 @@ import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
-import _initialState from '../reducers/_initialState';
+import _initialState_client from '../reducers/_initialState_client';
 
-const baseURL = `${SVC_ROOT}projects/`;
+const baseURL = `${SVC_ROOT}api/projects/`;
 
 export const loadProjectsData = projectSummaries => {
   return {
@@ -13,38 +13,31 @@ export const loadProjectsData = projectSummaries => {
   };
 };
 
-export const loadSingleProjectData = projectProfile => {
-  return {
-    type: types.LOAD_SINGLE_PROJECT,
-    projectProfile: projectProfile
-  }
+export const updateProjectSummary = projectSummary => {
+    return {
+        type: types.UPDATE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
-export const createProjectData = projectProfile => {
-  return {
-    type: types.CREATE_PROJECT,
-    projectProfile: projectProfile,
-  };
+export const deleteProjectSummary = projectSummary => {
+    return {
+        type: types.DELETE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
-export const updateProjectData = projectProfile => {
-  return {
-    type: types.UPDATE_PROJECT,
-    projectProfile: projectProfile,
-  };
-};
-
-export const deleteProjectData = projectProfile => {
-  return {
-    type: types.DELETE_PROJECT,
-    projectProfile: projectProfile,
-  };
+export const createProjectSummary = projectSummary => {
+    return {
+        type: types.CREATE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
 export const loadProjects = () => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
-      dispatch(loadProjectsData(_initialState.projectSummaries));
+      dispatch(loadProjectsData(_initialState_client.projectSummaries));
     } else {
       return axios
           .get(baseURL, { headers })
@@ -58,67 +51,20 @@ export const loadProjects = () => {
   };
 };
 
-export const loadSingleProject = (projectNumber) => {
-  return dispatch => {
-    if (CLIENT_DEV_ENV) {
-      let project = _initialState.projectProfiles.filter(projectProfile => {
-        return projectProfile.projectSummary.projectNumber == projectNumber;
-      });
-      dispatch(loadSingleProjectData(project[0]));
-    } else {
-      return axios
-          .get(`${baseURL + projectNumber}`, { headers })
-          .then(response => {
-            dispatch(loadSingleProjectData(response.data.payload))
-          })
-          .catch(error => {
-            throw error;
-          });
+export const updateProjectSummaries = (projectSummary) => {
+    return dispatch => {
+        dispatch(updateProjectSummary(projectSummary))
     }
-  };
 };
 
-export const createProject = (project) => {
-  return dispatch => {
-    if (CLIENT_DEV_ENV) {
-      dispatch(createProjectData(project))
-    } else {
-      return axios
-          .post(baseURL, project,{ headers })
-          .then(response => {
-            dispatch(createProjectData(project))
-          })
-          .catch(error => {
-            throw error;
-          })
+export const deleteProjectSummaries = (projectSummary) => {
+    return dispatch => {
+        dispatch(deleteProjectSummary(projectSummary))
     }
-  };
 };
 
-export const updateProject = (project) => {
-  return dispatch => {
-    dispatch(updateProjectData(project));
-    // return axios
-    //   .put(baseURL, { headers })
-    //   .then(response => {
-    //     dispatch(updateProjectData(response.data));
-    //   })
-    //   .catch(error => {
-    //     throw error;
-    //   });
-  };
-};
-
-export const deleteProject = number => {
-  return dispatch => {
-    // dispatch(deleteProjectData(response.data));
-    // return axios
-    //   .delete(`${baseURL}${number}`, { headers })
-    //   .then(response => {
-    //     dispatch(deleteProjectData(response.data));
-    //   })
-    //   .catch(error => {
-    //     throw error;
-    //   });
-  };
+export const createProjectSummaries = (projectSummary) => {
+    return dispatch => {
+        dispatch(createProjectSummary(projectSummary))
+    }
 };

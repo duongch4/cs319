@@ -2,7 +2,7 @@ import React,{ Component } from 'react';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
 import TeamRequirements from './TeamRequirements'
-import { createProject } from '../../redux/actions/projectsActions.js';
+import { createProject } from '../../redux/actions/projectProfileActions.js';
 import { loadMasterlists } from "../../redux/actions/masterlistsActions";
 import { connect } from 'react-redux';
 import { Button } from "@material-ui/core";

@@ -1,110 +1,49 @@
 import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
-const executeLoadProjectsData = (state, action) => {
-  return {
-    ...state,
-    projectSummaries: action.projectSummaries
-  }
+const executeLoadProjectsData = (action) => {
+  return action.projectSummaries;
 };
 
-const executeLoadSingleProjectData = (state, action) => {
-  return {
-    ...state,
-    projectProfile: action.projectProfile
-  }
+const executeUpdateProjectSummaryArray = (state, action) => {
+  return state.projects.map(project => {
+    if (project.projectNumber == action.projectSummary.projectNumber) {
+      return action.projectSummary;
+    } else {
+      return project;
+    }
+  })
 };
 
-const executeCreateProjectData = (state, action) => {
-  return {
-    ...state,
-    projectProfiles: [
-        ...state.projectProfiles,
-      action.projectProfile
-    ],
-    projectSummaries: [
-        ...state.projectSummaries,
-        action.projectProfile.projectSummary
-    ],
-    projectProfile: action.projectProfile
-  };
+const executeCreateProjectSummary = (state, action) => {
+  return [
+      ...state.projects,
+      action.projectSummary
+  ]
 };
 
-const executeUpdateProjectData = (state, action) => {
-  let projProfileIndex = state.projectProfiles.indexOf( projProfile => {
-      return projProfile.projectSummary.projectNumber == action.projectSummary.projectNumber;
-  });
-
-  let projSummaryIndex = state.projectSummaries.indexOf(projSummary => {
-    return projSummary.projectNumber == action.projectSummary.projectNumber;
-  });
-
-  let newProjectProfiles = JSON.parse(JSON.stringify(state.projectProfiles));
-  let newProjectSummaries = JSON.parse(JSON.stringify(state.projectSummaries));
-
-  if (projProfileIndex > -1) {
-    newProjectProfiles[projProfileIndex] = action.projectProfile;
+const executeDeleteProjectSummary = (state, action) => {
+  let newProjects = state.projects.slice();
+  let index = newProjects.indexOf(project => project.projectNumber == action.projectSummary.projectNumber);
+  if (index > -1) {
+    newProjects.splice(index, 1);
   }
-
-  if (projSummaryIndex > -1) {
-    newProjectSummaries[projSummaryIndex] = action.projectProfile.projectSummary;
-  }
-
-  return {
-    ...state,
-    projectSummaries: newProjectSummaries,
-    projectProfiles: newProjectProfiles,
-    projectProfile: action.projectProfile
-  };
-};
-
-const executeDeleteProjectData = (state, action) => {
-  let projSummaryIndex = state.projectSummaries.indexOf(projSummary => {
-    return projSummary.projectNumber == action.projectProfile.projectSummary.projectNumber;
-  });
-
-  let projProfileIndex = state.projectProfiles.indexOf(projProfile => {
-    return projProfile.projectSummary.projectNumber == action.projectProfile.projectSummary.projectNumber;
-  });
-
-  let newProjectProfiles = JSON.parse(JSON.stringify(state.projectProfiles));
-  let newProjectSummaries = JSON.parse(JSON.stringify(state.projectSummaries));
-
-  if (projSummaryIndex > -1) {
-    newProjectSummaries = newProjectSummaries.slice(projSummaryIndex, 1);
-  }
-
-  if (projProfileIndex > -1) {
-    newProjectProfiles = newProjectProfiles.slice(projProfileIndex, 1);
-  }
-
-  return {
-    ...state,
-    projectSummaries: newProjectSummaries,
-    projectProfiles: newProjectProfiles,
-    projectProfile: null
-  };
+  return newProjects;
 };
 
 export const projectsReducer = (
-  state = {
-    projectSummaries: initialState.projectSummaries,
-    projectProfiles: initialState.projectProfiles,
-    projectProfile: initialState.projectProfile
-  },
+  state = initialState.projects,
   action,
 ) => {
   switch (action.type) {
     case types.LOAD_PROJECTS_ALL:
-      return executeLoadProjectsData(state, action);
-    case types.LOAD_SINGLE_PROJECT:
-      return executeLoadSingleProjectData(state, action);
-    case types.CREATE_PROJECT:
-      return executeCreateProjectData(state, action);
-    case types.UPDATE_PROJECT:
-      return executeUpdateProjectData(state, action);
-    case types.DELETE_PROJECT:
-      return executeDeleteProjectData(state, action);
+      return executeLoadProjectsData(action);
+    case types.UPDATE_PROJECT_SUMMARY:
+      return executeUpdateProjectSummaryArray(state, action);
+    case types.DELETE_PROJECT_SUMMARY:
+      return executeDeleteProjectSummary(state, action);
+    case types.CREATE_PROJECT_SUMMARY:
+      return executeCreateProjectSummary(state, action);
     default:
       return state;
   }

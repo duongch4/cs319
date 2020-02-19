@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import UserCard from "../users/UserCard";
 import { Button } from "@material-ui/core";
 import { Link } from 'react-router-dom';
-import { loadSingleProject } from "../../redux/actions/projectsActions";
+import { loadSingleProject } from "../../redux/actions/projectProfileActions";
 import {formatDate} from "../../util/dateFormatter";
 
 class ProjectDetails extends Component {
@@ -102,7 +102,7 @@ ProjectDetails.propTypes = {
 
 const mapStateToProps = state => {
     return {
-      projectProfile: state.projects.projectProfile,
+      projectProfile: state.projectProfile,
     }
 };
 

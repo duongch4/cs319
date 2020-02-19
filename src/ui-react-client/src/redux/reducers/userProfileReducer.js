@@ -1,19 +1,31 @@
 import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
-const executeLoadSpecificUserData = (state, action) => {
-  // XXX TODO: This needs to be changed but I am unsure how. Ask Dave
-  return state.filter(user => user.userID == action.userID);
+const executeLoadSpecificUserData = (action) => {
+  return {
+    userProfile: action.userProfile
+  }
 };
 
 const executeUpdateSpecificUserData = (state, action) => {
-  return state.map(user => user.userID === action.user.userID ? action.user : user);
+  let profile = action.userProfile;
+  let indexOfUserSummary = state.users.indexOf(userSummary => {
+    return userSummary.userID === profile.userSummary.userID;
+  });
+  let newUserSummaries = [...state.users];
+  if (indexOfUserSummary >= 0) {
+    newUserSummaries = [...state.users];
+    newUserSummaries[indexOfUserSummary] = profile.userSummary;
+  }
+  return {
+    userProfile: profile
+  }
 };
 
-export const userProfileReducer = (state = initialState.usersProfile, action) => {
+export const userProfileReducer = (state = initialState.userProfile, action) => {
   switch (action.type) {
     case types.LOAD_USERS_SPECIFIC:
-      return executeLoadSpecificUserData(state, action);
+      return executeLoadSpecificUserData(action);
     case types.UPDATE_USERS_SPECIFIC:
       return executeUpdateSpecificUserData(state, action);
     default:

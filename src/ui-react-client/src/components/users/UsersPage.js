@@ -11,21 +11,21 @@ const UsersPage = ({
   useEffect(() => {
     if (users.length === 0) {
       loadUsers()
-          .catch(error => {
-            alert('Loading users failed' + error);
-          });
+          // .catch(error => {
+          //   alert('Loading users failed' + error);
+          // });
     }
   }, [users, loadUsers]);
   return (
     <div className="activity-container">
         <h1 className="greenHeader">Users</h1>
-        <UserList users={users.userSummaries} />
+        <UserList users={users} />
     </div>
   );
 };
 
 UsersPage.propTypes = {
-  users: PropTypes.object.isRequired,
+  users: PropTypes.array.isRequired,
   loadUsers: PropTypes.func.isRequired,
 };
 

@@ -1,6 +1,6 @@
 import React,{ Component } from 'react';
 import { loadMasterlists } from "../../redux/actions/masterlistsActions";
-import {updateSpecificUser, loadSpecificUser} from "../../redux/actions/usersActions";
+import {updateSpecificUser, loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {connect} from "react-redux";
 import TeamRequirements from "../projects/TeamRequirements";
 import Openings from "../projects/Openings";
@@ -109,7 +109,7 @@ class EditUser extends Component {
 const mapStateToProps = state => {
     return {
         masterlist: state.masterlist,
-        userProfile: state.users.userProfile
+        userProfile: state.userProfile
     };
 };
 
