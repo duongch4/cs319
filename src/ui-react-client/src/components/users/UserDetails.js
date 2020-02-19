@@ -23,13 +23,6 @@ class UserDetails extends Component {
     };
 
     render(){
-        if(this.props.userProfile.length == 0) {
-            return(
-                <div className="UserDetails">
-                No User Available
-                </div>
-            )
-        }
         let userDetails = this.props.userProfile;
         let disciplines = [];
         if (userDetails.disciplines) {

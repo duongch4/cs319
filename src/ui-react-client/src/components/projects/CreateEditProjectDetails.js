@@ -71,6 +71,7 @@ class CreateEditProjectDetails extends Component {
     };
 
     componentWillReceiveProps(existing_project){
+        console.log(existing_project);
       if (existing_project.currentProject){
         var project = existing_project.currentProject.project;
         this.setState({

@@ -16,10 +16,14 @@ class TeamRequirements extends Component {
     }
 
     handleChange = (e) => {
-      if (e.target.id == "commitment"){
-          this.setState({ opening: { ...this.state.opening, commitmentMonthlyHours: e.target.value} });
-      }
-      else if (e.target.id == "skills"){
+      if (e.target.id == "commitment") {
+          this.setState({
+              opening: {
+                  ...this.state.opening,
+                  commitmentMonthlyHours: e.target.value
+              }
+          });
+      } else if (e.target.id == "skills") {
         var skills_arr = [...this.state.opening.skills, e.target.value];
           this.setState({
             opening: {
@@ -27,16 +31,22 @@ class TeamRequirements extends Component {
               skills: skills_arr
             }
          });
+      } else if (e.target.id == "yearsOfExp") {
+          this.setState({
+              opening: {
+                ...this.state.opening,
+              yearsOfExp: e.target.value
+             }
+            })
+      } else {
+          this.setState({
+              opening: {
+                  ...this.state.opening,
+                  discipline: e.target.value
+              }
+          })
       }
-    else{
-      this.setState({
-          opening: {
-            ...this.state.opening,
-          discipline: e.target.value
-         }
-        })
-    }
-    }
+    };
 
     handleSubmit = (e) =>{
       e.preventDefault();
@@ -94,7 +104,7 @@ class TeamRequirements extends Component {
                   <div className="form-section opening">
                       <div className="form-row">
                           <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="name" onChange={this.handleChange}>
+                                  id="discipline" onChange={this.handleChange}>
                               <option value="DEFAULT" disabled>Discipline</option>
                               {discipline_render}
                           </select>
@@ -107,7 +117,7 @@ class TeamRequirements extends Component {
                       <label className="form-row" htmlFor= "yearsOfExperience">
                           <p className="form-label">Years of Experience</p>
                           <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="yearsOfExperience" onChange={this.handleChange}>
+                                  id="yearsOfExp" onChange={this.handleChange}>
                               <option value="DEFAULT" disabled>Select a range</option>
                               {range_render}
                           </select>

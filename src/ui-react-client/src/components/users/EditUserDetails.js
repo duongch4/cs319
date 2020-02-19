@@ -4,16 +4,13 @@ import PropTypes from 'prop-types';
 
 class EditUserDetails extends Component {
     state = {
-        userID: null,
-        firstName: "",
-        lastName: "",
-        location: {
-            city: "",
-            province: ""
-        },
-        utilization: 0,
-        resourceDiscipline: {},
-        isConfirmed: true
+        userID: this.props.userProfile.userID,
+        firstName: this.props.userProfile.firstName,
+        lastName: this.props.userProfile.lastName,
+        location: this.props.userProfile.location,
+        utilization: this.props.userProfile.utilization,
+        resourceDiscipline: this.props.userProfile.resourceDiscipline,
+        isConfirmed: this.props.userProfile.isConfirmed
     };
 
     componentDidMount() {
@@ -42,9 +39,11 @@ class EditUserDetails extends Component {
     };
 
     render() {
-        var cities = [];
-        var provinces = [];
         var locations_map = this.props.locations;
+        var cities = [];
+        var provinces = Array.from(Object.keys(locations_map));
+
+        var userProfile = this.props.userProfile;
 
         var city_render = [];
         cities.forEach((city, i) => {
@@ -55,12 +54,6 @@ class EditUserDetails extends Component {
         provinces.forEach((province, i) => {
             province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
         });
-
-        var userProfile = this.state;
-        if (this.props.userProfile) {
-            userProfile.name = this.props.userProfile.name;
-            userProfile.location = this.props.userProfile.location;
-        }
 
         return (
             <div className="form-section">

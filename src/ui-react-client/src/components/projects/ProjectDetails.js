@@ -11,16 +11,14 @@ import {formatDate} from "../../util/dateFormatter";
 
 class ProjectDetails extends Component {
     state = {
-        projectProfile: {}
+        projectProfile: this.props.projectProfile
     };
  
     // XXX TODO: These (below) will eventually be sent in from the database XXX
 
     componentDidMount = () => {
         this.props.loadSingleProject(this.props.match.params.project_number);
-        this.props.load();
-        var currentProject = this.props.project;
-
+        var currentProject = this.props.projectProfile;
         if(currentProject){
             this.setState({
                 projects: currentProject
@@ -31,13 +29,13 @@ class ProjectDetails extends Component {
 
     render(){
         var openingsRender = [];
-        var openings = this.state.project.openings;
+        var openings = this.state.projectProfile.openings;
         if (openings.length > 0) {
             openings.forEach((opening, index) => {
                 openingsRender.push(<Openings opening={opening}
                                               index={index} commitment={opening.commitmentMonthlyHours}
                                               isAssignable={true} key={openingsRender.length} />);
-                if(this.state.openings.length - 1 != index){
+                if(openings.length - 1 != index){
                     openingsRender.push(<hr key={openingsRender.length}></hr>)
                 }
             })
@@ -46,7 +44,7 @@ class ProjectDetails extends Component {
         }
 
         var teamMembersRender = [];
-        var userSummaries = this.state.project.userSummaries;
+        var userSummaries = this.state.projectProfile.usersSummary;
         if (userSummaries.length > 0) {
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
@@ -58,14 +56,14 @@ class ProjectDetails extends Component {
             )
         }
 
-        if (this.state.project === null) {
+        if (this.state.projectProfile === null) {
             return(
                 <div className="activity-container">
                     <h1 className="blueHeader">No Project Available</h1>
                 </div>
             )
         }
-        const projectDetails = this.state.project;
+        const projectDetails = this.state.projectProfile;
         var projectStartDate = formatDate(projectDetails.projectSummary.projectStartDate);
         var projectEndDate = formatDate(projectDetails.projectSummary.projectEndDate);
 

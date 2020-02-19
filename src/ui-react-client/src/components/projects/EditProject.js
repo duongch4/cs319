@@ -11,7 +11,7 @@ import UserCard from "../users/UserCard";
 
 class EditProject extends Component {
   state = {
-    project: {
+    projectProfile: {
         projectSummary: {
             title: "",
             location: {
@@ -34,28 +34,27 @@ class EditProject extends Component {
 
   componentDidMount(){
       this.props.loadMasterlists();
-    // this.props.masterlists holds the master list of experiences, disciplines and locations
-      this.props.loadSingleProject(this.props.params.project_number);
-      this.props.load();
-      var currentProject = this.props.project;
+      // this.props.masterlists holds the master list of experiences, disciplines and locations
+      this.props.loadSingleProject(this.props.match.params.project_id);
+      var currentProject = this.props.projectProfile;
 
     if(currentProject){
         this.setState({
-            project: currentProject
+            projectProfile: currentProject
             // state now holds the current project
         })
     }
   }
 
   onSubmit = () => {
-     this.props.updateProject(this.state.project)
+     this.props.updateProject(this.state.projectProfile)
   }
 
     addOpening = (opening) => {
-      const openings = [...this.state.project.openings, opening];
+      const openings = [...this.state.projectProfile.openings, opening];
       this.setState({
-        project:{
-          ...this.state.project,
+        projectProfile:{
+          ...this.state.projectProfile,
           openings
         }
       })
@@ -63,10 +62,10 @@ class EditProject extends Component {
 
     addProjDetails = (project) => {
       this.setState({
-         project: {
-           ...this.state.project,
+         projectProfile: {
+           ...this.state.projectProfile,
            projectSummary: {
-               ...this.state.project.projectSummary,
+               ...this.state.projectProfile.projectSummary,
                title: project.projectSummary.title,
                projectNumber: project.projectSummary.projectNumber,
                projectStartDate: project.projectSummary.projectStartDate,
@@ -78,8 +77,9 @@ class EditProject extends Component {
     }
   render(){
     var teamMembersRender = [];
-    if (this.state.project.usersSummary.length > 0) {
-        this.state.project.usersSummary.forEach(userSummary => {
+    console.log(this.props);
+    if (this.props.projectProfile.usersSummary.length > 0) {
+        this.props.projectProfile.usersSummary.forEach(userSummary => {
             teamMembersRender.push(
                 <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length} />
                 )
@@ -91,19 +91,20 @@ class EditProject extends Component {
     }
 
     const openings = [];
-      this.state.project.openings.forEach((opening, index) => {
+      this.props.projectProfile.openings.forEach((opening, index) => {
         openings.push(<Openings key = {index} opening={opening}
                                 commitment={opening.commitmentMonthlyHours}
                                 index={index}/>)
     }
   );
+      console.log(this.props);
       return (
           <div className="activity-container">
             <h1 className="greenHeader">Edit project</h1>
             <div className="section-container">
               <CreateEditProjectDetails locations={this.props.masterlist.locations}
                                 addProjDetails={(project) => this.addProjDetails(project)}
-                                currentProject={this.state.project.projectSummary}/>
+                                currentProject={this.props.projectProfile.projectSummary}/>
             </div>
             <div className="section-container">
               <TeamRequirements disciplines={this.props.masterlist.disciplines}
@@ -128,11 +129,10 @@ class EditProject extends Component {
 }
 
 const mapStateToProps = state => {
+    console.log(state);
   return {
-    disciplines: state.disciplines,
-    locations: state.locations,
-    masterYearsOfExperience: state.masterYearsOfExperience,
-    projects: state.projects
+    masterlist: state.masterlist,
+    projectProfile: state.projects.projectProfile
   };
 };
 

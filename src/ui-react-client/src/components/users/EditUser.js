@@ -42,7 +42,7 @@ class EditUser extends Component {
 
     addDisciplines = (opening) => {
         let discipline = {
-            name: opening.name,
+            name: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills
         };
@@ -109,7 +109,7 @@ class EditUser extends Component {
 const mapStateToProps = state => {
     return {
         masterlist: state.masterlist,
-        userProfile: state.userProfile
+        userProfile: state.users.userProfile
     };
 };
 

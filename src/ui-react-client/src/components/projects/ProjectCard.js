@@ -21,7 +21,7 @@ const ProjectCard = (props) => {
             </Link>
             <p><strong>Location:</strong> {project.location.city}, {project.location.province}</p>
             <p><strong>Duration:</strong>{startDate} - {endDate}</p>
-            {canEditProject && (<Link to={'/editproject/' + project.projID} className="action-link">
+            {canEditProject && (<Link to={'/editproject/' + project.projectNumber} className="action-link">
                 <EditIcon style={{fontSize: 'small'}}/> Edit </Link>)}
         </div>
     </div>
