@@ -24,7 +24,7 @@ export const loadSpecificUser = (userID) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
       let user = _initialState_client.userProfiles.filter(userProfile => {
-        return userProfile.userSummary.userID == userID;
+        return userProfile.userSummary.userID === userID;
       });
       dispatch(loadUserProfileData(user[0]));
     } else {

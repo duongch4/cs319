@@ -2,7 +2,8 @@ import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
-import _initialState from '../reducers/_initialState';
+// import _initialState from '../reducers/_initialState';
+import _initialState_dev from '../reducers/_initialState_client';
 import {updateProjectSummary} from "./projectsActions";
 
 const baseURL = `${SVC_ROOT}api/projects/`;
@@ -38,8 +39,8 @@ export const deleteProjectData = projectProfile => {
 export const loadSingleProject = (projectNumber) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
-            let project = _initialState.projectProfiles.filter(projectProfile => {
-                return projectProfile.projectSummary.projectNumber == projectNumber;
+            let project = _initialState_dev.projectProfiles.filter(projectProfile => {
+                return projectProfile.projectSummary.projectNumber === projectNumber;
             });
             dispatch(loadSingleProjectData(project[0]));
         } else {

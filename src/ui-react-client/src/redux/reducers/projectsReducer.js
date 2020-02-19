@@ -7,7 +7,7 @@ const executeLoadProjectsData = (action) => {
 
 const executeUpdateProjectSummaryArray = (state, action) => {
   return state.projects.map(project => {
-    if (project.projectNumber == action.projectSummary.projectNumber) {
+    if (project.projectNumber === action.projectSummary.projectNumber) {
       return action.projectSummary;
     } else {
       return project;
@@ -24,7 +24,7 @@ const executeCreateProjectSummary = (state, action) => {
 
 const executeDeleteProjectSummary = (state, action) => {
   let newProjects = state.projects.slice();
-  let index = newProjects.indexOf(project => project.projectNumber == action.projectSummary.projectNumber);
+  let index = newProjects.indexOf(project => project.projectNumber === action.projectSummary.projectNumber);
   if (index > -1) {
     newProjects.splice(index, 1);
   }

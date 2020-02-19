@@ -1,7 +1,5 @@
 import React,{ Component } from 'react';
-import PropTypes from 'prop-types';
 import './ProjectStyles.css';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
@@ -16,14 +14,14 @@ class TeamRequirements extends Component {
     };
 
     handleChange = (e) => {
-      if (e.target.id == "commitment") {
+      if (e.target.id === "commitment") {
           this.setState({
               opening: {
                   ...this.state.opening,
                   commitmentMonthlyHours: e.target.value
               }
           });
-      } else if (e.target.id == "skills") {
+      } else if (e.target.id === "skills") {
         var skills_arr = [...this.state.opening.skills, e.target.value];
           this.setState({
             opening: {
@@ -31,7 +29,7 @@ class TeamRequirements extends Component {
               skills: skills_arr
             }
          });
-      } else if (e.target.id == "yearsOfExp") {
+      } else if (e.target.id === "yearsOfExp") {
           this.setState({
               opening: {
                 ...this.state.opening,

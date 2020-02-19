@@ -218,8 +218,8 @@ namespace Web.API
                 if (env.IsDevelopment())
                 {
                     spa.Options.SourcePath = "../../ui-react-client/";
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                    // spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    // spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
                 else if (env.IsStaging())
                 {

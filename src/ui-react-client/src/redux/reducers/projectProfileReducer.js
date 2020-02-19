@@ -2,6 +2,7 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadSingleProjectData = action => {
+    // console.log(action.projectProfile);
     return action.projectProfile;
 };
 
@@ -14,7 +15,7 @@ const executeCreateProjectData = (state, action) => {
     };
 };
 
-const executeUpdateProjectData = (state, action) => {
+const executeUpdateProjectData = (action) => {
     return action.projectProfile;
 };
 
@@ -29,11 +30,11 @@ export const projectProfileReducer = (
 ) => {
     switch (action.type) {
         case types.LOAD_SINGLE_PROJECT:
-            return executeLoadSingleProjectData(state, action);
+            return executeLoadSingleProjectData(action);
         case types.CREATE_PROJECT:
-            return executeCreateProjectData(state, action);
+            return executeCreateProjectData(action);
         case types.UPDATE_PROJECT:
-            return executeUpdateProjectData(state, action);
+            return executeUpdateProjectData(action);
         case types.DELETE_PROJECT:
             return executeDeleteProjectData();
         default:

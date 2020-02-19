@@ -129,14 +129,15 @@ namespace Web.API.Controllers
                 var users = await usersRepository.GetAllUsersResourceOnProject(project.Id, project.ManagerId);
                 if (users == null || !users.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No User at projectNumber '{projectNumber}' found"));
+                    users = new UserResource[]{};
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
 
                 var openingPositions = await positionsRepository.GetAllUnassignedPositionsResourceOfProject(project.Id);
                 if (openingPositions == null || !openingPositions.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
+                    // return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
+                    openingPositions = new OpeningPositionsResource[]{};
                 }
                 var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
 
@@ -608,25 +609,25 @@ namespace Web.API.Controllers
         }
     }
 
-    [Authorize]
-    public class OldProjectsController : ControllerBase
-    {
-        private readonly IProjectsRepository projectsRepository;
-        private readonly IMapper mapper;
+    // [Authorize]
+    // public class OldProjectsController : ControllerBase
+    // {
+    //     private readonly IProjectsRepository projectsRepository;
+    //     private readonly IMapper mapper;
 
-        public OldProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
-        {
-            this.projectsRepository = projectsRepository;
-            this.mapper = mapper;
-        }
+    //     public OldProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
+    //     {
+    //         this.projectsRepository = projectsRepository;
+    //         this.mapper = mapper;
+    //     }
 
-        [HttpGet]
-        [Route("/projects")]
-        public async Task<IActionResult> GetAllProjects()
-        {
-            var response = await projectsRepository.GetAllProjects();
-            var viewModel = mapper.Map<IEnumerable<Project>>(response);
-            return Ok(viewModel);
-        }
-    }
+    //     [HttpGet]
+    //     [Route("/projects")]
+    //     public async Task<IActionResult> GetAllProjects()
+    //     {
+    //         var response = await projectsRepository.GetAllProjects();
+    //         var viewModel = mapper.Map<IEnumerable<Project>>(response);
+    //         return Ok(viewModel);
+    //     }
+    // }
 }

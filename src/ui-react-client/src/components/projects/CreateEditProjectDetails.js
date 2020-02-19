@@ -26,11 +26,11 @@ class CreateEditProjectDetails extends Component {
   }
 
     handleChange = (e) => {
-      if (e.target.id == "city"){
+      if (e.target.id === "city"){
           this.setState({ location: { ...this.state.location, city: e.target.value}
         }, () => this.props.addProjDetails(this.state))
       }
-      else if (e.target.id == "province"){
+      else if (e.target.id === "province"){
         var all_locations = {};
         var city_options = [];
 
@@ -42,10 +42,10 @@ class CreateEditProjectDetails extends Component {
               all_locations[element.province] = [element.city]
             }
           })
-          var city_options = Object.values(all_locations[e.target.value])
+          city_options = Object.values(all_locations[e.target.value])
         }
         else{
-          var city_options = Object.values(this.state.location[e.target.value])
+          city_options = Object.values(this.state.location[e.target.value])
         }
         this.setState({ location: { ...this.state.location, province: e.target.value},
           city_options: city_options

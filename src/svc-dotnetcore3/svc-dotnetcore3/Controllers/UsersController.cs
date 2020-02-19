@@ -151,7 +151,7 @@ namespace Web.API.Controllers
                 {
                     var discSkills = skills.Where(x => x.ResourceDisciplineName == discipline.Name);
                     var disc = new RDisciplineResource{
-                        Name = discipline.Name,
+                        Discipline = discipline.Name,
                         YearsOfExperience = discipline.YearsOfExperience,
                         Skills = discSkills.Select(x => x.Name).ToList()
                     };
@@ -291,7 +291,7 @@ namespace Web.API.Controllers
             {
                 var disc = new ResourceDiscipline{
                     ResourceId = userId,
-                    Name = discipline.Name,
+                    Name = discipline.Discipline,
                     YearsOfExperience = discipline.YearsOfExperience
                 };
                 result = result.Append(disc);
@@ -330,7 +330,7 @@ namespace Web.API.Controllers
                 {
                     var sk = new ResourceSkill();
                     sk.ResourceId = userId;
-                    sk.ResourceDisciplineName = disc.Name;
+                    sk.ResourceDisciplineName = disc.Discipline;
                     sk.Name = skill;
                     result = result.Append(sk);
                 }
@@ -443,25 +443,25 @@ namespace Web.API.Controllers
         }
     }
 
-    [Authorize]
-    public class OldUsersController : ControllerBase
-    {
-        private readonly IUsersRepository usersRepository;
-        private readonly IMapper mapper;
+    // [Authorize]
+    // public class OldUsersController : ControllerBase
+    // {
+    //     private readonly IUsersRepository usersRepository;
+    //     private readonly IMapper mapper;
 
-        public OldUsersController(IUsersRepository usersRepository, IMapper mapper)
-        {
-            this.usersRepository = usersRepository;
-            this.mapper = mapper;
-        }
+    //     public OldUsersController(IUsersRepository usersRepository, IMapper mapper)
+    //     {
+    //         this.usersRepository = usersRepository;
+    //         this.mapper = mapper;
+    //     }
 
-        [HttpGet]
-        [Route("/users")]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersOld()
-        {
-            var response = await usersRepository.GetAllUsers();
-            var viewModel = mapper.Map<IEnumerable<User>>(response);
-            return Ok(viewModel);
-        }
-    }
+    //     [HttpGet]
+    //     [Route("/users")]
+    //     public async Task<ActionResult<IEnumerable<User>>> GetAllUsersOld()
+    //     {
+    //         var response = await usersRepository.GetAllUsers();
+    //         var viewModel = mapper.Map<IEnumerable<User>>(response);
+    //         return Ok(viewModel);
+    //     }
+    // }
 }

@@ -6,7 +6,7 @@ namespace Web.API.Resources
     {
         /// <summary>Discipline Name</summary>
         /// <example>Intel</example>
-        public string Name { get; set; }
+        public string Discipline { get; set; }
         /// <summary>Years of Experience Range</summary>
         /// <example>3-5</example>
         public string YearsOfExperience {get; set;}
