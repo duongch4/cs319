@@ -10,5 +10,8 @@ namespace Web.API.Application.Models
         public int LocationId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int ManagerId {get; set;}
+        public DateTime ProjectStartDate {get; set;}
+        public DateTime ProjectEndDate {get; set;}
     }
 }
