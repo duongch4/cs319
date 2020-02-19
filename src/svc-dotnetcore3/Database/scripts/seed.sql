@@ -45,32 +45,32 @@ INSERT [dbo].[Projects] ([Id], [Number], [Title], [LocationId], [ManagerId], [Pr
 INSERT [dbo].[Projects] ([Id], [Number], [Title], [LocationId], [ManagerId], [ProjectStartDate], [ProjectEndDate]) VALUES (6, '2008-2TL3-77', 'Infiltrate and Dismantle Samaritan Operation', 19, 5, '2020-10-31', '2021-02-12');
 Set IDENTITY_INSERT [dbo].[Projects] OFF
 
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (1, 'Martial Arts', '1-3');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (5, 'Weapons', '10+');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (2, 'Language', '3-5');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (3, 'Language', '10+');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (4, 'Weapons', '5-10');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (5, 'Intel', '5-10');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (1, 'Language', '3-5');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (2, 'Martial Arts', '1-3');
-Insert ResourceDiscipline ([ResourceId], [DisciplineName], [YearsOfExperience]) values (3, 'Intel', '10+');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (1, 2, '10+');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (5, 1, '1-3');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (2, 3, '3-5');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (3, 3, '10+');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (4, 1, '5-10');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (5, 5, '5-10');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (1, 3, '1-3');
+Insert ResourceDiscipline ([ResourceId], [DisciplineId], [YearsOfExperience]) values (2, 2, '1-3');
 
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (1, 'Martial Arts', 2, 21);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (5, 'Weapons', 1, 10);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (2, 'Language', 3, 31);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (3, 'Language', 3, 30);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (5, 'Intel', 5, 50);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (1, 'Language', 3, 30);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (2, 'Martial Arts', 2, 20);
-Insert ResourceSkill ([ResourceId], [ResourceDisciplineName], [SkillDisciplineId], [SkillId]) values (3, 'Intel', 5, 51);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (1, 2, 2, 21);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (5, 1, 1, 10);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (2, 3, 3, 31);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (3, 3, 3, 30);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (5, 5, 5, 50);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (1, 3, 3, 30);
+Insert ResourceSkill ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]) values (2, 2, 2, 20);
 
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (1, 4, 1, 90, null, 'Binger', 0 );
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (2, 1, 2, 170, 4, 'Mission Control', 1);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (3, 5, 2, 170, 3, 'Intel', 1);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (4, 2, 5, 150, null, 'Preventing evil Cap', 0);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (5, 1, 4, 120, 1, 'Time Cop', 1);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (6, 3, 3, 165, null, 'In the dot', 0);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [IsConfirmed]) values (7, 1, 6, 120, 5, 'Protect the Machine', 1);
+Set IDENTITY_INSERT [dbo].[Positions] ON
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (1, 4, 1, 90, null, 'Binger', '10+', 0 );
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (2, 1, 2, 170, 4, 'Mission Control', '3-5', 1);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (3, 5, 2, 170, 3, 'Intel', '1-2', 1);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (4, 2, 5, 150, null, 'Preventing evil Cap','3-5', 0);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (5, 1, 4, 120, 1, 'Time Cop', '10+', 1);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (6, 3, 3, 165, null, 'In the dot', '10+', 0);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (7, 1, 6, 120, 5, 'Protect the Machine', '3-5',1);
+Set IDENTITY_INSERT [dbo].[Positions] OFF
 
 Insert [dbo].[PositionSkills] ([PositionId], [SkillId], [SkillDisciplineId]) values (1, 40, 4);
 Insert [dbo].[PositionSkills] ([PositionId], [SkillId], [SkillDisciplineId]) values (2, 10, 1);

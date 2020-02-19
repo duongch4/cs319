@@ -72,8 +72,8 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 select
-                    p.ProjectedMonthlyHours AS CommitmentMonthlyHours, p.PositionName AS Position,
-                    d.Name AS Discipline, rd.YearsOfExperience, STRING_AGG (s.Name, ',') as Skills
+                    p.ProjectedMonthlyHours AS CommitmentMonthlyHours, d.Name AS Discipline,
+                    rd.YearsOfExperience, STRING_AGG (s.Name, ',') as Skills
                 from
                     Positions p, ResourceDiscipline rd, Disciplines d, Skills s
                 where
@@ -81,9 +81,9 @@ namespace Web.API.Infrastructure.Data
                     AND p.ResourceId IS NOT NULL
                     AND p.DisciplineId = d.Id
                     AND p.DisciplineId = s.DisciplineId
-                    AND d.Name = rd.DisciplineName
+                    AND p.DisciplineId = rd.DisciplineId
                 group by
-                    p.DisciplineId, p.ProjectedMonthlyHours, p.PositionName,
+                    p.DisciplineId, p.ProjectedMonthlyHours,
                     d.Name, rd.YearsOfExperience
             ;";
             

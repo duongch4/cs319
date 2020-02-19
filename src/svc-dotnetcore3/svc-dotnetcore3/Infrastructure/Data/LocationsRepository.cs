@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -7,9 +7,8 @@ using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Resources;
 
-using Newtonsoft.Json.Linq;
+using System.Linq;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 using Serilog;
 
 namespace Web.API.Infrastructure.Data
@@ -17,12 +16,12 @@ namespace Web.API.Infrastructure.Data
     public class LocationsRepository : ILocationsRepository
     {
         private readonly string connectionString = string.Empty;
-        private readonly Dictionary<string, List<string>> locations;
+        private readonly Dictionary<string, IEnumerable<string>> locations;
 
         public LocationsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
-            this.locations = new Dictionary<string, List<string>>();
+            this.locations = new Dictionary<string, IEnumerable<string>>();
             this.SetStaticLocations();
         }
 
@@ -39,19 +38,6 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<Location>(sql);
         }
-
-        // public async Task<Location> GetALocationWithCity(string city)
-        // {
-        //     var sql = @"
-        //         select Province, City
-        //         from Locations
-        //         where City = @City
-        //     ;";
-
-        //     using var connection = new SqlConnection(connectionString);
-        //     connection.Open();
-        //     return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
-        // }
 
         public async Task<Location> GetALocation(int locationId) {
 
@@ -78,10 +64,20 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { Id = user.LocationId });
         }
-        //POST 
-        public async Task<Location> CreateALocation(Location location) {
-            return null;
+
+        public async Task<Location> GetALocation(string city)
+        {
+            var sql = @"
+                select *
+                from Locations
+                where City = @City
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
         }
+        
         private void SetStaticLocations()
         {
             var jsonStr = System.IO.File.ReadAllText(@"Infrastructure/Data/Locations.json");
@@ -91,19 +87,18 @@ namespace Web.API.Infrastructure.Data
                 string province = (string)json["admin_name"];
                 string country = (string)json["country"];
                 string city = (string)json["city"];
-                // Console.WriteLine(province.Equals("New York"));
                 if (country.Equals("Canada") && province != null && !this.locations.ContainsKey(province) && city != null)
                 {
                     this.locations.Add(province, new List<string>());
                 }
                 if (this.locations.ContainsKey(province))
                 {
-                    this.locations[province].Add(city);
+                    this.locations[province] = this.locations[province].Append(city);
                 }
             }
         }
 
-        public Dictionary<string, List<string>> GetStaticLocations()
+        public Dictionary<string, IEnumerable<string>> GetStaticLocations()
         {
             return this.locations;
         }

@@ -9,6 +9,22 @@ namespace Web.API.Resources
         /// <example>1</example>
         public int Id { get; set; }
 
+        /// <summary>Project Number</summary>
+        /// <example>2009-VD9D-15</example>
+        public string Number { get; set; }
+
+        /// <summary>Project Manager Id</summary>
+        /// <example>1</example>
+        public int ManagerId { get; set; }
+
+        /// <summary>Project Manager First Name</summary>
+        /// <example>1</example>
+        public string FirstName { get; set; }
+
+        /// <summary>Project Manager Last Name</summary>
+        /// <example>1</example>
+        public string LastName { get; set; }
+
         /// <summary>Project Title</summary>
         /// <example>Designing the new Pawnee Commons</example>
         public string Title { get; set; }

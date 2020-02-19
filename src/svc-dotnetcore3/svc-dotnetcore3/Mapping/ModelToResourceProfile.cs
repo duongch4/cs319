@@ -11,6 +11,7 @@ namespace Web.API.Mapping
         public ModelToResourceProfile()
         {
             SetProjectSummary();
+            SetProjectManager();
             SetUserSummary();
             SetOpeningPositionSummary();
             SetLocationProfile();
@@ -29,12 +30,27 @@ namespace Web.API.Mapping
             ).ForMember(
                 destinationMember => destinationMember.Location,
                 opt => opt.MapFrom(
-                    sourceMember => new Location
+                    sourceMember => new LocationResource
                     {
-                        Id = sourceMember.LocationId,
                         Province = sourceMember.Province,
                         City = sourceMember.City
                     }
+                )
+            ).ForMember(
+                destinationMember => destinationMember.ProjectNumber,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.Number
+                )
+            ).ReverseMap();
+        }
+
+        private void SetProjectManager()
+        {
+            CreateMap<ProjectResource, ProjectManagerResource>(
+            ).ForMember(
+                destinationMember => destinationMember.UserID,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.ManagerId
                 )
             ).ReverseMap();
         }
@@ -48,6 +64,11 @@ namespace Web.API.Mapping
                 destinationMember => destinationMember.Skills,
                 opt => opt.MapFrom(
                     sourceMember => new HashSet<string>(sourceMember.Skills.Split(sep))
+                )
+            ).ForMember(
+                destinationMember => destinationMember.YearsOfExp,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.YearsOfExperience
                 )
             ).ReverseMap();
         }
@@ -125,17 +146,3 @@ private void SetUserSummary()
         }
     }
 }
-
-//UserProfile { UserSummary, Disciplines[ ], Projects[ ], Availability[ ] },
-//ProjectProfile {  ProjectSummary, UserSummary[ ], Positions[ ] },
-
-// var config = new MapperConfiguration(cfg => {
-//                 cfg.CreateMap<AuthorDTO, AuthorModel>()
-//                    .ForMember(destination => destination.Address,
-//               map => map.MapFrom(
-//                   source => new Address
-//                   {
-//                       City = source .City,
-//                       State = source .State,
-//                       Country = source.Country
-//                   }));

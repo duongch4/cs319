@@ -18,7 +18,7 @@ namespace Web.API.Application.Repository
         // Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability);
         // Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil);
         Task<IEnumerable<User>> GetAllUsersOnProject(Project project);
-        Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId);
+        Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId, int projectManagerId);
 
         // TODO:
         // Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp);
