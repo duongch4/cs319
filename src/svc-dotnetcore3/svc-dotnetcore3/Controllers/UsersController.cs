@@ -188,7 +188,44 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT /api/users/5
+        ///     PUT /api/users/
+        ///     {
+        ///     "userSummary": {
+        ///         "userId": 3,
+        ///         "firstName": "Natasha",
+        ///         "lastName": "Romanov",
+        ///         "location": {
+        ///             "province": "British Columbia",
+        ///             "city": "Vancouver"
+        ///         },
+        ///         "utilization": 170
+        ///     },
+        ///     "currentProjects": [
+        ///         {
+        ///             "id": 2,
+        ///             "title": "Budapest",
+        ///             "locationId": 19,
+        ///             "projectStartDate": "2020-04-19T00:00:00",
+        ///             "projectEndDate": "2020-07-01T00:00:00"
+        ///         }
+        ///     ],
+        ///     "availability": [
+        ///         {
+        ///             "fromDate": "2020-10-31T00:00:00",
+        ///             "toDate": "2020-11-11T00:00:00",
+        ///             "reason": "Maternal Leave"
+        ///         }
+        ///     ],
+        ///     "disciplines": [
+        ///         {
+        ///             "name": "Weapons",
+        ///             "yearsOfExperience": "10+",
+        ///             "skills": [
+        ///                 "Glock", "Sniper Rifle"
+        ///             ]
+        ///         }
+        ///     ]
+        /// }
         ///
         /// </remarks>
         /// <returns>The id of the user that was updated</returns>

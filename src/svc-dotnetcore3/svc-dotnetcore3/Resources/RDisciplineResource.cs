@@ -5,9 +5,13 @@ namespace Web.API.Resources
     public class RDisciplineResource
     {
         /// <summary>Discipline Name</summary>
-        /// <example>Parks and Recreation</example>
+        /// <example>Intel</example>
         public string Name { get; set; }
+        /// <summary>Years of Experience Range</summary>
+        /// <example>3-5</example>
         public string YearsOfExperience {get; set;}
+        /// <summary>Skills of Discipline</summary>
+        /// <example>["False Identity Creation", "Deception"]</example>
         public List<string> Skills {get; set;}
     }
 }

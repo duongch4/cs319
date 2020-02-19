@@ -3,31 +3,31 @@ namespace Web.API.Resources
     public class UserResource
     {
         /// <summary>User ID</summary>
-        /// <example>567</example>
+        /// <example>5</example>
         public int Id { get; set; }
 
         /// <summary>User First Name</summary>
-        /// <example>Elissa</example>
+        /// <example>Sameen</example>
         public string FirstName { get; set; }
         
         /// <summary>User Last Name</summary>
-        /// <example>Anderson</example>
+        /// <example>Shaw</example>
         public string LastName { get; set; }
 
         /// <summary>UserName</summary>
-        /// <example>eliander</example>
+        /// <example>shaw</example>
         public string Username { get; set; }
 
         /// <summary>Location ID</summary>
-        /// <example>5</example>
+        /// <example>8</example>
         public int LocationId { get; set; }
 
         /// <summary>Location Province</summary>
-        /// <example>Ontario</example>
+        /// <example>British Columbia</example>
         public string Province { get; set; }
 
         /// <summary>Location City</summary>
-        /// <example>Toronto</example>
+        /// <example>Vancouver</example>
         public string City { get; set; }
 
         /// <summary>Position Confirmation Status</summary>
@@ -35,7 +35,7 @@ namespace Web.API.Resources
         public bool IsConfirmed { get; set; }
 
         /// <summary>Discipline</summary>
-        /// <example>AAA</example>
+        /// <example>Weapons</example>
         public string DisciplineName { get; set; }
 
         /// <summary>Years of Experience</summary>
