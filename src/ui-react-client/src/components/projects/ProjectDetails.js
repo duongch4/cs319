@@ -6,36 +6,36 @@ import { connect } from 'react-redux';
 import UserCard from "../users/UserCard";
 import { Button } from "@material-ui/core";
 import { Link } from 'react-router-dom';
+import { loadSingleProject } from "../../redux/actions/projectsActions";
+import {formatDate} from "../../util/dateFormatter";
 
 class ProjectDetails extends Component {
     state = {
-        openings: [],
-        project: this.props.projects.filter(project => project.projID == this.props.match.params.project_id),
-        users: []
-    }
+        project: {}
+    };
  
     // XXX TODO: These (below) will eventually be sent in from the database XXX
 
     componentDidMount = () => {
-        if(this.state.project.length > 0 && this.state.project[0].openings){
-            this.setState({
-                openings: this.state.project[0].openings
-            })
-        }
+        this.props.loadSingleProject(this.props.match.params.project_number);
+        this.props.load();
+        var currentProject = this.props.project;
 
-        if(this.state.project.length > 0 && this.state.project[0].users) {
+        if(currentProject){
             this.setState({
-                users: this.state.project[0].users
+                project: currentProject
+                // state now holds the current project
             })
         }
-    }
+    };
 
     render(){
         var openingsRender = [];
-        if (this.state.openings.length > 0) {
-            this.state.openings.forEach((opening, index) => {
-                openingsRender.push(<Openings opening={opening.discipline}
-                                              index={index} commitment={opening.commitment}
+        var openings = this.state.project.openings;
+        if (openings.length > 0) {
+            openings.forEach((opening, index) => {
+                openingsRender.push(<Openings opening={opening}
+                                              index={index} commitment={opening.commitmentMonthlyHours}
                                               isAssignable={true} key={openingsRender.length} />);
                 if(this.state.openings.length - 1 != index){
                     openingsRender.push(<hr key={openingsRender.length}></hr>)
@@ -46,12 +46,11 @@ class ProjectDetails extends Component {
         }
 
         var teamMembersRender = [];
-        if (this.state.users.length > 0) {
-            this.state.users.forEach(userProfile => {
+        var userSummaries = this.state.project.userSummaries;
+        if (userSummaries.length > 0) {
+            userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
-                    <Link to={'/users/' + userProfile.userID}>
-                        <UserCard user={userProfile} canEdit={false} key={teamMembersRender.length} />
-                    </Link>)
+                    <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length} />)
             })
         } else {
             teamMembersRender.push(
@@ -59,19 +58,22 @@ class ProjectDetails extends Component {
             )
         }
 
-        if(this.state.project.length === 0){
+        if(this.state.project === null){
             return(
-                <div className="ProjectDetails">
-                No Project Available
+                <div className="activity-container">
+                    <h1 className="blueHeader">No Project Available</h1>
                 </div>
             )
         }
-        const projectDetails = this.state.project[0];
+        const projectDetails = this.state.project;
+        var projectStartDate = formatDate(projectDetails.projectSummary.projectStartDate);
+        var projectEndDate = formatDate(projectDetails.projectSummary.projectEndDate);
+
         return (
             <div className="activity-container">
                 <div className="title-bar">
-                    <h1 className="blueHeader">{projectDetails.name}</h1>
-                    <Link to={'/editproject/' + projectDetails.projID}>
+                    <h1 className="blueHeader">{projectDetails.projectSummary.title}</h1>
+                    <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber}>
                         <Button variant="contained"
                                 style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                                 disableElevation>
@@ -80,10 +82,8 @@ class ProjectDetails extends Component {
                     </Link>
                 </div>
                 <div className="section-container">
-                    <p><b>Location:</b> {projectDetails.location.city}, {projectDetails.location.province}</p>
-                    <p><b>Total Hours:</b> </p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ullamcorper aliquam enim in fermentum. Pellentesque placerat augue sit amet leo pretium, eget volutpat turpis fringilla. Integer imperdiet nec augue sed mollis. Phasellus at lectus porttitor, vestibulum nulla sed, tristique nunc.
-                    </p>
+                    <p><b>Location:</b> {projectDetails.projectSummary.location.city}, {projectDetails.projectSummary.location.province}</p>
+                    <p><b>Duration:</b> {projectStartDate} - {projectEndDate}</p>
                 </div>
                 <div className="section-container">
                 <h2 className="greenHeader">The Team</h2>
@@ -107,10 +107,11 @@ const mapStateToProps = state => {
       projects: state.projects,
       locations: state.locations,
     }
-  }
+};
 
 const mapDispatchToProps = {
-  }
+    loadSingleProject
+};
   
 export default connect(
     mapStateToProps,

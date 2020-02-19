@@ -2,51 +2,47 @@ import React,{ Component } from 'react';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
 import TeamRequirements from './TeamRequirements'
-import { updateProject, loadProjects } from '../../redux/actions/projectsActions.js';
-import { loadDisciplines } from '../../redux/actions/disciplinesActions.js';
-import { loadLocations} from '../../redux/actions/locationsActions.js';
-import { loadExperiences } from '../../redux/actions/experienceActions.js';
+import { updateProject, loadSingleProject} from '../../redux/actions/projectsActions.js';
+import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import { connect } from 'react-redux';
 import { Button } from "@material-ui/core";
 import UserCard from "../users/UserCard";
-import { Link } from 'react-router-dom';
+
 
 class EditProject extends Component {
   state = {
     project: {
-      projID: null,
-      name: "",
-      location: {
-        city: "",
-        province: ""
-      },
-      startDate: "",
-      endDate: "",
-      openings: [],
-    },
-    users: []
-  }
+        projectSummary: {
+            title: "",
+            location: {
+                province: "",
+                city: ""
+            },
+            projectStartDate: "",
+            projectEndDate: "",
+            projectNumber: ""
+        },
+        projectManager: {
+            userID: 0,
+            firstName: "",
+            lastName: ""
+        },
+        usersSummary: [],
+        openings:[]
+    }
+  };
 
   componentDidMount(){
-    this.props.loadDisciplines();
-    // this.props.disciplines holds the master disciplines Map now
-    this.props.loadLocations();
-    // this.props.locations hold the master locations now
-    this.props.loadExperiences();
-    // this.props.masterYearsOfExperience holds the master list of experiences
-    this.props.loadProjects();
-    var currentProject = this.props.projects.filter(project => project.projID == this.props.match.params.project_id)
+      this.props.loadMasterlists();
+    // this.props.masterlists holds the master list of experiences, disciplines and locations
+      this.props.loadSingleProject(this.props.params.project_number);
+      this.props.load();
+      var currentProject = this.props.project;
 
     if(currentProject){
         this.setState({
-            project: currentProject[0]
+            project: currentProject
             // state now holds the current project
-        })
-    }
-
-    if(currentProject[0].users) {
-        this.setState({
-            users: currentProject[0].users
         })
     }
   }
@@ -56,7 +52,7 @@ class EditProject extends Component {
   }
 
     addOpening = (opening) => {
-      const openings = [...this.state.project.openings, opening]
+      const openings = [...this.state.project.openings, opening];
       this.setState({
         project:{
           ...this.state.project,
@@ -69,22 +65,24 @@ class EditProject extends Component {
       this.setState({
          project: {
            ...this.state.project,
-           name: project.name,
-           projID: project.projID,
-           startDate: project.startDate,
-           endDate: project.endDate,
-           location: project.location
+           projectSummary: {
+               ...this.state.project.projectSummary,
+               title: project.projectSummary.title,
+               projectNumber: project.projectSummary.projectNumber,
+               projectStartDate: project.projectSummary.projectStartDate,
+               projectEndDate: project.projectSummary.projectEndDate,
+               location: project.projectSummary.location
+           }
          }
       })
     }
   render(){
     var teamMembersRender = [];
-    if (this.state.users.length > 0) {
-        this.state.users.forEach(userProfile => {
+    if (this.state.project.usersSummary.length > 0) {
+        this.state.project.usersSummary.forEach(userSummary => {
             teamMembersRender.push(
-                <Link to={'/users/' + userProfile.userID}>
-                    <UserCard user={userProfile} canEdit={false} key={teamMembersRender.length} />
-                </Link>)
+                <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length} />
+                )
         })
     } else {
         teamMembersRender.push(
@@ -94,8 +92,8 @@ class EditProject extends Component {
 
     const openings = [];
       this.state.project.openings.forEach((opening, index) => {
-        openings.push(<Openings key = {index} opening={opening.discipline}
-                                commitment={opening.commitment}
+        openings.push(<Openings key = {index} opening={opening}
+                                commitment={opening.commitmentMonthlyHours}
                                 index={index}/>)
     }
   );
@@ -103,13 +101,13 @@ class EditProject extends Component {
           <div className="activity-container">
             <h1 className="greenHeader">Edit project</h1>
             <div className="section-container">
-              <CreateEditProjectDetails locations={this.props.locations}
+              <CreateEditProjectDetails locations={this.props.masterlist.locations}
                                 addProjDetails={(project) => this.addProjDetails(project)}
-                                currentProject={this.state}/>
+                                currentProject={this.state.project.projectSummary}/>
             </div>
             <div className="section-container">
-              <TeamRequirements disciplines={this.props.disciplines}
-                                masterYearsOfExperience={this.props.masterYearsOfExperience}
+              <TeamRequirements disciplines={this.props.masterlist.disciplines}
+                                masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                 addOpening={(opening) => this.addOpening(opening)}/>
               <hr />
               {openings}
@@ -139,11 +137,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  loadDisciplines,
-  loadLocations,
+  loadMasterlists,
   updateProject,
-  loadExperiences,
-  loadProjects
+  loadSingleProject
 };
 
 export default connect(

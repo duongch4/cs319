@@ -6,25 +6,17 @@ import "react-datepicker/dist/react-datepicker.css";
 
 class CreateEditProjectDetails extends Component {
     state = {
-      name: "",
+      title: "",
       location: {city: "City", province: "Province"},
-      startDate: new Date(),
-      endDate: new Date(),
+      projectStartDate: new Date(),
+      projectEndDate: new Date(),
       city_options: [],
       province_options: [],
       location_options: {},
-    }
+    };
 
     componentDidMount(){
-    var locations = {}
-
-    this.props.locations.forEach(element =>{
-      if(locations[element.province]){
-        locations[element.province] = [...locations[element.province], element.city]
-      } else {
-        locations[element.province] = [element.city]
-      }
-    })
+    var locations = this.props.locations;
 
     this.setState({
       location: locations,
@@ -64,29 +56,29 @@ class CreateEditProjectDetails extends Component {
           [e.target.id]: e.target.value
         }, () => this.props.addProjDetails(this.state))
       }
-    }
+    };
 
     handleChangeStartDate = (date) => {
       this.setState({
         startDate: date
       }, () => this.props.addProjDetails(this.state))
-    }
+    };
 
     handleChangeEndDate = (date) => {
       this.setState({
         endDate: date
       }, () => this.props.addProjDetails(this.state))
-    }
+    };
 
     componentWillReceiveProps(existing_project){
       if (existing_project.currentProject){
         var project = existing_project.currentProject.project;
         this.setState({
-          projID: project.projID,
-          name: project.name,
+          projectNumber: project.projectNumber,
+          title: project.title,
           location: project.location,
-          startDate: project.startDate,
-          endDate: project.endDate,
+          projectStartDate: project.projectStartDate,
+          projectEndDate: project.projectEndDate,
         })
       }
     }
@@ -95,7 +87,7 @@ class CreateEditProjectDetails extends Component {
     var city_render = [];
     this.state.city_options.forEach((city, i) => {
         city_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
-    })
+    });
 
     var province_render = [];
     this.state.province_options.forEach((province, i) => {
@@ -123,8 +115,8 @@ class CreateEditProjectDetails extends Component {
                 </label>
                 <label htmlFor= "project_duration" className="form-row">
                     <p className="form-label">Project Duration</p>
-                <DatePicker className="input-box" id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
-                <DatePicker className="input-box" id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+                <DatePicker className="input-box" id="startDate" selected={this.state.projectStartDate} onChange={this.handleChangeStartDate} />
+                <DatePicker className="input-box" id="endDate" selected={this.state.projectEndDate} onChange={this.handleChangeEndDate} />
                 </label>
             </div>
       </div>
@@ -135,6 +127,6 @@ class CreateEditProjectDetails extends Component {
 CreateEditProjectDetails.propTypes = {
   addOpening: PropTypes.object,
   currentProject: PropTypes.object
-}
+};
 
 export default CreateEditProjectDetails;

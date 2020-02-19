@@ -4,28 +4,39 @@ import PropTypes from 'prop-types';
 
 class EditUserDetails extends Component {
     state = {
-        name: "",
+        userID: null,
+        firstName: "",
+        lastName: "",
         location: {
             city: "",
             province: ""
-        }
+        },
+        utilization: 0,
+        resourceDiscipline: {},
+        isConfirmed: true
     };
 
     componentDidMount() {
         this.setState({
-            name: this.props.userProfile.name,
+            ...this.state,
+            firstName: this.props.userProfile.firstName,
+            lastName: this.props.userProfile.lastName,
             location: this.props.userProfile.location
         })
     }
 
     handleChange = (e) => {
-        if (e.target.id == "city") {
+        if (e.target.id === "city") {
             this.setState(
                 { location: {...this.state.location, city: e.target.value}},
                 () => this.props.addUserDetails(this.state));
-        } else if (e.target.id == "province") {
+        } else if (e.target.id === "province") {
             this.setState(
                 { location: { ...this.state.location, province: e.target.value}},
+                () => this.props.addUserDetails(this.state));
+        } else if (e.target.id === "firstName") {
+            this.setState(
+                { [e.target.id]: e.target.value },
                 () => this.props.addUserDetails(this.state));
         } else {
             this.setState(
@@ -38,11 +49,6 @@ class EditUserDetails extends Component {
         var cities = [];
         var provinces = [];
         var locations_map = this.props.locations;
-
-        locations_map.forEach(element =>{
-            cities.push(element["city"]);
-            provinces.push(element["province"]);
-        });
 
         var city_render = [];
         cities.forEach((city, i) => {
@@ -64,8 +70,10 @@ class EditUserDetails extends Component {
             <div className="form-section">
                 <h2 className="darkGreenHeader">Personal Details</h2>
                 <div className="form-row">
-                    <label htmlFor= "name"><p className="form-label">Name</p></label>
-                    <input className="input-box" type="text" id="name" onChange={this.handleChange} value= {userProfile.name}/>
+                    <label htmlFor= "name"><p className="form-label">First Name</p></label>
+                    <input className="input-box" type="text" id="firstName" onChange={this.handleChange} value= {userProfile.firstName}/>
+                    <label htmlFor= "name"><p className="form-label">First Name</p></label>
+                    <input className="input-box" type="text" id="lastName" onChange={this.handleChange} value= {userProfile.lastName}/>
                 </div>
                 <label htmlFor= "location" className="form-row">
                     <p className="form-label">Location</p>

@@ -1,264 +1,416 @@
 export default {
-  users: [{
-    userID: 123,
-    name: "Jason Bourne",
-    discipline: {
-      name: "Covert Spy",
-      skills: ["skill 1", "skill 2"],
-      yearsOfExperience: "15+"
-    },
-    position: "Rogue",
-    utilization: 80,
-    location: {city: "Vancouver", province: "BC"},
-  }, {
-    userID: 432,
-    name: "Nicky Parsons",
-    discipline: {
-      name: "Logistical Operations and Mental Health Analysis",
-      skills: ["skill 1", "skill 2"],
-      yearsOfExperience: "3-5 years"
-    },
-    position: "Contact",
-    utilization: 10,
-    location: {city: "Toronto", province: "ON"},
-  }],
-  projects: [
-    {
-      projID: 1233,
-      name: "Demo",
-      location: {city: "Vancouver", province: "BC"},
-      startDate: 9876,
-      endDate:6789,
-      openings: [{
-        openingID: 111,
-        discipline: {
-          name: "Discipline: Parks and Recreation",
-          skills: ["Skill 1", "Skill 2", "Skill 3"],
-          yearsOfExperience: "3-5 years",
-        },
-        commitment: 160
-      },
-      {
-        openingID: 112,
-        discipline: {
-          name: "Discipline: Environmental Planning",
-          skills: ["Skill 1", "Skill 2", "Skill 3"],
-          yearsOfExperience: "3-5 years",
-        },
-        commitment: 160
-      },
-      {
-        openingID: 112,
-        discipline: {
-          name: "Discipline: Sustainable Design",
-          skills: ["Skill 1", "Skill 2", "Skill 3"],
-          yearsOfExperience: "3-5 years",
-        },
-        commitment: 160
-      }],
-      users: [
+    userSummaries: [
         {
-          userID: 123,
-          name: "Jason Bourne",
-          discipline: {
-            name: "Covert Spy",
-            skills: ["skill 1", "skill 2"],
-            yearsOfExperience: "15+"
-          },
-          position: "Rogue",
-          utilization: 80,
-          location: {city: "Vancouver", province: "BC"},
+            firstName: "Jason",
+            lastName: "Bourne",
+            userID: 100,
+            location: {
+                province: "British Columbia",
+                city: "Vancouver"
+            },
+            utilization: 100,
+            resourceDiscipline: {
+                discipline: "Intel",
+                yearsOfExp: "3-5"
+            },
+            isConfirmed: true
         }, {
-          userID: 432,
-          name: "Nicky Parsons",
-          discipline: {
-            name: "Logistical Operations and Mental Health Analysis",
-            skills: ["skill 1", "skill 2"],
-            yearsOfExperience: "3-5 years"
-          },
-          position: "Contact",
-          utilization: 10,
-          location: {city: "Toronto", province: "ON"},
+            firstName: "Nicky",
+            lastName: "Parsons",
+            userID: 101,
+            location: {
+                province: "British Columbia",
+                city: "Vancouver"
+            },
+            utilization: 75,
+            resourceDiscipline: {
+                discipline: "Logistical Operations and Mental Health Analysis",
+                yearsOfExp: "3-5"
+            },
+            isConfirmed: true
+        }, {
+            firstName: "Pamela",
+            lastName: "Landy",
+            userID: 102,
+            location: {
+                province: "Ontario",
+                city: "Toronto"
+            },
+            utilization: 100,
+            resourceDiscipline: {
+                discipline: "Reconnaisance",
+                yearsOfExp: "10+"
+            },
+            isConfirmed: false
+        }],
+    projectSummaries: [{
+        title: "Martensville Athletic Pavillion",
+        location: {
+            province: "Seskatchewan",
+            city: "Saskatoon"
+        },
+        projectStartDate: "2020-10-31T00:00:00.0000000",
+        projectEndDate: "2021-12-31T00:00:00.0000000",
+        projectNumber: "2009-VD9D-15"
+    }, {
+        title: "University of British Columbia Science Building",
+        location: {
+            province: "British Columbia",
+            city: "Vancouver"
+        },
+        projectStartDate: "2020-10-31T00:00:00.0000000",
+        projectEndDate: "2021-12-31T00:00:00.0000000",
+        projectNumber: "2009-VD9D-16"
+    }],
+    projectProfiles: [
+        {
+            projectSummary: {
+                title: "Martensville Athletic Pavillion",
+                location: {
+                    province: "Seskatchewan",
+                    city: "Saskatoon"
+                },
+                projectStartDate: "2020-10-31T00:00:00.0000000",
+                projectEndDate: "2021-12-31T00:00:00.0000000",
+                projectNumber: "2009-VD9D-15"
+            },
+            projectManager: {
+                userID: 100,
+                firstName: "Jason",
+                lastName: "Bourne"
+            },
+            usersSummary: [
+                {
+                    firstName: "Nicky",
+                    lastName: "Parsons",
+                    userID: 101,
+                    location: {
+                        province: "British Columbia",
+                        city: "Vancouver"
+                    },
+                    utilization: 100,
+                    resourceDiscipline: {
+                        discipline: "Logistical Operations and Mental Health Analysis",
+                        yearsOfExp: "3-5"
+                    },
+                    isConfirmed: true
+                },
+                {
+                    firstName: "Pamela",
+                    lastName: "Landy",
+                    userID: 102,
+                    location: {
+                        province: "Ontario",
+                        city: "Toronto"
+                    },
+                    utilization: 100,
+                    resourceDiscipline: {
+                        discipline: "Reconnaisance",
+                        yearsOfExp: "10+"
+                    },
+                    isConfirmed: false
+                }
+            ],
+            openings: [
+                {
+                    discipline: "Environmental Design",
+                    skills: [
+                        "skill1", "skill2"
+                    ],
+                    yearsOfExp: "1-3",
+                    commitmentMonthlyHours: 160
+                },
+                {
+                    discipline: "Waste Management",
+                    skills: [],
+                    yearsOfExp: "1-3",
+                    commitmentMonthlyHours: 160
+                }
+            ]
+        }, {
+            projectSummary: {
+                title: "University of British Columbia Science Building",
+                location: {
+                    province: "British Columbia",
+                    city: "Vancouver"
+                },
+                projectStartDate: "2020-10-31T00:00:00.0000000",
+                projectEndDate: "2021-12-31T00:00:00.0000000",
+                projectNumber: "2009-VD9D-16"
+            },
+            projectManager: {
+                "userID": 100,
+                "firstName": "Jason",
+                "lastName": "Bourne"
+            },
+            usersSummary: [],
+            openings: []
         }
-      ]
+    ],
+    userProfiles: [
+        {
+            userSummary: {
+                userID: 100,
+                firstName: "Jason",
+                lastName: "Bourne",
+                location: {
+                    province: "British Columbia",
+                    city: "Vancouver"
+                },
+                utilization: 100,
+                resourceDiscipline: {
+                    discipline: "Logistical Operations and Mental Health Analysis",
+                    yearsOfExp: "3-5"
+                },
+                isConfirmed: false
+            },
+            currentProjects: [
+                {
+                    title: "Martensville Athletic Pavillion",
+                    location: {
+                        province: "Seskatchewan",
+                        city: "Saskatoon"
+                    },
+                    projectStartDate: "2020-10-31T00:00:00.0000000",
+                    projectEndDate: "2021-12-31T00:00:00.0000000",
+                    projectNumber: "2009-VD9D-15"
+                }
+            ],
+            availability: [
+                {
+                    fromDate: "2020-10-31T00:00:00",
+                    toDate: "2020-11-11T00:00:00",
+                    reason: "Paternal Leave"
+                }
+            ],
+            disciplines: [
+                {
+                    name: "Intel",
+                    yearsOfExp: "10+",
+                    skills: [
+                        "Deception"
+                    ]
+                },
+                {
+                    name: "Language",
+                    yearsOfExp: "10+",
+                    skills: [
+                        "Russian"
+                    ]
+                }
+            ]
+        }, {
+            userSummary: {
+                firstName: "Nicky",
+                lastName: "Parsons",
+                userID: 101,
+                location: {
+                    province: "British Columbia",
+                    city: "Vancouver"
+                },
+                utilization: 75,
+                resourceDiscipline: {
+                    discipline: "Logistical Operations and Mental Health Analysis",
+                    yearsOfExp: "3-5"
+                },
+                isConfirmed: true
+            },
+            currentProjects: [
+                {
+                    title: "Martensville Athletic Pavillion",
+                    location: {
+                        province: "Seskatchewan",
+                        city: "Saskatoon"
+                    },
+                    projectStartDate: "2020-10-31T00:00:00.0000000",
+                    projectEndDate: "2021-12-31T00:00:00.0000000",
+                    projectNumber: "2009-VD9D-15"
+                }
+            ],
+            availability: [
+                {
+                    fromDate: "2020-10-31T00:00:00",
+                    toDate: "2020-11-11T00:00:00",
+                    reason: "Maternity Leave"
+                }
+            ],
+            disciplines: [
+                {
+                    name: "Intel",
+                    yearsOfExp: "10+",
+                    skills: [
+                        "Deception"
+                    ]
+                }]
+        }, {
+            userSummary: {
+                firstName: "Pamela",
+                lastName: "Landy",
+                userID: 102,
+                location: {
+                    province: "Ontario",
+                    city: "Toronto"
+                },
+                utilization: 100,
+                resourceDiscipline: {
+                    discipline: "Reconnaisance",
+                    yearsOfExp: "10+"
+                },
+                isConfirmed: false
+            },
+            currentProjects: [],
+            availability: [],
+            disciplines: []
+        }
+    ],
+    userProfile: {
+        userSummary: {
+            userID: 100,
+            firstName: "Jason",
+            lastName: "Bourne",
+            location: {
+                province: "British Columbia",
+                city: "Vancouver"
+            },
+            utilization: 100,
+            resourceDiscipline: {
+                discipline: "Logistical Operations and Mental Health Analysis",
+                yearsOfExp: "3-5"
+            },
+            isConfirmed: false
+        },
+        currentProjects: [
+            {
+                title: "Martensville Athletic Pavillion",
+                location: {
+                    province: "Seskatchewan",
+                    city: "Saskatoon"
+                },
+                projectStartDate: "2020-10-31T00:00:00.0000000",
+                projectEndDate: "2021-12-31T00:00:00.0000000",
+                projectNumber: "2009-VD9D-15"
+            }
+        ],
+        availability: [
+            {
+                fromDate: "2020-10-31T00:00:00",
+                toDate: "2020-11-11T00:00:00",
+                reason: "Paternal Leave"
+            }
+        ],
+        disciplines: [
+            {
+                name: "Intel",
+                yearsOfExp: "10+",
+                skills: [
+                    "Deception"
+                ]
+            },
+            {
+                name: "Language",
+                yearsOfExp: "10+",
+                skills: [
+                    "Russian"
+                ]
+            }
+        ]
     },
-    {
-      projID: 1234,
-      name: "Demo - Item 2",
-      location: {city: "Vancouver", province: "BC"},
-      startDate: 9876,
-      endDate:6789,
-      openings: []
-
-  },
-  {
-    projID: 1235,
-    name: "Demo - Item 3",
-    location: {city: "Vancouver", province: "BC"},
-    startDate: 9876,
-    endDate:6789,
-    openings: []
-}
-  ],
-  locations: [
-    {
-      city: "Vancouver",
-      province: "British Columbia"
-    },{
-      city: "Toronto",
-      province: "Ontario"
+    projectProfile: {
+        projectSummary: {
+            title: "Martensville Athletic Pavillion",
+            location: {
+                province: "Seskatchewan",
+                city: "Saskatoon"
+            },
+            projectStartDate: "2020-10-31T00:00:00.0000000",
+            projectEndDate: "2021-12-31T00:00:00.0000000",
+            projectNumber: "2009-VD9D-15"
+        },
+        projectManager: {
+            userID: 100,
+            firstName: "Jason",
+            lastName: "Bourne"
+        },
+        usersSummary: [
+            {
+                firstName: "Nicky",
+                lastName: "Parsons",
+                userID: 101,
+                location: {
+                    province: "British Columbia",
+                    city: "Vancouver"
+                },
+                utilization: 100,
+                resourceDiscipline: {
+                    discipline: "Logistical Operations and Mental Health Analysis",
+                    yearsOfExp: "3-5"
+                },
+                isConfirmed: true
+            },
+            {
+                firstName: "Pamela",
+                lastName: "Landy",
+                userID: 102,
+                location: {
+                    province: "Ontario",
+                    city: "Toronto"
+                },
+                utilization: 100,
+                resourceDiscipline: {
+                    discipline: "Reconnaisance",
+                    yearsOfExp: "10+"
+                },
+                isConfirmed: false
+            }
+        ],
+        openings: [
+            {
+                discipline: "Environmental Design",
+                skills: [
+                    "skill1", "skill2"
+                ],
+                yearsOfExp: "1-3",
+                commitmentMonthlyHours: 160
+            },
+            {
+                discipline: "Waste Management",
+                skills: [],
+                yearsOfExp: "1-3",
+                commitmentMonthlyHours: 160
+            }
+        ]
+    },
+    masterlist: {
+        disciplines: {
+            "Environmental Design": [
+                "Skill 1",
+                "Skill 2"
+            ],
+            "Waste Management": [
+                "Skill A",
+                "Skill B"
+            ],
+            "Parks and Recreation": [
+                "Skill A1",
+                "Skill B2"
+            ]
+        },
+        locations: {
+            "British Columbia": [
+                "Vancouver",
+                "Richmond"
+            ],
+            "Seskatchewan": [
+                "Saskatoon"
+            ],
+            "Ontario": [
+                "Toronto"
+            ]
+        },
+        yearsOfExp: [
+            "3-5",
+            "10+",
+            "1-3"
+        ]
     }
-  ],
-  disciplines: new Map([
-    ["Discipline: Environmental Planning",
-    ["Skill 1", "Skill 2", "Skill 3"]],
-    ["Discipline: Sustainable Design",
-    ["Skill A", "Skill B", "Skill C"]],
-    ["Discipline: Parks and Recreation",
-    ["Skill 1A", "Skill 2B", "Skill 3C"]],
-  ]),
-  masterYearsOfExperience: [
-    "less than 1 year",
-    "1-3 years",
-    "3-5 years",
-    "5+ years"
-  ],
-  usersProfile: [{
-    userID: 123,
-    name: "Jason Bourne",
-    discipline: {
-      name: "Covert Spy",
-      skills: ["skill 1", "skill 2"],
-      yearsOfExperience: "15+"
-    },
-    position: "Rogue",
-    utilization: 80,
-    location: {city: "Vancouver", province: "BC"},
-    currentProjects: [
-      {
-        projID: 1233,
-        name: "Demo",
-        location: {city: "Vancouver", province: "BC"},
-        startDate: 9876,
-        endDate:6789,
-        openings: [{
-          openingID: 111,
-          discipline: {
-            name: "Discipline: Parks and Recreation",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        },
-        {
-          openingID: 112,
-          discipline: {
-            name: "Discipline: Environmental Planning",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        },
-        {
-          openingID: 112,
-          discipline: {
-            name: "Discipline: Sustainable Design",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        }]
-      },
-      {
-        projID: 1234,
-        name: "Demo",
-        location: {city: "Vancouver", province: "BC"},
-        startDate: 9876,
-        endDate:6789,
-        openings: [{
-          openingID: 111,
-          discipline: {
-            name: "Discipline: Parks and Recreation",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        }]
-      }
-    ],
-    availability: [
-      {
-        reason: "sick",
-        start: '2020-02-14',
-        end: '2020-02-14'
-      },
-      {
-        reason: "sick",
-        start: '2020-02-15',
-        end: '2020-02-15'
-      }
-    ],
-    disciplines: [
-      {
-        name: "Discipline: Sustainable Design",
-        skills: ["Skill 1", "Skill 2", "Skill 3"],
-        yearsOfExperience: "3-5 years",
-      },
-      {
-        name: "Discipline: Sustainable Design",
-        skills: ["Skill 1", "Skill 2", "Skill 3"],
-        yearsOfExperience: "3-5 years",
-      }
-    ]
-  }, {
-    userID: 432,
-    name: "Nicky Parsons",
-    discipline: {
-      name: "Logistical Operations and Mental Health Analysis",
-      skills: ["skill 1", "skill 2"],
-      yearsOfExperience: "3-5 years"
-    },
-    position: "Contact",
-    utilization: 10,
-    location: {city: "Toronto", province: "ON"},
-    currentProjects: [
-      {
-        projID: 1233,
-        name: "Demo",
-        location: {city: "Vancouver", province: "BC"},
-        startDate: 9876,
-        endDate:6789,
-        openings: [{
-          openingID: 111,
-          discipline: {
-            name: "Discipline: Parks and Recreation",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        },
-        {
-          openingID: 112,
-          discipline: {
-            name: "Discipline: Environmental Planning",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        },
-        {
-          openingID: 112,
-          discipline: {
-            name: "Discipline: Sustainable Design",
-            skills: ["Skill 1", "Skill 2", "Skill 3"],
-            yearsOfExperience: "3-5 years",
-          },
-          commitment: 160
-        }]
-      }
-    ],
-    availability: [],
-    disciplines: []
-  }],
-
 };

@@ -1,93 +1,97 @@
 import * as types from './actionTypes';
-import { SVC_ROOT } from '../../config/config';
+import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}projects/`;
 
-export const loadProjectsMostRecentData = projects => {
-  return {
-    type: types.LOAD_PROJECTS_MOST_RECENT,
-    projects: projects,
-  };
-};
-
-export const loadProjectsData = projects => {
+export const loadProjectsData = projectSummaries => {
   return {
     type: types.LOAD_PROJECTS_ALL,
-    projects: projects,
+    projectSummaries: projectSummaries,
   };
 };
 
-export const createProjectData = project => {
+export const loadSingleProjectData = projectProfile => {
+  return {
+    type: types.LOAD_SINGLE_PROJECT,
+    projectProfile: projectProfile
+  }
+};
+
+export const createProjectData = projectProfile => {
   return {
     type: types.CREATE_PROJECT,
-    project: project,
+    projectProfile: projectProfile,
   };
 };
 
-export const updateProjectData = project => {
+export const updateProjectData = projectProfile => {
   return {
     type: types.UPDATE_PROJECT,
-    project: project,
+    projectProfile: projectProfile,
   };
 };
 
-export const deleteProjectData = project => {
+export const deleteProjectData = projectProfile => {
   return {
     type: types.DELETE_PROJECT,
-    project: project,
-  };
-};
-
-export const loadProjectsMostRecent = () => {
-  return dispatch => {
-    dispatch(loadProjectsMostRecentData(_initialState.projects));
-    // return axios
-    //   .get(`${baseURL}most-recent`, { headers })
-    //   .then(response => {
-    //     dispatch(loadProjectsMostRecentData(response.data));
-    //   })
-    //   .catch(error => {
-    //     throw error;
-    //   });
+    projectProfile: projectProfile,
   };
 };
 
 export const loadProjects = () => {
   return dispatch => {
-    dispatch(loadProjectsData(_initialState.projects));
-    // return axios
-    //   .get(baseURL, { headers })
-    //   .then(response => {
-    //     dispatch(loadProjectsData(response.data));
-    //   })
-    //   .catch(error => {
-    //     throw error;
-    //   });
+    if (CLIENT_DEV_ENV) {
+      dispatch(loadProjectsData(_initialState.projectSummaries));
+    } else {
+      return axios
+          .get(baseURL, { headers })
+          .then(response => {
+            dispatch(loadProjectsData(response.data.payload));
+          })
+          .catch(error => {
+            throw error;
+          });
+    }
   };
 };
 
-// export const loadSingleProject = (id) => {
-//   return dispatch => {
-
-//     dispatch(loadSingleProjectData(id));
-//   };
-// };
+export const loadSingleProject = (projectNumber) => {
+  return dispatch => {
+    if (CLIENT_DEV_ENV) {
+      let project = _initialState.projectProfiles.filter(projectProfile => {
+        return projectProfile.projectSummary.projectNumber == projectNumber;
+      });
+      dispatch(loadSingleProjectData(project[0]));
+    } else {
+      return axios
+          .get(`${baseURL + projectNumber}`, { headers })
+          .then(response => {
+            dispatch(loadSingleProjectData(response.data.payload))
+          })
+          .catch(error => {
+            throw error;
+          });
+    }
+  };
+};
 
 export const createProject = (project) => {
   return dispatch => {
-    dispatch(createProjectData(project))
-    // dispatch(createProjectData(response.data));
-    // return axios
-    //   .post(baseURL, { headers })
-    //   .then(response => {
-    //     dispatch(createProjectData(response.data));
-    //   })
-    //   .catch(error => {
-    //     throw error;
-    //   });
+    if (CLIENT_DEV_ENV) {
+      dispatch(createProjectData(project))
+    } else {
+      return axios
+          .post(baseURL, project,{ headers })
+          .then(response => {
+            dispatch(createProjectData(project))
+          })
+          .catch(error => {
+            throw error;
+          })
+    }
   };
 };
 
