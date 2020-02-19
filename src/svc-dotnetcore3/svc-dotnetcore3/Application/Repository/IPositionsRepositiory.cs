@@ -1,4 +1,5 @@
 using Web.API.Application.Models;
+using Web.API.Resources;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,18 +8,19 @@ namespace Web.API.Application.Repository
     public interface IPositionsRepository
     {
         // GET
-        Task<IEnumerable<Position>> GetPositionsOfUser(User user);
-        Task<IEnumerable<Position>> GetAllUnassignedPositionOfProject(Project project);
-        Task<Project> GetAProject(string projectNumber);
-        Task<IEnumerable<Project>> GetAllProjectsOfUser(User user);
+        Task<IEnumerable<Position>> GetAllPositions();
+        Task<Position> GetAPosition(int positionId);
+        Task<IEnumerable<PositionResource>> GetPositionsOfUser(User user);
+        Task<IEnumerable<Position>> GetAllUnassignedPositionsOfProject(Project project);
+        Task<IEnumerable<OpeningPositionsResource>> GetAllUnassignedPositionsResourceOfProject(int projectId);
 
         // POST
-        Task<Project> CreateAProject(Project project);
+        Task<Position> CreateAPosition(Position position);
 
         // PUT
-        Task<Project> UpdateAProject(Project project);
+        Task<Position> UpdateAPosition(Position position);
 
         // DELETE
-        Task<Project> DeleteAProject(string number);
+        Task<Position> DeleteAPosition(int positionId);
     }
 }

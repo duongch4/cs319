@@ -8,10 +8,9 @@ namespace Web.API.Application.Repository
     public interface IDisciplinesRepository
     {
         //GET
-        Task<Discipline> GetADiscipline(int disciplineID);
+        Task<Discipline> GetADiscipline(int disciplineId);
         Task<IEnumerable<Discipline>> GetAllDisciplines();
         Task<IEnumerable<Discipline>> GetDisciplinesByName(string disciplineName);
-        Task<IEnumerable<User>> GetAllUsersWithDiscipline(string disciplineName);
 
         // POST
         Task<Discipline> CreateADiscipline(Discipline discipline);
@@ -20,6 +19,10 @@ namespace Web.API.Application.Repository
         Task<Discipline> UpdateADiscipline(Discipline discipline);
 
         // DELETE
-        Task<Discipline> DeleteADiscipline(Discipline discipline);
+        Task<Discipline> DeleteADiscipline(int disciplineId);
+
+        Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(User user);
+        Task<ResourceDiscipline> DeleteResourceDiscipline(ResourceDiscipline discipline);
+        Task<ResourceDiscipline> InsertResourceDiscipline(ResourceDiscipline discipline);
     }
 }
