@@ -1,4 +1,5 @@
 ﻿using Web.API.Application.Models;
+using Web.API.Resources;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<Project>> GetAllProjects();
         Task<IEnumerable<Project>> GetMostRecentProjects();
         Task<Project> GetAProject(string projectNumber);
+        Task<ProjectResource> GetAProjectResource(string projectNumber);
         Task<IEnumerable<Project>> GetAllProjectsOfUser(User user);
 
         // POST

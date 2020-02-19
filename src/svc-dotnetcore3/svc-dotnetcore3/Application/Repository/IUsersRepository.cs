@@ -13,10 +13,15 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<User>> GetAllUsersAtLocation(Location location);
         Task<IEnumerable<User>> GetAllUsersWithDiscipline(Discipline discipline);
         Task<IEnumerable<User>> GetAllUsersWithSkill(Skill skill);
-        Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability);
-        Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil);
+
+        // TODO:
+        // Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability);
+        // Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil);
         Task<IEnumerable<User>> GetAllUsersOnProject(Project project);
-        Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp);
+        Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId);
+
+        // TODO:
+        // Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp);
         Task<User> GetPMOfProject(Project project);
 
         //PUT

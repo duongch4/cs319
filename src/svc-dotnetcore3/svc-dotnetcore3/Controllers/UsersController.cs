@@ -247,12 +247,12 @@ namespace Web.API.Controllers
             return user;
         }
 
-        private IEnumerable<ResourceDisciplines> createResourceDisciplinesFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        private IEnumerable<ResourceDiscipline> createResourceDisciplinesFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
         {
-            var result = Enumerable.Empty<ResourceDisciplines>();
+            var result = Enumerable.Empty<ResourceDiscipline>();
             foreach (var discipline in disciplines)
             {
-                var disc = new ResourceDisciplines{
+                var disc = new ResourceDiscipline{
                     ResourceId = userId,
                     Name = discipline.Name,
                     YearsOfExperience = discipline.YearsOfExperience
@@ -325,10 +325,10 @@ namespace Web.API.Controllers
             }
             return result;
         }
-        private async Task<IEnumerable<ResourceDisciplines>> addDisciplinesToDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
+        private async Task<IEnumerable<ResourceDiscipline>> addDisciplinesToDB(IEnumerable<ResourceDiscipline> profile, IEnumerable<ResourceDiscipline> db)
         {
             var toBeAdded = profile.Except(db);
-            var result = Enumerable.Empty<ResourceDisciplines>();
+            var result = Enumerable.Empty<ResourceDiscipline>();
             foreach (var disc in toBeAdded)
             {
                 var added = await disciplinesRepository.InsertResourceDiscipline(disc);
@@ -337,10 +337,10 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<IEnumerable<ResourceDisciplines>> removeDisciplinesFromDB(IEnumerable<ResourceDisciplines> profile, IEnumerable<ResourceDisciplines> db)
+        private async Task<IEnumerable<ResourceDiscipline>> removeDisciplinesFromDB(IEnumerable<ResourceDiscipline> profile, IEnumerable<ResourceDiscipline> db)
         {
             var toBeRemoved = db.Except(profile);
-            var result = Enumerable.Empty<ResourceDisciplines>();
+            var result = Enumerable.Empty<ResourceDiscipline>();
             foreach (var disc in toBeRemoved)
             {
                 var removed = await disciplinesRepository.DeleteResourceDiscipline(disc);

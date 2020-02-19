@@ -1,12 +1,12 @@
 namespace Web.API.Application.Models
 {
-    public class ResourceDisciplines
+    public class ResourceDiscipline
     {
         public int ResourceId {get; set;}
         public string Name { get; set; }
         public string YearsOfExperience {get; set;}
 
-        public bool Equals(ResourceDisciplines other) {
+        public bool Equals(ResourceDiscipline other) {
             if(other is null) {
                 return false;
             } else {
@@ -14,7 +14,7 @@ namespace Web.API.Application.Models
             }
         }
 
-        public override bool Equals(object obj) => Equals(obj as ResourceDisciplines);
+        public override bool Equals(object obj) => Equals(obj as ResourceDiscipline);
         public override int GetHashCode() => (ResourceId, Name, YearsOfExperience).GetHashCode();
     }
 }

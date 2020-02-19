@@ -1,5 +1,6 @@
 ﻿using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -50,12 +51,9 @@ namespace Web.API.Infrastructure.Data
         public async Task<Project> GetAProject(string projectNumber)
         {
             var sql = @"
-                select 
-                    Id, Number, Title, LocationId, CreatedAt, UpdatedAt
-                from
-                    Projects
-                where
-                    Number = @Number
+                select *
+                from Projects
+                where Number = @Number
             ;";
 
             using var connection = new SqlConnection(connectionString);
@@ -63,8 +61,27 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryFirstOrDefaultAsync<Project>(sql, new { Number = projectNumber });
         }
 
-        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
-            
+        public async Task<ProjectResource> GetAProjectResource(string projectNumber)
+        {
+            var sql = @"
+                select
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate, p.LocationId,
+                    l.Province, l.City 
+                from
+                    Projects p, Locations l
+                where
+                    p.LocationId = l.Id
+                    AND p.Number = @Number
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<ProjectResource>(sql, new { Number = projectNumber });
+        }
+
+        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user)
+        {
+
             var sql = @"
                 select 
                     p.Id, p.Number, p.Title, p.LocationId, 
@@ -75,7 +92,7 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<Project>(sql, new {UserId = user.Id});
+            return await connection.QueryAsync<Project>(sql, new { UserId = user.Id });
         }
 
         public async Task<Project> CreateAProject(Project project)
@@ -90,7 +107,8 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            var id = await connection.QuerySingleAsync<int>(sql, new {
+            var id = await connection.QuerySingleAsync<int>(sql, new
+            {
                 project.Number,
                 project.Title,
                 project.LocationId
@@ -128,17 +146,14 @@ namespace Web.API.Infrastructure.Data
         {
             var project = await GetAProject(number);
             var sql = @"
-                delete from Projects where Number = @Number
+                delete from Projects
+                where Number = @Number
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.ExecuteAsync(sql, new { number });
+            await connection.ExecuteAsync(sql, new { Number = number });
             return project;
         }
-
-        // public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user) {
-        //     return null;
-        // }
     }
 }

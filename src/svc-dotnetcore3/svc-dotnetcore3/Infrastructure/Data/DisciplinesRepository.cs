@@ -101,7 +101,7 @@ namespace Web.API.Infrastructure.Data
             return discipline;
         }
 
-        public async Task<IEnumerable<ResourceDisciplines>> GetUserDisciplines(User user)
+        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(User user)
         {
             var sql = @"
                 select rd.ResourceId, d.Name, rd.YearsOfExperience
@@ -110,10 +110,10 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ResourceDisciplines>(sql);
+            return await connection.QueryAsync<ResourceDiscipline>(sql);
         }
 
-        public async Task<ResourceDisciplines> DeleteResourceDiscipline(ResourceDisciplines discipline)
+        public async Task<ResourceDiscipline> DeleteResourceDiscipline(ResourceDiscipline discipline)
         {
             var sql = @"
                delete from ResourceDiscipline 
@@ -125,7 +125,7 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.QueryAsync<ResourceDisciplines>(sql, new
+            await connection.QueryAsync<ResourceDiscipline>(sql, new
             {
                 ResourceId = discipline.ResourceId,
                 DisciplineName = discipline.Name
@@ -133,7 +133,7 @@ namespace Web.API.Infrastructure.Data
             return discipline;
         }
 
-        public async Task<ResourceDisciplines> InsertResourceDiscipline(ResourceDisciplines discipline)
+        public async Task<ResourceDiscipline> InsertResourceDiscipline(ResourceDiscipline discipline)
         {
             var sql = @"
                 insert into ResourceDiscipline 

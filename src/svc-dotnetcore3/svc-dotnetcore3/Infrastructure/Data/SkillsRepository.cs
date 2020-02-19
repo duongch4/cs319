@@ -34,10 +34,7 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 select
                     s.Id, s.DisciplineId, s.Name
-                from
-                    Skills s
-                inner join
-                    Disciplines d
+                from Skills s, Disciplines d
                 where
                     d.Id = s.DisciplineId
                     AND d.Name = @DisciplineName
@@ -169,7 +166,7 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.QueryAsync<ResourceDisciplines>(sql, new
+            await connection.QueryAsync<ResourceDiscipline>(sql, new
             {
                 ResourceId = skill.ResourceId,
                 ResourceDisciplineName = skill.ResourceDisciplineName,
