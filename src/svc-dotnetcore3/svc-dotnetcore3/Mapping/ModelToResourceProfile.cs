@@ -62,15 +62,14 @@ namespace Web.API.Mapping
             CreateMap<User, UserResource>();
         }
 
-        private void SetUserSummary()
+private void SetUserSummary()
         {
             CreateMap<UserResource, UserSummary>(
             ).ForMember(
                 destinationMember => destinationMember.Location,
                 opt => opt.MapFrom(
-                    sourceMember => new Location
+                    sourceMember => new LocationResource
                     {
-                        Id = sourceMember.LocationId,
                         Province = sourceMember.Province,
                         City = sourceMember.City
                     }
@@ -78,7 +77,21 @@ namespace Web.API.Mapping
             ).ForMember(
                 destinationMember => destinationMember.Utilization,
                 opt => opt.MapFrom(
-                    sourceMember => RandomNumber(0,100)
+                    sourceMember => RandomNumber(0, 150)
+                )
+            ).ForMember(
+                destinationMember => destinationMember.ResourceDiscipline,
+                opt => opt.MapFrom(
+                    sourceMember => new ResourceDisciplineResource
+                    {
+                        Discipline = sourceMember.DisciplineName,
+                        YearsOfExp = sourceMember.YearsOfExperience,
+                    }
+                )
+            ).ForMember(
+                destinationMember => destinationMember.UserID,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.Id
                 )
             ).ReverseMap();
         }
