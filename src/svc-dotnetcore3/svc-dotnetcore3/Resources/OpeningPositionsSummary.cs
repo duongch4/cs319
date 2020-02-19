@@ -9,7 +9,7 @@ namespace Web.API.Resources
         public int CommitmentMonthlyHours { get; set; }
 
         /// <summary>Discipline Name</summary>
-        /// <example>Intel</example>
+        /// <example>Language</example>
         public string Discipline { get; set; }
 
         /// <summary>Years Of Experience</summary>
@@ -17,7 +17,7 @@ namespace Web.API.Resources
         public string YearsOfExp { get; set; }
 
         /// <summary>Skills</summary>
-        /// <example>["s1", "s2"]</example>
+        /// <example>["Russian", "Mandarin"]</example>
         public HashSet<string> Skills { get; set; }
     }
 }

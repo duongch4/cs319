@@ -11,11 +11,11 @@ namespace Web.API.Resources
         public string Discipline { get; set; }
 
         /// <summary>Skills</summary>
-        /// <example>["s1","s2"]</example>
+        /// <example>["Deception","False Identity Creation"]</example>
         public string Skills { get; set; }
 
         /// <summary>Years Of Experience</summary>
-        /// <example>5-7</example>
+        /// <example>1-3</example>
         public string YearsOfExperience { get; set; }
     }
 }

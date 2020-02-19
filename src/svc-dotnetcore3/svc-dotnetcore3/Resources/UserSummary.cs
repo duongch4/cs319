@@ -9,11 +9,11 @@ namespace Web.API.Resources
         public int UserID { get; set; }
 
         /// <summary>User First Name</summary>
-        /// <example>Elissa</example>
+        /// <example>Jason</example>
         public string FirstName { get; set; }
         
         /// <summary>User Last Name</summary>
-        /// <example>Anderson</example>
+        /// <example>Bourne</example>
         public string LastName { get; set; }
 
         /// <summary>Location Object with City and Province</summary>

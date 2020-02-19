@@ -4,8 +4,8 @@ namespace Web.API.Resources
 {
     public class ProjectDirectMappingResource
     {
-        /// <summary>Project ID</summary>
-        /// <example>3570</example>
+        /// <summary>Project Number</summary>
+        /// <example>2005-P4T0-09</example>
         public string ProjectNumber { get; set; }
         /// <summary>Project Name</summary>
         /// <example>Designing the new Pawnee Commons</example>

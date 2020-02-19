@@ -18,11 +18,11 @@ namespace Web.API.Resources
         public int ManagerId { get; set; }
 
         /// <summary>Project Manager First Name</summary>
-        /// <example>1</example>
+        /// <example>Jason</example>
         public string FirstName { get; set; }
 
         /// <summary>Project Manager Last Name</summary>
-        /// <example>1</example>
+        /// <example>Bourne</example>
         public string LastName { get; set; }
 
         /// <summary>Project Title</summary>

@@ -6,7 +6,7 @@ namespace Web.API.Resources
         /// <example>5</example>
         public int Id { get; set; }
         /// <summary>Discipline Name</summary>
-        /// <example>Parks and Recreation</example>
+        /// <example>Intel</example>
         public string Name { get; set; }
     }
 }
