@@ -221,14 +221,14 @@ namespace Web.API.Controllers
         ///     POST /api/projects
         /// {
         ///     "projectSummary": {
-        ///         "title": "test Title",
+        ///         "title": "POST Title",
         ///         "location": {
         ///             "province": "test Province",
         ///             "city": "Vancouver"
         ///         },
         ///         "projectStartDate": "2020-10-31T00:00:00.0000000",
         ///         "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///         "projectNumber": "0000"
+        ///         "projectNumber": "2005-KJS4-46"
         ///     },
         ///     "projectManager": {
         ///         "userID": 5,
@@ -264,19 +264,19 @@ namespace Web.API.Controllers
         ///                 "discipline": "test d1",
         ///                 "yearsOfExp": "3-5"
         ///             },
-        ///             "isConfirmed": true
+        ///             "isConfirmed": false
         ///         }
         ///     ],
         ///     "openings": [
         ///         {
-        ///             "discipline": "Cryptography",
-        ///             "skills": ["Glock", "Kali"],
+        ///             "discipline": "Weapons",
+        ///             "skills": ["Glock", "Sniper Rifle"],
         ///             "yearsOfExp": "1-3",
         ///             "commitmentMonthlyHours": 160
         ///         },
         ///         {
-        ///             "discipline": "Language",
-        ///             "skills": ["Mandarin", "False Identity Creation"],
+        ///             "discipline": "Intel",
+        ///             "skills": ["Deception", "False Identity Creation"],
         ///             "yearsOfExp": "3-5",
         ///             "commitmentMonthlyHours": 180
         ///         }
@@ -331,7 +331,7 @@ namespace Web.API.Controllers
         ///     PUT /api/projects/2005-KJS4-46
         /// {
         ///     "projectSummary": {
-        ///         "title": "test Title",
+        ///         "title": "POST Title",
         ///         "location": {
         ///             "province": "test Province",
         ///             "city": "Vancouver"
@@ -374,19 +374,19 @@ namespace Web.API.Controllers
         ///                 "discipline": "test d1",
         ///                 "yearsOfExp": "3-5"
         ///             },
-        ///             "isConfirmed": true
+        ///             "isConfirmed": false
         ///         }
         ///     ],
         ///     "openings": [
         ///         {
-        ///             "discipline": "Cryptography",
-        ///             "skills": ["Glock", "Kali"],
+        ///             "discipline": "Weapons",
+        ///             "skills": ["Glock", "Sniper Rifle"],
         ///             "yearsOfExp": "1-3",
         ///             "commitmentMonthlyHours": 160
         ///         },
         ///         {
-        ///             "discipline": "Language",
-        ///             "skills": ["Mandarin", "False Identity Creation"],
+        ///             "discipline": "Intel",
+        ///             "skills": ["Deception", "False Identity Creation"],
         ///             "yearsOfExp": "3-5",
         ///             "commitmentMonthlyHours": 180
         ///         }
