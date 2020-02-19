@@ -2,9 +2,7 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadSpecificUserData = (action) => {
-  return {
-    userProfile: action.userProfile
-  }
+  return action.userProfile;
 };
 
 const executeUpdateSpecificUserData = (state, action) => {
@@ -17,9 +15,7 @@ const executeUpdateSpecificUserData = (state, action) => {
     newUserSummaries = [...state.users];
     newUserSummaries[indexOfUserSummary] = profile.userSummary;
   }
-  return {
-    userProfile: profile
-  }
+  return  profile;
 };
 
 export const userProfileReducer = (state = initialState.userProfile, action) => {

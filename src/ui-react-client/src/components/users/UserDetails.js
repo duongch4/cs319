@@ -8,18 +8,42 @@ import AvailabilityCard from './AvailabilityCard';
 import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
+
 class UserDetails extends Component {
     state = {
-        userProfile: {}
+        userProfile: {
+            userSummary: {
+                userID: 0,
+                firstName: "",
+                lastName: "",
+                location: {
+                    city: "",
+                    state: ""
+                },
+                utilization: 0,
+                resourceDiscipline: {
+                    discipline: "",
+                    yearsOfExp: ""
+                },
+                isConfirmed: false
+            },
+            currentProjects:[],
+            availability: [],
+            disciplines: []
+        }
     };
 
-    componentWillMount() {
-        this.props.loadSpecificUser(this.props.match.params.user_id);
+    componentDidMount() {
+        if (Object.keys(this.props.userProfile).length === 0) {
+            this.props.loadSpecificUser(this.props.match.params.user_id)
+                .then(
+                    this.setState({ userProfile: this.props.userProfile })
+                )
+        }
     };
 
     render(){
-        console.log(this.props);
-        let userDetails = this.props.userProfile;
+        let userDetails = this.state.userProfile;
         let disciplines = [];
         if (userDetails.disciplines) {
             userDetails.disciplines.forEach((discipline, index) => {

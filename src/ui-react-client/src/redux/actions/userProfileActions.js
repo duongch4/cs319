@@ -31,7 +31,7 @@ export const loadSpecificUser = (userID) => {
       return axios
           .get(`${baseURL + userID}`, { headers })
           .then(response => {
-            dispatch(loadUserProfileData(response.data.payload))
+            dispatch(loadUserProfileData(response.data.payload));
           })
           .catch(error => {
             throw error;
