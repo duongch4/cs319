@@ -10,14 +10,20 @@ import { Button } from "@material-ui/core";
 class EditUser extends Component {
     state = {
         userProfile: {},
-        pending: true
+        pending: true,
+        masterlist: {}
     };
 
     componentDidMount() {
-        this.props.loadMasterlists();
+        this.props.loadMasterlists()
+            .then(() => {
+                this.setState({
+                    ...this.state,
+                    masterlist: this.props.masterlist
+                })
+            });
         this.props.loadSpecificUser(this.props.match.params.user_id)
             .then(() => {
-                console.log(this.props);
                 this.setState({
                     ...this.state,
                     userProfile: this.props.userProfile,
@@ -46,6 +52,7 @@ class EditUser extends Component {
     };
 
     addUserDetails = (userProfile) => {
+        console.log(userProfile);
         this.setState({
             userProfile: {
                 ...this.state.userProfile,
@@ -53,7 +60,11 @@ class EditUser extends Component {
                     ...this.state.userProfile.userSummary,
                     firstName: userProfile.firstName,
                     lastName: userProfile.lastName,
-                    location: userProfile.location
+                    location: {
+                        ...this.state.userProfile.location,
+                        city: userProfile.location.city,
+                        province: userProfile.location.province
+                    }
                 }
             }
         })
@@ -66,7 +77,6 @@ class EditUser extends Component {
             </div>);
         } else {
             let disciplines = [];
-            console.log(this.props);
             if (this.props.userProfile) {
                 this.state.userProfile.disciplines.forEach((discipline, index) => {
                     disciplines.push(<Openings opening={discipline}

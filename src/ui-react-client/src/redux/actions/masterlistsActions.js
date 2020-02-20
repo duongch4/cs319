@@ -19,7 +19,7 @@ export const loadMasterlists = () => {
             dispatch(loadMasterlistsData(_initialState.masterlist));
         } else {
             return axios
-                .get(`${baseURL}api/masterlists/`, { headers })
+                .get(`${baseURL}masterlists/`, { headers })
                 .then (response => {
                     dispatch(loadMasterlistsData(response.data.payload));
                 })
