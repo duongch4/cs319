@@ -52,7 +52,6 @@ class EditUser extends Component {
     };
 
     addUserDetails = (userProfile) => {
-        console.log(userProfile);
         this.setState({
             userProfile: {
                 ...this.state.userProfile,
