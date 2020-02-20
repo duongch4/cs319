@@ -151,8 +151,13 @@ p {
     margin-bottom: 24px;
 }
 
-.form-label {
+.form-label:first-child {
     margin-right: 16px;
+    margin-left: 0px;
+}
+
+.form-label {
+    margin-left: 16px;
 }
 
 input.input-box, select.input-box {

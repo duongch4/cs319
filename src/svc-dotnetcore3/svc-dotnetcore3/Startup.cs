@@ -145,9 +145,14 @@ namespace Web.API
                 options.Authority = authSettings.Authority;
             });
 
+            services.AddScoped<IDisciplinesRepository>(sp => new DisciplinesRespository(connectionString));
             services.AddScoped<ILocationsRepository>(sp => new LocationsRepository(connectionString));
+            services.AddScoped<IPositionsRepository>(sp => new PositionsRepository(connectionString));
             services.AddScoped<IProjectsRepository>(sp => new ProjectsRepository(connectionString));
+            services.AddScoped<IResourceDisciplineRepository>(sp => new ResourceDisciplineRepository(connectionString));
+            services.AddScoped<ISkillsRepository>(sp => new SkillsRepository(connectionString));
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
+            services.AddScoped<IOutOfOfficeRepository>(sp => new OutOfOfficeRepository(connectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -213,8 +218,8 @@ namespace Web.API
                 if (env.IsDevelopment())
                 {
                     spa.Options.SourcePath = "../../ui-react-client/";
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                    // spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    // spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
                 else if (env.IsStaging())
                 {

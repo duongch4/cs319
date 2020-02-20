@@ -20,8 +20,8 @@ dotnet watch --project=src\svc-dotnetcore3\svc-dotnetcore3 run --launch-profile=
 
 ## Build Mode (only works on Tests and API)
 ```[cmd]
-dotnet build --project=src\svc-dotnetcore3\svc-dotnetcore3
-dotnet build --project=src\svc-dotnetcore3\Tests
+dotnet build src\svc-dotnetcore3\svc-dotnetcore3
+dotnet build src\svc-dotnetcore3\Tests
 ```
 
 ## Deployment Testing

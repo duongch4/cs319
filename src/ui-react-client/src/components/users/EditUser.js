@@ -1,6 +1,5 @@
 import React,{ Component } from 'react';
-import {loadDisciplines} from "../../redux/actions/disciplinesActions";
-import {loadExperiences} from "../../redux/actions/experienceActions";
+import { loadMasterlists } from "../../redux/actions/masterlistsActions";
 import {updateSpecificUser, loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {connect} from "react-redux";
 import TeamRequirements from "../projects/TeamRequirements";
@@ -10,108 +9,119 @@ import { Button } from "@material-ui/core";
 
 class EditUser extends Component {
     state = {
-        usersProfile: {
-            userID: null,
-            name: "",
-            discipline: {},
-            position: "",
-            utilization: 0,
-            location: {city: "", province: ""},
-            currentProjects: [],
-            availability: [],
-            disciplines:[]
-        }
+        userProfile: {},
+        pending: true,
+        masterlist: {}
     };
 
     componentDidMount() {
-        this.props.loadDisciplines();
-        // this.props.disciplines holds the master disciplines Map now
-        this.props.loadExperiences();
-        // this.props.masterYearsOfExperience holds the master list of experiences
-        this.props.loadSpecificUser();
-        var currentUser = this.props.usersProfile.filter(userProfile => userProfile.userID == this.props.match.params.user_id);
-        if (currentUser) {
-            this.setState({
-                usersProfile: currentUser[0]
-            })
-        }
+        this.props.loadMasterlists()
+            .then(() => {
+                this.setState({
+                    ...this.state,
+                    masterlist: this.props.masterlist
+                })
+            });
+        this.props.loadSpecificUser(this.props.match.params.user_id)
+            .then(() => {
+                this.setState({
+                    ...this.state,
+                    userProfile: this.props.userProfile,
+                    pending: false
+                })
+            });
     }
 
     onSubmit = () => {
-        this.props.updateSpecificUser(this.state.usersProfile)
+        this.props.updateSpecificUser(this.state.userProfile)
     };
 
     addDisciplines = (opening) => {
-        const disciplines = [...this.state.usersProfile.disciplines, opening.discipline];
+        let discipline = {
+            discipline: opening.discipline,
+            yearsOfExp: opening.yearsOfExp,
+            skills: opening.skills
+        };
+        const disciplines = [...this.state.userProfile.disciplines, discipline];
         this.setState({
-            usersProfile:{
-                ...this.state.usersProfile,
-                disciplines
+            userProfile: {
+                ...this.state.userProfile,
+                disciplines: disciplines
             }
         })
     };
 
     addUserDetails = (userProfile) => {
         this.setState({
-            usersProfile: {
-                ...this.state.usersProfile,
-                name: userProfile.name,
-                location: userProfile.location
+            userProfile: {
+                ...this.state.userProfile,
+                userSummary: {
+                    ...this.state.userProfile.userSummary,
+                    firstName: userProfile.firstName,
+                    lastName: userProfile.lastName,
+                    location: {
+                        ...this.state.userProfile.location,
+                        city: userProfile.location.city,
+                        province: userProfile.location.province
+                    }
+                }
             }
         })
     };
 
     render() {
-        const disciplines = [];
-        if (this.state.usersProfile) {
-            this.state.usersProfile.disciplines.forEach((discipline, index) => {
-                disciplines.push(<Openings opening={discipline}
-                                           index={index}
-                                           key={disciplines.length} />)
-            });
+        if (this.state.pending) {
+            return (<div className="activity-container">
+                <h1>Loading user data...</h1>
+            </div>);
+        } else {
+            let disciplines = [];
+            if (this.props.userProfile) {
+                this.state.userProfile.disciplines.forEach((discipline, index) => {
+                    disciplines.push(<Openings opening={discipline}
+                                               index={index}
+                                               key={disciplines.length} />)
+                });
+            }
+            return (
+                <div className="activity-container">
+                    <h1 className="greenHeader">Edit user</h1>
+                    <div className="section-container">
+                        <EditUserDetails userProfile={this.state.userProfile.userSummary}
+                                         addUserDetails={(userProfile) => this.addUserDetails(userProfile)}
+                                         locations={this.props.masterlist.locations}/>
+                    </div>
+                    <div className="section-container">
+                        <TeamRequirements disciplines={this.props.masterlist.disciplines}
+                                          masterYearsOfExperience={this.props.masterlist.yearsOfExp}
+                                          addOpening={(opening) => this.addDisciplines(opening)}
+                                          isUserPage={true}/>
+                        <hr />
+                        {disciplines}
+                    </div>
+                    <Button variant="contained"
+                            style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                            disableElevation
+                            onClick={() => this.onSubmit()}>
+                        Save
+                    </Button>
+                </div>
+            );
         }
-
-        return (
-            <div className="activity-container">
-                <h1 className="greenHeader">Edit user</h1>
-                <div className="section-container">
-                <EditUserDetails userProfile={this.state.usersProfile}
-                                 addUserDetails={(userProfile) => this.addUserDetails(userProfile)}
-                                 locations={this.props.locations}/>
-                </div>
-                <div className="section-container">
-                <TeamRequirements disciplines={this.props.disciplines}
-                                  masterYearsOfExperience={this.props.masterYearsOfExperience}
-                                  addOpening={(opening) => this.addDisciplines(opening)}
-                                  isUserPage={true}/>
-                <hr />
-                {disciplines}
-                </div>
-                <Button variant="contained"
-                        style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                        disableElevation
-                        onClick={() => this.onSubmit()}>
-                    Save
-                </Button>
-            </div>
-        );
     }
 }
 
 const mapStateToProps = state => {
     return {
-        disciplines: state.disciplines,
-        locations: state.locations,
-        masterYearsOfExperience: state.masterYearsOfExperience,
-        usersProfile: state.usersProfile
+        masterlist: state.masterlist,
+        userProfile: state.userProfile
     };
 };
 
 const mapDispatchToProps = {
-    loadDisciplines,
-    loadExperiences,
+    loadMasterlists,
+    loadSpecificUser,
     updateSpecificUser,
-    loadSpecificUser
 };
 
 export default connect(
