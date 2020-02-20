@@ -49,17 +49,33 @@ class CreateEditProjectDetails extends Component {
     handleChange = (e) => {
         if (e.target.id === "city") {
             this.setState({
-                location: {...this.state.location, city: e.target.value}
-            }, () => this.props.addProjDetails(this.state))
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    location: {...this.state.location, city: e.target.value}
+                }
+            });
+            this.props.addProjDetails(this.state.projectSummary);
         } else if (e.target.id === "province") {
+            let newCities = this.props.locations[e.target.value];
             this.setState({
-                location: {...this.state.location, province: e.target.value},
-                city_options: this.state.city_options
-            }, () => this.props.addProjDetails(this.state))
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    location: {...this.state.location, province: e.target.value},
+                },
+                city_options: newCities
+            });
+            this.props.addProjDetails(this.state.projectSummary);
         } else {
             this.setState({
-                [e.target.id]: e.target.value
-            }, () => this.props.addProjDetails(this.state))
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    [e.target.id]: e.target.value
+                }
+            })
+            this.props.addProjDetails(this.state.projectSummary);
         }
     };
 
