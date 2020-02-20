@@ -65,10 +65,15 @@
     <None Include="Database.DEV.publish.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\Locations.sql" />
-    <Build Include="dbo\Tables\Users.sql" />
-    <Build Include="dbo\Tables\Projects.sql" />
     <Build Include="dbo\Tables\Disciplines.sql" />
+    <Build Include="dbo\Tables\Locations.sql" />
+    <Build Include="dbo\Tables\OutOfOffice.sql" />
+    <Build Include="dbo\Tables\Positions.sql" />
+    <Build Include="dbo\Tables\PositionSkills.sql" />
+    <Build Include="dbo\Tables\Projects.sql" />
+    <Build Include="dbo\Tables\ResourceDiscipline.sql" />
+    <Build Include="dbo\Tables\ResourceSkill.sql" />
     <Build Include="dbo\Tables\Skills.sql" />
+    <Build Include="dbo\Tables\Users.sql" />
   </ItemGroup>
 </Project>
