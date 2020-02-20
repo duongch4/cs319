@@ -17,7 +17,6 @@ namespace Web.API.Resources
         public string LastName { get; set; }
 
         /// <summary>Location Object with City and Province</summary>
-        /// <example>["Vancouver", "BC"]</example>
         public LocationResource Location { get; set; }
 
         /// <summary>Utilization</summary>
@@ -25,7 +24,6 @@ namespace Web.API.Resources
         public int Utilization { get; set; }
 
         /// <summary>Resource Discipline</summary>
-        /// <example>2</example>
         public ResourceDisciplineResource ResourceDiscipline { get; set; }
 
         /// <summary>Confirmation Status</summary>
