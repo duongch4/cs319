@@ -21,9 +21,9 @@ namespace Web.API.Application.Communication
         }
     }
 
-    public class UnauthorizedAccessException : BaseException
+    public class UnauthorizedException : BaseException
     {
-        public UnauthorizedAccessException(string message, int code = StatusCodes.Status401Unauthorized, string status = "Unauthorized Access") : base(message, code, status)
+        public UnauthorizedException(string message, int code = StatusCodes.Status401Unauthorized, string status = "Unauthorized Access") : base(message, code, status)
         { }
     }
 

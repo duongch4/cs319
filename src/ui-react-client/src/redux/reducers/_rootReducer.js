@@ -1,12 +1,16 @@
 import { combineReducers } from 'redux';
 import users from './usersReducer';
 import projects from './projectsReducer';
-import locations from './locationsReducer';
+import masterlist from './masterlistsReducer';
+import userProfile from "./userProfileReducer";
+import projectProfile from "./projectProfileReducer";
 
 const rootReducer = combineReducers({
   users: users,
   projects: projects,
-  locations: locations,
+  masterlist: masterlist,
+  userProfile: userProfile,
+  projectProfile: projectProfile
 });
 
 export default rootReducer;

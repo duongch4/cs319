@@ -1,39 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ProjectCard from './ProjectCard';
 
 const ProjectList = ({ projects }) => {
+  var projectList = [];
+  // console.log(projects);
+  projects.forEach((project, index) => {
+    // console.log(project);
+    projectList.push(
+      <div key={projectList.length} className="card">
+          <ProjectCard number={index + 1} project={project}
+                       canEditProject={true} key={projectList.length}/>
+      </div>
+    )
+  });
   return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Number</th>
-            <th>Title</th>
-            <th>Location</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map(project => (
-            <tr key={project.id}>
-              <td>{project.id}</td>
-              <td>{project.number}</td>
-              <td>{project.title}</td>
-              <td>{project.locationName}</td>
-              <td>{project.createdAt}</td>
-              <td>{project.updatedAt}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-};
+      <div>
+        {projectList}
+      </div>)
+}
 
 ProjectList.propTypes = {
   projects: PropTypes.array.isRequired,
 };
 
-export default ProjectList;
+export default ProjectList

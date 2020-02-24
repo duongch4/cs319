@@ -16,7 +16,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -53,14 +53,16 @@ namespace Web.API.Controllers
         /// <returns>All available projects</returns>
         /// <response code="200">Returns all available projects</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectSummary>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllProjects()
         {
             try
@@ -101,14 +103,16 @@ namespace Web.API.Controllers
         /// <returns>The requested project</returns>
         /// <response code="200">Returns the requested project</response>
         /// <response code="400">Bad Request</response>
-        /// <response code="404">If the requested project cannot found</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="404">If the requested project cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects/{projectNumber}", Name = "GetAProject")]
         [ProducesResponseType(typeof(OkResponse<ProjectProfile>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAProject(string projectNumber)
         {
             if (projectNumber == null)
@@ -124,19 +128,20 @@ namespace Web.API.Controllers
                 }
                 var projectSummary = mapper.Map<ProjectResource, ProjectSummary>(project);
 
-                var projectManager = mapper.Map<ProjectResource, ProjectManagerResource>(project);
+                var projectManager = mapper.Map<ProjectResource, ProjectManager>(project);
 
                 var users = await usersRepository.GetAllUsersResourceOnProject(project.Id, project.ManagerId);
                 if (users == null || !users.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No User at projectNumber '{projectNumber}' found"));
+                    users = new UserResource[]{};
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
 
                 var openingPositions = await positionsRepository.GetAllUnassignedPositionsResourceOfProject(project.Id);
                 if (openingPositions == null || !openingPositions.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
+                    // return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
+                    openingPositions = new OpeningPositionsResource[]{};
                 }
                 var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
 
@@ -177,14 +182,16 @@ namespace Web.API.Controllers
         /// <returns>The requested project</returns>
         /// <response code="200">Returns the most recent projects</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("projects/most-recent")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectProfile>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetMostRecentProjects()
         {
             try
@@ -219,81 +226,83 @@ namespace Web.API.Controllers
         /// Sample request:
         ///
         ///     POST /api/projects
-        /// {
-        ///     "projectSummary": {
-        ///         "title": "POST Title",
-        ///         "location": {
-        ///             "province": "test Province",
-        ///             "city": "Vancouver"
-        ///         },
-        ///         "projectStartDate": "2020-10-31T00:00:00.0000000",
-        ///         "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///         "projectNumber": "2005-KJS4-46"
-        ///     },
-        ///     "projectManager": {
-        ///         "userID": 5,
-        ///         "lastName": "Lulu",
-        ///         "firstName": "Lala"
-        ///     },
-        ///     "usersSummary": [
-        ///         {
-        ///             "firstName": "test FirstName 1",
-        ///             "lastName": "test LastName 1",
-        ///             "userID": 1,
+        ///     {
+        ///         "projectSummary": {
+        ///             "title": "POST Title",
         ///             "location": {
-        ///                 "province": "test Province User 1",
-        ///                 "city": "test City User 1"
+        ///                 "province": "test Province",
+        ///                 "city": "Vancouver"
         ///             },
-        ///             "utilization": 100,
-        ///             "resourceDiscipline": {
-        ///                 "discipline": "test d1",
-        ///                 "yearsOfExp": "3-5"
-        ///             },
-        ///             "isConfirmed": true
+        ///             "projectStartDate": "2020-10-31T00:00:00.0000000",
+        ///             "projectEndDate": "2021-02-12T00:00:00.0000000",
+        ///             "projectNumber": "2005-KJS4-46"
         ///         },
-        ///         {
-        ///             "firstName": "test FirstName 2",
-        ///             "lastName": "test LastName 2",
-        ///             "userID": 2,
-        ///             "location": {
-        ///                 "province": "test Province User 2",
-        ///                 "city": "test City User 2"
-        ///             },
-        ///             "utilization": 90,
-        ///             "resourceDiscipline": {
-        ///                 "discipline": "test d1",
-        ///                 "yearsOfExp": "3-5"
-        ///             },
-        ///             "isConfirmed": false
-        ///         }
-        ///     ],
-        ///     "openings": [
-        ///         {
-        ///             "discipline": "Weapons",
-        ///             "skills": ["Glock", "Sniper Rifle"],
-        ///             "yearsOfExp": "1-3",
-        ///             "commitmentMonthlyHours": 160
+        ///         "projectManager": {
+        ///             "userID": 5,
+        ///             "lastName": "Lulu",
+        ///             "firstName": "Lala"
         ///         },
-        ///         {
-        ///             "discipline": "Intel",
-        ///             "skills": ["Deception", "False Identity Creation"],
-        ///             "yearsOfExp": "3-5",
-        ///             "commitmentMonthlyHours": 180
-        ///         }
-        ///     ]
-        /// }
+        ///         "usersSummary": [
+        ///             {
+        ///                 "firstName": "test FirstName 1",
+        ///                 "lastName": "test LastName 1",
+        ///                 "userID": 1,
+        ///                 "location": {
+        ///                     "province": "test Province User 1",
+        ///                     "city": "test City User 1"
+        ///                 },
+        ///                 "utilization": 100,
+        ///                 "resourceDiscipline": {
+        ///                     "discipline": "test d1",
+        ///                     "yearsOfExp": "3-5"
+        ///                 },
+        ///                 "isConfirmed": true
+        ///             },
+        ///             {
+        ///                 "firstName": "test FirstName 2",
+        ///                 "lastName": "test LastName 2",
+        ///                 "userID": 2,
+        ///                 "location": {
+        ///                     "province": "test Province User 2",
+        ///                     "city": "test City User 2"
+        ///                 },
+        ///                 "utilization": 90,
+        ///                 "resourceDiscipline": {
+        ///                     "discipline": "test d1",
+        ///                     "yearsOfExp": "3-5"
+        ///                 },
+        ///                 "isConfirmed": false
+        ///             }
+        ///         ],
+        ///         "openings": [
+        ///             {
+        ///                 "discipline": "Weapons",
+        ///                 "skills": ["Glock", "Sniper Rifle"],
+        ///                 "yearsOfExp": "1-3",
+        ///                 "commitmentMonthlyHours": 160
+        ///             },
+        ///             {
+        ///                 "discipline": "Intel",
+        ///                 "skills": ["Deception", "False Identity Creation"],
+        ///                 "yearsOfExp": "3-5",
+        ///                 "commitmentMonthlyHours": 180
+        ///             }
+        ///         ]
+        ///     }
         ///
         /// </remarks>
         /// <param name="projectProfile"></param>
         /// <returns>A newly created project</returns>
         /// <response code="201">Returns the newly created project</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Route("projects")]
         [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateAProject([FromBody] ProjectProfile projectProfile)
         {
             if (projectProfile == null)
@@ -329,69 +338,69 @@ namespace Web.API.Controllers
         /// Sample request:
         ///
         ///     PUT /api/projects/2005-KJS4-46
-        /// {
-        ///     "projectSummary": {
-        ///         "title": "POST Title",
-        ///         "location": {
-        ///             "province": "test Province",
-        ///             "city": "Vancouver"
-        ///         },
-        ///         "projectStartDate": "2020-10-31T00:00:00.0000000",
-        ///         "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///         "projectNumber": "2005-KJS4-46"
-        ///     },
-        ///     "projectManager": {
-        ///         "userID": 5,
-        ///         "lastName": "Lulu",
-        ///         "firstName": "Lala"
-        ///     },
-        ///     "usersSummary": [
-        ///         {
-        ///             "firstName": "test FirstName 1",
-        ///             "lastName": "test LastName 1",
-        ///             "userID": 1,
+        ///     {
+        ///         "projectSummary": {
+        ///             "title": "POST Title",
         ///             "location": {
-        ///                 "province": "test Province User 1",
-        ///                 "city": "test City User 1"
+        ///                 "province": "test Province",
+        ///                 "city": "Vancouver"
         ///             },
-        ///             "utilization": 100,
-        ///             "resourceDiscipline": {
-        ///                 "discipline": "test d1",
-        ///                 "yearsOfExp": "3-5"
-        ///             },
-        ///             "isConfirmed": true
+        ///             "projectStartDate": "2020-10-31T00:00:00.0000000",
+        ///             "projectEndDate": "2021-02-12T00:00:00.0000000",
+        ///             "projectNumber": "2005-KJS4-46"
         ///         },
-        ///         {
-        ///             "firstName": "test FirstName 2",
-        ///             "lastName": "test LastName 2",
-        ///             "userID": 2,
-        ///             "location": {
-        ///                 "province": "test Province User 2",
-        ///                 "city": "test City User 2"
-        ///             },
-        ///             "utilization": 90,
-        ///             "resourceDiscipline": {
-        ///                 "discipline": "test d1",
-        ///                 "yearsOfExp": "3-5"
-        ///             },
-        ///             "isConfirmed": false
-        ///         }
-        ///     ],
-        ///     "openings": [
-        ///         {
-        ///             "discipline": "Weapons",
-        ///             "skills": ["Glock", "Sniper Rifle"],
-        ///             "yearsOfExp": "1-3",
-        ///             "commitmentMonthlyHours": 160
+        ///         "projectManager": {
+        ///             "userID": 5,
+        ///             "lastName": "Lulu",
+        ///             "firstName": "Lala"
         ///         },
-        ///         {
-        ///             "discipline": "Intel",
-        ///             "skills": ["Deception", "False Identity Creation"],
-        ///             "yearsOfExp": "3-5",
-        ///             "commitmentMonthlyHours": 180
-        ///         }
-        ///     ]
-        /// }
+        ///         "usersSummary": [
+        ///             {
+        ///                 "firstName": "test FirstName 1",
+        ///                 "lastName": "test LastName 1",
+        ///                 "userID": 1,
+        ///                 "location": {
+        ///                     "province": "test Province User 1",
+        ///                     "city": "test City User 1"
+        ///                 },
+        ///                 "utilization": 100,
+        ///                 "resourceDiscipline": {
+        ///                     "discipline": "test d1",
+        ///                     "yearsOfExp": "3-5"
+        ///                 },
+        ///                 "isConfirmed": true
+        ///             },
+        ///             {
+        ///                 "firstName": "test FirstName 2",
+        ///                 "lastName": "test LastName 2",
+        ///                 "userID": 2,
+        ///                 "location": {
+        ///                     "province": "test Province User 2",
+        ///                     "city": "test City User 2"
+        ///                 },
+        ///                 "utilization": 90,
+        ///                 "resourceDiscipline": {
+        ///                     "discipline": "test d1",
+        ///                     "yearsOfExp": "3-5"
+        ///                 },
+        ///                 "isConfirmed": false
+        ///             }
+        ///         ],
+        ///         "openings": [
+        ///             {
+        ///                 "discipline": "Weapons",
+        ///                 "skills": ["Glock", "Sniper Rifle"],
+        ///                 "yearsOfExp": "1-3",
+        ///                 "commitmentMonthlyHours": 160
+        ///             },
+        ///             {
+        ///                 "discipline": "Intel",
+        ///                 "skills": ["Deception", "False Identity Creation"],
+        ///                 "yearsOfExp": "3-5",
+        ///                 "commitmentMonthlyHours": 180
+        ///             }
+        ///         ]
+        ///     }
         ///
         /// </remarks>
         /// <param name="projectProfile"></param>
@@ -399,12 +408,14 @@ namespace Web.API.Controllers
         /// <returns>An updated project</returns>
         /// <response code="200">Returns the updated project</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("projects/{projectNumber}")]
-        [ProducesResponseType(typeof(UpdatedResponse<ProjectProfile>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(UpdatedResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAProject([FromBody] ProjectProfile projectProfile, string projectNumber)
         {
             if (projectProfile == null)
@@ -442,71 +453,6 @@ namespace Web.API.Controllers
             }
         }
 
-        // /// <summary>Assigns a user to an opening and modifies the project</summary>
-        // /// <remarks>
-        // /// Sample request:
-        // ///
-        // ///     PUT /api/projects/{projectId}/assign/{openingId}
-        // ///     {
-        // ///        "PositionId": 1,
-        // ///        "UserId": 2
-        // ///     }
-        // ///
-        // /// </remarks>
-        // /// <param name="projectId"></param>
-        // /// <param name="openingId"></param>
-        // /// <param name="req"></param>
-        // /// <returns>The newly updated project</returns>
-        // /// <response code="201">Returns the newly updated project</response>
-        // /// <response code="400">Bad Request</response>
-        // /// <response code="500">Internal Server Error</response>
-        // [HttpPut]
-        // [Route("projects/{projectId}/assign/{openingId}")]
-        // [ProducesResponseType(typeof(OkResponse<ProjectProfile>), StatusCodes.Status201Created)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // public async Task<IActionResult> UpdateAProject(int projectId, int openingId, [FromBody] RequestProjectAssign req)
-        // {
-        //     Log.Information("{@a}", req);
-        //     Log.Information("{@a}", projectId);
-        //     Log.Information("{@a}", openingId);
-        //     // Log.Information("{@a}", openingId);
-
-        //     if (req == null)
-        //     {
-        //         return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given Request Body cannot be read"));
-        //     }
-
-        //     try
-        //     {
-        //         // Log.Logger.Here().Information("{@Req}", req);
-        //         // User user = new {
-        //         //     Id = req.userId,
-        //         //     FirstName 
-        //         // };
-        //         // var assginedUser = await usersRepository.UpdateAUser();
-        //         // var updated = await projectsRepository.UpdateAProject(project);
-        //         // var resource = mapper.Map<Project, ProjectResource>(updated);
-        //         // var response = new OkResponse<ProjectResource>(resource, "Successfully updated");
-        //         // return StatusCode(StatusCodes.Status200OK, response);
-        //         return Ok(req);
-        //     }
-        //     catch (Exception err)
-        //     {
-        //         var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-        //         if (err is SqlException)
-        //         {
-        //             var error = new InternalServerException(errMessage);
-        //             return StatusCode(StatusCodes.Status500InternalServerError, error);
-        //         }
-        //         else
-        //         {
-        //             var error = new BadRequestException(errMessage);
-        //             return StatusCode(StatusCodes.Status400BadRequest, error);
-        //         }
-        //     }
-        // }
-
         /// <summary>Delete a project</summary>
         /// <remarks>
         /// Sample request:
@@ -518,14 +464,16 @@ namespace Web.API.Controllers
         /// <returns>The old deleted project number</returns>
         /// <response code="200">Returns the old deleted project number</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
         [Route("projects/{projectNumber}")]
         [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAProject([FromRoute] string projectNumber)
         {
             if (projectNumber == null)
@@ -571,10 +519,15 @@ namespace Web.API.Controllers
         /// <returns>The old deleted project</returns>
         /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("projects/{projectNumber}/assign/{positionId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AssignAResource([FromBody] RequestProjectAssign reqBody)
         {
             try
@@ -608,25 +561,25 @@ namespace Web.API.Controllers
         }
     }
 
-    [Authorize]
-    public class OldProjectsController : ControllerBase
-    {
-        private readonly IProjectsRepository projectsRepository;
-        private readonly IMapper mapper;
+    // [Authorize]
+    // public class OldProjectsController : ControllerBase
+    // {
+    //     private readonly IProjectsRepository projectsRepository;
+    //     private readonly IMapper mapper;
 
-        public OldProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
-        {
-            this.projectsRepository = projectsRepository;
-            this.mapper = mapper;
-        }
+    //     public OldProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
+    //     {
+    //         this.projectsRepository = projectsRepository;
+    //         this.mapper = mapper;
+    //     }
 
-        [HttpGet]
-        [Route("/projects")]
-        public async Task<IActionResult> GetAllProjects()
-        {
-            var response = await projectsRepository.GetAllProjects();
-            var viewModel = mapper.Map<IEnumerable<Project>>(response);
-            return Ok(viewModel);
-        }
-    }
+    //     [HttpGet]
+    //     [Route("/projects")]
+    //     public async Task<IActionResult> GetAllProjects()
+    //     {
+    //         var response = await projectsRepository.GetAllProjects();
+    //         var viewModel = mapper.Map<IEnumerable<Project>>(response);
+    //         return Ok(viewModel);
+    //     }
+    // }
 }
