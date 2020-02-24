@@ -54,8 +54,7 @@ class CreateEditProjectDetails extends Component {
                     ...this.state.projectSummary,
                     location: {...this.state.location, city: e.target.value}
                 }
-            });
-            this.props.addProjDetails(this.state.projectSummary);
+            }, () => this.props.addProjDetails(this.state.projectSummary));
         } else if (e.target.id === "province") {
             let newCities = this.props.locations[e.target.value];
             this.setState({
@@ -65,8 +64,7 @@ class CreateEditProjectDetails extends Component {
                     location: {...this.state.location, province: e.target.value},
                 },
                 city_options: newCities
-            });
-            this.props.addProjDetails(this.state.projectSummary);
+            }, () => this.props.addProjDetails(this.state.projectSummary));
         } else {
             this.setState({
                 ...this.state,
@@ -74,8 +72,7 @@ class CreateEditProjectDetails extends Component {
                     ...this.state.projectSummary,
                     [e.target.id]: e.target.value
                 }
-            })
-            this.props.addProjDetails(this.state.projectSummary);
+            }, () => this.props.addProjDetails(this.state.projectSummary));
         }
     };
 

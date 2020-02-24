@@ -38,8 +38,7 @@ class EditUserDetails extends Component {
                 userSummary: {
                     ...this.state.userSummary,
                     location: {...this.state.location, city: e.target.value}
-                    }});
-            this.props.addUserDetails(this.state.userSummary);
+                    }}, () => this.props.addUserDetails(this.state.userSummary));
         } else if (e.target.id === "province") {
             let newCities = this.props.locations[e.target.value];
             this.setState(
@@ -49,8 +48,7 @@ class EditUserDetails extends Component {
                         ...this.state.userSummary,
                         location: {...this.state.location, province: e.target.value}},
                     city_options: newCities
-                });
-            this.props.addUserDetails(this.state.userSummary);
+                }, () => this.props.addUserDetails(this.state.userSummary));
         } else {
             this.setState({
                 ...this.state,
@@ -58,8 +56,7 @@ class EditUserDetails extends Component {
                     ...this.state.userSummary,
                         [e.target.id]: e.target.value
                     }
-            });
-            this.props.addUserDetails(this.state.userSummary)
+            }, () => this.props.addUserDetails(this.state.userSummary));
         }
     };
 

@@ -48,7 +48,6 @@ export const updateSpecificUser = (user) => {
       return axios
           .put(baseURL, user, { headers })
           .then(response => {
-            console.log(response);
             dispatch(updateUserProfileData(user));
           })
           .catch(error => {

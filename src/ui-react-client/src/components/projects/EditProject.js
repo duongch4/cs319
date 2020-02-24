@@ -90,8 +90,6 @@ class EditProject extends Component {
                 );
             }
 
-            console.log('editproj');
-            console.log(this.state);
             return (
                 <div className="activity-container">
                     <h1 className="greenHeader">Edit project</h1>

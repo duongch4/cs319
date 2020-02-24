@@ -16,7 +16,6 @@ class UserDetails extends Component {
 
     componentDidMount() {
         if (Object.keys(this.props.userProfile).length === 0) {
-            console.log('making API call');
             this.props.loadSpecificUser(this.props.match.params.user_id)
                 .then(() => {
                     this.setState({ userProfile: this.props.userProfile });
@@ -44,7 +43,6 @@ class UserDetails extends Component {
             if(userDetails.currentProjects){
                 userDetails.currentProjects.forEach((project, index) => {
                     let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
-                    console.log(projectRole[0]);
                     currentProjects.push(
                         <Link to={'/projects/' + project.projectNumber}>
                             <ProjectCard number={index} project={project} canEditProject={false}

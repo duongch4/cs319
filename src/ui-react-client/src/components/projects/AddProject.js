@@ -128,9 +128,8 @@ class AddProject extends Component {
                 </div>
             )
         }
-        ;
     }
-};
+}
 
 const mapStateToProps = state => {
     return {

@@ -1,24 +1,20 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Openings from './Openings'
 import './ProjectStyles.css';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import UserCard from "../users/UserCard";
-import { Button } from "@material-ui/core";
-import { Link } from 'react-router-dom';
-import { loadSingleProject } from "../../redux/actions/projectProfileActions";
-import { formatDate } from "../../util/dateFormatter";
-import { CLIENT_DEV_ENV } from '../../config/config';
+import {Button} from "@material-ui/core";
+import {Link} from 'react-router-dom';
+import {loadSingleProject} from "../../redux/actions/projectProfileActions";
+import {formatDate} from "../../util/dateFormatter";
+import {CLIENT_DEV_ENV} from '../../config/config';
 
 class ProjectDetails extends Component {
     state = {
         projectProfile: this.props.projectProfile
     };
 
-    // XXX TODO: These (below) will eventually be sent in from the database XXX
-
     componentDidMount = () => {
-        // console.log("AAA");
-        // console.log(CLIENT_DEV_ENV);
         if (CLIENT_DEV_ENV) {
             this.props.loadSingleProject(this.props.match.params.project_id);
             var projectProfile = this.props.projectProfile;
@@ -27,11 +23,9 @@ class ProjectDetails extends Component {
                     projectProfile
                 })
             }
-        }
-        else {
+        } else {
             this.props.loadSingleProject(this.props.match.params.project_id)
                 .then(res => {
-                    // console.log(this.props);
                     var projectProfile = this.props.projectProfile;
                     if (projectProfile) {
                         this.setState({
@@ -50,14 +44,15 @@ class ProjectDetails extends Component {
             if (openings.length > 0) {
                 openings.forEach((opening, index) => {
                     openingsRender.push(<Openings opening={opening}
-                        index={index} commitment={opening.commitmentMonthlyHours}
-                        isAssignable={true} key={openingsRender.length} />);
+                                                  index={index} commitment={opening.commitmentMonthlyHours}
+                                                  isAssignable={true} key={openingsRender.length}/>);
                     if (openings.length - 1 !== index) {
-                        openingsRender.push(<hr key={openingsRender.length}></hr>)
+                        openingsRender.push(<hr key={openingsRender.length}/>)
                     }
                 })
             } else {
-                openingsRender.push(<p className="empty-statements">There are currently no openings for this project.</p>);
+                openingsRender.push(<p className="empty-statements">There are currently no openings for this
+                    project.</p>);
             }
 
             var teamMembersRender = [];
@@ -65,7 +60,7 @@ class ProjectDetails extends Component {
             if (userSummaries.length > 0) {
                 userSummaries.forEach(userSummary => {
                     teamMembersRender.push(
-                        <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length} />)
+                        <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>)
                 })
             } else {
                 teamMembersRender.push(
@@ -90,14 +85,16 @@ class ProjectDetails extends Component {
                         <h1 className="blueHeader">{projectDetails.projectSummary.title}</h1>
                         <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber}>
                             <Button variant="contained"
-                                style={{ backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                                disableElevation>
+                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
+                                    disableElevation>
                                 Edit
                             </Button>
                         </Link>
                     </div>
                     <div className="section-container">
-                        <p><b>Location:</b> {projectDetails.projectSummary.location.city}, {projectDetails.projectSummary.location.province}</p>
+                        <p>
+                            <b>Location:</b> {projectDetails.projectSummary.location.city}, {projectDetails.projectSummary.location.province}
+                        </p>
                         <p><b>Duration:</b> {projectStartDate} - {projectEndDate}</p>
                     </div>
                     <div className="section-container">
@@ -110,8 +107,7 @@ class ProjectDetails extends Component {
                     </div>
                 </div>
             )
-        }
-        else {
+        } else {
             return <div>Loading</div>
         }
 
