@@ -14,6 +14,17 @@ class AddProject extends Component {
     disciplines: [],
     skills: [],
     years_experience: [],
+    /*
+    filterType
+      location: "",
+      discipline: "", - what is there are multiple ones to search?
+      experience: "",
+      utilization: "",
+      searchParam: "",
+      startDate: "",
+      endDate: "" ; 
+    filterValue = String ; 
+    */
   }
 
   componentDidMount(){
