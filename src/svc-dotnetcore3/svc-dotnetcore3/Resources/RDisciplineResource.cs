@@ -9,7 +9,7 @@ namespace Web.API.Resources
         public string Discipline { get; set; }
         /// <summary>Years of Experience Range</summary>
         /// <example>3-5</example>
-        public string YearsOfExperience {get; set;}
+        public string YearsOfExp {get; set;}
         /// <summary>Skills of Discipline</summary>
         /// <example>["False Identity Creation", "Deception"]</example>
         public List<string> Skills {get; set;}
