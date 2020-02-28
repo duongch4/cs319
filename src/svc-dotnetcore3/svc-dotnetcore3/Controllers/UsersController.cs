@@ -156,7 +156,7 @@ namespace Web.API.Controllers
                     var discSkills = skills.Where(x => x.ResourceDisciplineName == discipline.Name);
                     var disc = new RDisciplineResource{
                         Discipline = discipline.Name,
-                        YearsOfExperience = discipline.YearsOfExperience,
+                        YearsOfExp = discipline.YearsOfExperience,
                         Skills = discSkills.Select(x => x.Name).ToList()
                     };
                     disciplineResources = disciplineResources.Append(disc);
@@ -193,50 +193,67 @@ namespace Web.API.Controllers
         /// Sample request:
         ///
         ///     PUT /api/users/3
-        ///     {
-        ///         "userSummary": {
-        ///             "userId": 3,
-        ///             "firstName": "Natasha",
-        ///             "lastName": "Romanov",
-        ///             "location": {
-        ///                 "province": "British Columbia",
-        ///                 "city": "Vancouver"
-        ///             },
-        ///             "utilization": 170
-        ///         },
-        ///         "currentProjects": [
-        ///             {
-        ///                 "id": 2,
-        ///                 "title": "Budapest",
-        ///                 "locationId": 19,
-        ///                 "projectStartDate": "2020-04-19T00:00:00",
-        ///                 "projectEndDate": "2020-07-01T00:00:00"
-        ///             }
-        ///         ],
-        ///         "availability": [
-        ///             {
-        ///                 "fromDate": "2020-10-31T00:00:00",
-        ///                 "toDate": "2020-11-11T00:00:00",
-        ///                 "reason": "Maternal Leave"
-        ///             }
-        ///         ],
-        ///         "disciplines": [
-        ///             {
-        ///                 "name": "Weapons",
-        ///                 "yearsOfExperience": "10+",
-        ///                 "skills": [
-        ///                     "Glock", "Sniper Rifle"
-        ///                 ]
-        ///             }
-        ///         ],
-        ///         "positions": [
-        ///             {
-        ///                 "projectTitle": "",
-        ///                 "disciplineName: "",
-        ///                 "projectedMonthlyHours: ""
-        ///             }
+        /// {
+        ///     "userSummary": {
+        ///       "userID": 3,
+        ///       "firstName": "Nat",
+        ///       "lastName": "Romanov",
+        ///       "location": {
+        ///         "province": "Alberta",
+        ///         "city": "Calgary"
+        ///       },
+        ///       "utilization": 117,
+        ///       "resourceDiscipline": {
+        ///         "discipline": null,
+        ///         "yearsOfExp": null
+        ///       },
+        ///       "isConfirmed": false
+        ///     },
+        ///     "currentProjects": [
+        ///       {
+        ///         "projectNumber": "2005-KJS4-46",
+        ///         "title": "Budapest",
+        ///         "locationId": 19,
+        ///         "projectStartDate": "2020-04-19T00:00:00",
+        ///         "projectEndDate": "2020-07-01T00:00:00"
+        ///       }
+        ///     ],
+        ///     "availability": [
+        ///       {
+        ///         "fromDate": "2020-04-07T00:00:00",
+        ///         "toDate": "2020-04-19T00:00:00",
+        ///         "reason": "Maternal Leave"
+        ///       },
+        ///       {
+        ///         "fromDate": "2020-10-31T00:00:00",
+        ///         "toDate": "2020-11-11T00:00:00",
+        ///         "reason": "Maternal Leave"
+        ///       }
+        ///     ],
+        ///     "disciplines": [
+        ///       {
+        ///         "discipline": "Language",
+        ///         "yearsOfExp": "10+",
+        ///         "skills": [
+        ///           "Russian"
         ///         ]
-        ///     }
+        ///       },
+        ///       {
+        ///         "discipline": "Weapons",
+        ///         "yearsOfExp": "10+",
+        ///          "skills": [
+        ///             "Glock", "Sniper Rifle"
+        ///           ]
+        ///         }
+        ///     ],
+        ///     "positions": [
+        ///       {
+        ///         "projectTitle": "Budapest",
+        ///         "disciplineName": "Intel",
+        ///         "projectedMonthlyHours": 170
+        ///       }
+        ///     ]
+        ///   }
         ///
         /// </remarks>
         /// <param name="userProfile"></param>
@@ -254,7 +271,7 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, int userId)
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserProfile userProfile)
         {
             if (userProfile == null)
             {
@@ -270,7 +287,7 @@ namespace Web.API.Controllers
                 var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, updateUser);
                 var avails = await processOutOfOfficeChanges(userProfile.Availability, updateUser);
                 var tmp = new { changedUser, disciplines, avails };
-                var response = new OkResponse<int>(updateUser.Id, "Successfully updated");
+                var response = tmp; /* new OkResponse<int>(updateUser.Id, "Successfully updated"); */
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -307,7 +324,7 @@ namespace Web.API.Controllers
                 var disc = new ResourceDiscipline{
                     ResourceId = userId,
                     Name = discipline.Discipline,
-                    YearsOfExperience = discipline.YearsOfExperience
+                    YearsOfExperience = discipline.YearsOfExp
                 };
                 result = result.Append(disc);
             }
