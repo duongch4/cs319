@@ -11,7 +11,7 @@ class UserCard extends Component {
             <div className="card-summary">
                 <div className="card-summary-title">
                     <Link to={'/users/' + user.userID}>
-                        <h2 className="blueHeader">{user.name}</h2>
+                        <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
                     {canEdit && (
