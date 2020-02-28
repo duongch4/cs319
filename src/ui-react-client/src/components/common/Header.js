@@ -30,11 +30,6 @@ const Header = () => {
           Projects
         </NavLink>
         </div>
-        <div>
-        <NavLink to="/locations" style={style} activeStyle={activeStyle} exact>
-          Locations
-        </NavLink>
-        </div>
       </nav>
     </div>
   );

@@ -1,10 +1,10 @@
 import * as types from './actionTypes';
-import { SVC_ROOT } from '../../config/config';
-import { headers } from '../../config/adalConfig';
-import axios from 'axios';
+// import { SVC_ROOT } from '../../config/config';
+// import { headers } from '../../config/adalConfig';
+// import axios from 'axios';''
 import _initialState from '../reducers/_initialState';
 
-const baseURL = `${SVC_ROOT}locations/`;
+// const baseURL = `${SVC_ROOT}locations/`;
 
 export const loadLocationsAllData = locations => {
   return { type: types.LOAD_LOCATIONS_ALL, locations: locations };

@@ -3,16 +3,14 @@
 html, body {
     font-family: 'Roboto', Helvetica, Arial, sans-serif;
     margin: 0px;
-    line-height: 1em;
     color: #333;
     height: 100%;
 }
 
-/* margin of activity container is the width of the navigation menu + 20px */
+/* margin of activity container is the width of the navigation menu + 50px */
 .activity-container {
-    margin-left: 220px;
-    padding-top: 24px;
-    padding-right: 24px;
+    margin-left: 250px;
+    padding: 24px 50px 50px 0px;
 }
 
 h1 {
@@ -30,9 +28,15 @@ h3 {
     margin: 6px 0px;
 }
 
+h4 {
+    font-size: 1em;
+    margin: 5px 0px;
+}
+
 p {
     font-size: 0.9em;
     margin: 4px 0px;
+    line-height: 1.5em;
 }
 
 .action-button {
@@ -68,6 +72,39 @@ p {
     margin: 0px 8px;
 }
 
+.card-summary-title:first-child {
+    margin-right: 8px;
+}
+
+.title-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.utilization {
+    flex-grow: 1;
+    display:flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.utilization p {
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.assign {
+    flex-grow: 1;
+    display:flex;
+    justify-content: flex-end;
+}
+
+.availability {
+    text-align: center;
+}
+
 .action-link {
     font-size: 0.75em;
     color: #87C34B;
@@ -82,23 +119,79 @@ p {
 }
 
 .action-link svg {
-    margin: 0px 4px;
+    margin-right: 4px;
 }
 
 .form-section {
     display: flex;
     flex-direction: column;
-    margin: 16px 0px;
+    margin: 8px 0px;
 }
 
 .form-row {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 8px 0px;
+    margin: 4px 0px;
 }
 
 .form-field {
     display: flex;
     flex-grow: 1;
+    margin: 0px 16px;
+}
+
+.form-field:first-child {
+    display: flex;
+    flex-grow: 1;
+    margin-right: 16px;
+}
+
+.section-container {
+    margin-bottom: 24px;
+}
+
+.form-label:first-child {
+    margin-right: 16px;
+    margin-left: 0px;
+}
+
+.form-label {
+    margin-left: 16px;
+}
+
+input.input-box, select.input-box {
+    padding: 6px;
+    display: flex;
+    flex-grow: 1;
+    border-radius: 3px;
+    border-width: 0.5px;
+    border-color: #cdcdcd;
+}
+
+input.input-box:last-child, select.input-box:last-child {
+    margin-left: 8px;
+}
+
+input.add {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    background-color: #87C34B;
+    border: none;
+    border-radius: 40px;
+    font-size: 2em;
+    color: #fff;
+}
+
+input.add:hover {
+    background-color: #2c6232;
+}
+
+.opening {
+    display: flex;
+    flex-grow: 1;
+    margin-left: 16px;
 }

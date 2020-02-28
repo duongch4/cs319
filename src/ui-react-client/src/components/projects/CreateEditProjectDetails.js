@@ -1,125 +1,141 @@
-import React,{ Component } from 'react';
+import React, {Component} from 'react';
 import './ProjectStyles.css';
 import PropTypes from 'prop-types';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {TextField, FormControl, Select, InputLabel, MenuItem} from "@material-ui/core";
 
 class CreateEditProjectDetails extends Component {
     state = {
-      projID: 1,
-      name: null,
-      location: {city: null, province: null},
-      startDate: new Date(),
-      endDate: new Date(),
+        projectSummary: {
+            title: "",
+            location: {city: "", province: ""},
+            projectStartDate: new Date(),
+            projectEndDate: new Date(),
+            projectNumber: ""
+        },
+        city_options: [],
+        province_options: [],
+        pending: true
+    };
+
+    componentDidMount() {
+        this.setState({
+            ...this.state,
+            province_options: Object.keys(this.props.locations),
+            pending: false
+        });
+        let currentProj = this.props.currentProject;
+        if (currentProj) {
+            let projStart = new Date(currentProj.projectStartDate);
+            let projEnd = new Date(currentProj.projectEndDate);
+            this.setState({
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    title: currentProj.title,
+                    location: {
+                        ...this.state.projectSummary.location,
+                        city: currentProj.location.city,
+                        province: currentProj.location.province
+                    },
+                    projectStartDate: projStart,
+                    projectEndDate: projEnd,
+                    projectNumber: currentProj.projectNumber
+                }
+            })
+        }
     }
 
     handleChange = (e) => {
-      if (e.target.id == "city"){
-          this.setState({ location: { ...this.state.location, city: e.target.value}
-        })
-      }
-      else if (e.target.id == "province"){
-        this.setState({ location: { ...this.state.location, province: e.target.value}
-        })
-      }
-      else {
-        this.setState({
-          [e.target.id]: e.target.value
-        })
-      }
-    }
+        if (e.target.id === "city") {
+            this.setState({
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    location: {...this.state.location, city: e.target.value}
+                }
+            }, () => this.props.addProjDetails(this.state.projectSummary));
+        } else if (e.target.id === "province") {
+            let newCities = this.props.locations[e.target.value];
+            this.setState({
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    location: {...this.state.location, province: e.target.value},
+                },
+                city_options: newCities
+            }, () => this.props.addProjDetails(this.state.projectSummary));
+        } else {
+            this.setState({
+                ...this.state,
+                projectSummary: {
+                    ...this.state.projectSummary,
+                    [e.target.id]: e.target.value
+                }
+            }, () => this.props.addProjDetails(this.state.projectSummary));
+        }
+    };
 
     handleChangeStartDate = (date) => {
-      this.setState({
-        startDate: date
-      })
-    }
+        this.setState({
+            startDate: date
+        }, () => this.props.addProjDetails(this.state))
+    };
 
     handleChangeEndDate = (date) => {
-      this.setState({
-        endDate: date
-      })
-    }
+        this.setState({
+            endDate: date
+        }, () => this.props.addProjDetails(this.state))
+    };
 
-    handleSubmit = (e) =>{
-      e.preventDefault();
-      this.props.addProjDetails(this.state)
-      this.setState({
-            projID: this.state.projID + 1,
-            name: null,
-            location: {city: null, province: null},
-            startDate: new Date(),
-            endDate: new Date(),
-      })
-    }
-  render(){
-    var cities = [];
-    var provinces = [];
-    var locations_map = this.props.locations;
+    render() {
+        let projSummary = this.state.projectSummary;
+        var city_render = [];
+        this.state.city_options.forEach((city, i) => {
+            city_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
+        });
 
-    locations_map.forEach(element =>{
-      cities.push(element["city"])
-      provinces.push(element["province"])
-    })
+        var province_render = [];
+        this.state.province_options.forEach((province, i) => {
+            province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
+        });
 
-    var city_render = [];
-    cities.forEach((city) => {
-        city_render.push(<option value={city}>{city}</option>)
-    })
-
-    var province_render = [];
-    provinces.forEach((province) => {
-        province_render.push(<option value={province}>{province}</option>)
-    })
-
-    var province_render2 = [];
-    provinces.forEach((province) => {
-        province_render2.push(<MenuItem value={province}>{province}</MenuItem>)
-    })
-
-    return (
-      <div className="form-section">
-          <h2 className="darkGreenHeader">Project Details</h2>
-          <form onSubmit={this.handleSubmit}>
+        return (
+        <div className="form-section">
+            <h2 className="darkGreenHeader">Project Details</h2>
             <div className="form-section">
                 <div className="form-row">
-                    <TextField label="Title" fullWidth inputLabelProps={{shrink: true}}/>
+                    <label htmlFor="title"><p className="form-label">Title</p></label>
+                    <input className="input-box" type="text" id="title" onChange={this.handleChange}
+                           defaultValue={projSummary.title}/>
                 </div>
-                <div className="form-row">
-                    <FormControl className="form-field">
-                        <InputLabel>Province</InputLabel>
-                        <Select value="Province" onChange={this.handleChange} displayEmpty >
-                            {province_render2}
-                        </Select>
-                    </FormControl>
-
-                    <label htmlFor= "location">Location
-                        <select id="province" onChange={this.handleChange}>
-                          <option selected disabled>Province</option>
-                          {province_render}
-                        </select>
-                        <select id="city" onChange={this.handleChange}>
-                          <option selected disabled>City</option>
-                          {city_render}
-                        </select>
-                    </label>
-                </div>
-                <label htmlFor= "project_duration">
-                Project Duration
-                <DatePicker id="startDate" selected={this.state.startDate} onChange={this.handleChangeStartDate} />
-                <DatePicker id="endDate" selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+                <label htmlFor="location" className="form-row">
+                    <p className="form-label">Location</p>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="province"
+                            onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{projSummary.location.province}</option>
+                        {province_render}
+                    </select>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{projSummary.location.city}</option>
+                        {city_render}
+                    </select>
                 </label>
-                <input type="submit" value="submit"/>
+                <label htmlFor="project_duration" className="form-row">
+                    <p className="form-label">Project Duration</p>
+                    <DatePicker className="input-box" id="startDate" selected={projSummary.projectStartDate}
+                                onChange={this.handleChangeStartDate}/>
+                    <DatePicker className="input-box" id="endDate" selected={projSummary.projectEndDate}
+                                onChange={this.handleChangeEndDate}/>
+                </label>
             </div>
-          </form>
-      </div>
-    );
+        </div>)
+    }
 }
-};
 
 CreateEditProjectDetails.propTypes = {
-  addOpening: PropTypes.object.isRequired,
+    addOpening: PropTypes.object,
+    currentProject: PropTypes.object
 };
 
 export default CreateEditProjectDetails;
