@@ -25,6 +25,7 @@ dotnet build src\svc-dotnetcore3\Tests
 ```
 
 ## Deployment Testing
+### Add Info to appsettings.json!!!
 ### Publish Mode (Build for Client as well here to deploy)
 ```[cmd]
 dotnet publish -c release src\svc-dotnetcore3\svc-dotnetcore3
