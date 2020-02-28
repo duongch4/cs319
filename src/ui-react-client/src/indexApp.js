@@ -1,7 +1,3 @@
-import 'core-js/stable';
-import 'core-js';
-import 'react-app-polyfill/ie11';
-import 'react-app-polyfill/stable';
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
