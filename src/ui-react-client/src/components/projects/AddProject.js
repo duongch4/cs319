@@ -69,7 +69,7 @@ class AddProject extends Component {
     };
 
     onSubmit = () => {
-        this.props.createProject(this.state.project);
+        this.props.createProject(this.state.projectProfile);
         this.setState({
             projectProfile: {
                 projectSummary: {
