@@ -2,7 +2,6 @@ import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
-// import _initialState from '../reducers/_initialState';
 import _initialState_dev from '../reducers/_initialState_client';
 import {updateProjectSummary} from "./projectsActions";
 
@@ -92,17 +91,16 @@ export const updateProject = (project) => {
 };
 
 export const deleteProject = number => {
+    //TODO: Delete project api
     return dispatch => {
-        return axios
-            .delete(`${baseURL + number}`)
-        // dispatch(deleteProjectData(response.data));
-        // return axios
-        //   .delete(`${baseURL}${number}`, { headers })
-        //   .then(response => {
-        //     dispatch(deleteProjectData(response.data));
-        //   })
-        //   .catch(error => {
-        //     throw error;
-        //   });
+        if (CLIENT_DEV_ENV) {
+
+        } else {
+            return axios
+                .delete(`${baseURL + number}`)
+                .then(response => {
+                    // stuff here
+                });
+        }
     };
 };

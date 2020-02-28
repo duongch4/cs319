@@ -105,8 +105,8 @@ class CreateEditProjectDetails extends Component {
             <h2 className="darkGreenHeader">Project Details</h2>
             <div className="form-section">
                 <div className="form-row">
-                    <label htmlFor="name"><p className="form-label">Title</p></label>
-                    <input className="input-box" type="text" id="name" onChange={this.handleChange}
+                    <label htmlFor="title"><p className="form-label">Title</p></label>
+                    <input className="input-box" type="text" id="title" onChange={this.handleChange}
                            defaultValue={projSummary.title}/>
                 </div>
                 <label htmlFor="location" className="form-row">
