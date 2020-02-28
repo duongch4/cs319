@@ -271,7 +271,7 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserProfile userProfile)
+        public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, int userId)
         {
             if (userProfile == null)
             {
@@ -287,7 +287,7 @@ namespace Web.API.Controllers
                 var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, updateUser);
                 var avails = await processOutOfOfficeChanges(userProfile.Availability, updateUser);
                 var tmp = new { changedUser, disciplines, avails };
-                var response = tmp; /* new OkResponse<int>(updateUser.Id, "Successfully updated"); */
+                var response = new OkResponse<int>(updateUser.Id, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
