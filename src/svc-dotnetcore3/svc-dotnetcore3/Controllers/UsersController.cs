@@ -54,14 +54,16 @@ namespace Web.API.Controllers
         /// <returns>All available users</returns>
         /// <response code="200">Returns all available users</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no users are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("users")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<UserSummary>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -102,14 +104,16 @@ namespace Web.API.Controllers
         /// <returns>The requested user</returns>
         /// <response code="200">Returns the requested user</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("users/{userId}")]
-        [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(OkResponse<UserProfile>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAUser(string userId)
         {
             if (userId == null)
@@ -157,7 +161,7 @@ namespace Web.API.Controllers
                     };
                     disciplineResources = disciplineResources.Append(disc);
                 }
-                var userProfile = new UserProfileResource{
+                var userProfile = new UserProfile{
                     UserSummary = userSummary,
                     Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice),
                     CurrentProjects = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects),
@@ -165,7 +169,7 @@ namespace Web.API.Controllers
                     Positions = positions
                 };
 
-                var response = new OkResponse<UserProfileResource>(userProfile, "Everything is good");
+                var response = new OkResponse<UserProfile>(userProfile, "Everything is good");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -188,72 +192,83 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT /api/users/
+        ///     PUT /api/users/3
         ///     {
-        ///     "userSummary": {
-        ///         "userId": 3,
-        ///         "firstName": "Natasha",
-        ///         "lastName": "Romanov",
-        ///         "location": {
-        ///             "province": "British Columbia",
-        ///             "city": "Vancouver"
+        ///         "userSummary": {
+        ///             "userId": 3,
+        ///             "firstName": "Natasha",
+        ///             "lastName": "Romanov",
+        ///             "location": {
+        ///                 "province": "British Columbia",
+        ///                 "city": "Vancouver"
+        ///             },
+        ///             "utilization": 170
         ///         },
-        ///         "utilization": 170
-        ///     },
-        ///     "currentProjects": [
-        ///         {
-        ///             "id": 2,
-        ///             "title": "Budapest",
-        ///             "locationId": 19,
-        ///             "projectStartDate": "2020-04-19T00:00:00",
-        ///             "projectEndDate": "2020-07-01T00:00:00"
-        ///         }
-        ///     ],
-        ///     "availability": [
-        ///         {
-        ///             "fromDate": "2020-10-31T00:00:00",
-        ///             "toDate": "2020-11-11T00:00:00",
-        ///             "reason": "Maternal Leave"
-        ///         }
-        ///     ],
-        ///     "disciplines": [
-        ///         {
-        ///             "name": "Weapons",
-        ///             "yearsOfExperience": "10+",
-        ///             "skills": [
-        ///                 "Glock", "Sniper Rifle"
-        ///             ]
-        ///         }
-        ///     ]
-        /// }
+        ///         "currentProjects": [
+        ///             {
+        ///                 "id": 2,
+        ///                 "title": "Budapest",
+        ///                 "locationId": 19,
+        ///                 "projectStartDate": "2020-04-19T00:00:00",
+        ///                 "projectEndDate": "2020-07-01T00:00:00"
+        ///             }
+        ///         ],
+        ///         "availability": [
+        ///             {
+        ///                 "fromDate": "2020-10-31T00:00:00",
+        ///                 "toDate": "2020-11-11T00:00:00",
+        ///                 "reason": "Maternal Leave"
+        ///             }
+        ///         ],
+        ///         "disciplines": [
+        ///             {
+        ///                 "name": "Weapons",
+        ///                 "yearsOfExperience": "10+",
+        ///                 "skills": [
+        ///                     "Glock", "Sniper Rifle"
+        ///                 ]
+        ///             }
+        ///         ],
+        ///         "positions": [
+        ///             {
+        ///                 "projectTitle": "",
+        ///                 "disciplineName: "",
+        ///                 "projectedMonthlyHours: ""
+        ///             }
+        ///         ]
+        ///     }
         ///
         /// </remarks>
+        /// <param name="userProfile"></param>
+        /// <param name="userId"></param>
         /// <returns>The id of the user that was updated</returns>
         /// <response code="200">Returns the userId</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
-        [Route("users/")]
-        [ProducesResponseType(typeof(OkResponse<UserResource>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [Route("users/{userId}")]
+        [ProducesResponseType(typeof(OkResponse<int>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateUser([FromBody] UserProfileResource user)
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, int userId)
         {
-            if (user == null)
+            if (userProfile == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
             }
 
             try
             {
-                UserSummary summary = user.UserSummary;
-                Location location = await locationsRepository.GetLocationIdByCityProvince(summary.Location);
+                UserSummary summary = userProfile.UserSummary;
+                Location location = await locationsRepository.GetALocation(userProfile.UserSummary.Location.City);
                 User updateUser = createUserFromSummary(summary, location);
                 var changedUser = await usersRepository.UpdateAUser(updateUser);
-                var disciplines = await processDisciplineSkillChanges(user.Disciplines, updateUser);
-                var avails = await processOutOfOfficeChanges(user.Availability, updateUser);
+                var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, updateUser);
+                var avails = await processOutOfOfficeChanges(userProfile.Availability, updateUser);
                 var tmp = new { changedUser, disciplines, avails };
                 var response = new OkResponse<int>(updateUser.Id, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);

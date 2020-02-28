@@ -57,14 +57,16 @@ namespace Web.API.Controllers
         /// <returns>All available disciplines, locations, and years of exp</returns>
         /// <response code="200">Returns all available locations</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no locations are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("masterlists")]
         [ProducesResponseType(typeof(OkResponse<MasterResource>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetMasterlists()
         {
             try

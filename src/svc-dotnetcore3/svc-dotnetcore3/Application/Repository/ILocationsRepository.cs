@@ -23,7 +23,7 @@ namespace Web.API.Application.Repository
         // Task<Location> UpdateALocation(Location location);
 
         //DELETE
-        Task<Location> DeleteALocation(Location locationCode);
+        // Task<Location> DeleteALocation(Location locationCode);
 
         Task<Location> GetLocationIdByCityProvince(LocationResource location);
     }

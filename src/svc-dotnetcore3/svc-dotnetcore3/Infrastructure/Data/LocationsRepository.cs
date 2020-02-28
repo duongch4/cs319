@@ -108,9 +108,9 @@ namespace Web.API.Infrastructure.Data
         // }
 
         //DELETE
-        public async Task<Location> DeleteALocation(Location locationCode) {
-            return null;
-        }
+        // public async Task<Location> DeleteALocation(Location locationCode) {
+        //     return null;
+        // }
 
         public async Task<Location> GetLocationIdByCityProvince(LocationResource location) {
             var sql = @"
