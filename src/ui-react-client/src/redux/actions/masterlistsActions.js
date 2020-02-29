@@ -34,6 +34,13 @@ export const createProvinceData = location => {
     }
 }
 
+export const createCityData = location => {
+    return {
+        type: types.CREATE_CITY,
+        location: location
+    }
+}
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -75,6 +82,16 @@ export const createProvince = (location) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProvinceData(location))
+        } else {
+            // TODO
+        }
+    } 
+}
+
+export const createCity = (location) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(createCityData(location))
         } else {
             // TODO
         }

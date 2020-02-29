@@ -28,7 +28,16 @@ export const executeCreateSkill = (action, state) => {
 export const executeCreateProvince = (action, state) => {
     let newLocation = state.locations
     newLocation[action.location.province] = []
-    console.log(newLocation)
+    let newState = {
+        ...state,
+        locations: newLocation
+    }
+    return newState
+}
+
+export const executeCreateCity = (action, state) => {
+    let newLocation = state.locations
+    newLocation[action.location.province] = [...state.locations[action.location.province], action.location.city]
     let newState = {
         ...state,
         locations: newLocation
@@ -49,6 +58,8 @@ export const masterlistsReducer = (
             return executeCreateSkill(action, state);
         case types.CREATE_PROVINCE:
             return executeCreateProvince(action, state);
+        case types.CREATE_CITY:
+            return executeCreateCity(action,state);
         default:
             return state;
     }

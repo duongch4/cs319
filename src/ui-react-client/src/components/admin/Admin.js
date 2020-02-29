@@ -2,7 +2,7 @@ import React, { Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {loadMasterlists, createDiscpline, createSkill, createProvince} from '../../redux/actions/masterlistsActions';
+import {loadMasterlists, createDiscpline, createSkill, createProvince,createCity} from '../../redux/actions/masterlistsActions';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -48,17 +48,31 @@ class Admin extends Component {
             skill: {
                 ...this.state.skill,
                 disciplineID: Object.keys(this.state.masterlist.disciplines)[0]
+            },
+            location: {
+                ...this.state.location,
+                province: Object.keys(this.state.masterlist.locations)[0]
             }
         })
         
     }
 
-    handleDropdownChange = (e) => {
+    handleSkillDropdownChange = (e) => {
         this.setState({
             ...this.state,
             skill: {
                 ...this.state.skill,
                 disciplineID: e.target.value // TODO: This needs to be changed to the ID of the discpline, but we currently do not have that
+            }
+        })
+    }
+
+    handleCityDropdownChange = (e) => {
+        this.setState({
+            ...this.state,
+            location: {
+                ...this.state.location,
+                province: e.target.value
             }
         })
     }
@@ -95,8 +109,12 @@ class Admin extends Component {
 
     onProvinceSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state.location)
         this.props.createProvince(this.state.location)
+    }
+
+    onCitySubmit = (e) => {
+        e.preventDefault();
+        this.props.createCity(this.state.location)
     }
 
     render() {
@@ -127,6 +145,11 @@ class Admin extends Component {
             )
         })
         
+        let provinceDropDown = []
+        provinces.forEach(elem => {
+            provinceDropDown.push(<option value={elem} key={provinceDropDown.length}>{elem}</option>
+            )
+        })
 
         return (
             <div className="activity-container">
@@ -142,7 +165,7 @@ class Admin extends Component {
                 <div>
                     <h2>Skills</h2>
                     {skillList}
-                    <select className="input-box" id="discipline" onChange={this.handleDropdownChange}>
+                    <select className="input-box" id="discipline" onChange={this.handleSkillDropdownChange}>
                         <option value="DEFAULT" disabled>Discipline</option>
                         {disciplineDropDown}
                     </select>
@@ -162,7 +185,14 @@ class Admin extends Component {
                 <div>
                     <h2>Cities</h2>
                     {cityList}
-                    <button id="city">Add City</button>
+                    <select className="input-box" id="discipline" onChange={this.handleCityDropdownChange}>
+                        <option value="DEFAULT" disabled>Province</option>
+                        {provinceDropDown}
+                    </select>
+                    <form name="city" onSubmit={this.onProvinceubmit}>
+                        <input type="text" onChange={this.handleLocationChange} name="city"/>
+                    </form>
+                    <button id="city" onClick={this.onCitySubmit}>Add City</button>
                 </div>
             </div>
         )
@@ -197,7 +227,8 @@ const mapDispatchToProps = {
     loadMasterlists,
     createDiscpline,
     createSkill,
-    createProvince
+    createProvince,
+    createCity
 };
   
 export default connect(
