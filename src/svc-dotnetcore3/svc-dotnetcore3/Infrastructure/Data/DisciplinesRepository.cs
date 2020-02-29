@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using Dapper;
 using System.Threading.Tasks;
+using Serilog;
+
 namespace Web.API.Infrastructure.Data
 {
     public class DisciplinesRespository : IDisciplinesRepository
@@ -135,6 +137,8 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<ResourceDiscipline> InsertResourceDiscipline(ResourceDiscipline discipline)
         {
+            Log.Information("{@a}", discipline);
+
             var sql = @"
                 insert into ResourceDiscipline 
 	                values (@ResourceId, 

@@ -4,7 +4,7 @@ using AutoMapper;
 
 namespace Web.API.Resources
 {
-    public class UserProfileResource
+    public class UserProfile
     {
         public UserSummary UserSummary {get; set;}
         public IEnumerable<ProjectDirectMappingResource> CurrentProjects {get; set;}

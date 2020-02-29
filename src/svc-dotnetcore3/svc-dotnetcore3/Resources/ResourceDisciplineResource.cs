@@ -3,7 +3,7 @@ namespace Web.API.Resources
     public class ResourceDisciplineResource
     {
         /// <summary>Discipline</summary>
-        /// <example>Discipline 1</example>
+        /// <example>Weapons</example>
         public string Discipline { get; set; }
 
         /// <summary>Years of Experience</summary>

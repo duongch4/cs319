@@ -46,7 +46,7 @@ namespace Web.API.Mapping
 
         private void SetProjectManager()
         {
-            CreateMap<ProjectResource, ProjectManagerResource>(
+            CreateMap<ProjectResource, ProjectManager>(
             ).ForMember(
                 destinationMember => destinationMember.UserID,
                 opt => opt.MapFrom(
@@ -83,7 +83,7 @@ namespace Web.API.Mapping
             CreateMap<User, UserResource>();
         }
 
-private void SetUserSummary()
+        private void SetUserSummary()
         {
             CreateMap<UserResource, UserSummary>(
             ).ForMember(
@@ -130,8 +130,9 @@ private void SetUserSummary()
                 opt => opt.MapFrom(sourceMember => sourceMember.Name)
             ).ReverseMap();
         }
-        private void SetProject() {
-            CreateMap<Project, ProjectDirectMappingResource>(                
+        private void SetProject()
+        {
+            CreateMap<Project, ProjectDirectMappingResource>(
             ).ForMember(
                 destinationMember => destinationMember.ProjectNumber,
                 opt => opt.MapFrom(
@@ -140,14 +141,17 @@ private void SetUserSummary()
             );
         }
 
-        private void SetOutOfOffice() {
+        private void SetOutOfOffice()
+        {
             CreateMap<OutOfOffice, OutOfOfficeResource>();
         }
 
-        private void SetRDiscipline() {
+        private void SetRDiscipline()
+        {
             CreateMap<ResourceDiscipline, RDisciplineResource>();
         }
-        private void SetRSkill() {
+        private void SetRSkill()
+        {
             CreateMap<ResourceSkill, RSkillResource>();
         }
     }
