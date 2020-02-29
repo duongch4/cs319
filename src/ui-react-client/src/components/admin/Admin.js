@@ -62,7 +62,8 @@ class Admin extends Component {
             ...this.state,
             skill: {
                 ...this.state.skill,
-                disciplineID: e.target.value // TODO: This needs to be changed to the ID of the discpline, but we currently do not have that
+                disciplineID: e.target.value 
+                // TODO: This needs to be changed to the ID of the discpline, but we currently do not have that
             }
         })
     }
@@ -97,24 +98,21 @@ class Admin extends Component {
         })
     }
 
-    onDisciplineSubmit = (e) =>  {
+    onSubmit = (e) => {
         e.preventDefault();
-        this.props.createDiscpline(this.state.discipline)
-    }
-
-    onSkillSubmit = (e) => {
-        e.preventDefault();
-        this.props.createSkill(this.state.skill)
-    }
-
-    onProvinceSubmit = (e) => {
-        e.preventDefault();
-        this.props.createProvince(this.state.location)
-    }
-
-    onCitySubmit = (e) => {
-        e.preventDefault();
-        this.props.createCity(this.state.location)
+        console.log(e.target.name)
+        switch(e.target.name) {
+            case "discipline":
+                return this.props.createDiscpline(this.state.discipline);
+            case "skill":
+                return this.props.createSkill(this.state.skill);
+            case "province":
+                return this.props.createProvince(this.state.location);
+            case "city":
+                return this.props.createCity(this.state.location);
+            default:
+                console.log("ERR")
+        }
     }
 
     render() {
@@ -157,10 +155,10 @@ class Admin extends Component {
                 <div>
                     <h2>Disciplines</h2>
                     {disciplineList}
-                    <form name="discipline" onSubmit={this.onDisciplineSubmit}>
+                    <form name="discipline" onSubmit={this.onSubmit}>
                     <input type="text" onChange={this.handleChange} name="discipline"/>
                     </form>
-                    <button name="discipline" id="discipline" onClick={this.onDisciplineSubmit}>Add Discipline</button>
+                    <button name="discipline" id="discipline" onClick={this.onSubmit}>Add Discipline</button>
                 </div>
                 <div>
                     <h2>Skills</h2>
@@ -169,18 +167,18 @@ class Admin extends Component {
                         <option value="DEFAULT" disabled>Discipline</option>
                         {disciplineDropDown}
                     </select>
-                    <form name="skill" onSubmit={this.onSkillSubmit}>
+                    <form name="skill" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleChange} name="skill"/>
                     </form>
-                    <button id="skill" onClick={this.onSkillSubmit}>Add Skill</button>
+                    <button id="skill" name="skill" onClick={this.onSubmit}>Add Skill</button>
                 </div>
                 <div>
                     <h2>Province</h2>
                     {provinceList}
-                    <form name="province" onSubmit={this.onProvinceubmit}>
+                    <form name="province" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} name="province"/>
                     </form>
-                    <button id="province" onClick={this.onProvinceSubmit}>Add Province</button>
+                    <button id="province" name="province" onClick={this.onSubmit}>Add Province</button>
                 </div>
                 <div>
                     <h2>Cities</h2>
@@ -189,10 +187,10 @@ class Admin extends Component {
                         <option value="DEFAULT" disabled>Province</option>
                         {provinceDropDown}
                     </select>
-                    <form name="city" onSubmit={this.onProvinceubmit}>
+                    <form name="city" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} name="city"/>
                     </form>
-                    <button id="city" onClick={this.onCitySubmit}>Add City</button>
+                    <button id="city" name="city" onClick={this.onSubmit}>Add City</button>
                 </div>
             </div>
         )
