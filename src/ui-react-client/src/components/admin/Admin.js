@@ -6,6 +6,7 @@ import {loadMasterlists, createDiscpline, createSkill, createProvince,createCity
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import EditIcon from '@material-ui/icons/Edit';
 
 class Admin extends Component {
     state = {
@@ -95,6 +96,9 @@ class Admin extends Component {
         }
     }
 
+    edit = (elem) => {
+        console.log(elem)
+    }
     changeSelected = (elem, name) => {
         switch(name) {
             case "discipline":
@@ -131,6 +135,7 @@ class Admin extends Component {
                 <List>
                     <ListItem button name={name} onClick={() => this.changeSelected(elem, name)}>
                     <ListItemText primary={elem} />
+                    <EditIcon onClick={()=>this.edit(elem)}/>
                     </ListItem>
                 </List>
             </div>)
