@@ -59,49 +59,10 @@ class Admin extends Component {
             })
         }
 
-        let disciplineList = []
-        disciplines.forEach(elem =>{
-            disciplineList.push(<div key={disciplineList.length}>
-                <List>
-                    <ListItem button>
-                    <ListItemText primary={elem} />
-                    </ListItem>
-                </List>
-            </div>)
-        })
-
-        let skillList = []
-        skills.forEach(elem =>{
-            skillList.push(<div key={skillList.length}>
-                <List>
-                    <ListItem button>
-                    <ListItemText primary={elem} />
-                    </ListItem>
-                </List>
-            </div>)
-        })
- 
-        let provinceList = []
-        provinces.forEach(elem =>{
-            provinceList.push(<div key={provinceList.length}>
-                <List>
-                    <ListItem button>
-                    <ListItemText primary={elem} />
-                    </ListItem>
-                </List>
-            </div>)
-        })
-
-        let cityList = []
-        cities.forEach(elem =>{
-            cityList.push(<div key={cityList.length}>
-                <List>
-                    <ListItem button>
-                    <ListItemText primary={elem} />
-                    </ListItem>
-                </List>
-            </div>)
-        })
+        let disciplineList = listGen(disciplines)
+        let skillList = listGen(skills)
+        let provinceList = listGen(provinces)
+        let cityList = listGen(cities)
         
         return (
             <div className="activity-container">
@@ -109,22 +70,40 @@ class Admin extends Component {
                 <div>
                     <h2>Disciplines</h2>
                     {disciplineList}
+                    <button id="discipline">Add Discipline</button>
                 </div>
                 <div>
                     <h2>Skills</h2>
                     {skillList}
+                    <button id="skill">Add Skill</button>
                 </div>
                 <div>
                     <h2>Province</h2>
                     {provinceList}
+                    <button id="province">Add Province</button>
                 </div>
                 <div>
                     <h2>Cities</h2>
                     {cityList}
+                    <button id="city">Add City</button>
                 </div>
             </div>
         )
     }
+}
+
+function listGen (inputList) {
+    let list = []
+    inputList.forEach(elem =>{
+        list.push(<div key={list.length}>
+            <List>
+                <ListItem button>
+                <ListItemText primary={elem} />
+                </ListItem>
+            </List>
+        </div>)
+    })
+    return list
 }
 
 Admin.propTypes = {
