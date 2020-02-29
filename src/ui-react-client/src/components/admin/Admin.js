@@ -2,27 +2,27 @@ import React, { Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {loadMasterlists} from '../../redux/actions/masterlistsActions';
+import {loadMasterlists, createDiscpline} from '../../redux/actions/masterlistsActions';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 class Admin extends Component {
     state = {
-        // discipline: {
-        //     name: "", 
-        //     id: -1
-        // },
-        // skill: {
-        //     disciplineID: -1, 
-        //     name: "", 
-        //     skillID: -1
-        // },
-        // location: {
-        //     city: "", 
-        //     province: "", 
-        //     id: -1
-        // },
+        discipline: {
+            name: "", 
+            id: -1
+        },
+        skill: {
+            disciplineID: -1, 
+            name: "", 
+            skillID: -1
+        },
+        location: {
+            city: "", 
+            province: "", 
+            id: -1
+        },
         masterlist: {}
     };
 
@@ -42,7 +42,22 @@ class Admin extends Component {
         }
     }
 
+    handleChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
+    onSubmit = (e) =>  {
+        e.preventDefault();
+        let targetname = e.target.name
+        // db call
+        // console.log(this.state[targetname])
+        this.props.createDiscpline(this.state[targetname])
+    }
+
     render() {
+        // console.log(this.state)
         let disciplinesObj = this.state.masterlist.disciplines
         let skills = []
         let disciplines = Object.keys(disciplinesObj)
@@ -70,7 +85,10 @@ class Admin extends Component {
                 <div>
                     <h2>Disciplines</h2>
                     {disciplineList}
-                    <button id="discipline">Add Discipline</button>
+                    <form name="discipline" onSubmit={this.onSubmit}>
+                    <input type="text" onChange={this.handleChange} name="discipline"/>
+                    </form>
+                    <button name="discipline" id="discipline" onClick={this.onSubmit}>Add Discipline</button>
                 </div>
                 <div>
                     <h2>Skills</h2>
@@ -117,7 +135,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    loadMasterlists
+    loadMasterlists,
+    createDiscpline
 };
   
 export default connect(

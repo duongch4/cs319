@@ -13,6 +13,13 @@ export const loadMasterlistsData = masterlist => {
     };
 };
 
+export const createDiscplineData = disciplines => {
+    return {
+        type: types.CREATE_DISCIPLINE,
+        disciplines: disciplines
+    }
+}
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -29,3 +36,13 @@ export const loadMasterlists = () => {
         }
     }
 };
+
+export const createDiscpline = (discipline) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(createDiscplineData(discipline))
+        } else {
+            // TODO
+        }
+    }
+}
