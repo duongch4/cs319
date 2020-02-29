@@ -61,7 +61,7 @@
     <ItemGroup>
       <ToFiles Include="$(ToSpaBuild)**" />
       <DistFiles Include="$(SpaRoot)build\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>$(ToSpaBuild)%(ToFiles.Identity)%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
         <!-- <RelativePath>%(DistFiles.Identity)</RelativePath> -->
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
