@@ -2,7 +2,7 @@ import React, { Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {loadMasterlists, createDiscpline} from '../../redux/actions/masterlistsActions';
+import {loadMasterlists, createDiscpline, createSkill, createProvince} from '../../redux/actions/masterlistsActions';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -14,7 +14,7 @@ class Admin extends Component {
             id: null
         },
         skill: {
-            disciplineID: null, 
+            disciplineID: "", 
             name: "", 
             skillID: null
         },
@@ -30,7 +30,7 @@ class Admin extends Component {
         if(CLIENT_DEV_ENV){
             props.loadMasterlists();
             return{
-                masterlist: props.masterlist
+                masterlist: props.masterlist,
             }
         } else {
             props.loadMasterlists()
@@ -42,6 +42,17 @@ class Admin extends Component {
         }
     }
 
+    componentDidMount(){
+        this.setState({
+            ...this.state,
+            skill: {
+                ...this.state.skill,
+                disciplineID: Object.keys(this.state.masterlist.disciplines)[0]
+            }
+        })
+        
+    }
+
     handleDropdownChange = (e) => {
         this.setState({
             ...this.state,
@@ -49,7 +60,7 @@ class Admin extends Component {
                 ...this.state.skill,
                 disciplineID: e.target.value // TODO: This needs to be changed to the ID of the discpline, but we currently do not have that
             }
-        }, () => console.log("DROPDOWN", this.state))
+        })
     }
 
     handleChange = (e) => {
@@ -59,7 +70,17 @@ class Admin extends Component {
                 ...this.state[e.target.name],
                 name: e.target.value
             }
-        }, () => console.log(this.state))
+        })
+    }
+
+    handleLocationChange = (e) => {
+        this.setState({
+            ...this.state,
+            location: {
+                ...this.state.location,
+                [e.target.name]: e.target.value
+            }
+        })
     }
 
     onDisciplineSubmit = (e) =>  {
@@ -69,7 +90,13 @@ class Admin extends Component {
 
     onSkillSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state.skill)
+        this.props.createSkill(this.state.skill)
+    }
+
+    onProvinceSubmit = (e) => {
+        e.preventDefault();
+        console.log(this.state.location)
+        this.props.createProvince(this.state.location)
     }
 
     render() {
@@ -127,7 +154,10 @@ class Admin extends Component {
                 <div>
                     <h2>Province</h2>
                     {provinceList}
-                    <button id="province">Add Province</button>
+                    <form name="province" onSubmit={this.onProvinceubmit}>
+                        <input type="text" onChange={this.handleLocationChange} name="province"/>
+                    </form>
+                    <button id="province" onClick={this.onProvinceSubmit}>Add Province</button>
                 </div>
                 <div>
                     <h2>Cities</h2>
@@ -165,7 +195,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
     loadMasterlists,
-    createDiscpline
+    createDiscpline,
+    createSkill,
+    createProvince
 };
   
 export default connect(

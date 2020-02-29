@@ -15,6 +15,27 @@ export const executeCreateDiscipline = (action, state) => {
     return newState
 }
 
+export const executeCreateSkill = (action, state) => {
+    let newDisciplines = state.disciplines
+    newDisciplines[action.skill.disciplineID] = [...state.disciplines[action.skill.disciplineID], action.skill.name]
+    let newState = {
+        ...state,
+        disciplines: newDisciplines
+    }
+    return newState
+}
+
+export const executeCreateProvince = (action, state) => {
+    let newLocation = state.locations
+    newLocation[action.location.province] = []
+    console.log(newLocation)
+    let newState = {
+        ...state,
+        locations: newLocation
+    }
+    return newState
+}
+
 export const masterlistsReducer = (
     state = initialState.masterlist,
     action
@@ -24,6 +45,10 @@ export const masterlistsReducer = (
             return executeLoadMasterlistsData(action);
         case types.CREATE_DISCIPLINE:
             return executeCreateDiscipline(action, state);
+        case types.CREATE_SKILL:
+            return executeCreateSkill(action, state);
+        case types.CREATE_PROVINCE:
+            return executeCreateProvince(action, state);
         default:
             return state;
     }

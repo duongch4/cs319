@@ -20,6 +20,20 @@ export const createDiscplineData = disciplines => {
     }
 }
 
+export const createSkillData = skill => {
+    return {
+        type: types.CREATE_SKILL,
+        skill: skill
+    }
+}
+
+export const createProvinceData = location => {
+    return {
+        type: types.CREATE_PROVINCE,
+        location: location
+    }
+}
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -45,4 +59,24 @@ export const createDiscpline = (discipline) => {
             // TODO
         }
     }
+}
+
+export const createSkill = (skill) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(createSkillData(skill))
+        } else {
+            // TODO
+        }
+    } 
+}
+
+export const createProvince = (location) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(createProvinceData(location))
+        } else {
+            // TODO
+        }
+    } 
 }
