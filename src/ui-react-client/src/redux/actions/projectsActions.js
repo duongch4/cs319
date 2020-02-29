@@ -1,106 +1,70 @@
 import * as types from './actionTypes';
-import { SVC_ROOT } from '../../config/config';
+import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
+import _initialState_client from '../reducers/_initialState_client';
 
-const baseURL = `${SVC_ROOT}projects/`;
+const baseURL = `${SVC_ROOT}api/projects/`;
 
-export const loadProjectsMostRecentData = projects => {
-  return {
-    type: types.LOAD_PROJECTS_MOST_RECENT,
-    projects: projects,
-  };
-};
-
-export const loadProjectsData = projects => {
+export const loadProjectsData = projectSummaries => {
   return {
     type: types.LOAD_PROJECTS_ALL,
-    projects: projects,
+    projectSummaries: projectSummaries,
   };
 };
 
-export const createProjectData = project => {
-  return {
-    type: types.CREATE_PROJECT,
-    project: project,
-  };
+export const updateProjectSummary = projectSummary => {
+    return {
+        type: types.UPDATE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
-export const updateProjectData = project => {
-  return {
-    type: types.UPDATE_PROJECT,
-    project: project,
-  };
+export const deleteProjectSummary = projectSummary => {
+    return {
+        type: types.DELETE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
-export const deleteProjectData = project => {
-  return {
-    type: types.DELETE_PROJECT,
-    project: project,
-  };
-};
-
-export const loadProjectsMostRecent = () => {
-  return dispatch => {
-    return axios
-      .get(`${baseURL}most-recent`, { headers })
-      .then(response => {
-        dispatch(loadProjectsMostRecentData(response.data));
-      })
-      .catch(error => {
-        throw error;
-      });
-  };
+export const createProjectSummary = projectSummary => {
+    return {
+        type: types.CREATE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
 export const loadProjects = () => {
   return dispatch => {
-    return axios
-      .get(baseURL, { headers })
-      .then(response => {
-        dispatch(loadProjectsData(response.data));
-      })
-      .catch(error => {
-        throw error;
-      });
+    if (CLIENT_DEV_ENV) {
+      dispatch(loadProjectsData(_initialState_client.projectSummaries));
+    } else {
+      return axios
+          .get(baseURL, { headers })
+          .then(response => {
+            dispatch(loadProjectsData(response.data.payload));
+          })
+          .catch(error => {
+            throw error;
+          });
+    }
   };
 };
 
-export const createProject = () => {
-  return dispatch => {
-    return axios
-      .post(baseURL, { headers })
-      .then(response => {
-        dispatch(createProjectData(response.data));
-      })
-      .catch(error => {
-        throw error;
-      });
-  };
+export const updateProjectSummaries = (projectSummary) => {
+    return dispatch => {
+        dispatch(updateProjectSummary(projectSummary))
+    }
 };
 
-export const updateProject = () => {
-  return dispatch => {
-    return axios
-      .put(baseURL, { headers })
-      .then(response => {
-        dispatch(updateProjectData(response.data));
-      })
-      .catch(error => {
-        throw error;
-      });
-  };
+export const deleteProjectSummaries = (projectSummary) => {
+    return dispatch => {
+        dispatch(deleteProjectSummary(projectSummary))
+    }
 };
 
-export const deleteProject = number => {
-  return dispatch => {
-    return axios
-      .delete(`${baseURL}${number}`, { headers })
-      .then(response => {
-        dispatch(deleteProjectData(response.data));
-      })
-      .catch(error => {
-        throw error;
-      });
-  };
+export const createProjectSummaries = (projectSummary) => {
+    return dispatch => {
+        dispatch(createProjectSummary(projectSummary))
+    }
 };

@@ -1,31 +1,37 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import UserHeaderMenu from './UserHeaderMenu';
+import './Header.css';
 
 const Header = () => {
-  const activeStyle = { color: '#F15B2A' };
-
+  const activeStyle = { color: '#ffffff' };
+  const style={ color: '#ffffff', fontSize: '20px'};
   return (
-    <>
+    <div className="sidenav">
+      <p className="ae-logo">AE</p>
+      <p className="ae-subtitle">Associated Engineering</p>
+      <svg width={80} height={80}>
+        <circle r={40} cx={40} cy={40}></circle>
+      </svg>
       <UserHeaderMenu />
       <nav>
-        <NavLink to="/" activeStyle={activeStyle} exact>
+        <div>
+        <NavLink to="/" style={style} activeStyle={activeStyle} exact>
           Home
         </NavLink>
-        {' | '}
-        <NavLink to="/users" activeStyle={activeStyle}>
+        </div>
+        <div>
+        <NavLink to="/users" style={style} activeStyle={activeStyle} exact>
           Users
         </NavLink>
-        {' | '}
-        <NavLink to="/projects" activeStyle={activeStyle}>
+        </div>
+        <div>
+        <NavLink to="/projects" style={style} activeStyle={activeStyle} exact>
           Projects
         </NavLink>
-        {' | '}
-        <NavLink to="/locations" activeStyle={activeStyle}>
-          Locations
-        </NavLink>
+        </div>
       </nav>
-    </>
+    </div>
   );
 };
 

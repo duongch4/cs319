@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const LocationList = ({ locations }) => {
   return (
-    <>
+    <div>
       <table>
         <thead>
           <tr>
@@ -22,7 +22,7 @@ const LocationList = ({ locations }) => {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 

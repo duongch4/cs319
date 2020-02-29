@@ -1,5 +1,7 @@
 export default {
-  users: [],
-  projects: [],
-  locations: [],
+    users: [],
+    projects: [],
+    userProfile: {},
+    projectProfile: {},
+    masterlist: {}
 };
