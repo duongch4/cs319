@@ -11,17 +11,17 @@ class Admin extends Component {
     state = {
         discipline: {
             name: "", 
-            id: -1
+            id: null
         },
         skill: {
-            disciplineID: -1, 
+            disciplineID: null, 
             name: "", 
-            skillID: -1
+            skillID: null
         },
         location: {
             city: "", 
             province: "", 
-            id: -1
+            id: null
         },
         masterlist: {}
     };
@@ -42,22 +42,37 @@ class Admin extends Component {
         }
     }
 
-    handleChange = (e) => {
+    handleDropdownChange = (e) => {
         this.setState({
-            [e.target.name]: e.target.value
-        })
+            ...this.state,
+            skill: {
+                ...this.state.skill,
+                disciplineID: e.target.value // TODO: This needs to be changed to the ID of the discpline, but we currently do not have that
+            }
+        }, () => console.log("DROPDOWN", this.state))
     }
 
-    onSubmit = (e) =>  {
+    handleChange = (e) => {
+        this.setState({
+            ...this.state,
+            [e.target.name]: {
+                ...this.state[e.target.name],
+                name: e.target.value
+            }
+        }, () => console.log(this.state))
+    }
+
+    onDisciplineSubmit = (e) =>  {
         e.preventDefault();
-        let targetname = e.target.name
-        // db call
-        // console.log(this.state[targetname])
-        this.props.createDiscpline(this.state[targetname])
+        this.props.createDiscpline(this.state.discipline)
+    }
+
+    onSkillSubmit = (e) => {
+        e.preventDefault();
+        console.log(this.state.skill)
     }
 
     render() {
-        // console.log(this.state)
         let disciplinesObj = this.state.masterlist.disciplines
         let skills = []
         let disciplines = Object.keys(disciplinesObj)
@@ -79,21 +94,35 @@ class Admin extends Component {
         let provinceList = listGen(provinces)
         let cityList = listGen(cities)
         
+        let disciplineDropDown = []
+        disciplines.forEach(elem => {
+            disciplineDropDown.push(<option value={elem} key={disciplineDropDown.length}>{elem}</option>
+            )
+        })
+        
+
         return (
             <div className="activity-container">
                 <h1 className="greenHeader">Admin</h1>
                 <div>
                     <h2>Disciplines</h2>
                     {disciplineList}
-                    <form name="discipline" onSubmit={this.onSubmit}>
+                    <form name="discipline" onSubmit={this.onDisciplineSubmit}>
                     <input type="text" onChange={this.handleChange} name="discipline"/>
                     </form>
-                    <button name="discipline" id="discipline" onClick={this.onSubmit}>Add Discipline</button>
+                    <button name="discipline" id="discipline" onClick={this.onDisciplineSubmit}>Add Discipline</button>
                 </div>
                 <div>
                     <h2>Skills</h2>
                     {skillList}
-                    <button id="skill">Add Skill</button>
+                    <select className="input-box" id="discipline" onChange={this.handleDropdownChange}>
+                        <option value="DEFAULT" disabled>Discipline</option>
+                        {disciplineDropDown}
+                    </select>
+                    <form name="skill" onSubmit={this.onSkillSubmit}>
+                        <input type="text" onChange={this.handleChange} name="skill"/>
+                    </form>
+                    <button id="skill" onClick={this.onSkillSubmit}>Add Skill</button>
                 </div>
                 <div>
                     <h2>Province</h2>

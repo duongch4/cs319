@@ -7,7 +7,7 @@ export const executeLoadMasterlistsData = action => {
 
 export const executeCreateDiscipline = (action, state) => {
     let newDisciplines = state.disciplines
-    newDisciplines[action.disciplines] = []
+    newDisciplines[action.disciplines.name] = []
     let newState = {
         ...state,
         disciplines: newDisciplines
