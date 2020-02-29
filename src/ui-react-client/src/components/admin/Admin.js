@@ -100,7 +100,6 @@ class Admin extends Component {
 
     onSubmit = (e) => {
         e.preventDefault();
-        console.log(e.target.name)
         switch(e.target.name) {
             case "discipline":
                 return this.props.createDiscpline(this.state.discipline);
