@@ -23,20 +23,50 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<ProjectResource>> GetAllProjects()
         {
             var sql = @"
-                select
+                SELECT
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
                     p.ManagerId, p.LocationId, p.Number,
                     u.FirstName, u.LastName,
                     l.Province, l.City 
-                from
+                FROM
                     Projects p, Locations l, Users u
-                where
+                WHERE
                     p.LocationId = l.Id
                     AND p.ManagerId = u.Id
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ProjectResource>(sql);
+            return await connection.QueryAsync<ProjectResource>(sql, new { DateTimeNow = DateTime.Today });
+        }
+
+        public async Task<IEnumerable<ProjectResource>> GetProjectsWithEndDateAfterSpecificDate(DateTime dateTime, int page)
+        {
+            Log.Information("DateTime: {@dt}", dateTime);
+            var sql = @"
+                SELECT
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City 
+                FROM
+                    Projects p, Locations l, Users u
+                WHERE
+                    p.LocationId = l.Id
+                    AND p.ManagerId = u.Id
+                    AND p.ProjectEndDate > @DateTimeSpecific
+                ORDER BY
+                    p.ProjectStartDate
+                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                    FETCH NEXT @RowsPerPage ROWS ONLY
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ProjectResource>(sql, new
+            {
+                DateTimeSpecific = dateTime,
+                PageNumber = page,
+                RowsPerPage = 50
+            });
         }
 
         public async Task<IEnumerable<Project>> GetMostRecentProjects()

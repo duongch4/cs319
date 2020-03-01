@@ -1,5 +1,6 @@
 ﻿using Web.API.Application.Models;
 using Web.API.Resources;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Web.API.Application.Repository
     {
         // GET
         Task<IEnumerable<ProjectResource>> GetAllProjects();
+        Task<IEnumerable<ProjectResource>> GetProjectsWithEndDateAfterSpecificDate(DateTime dateTime, int page);
         Task<IEnumerable<Project>> GetMostRecentProjects();
         Task<Project> GetAProject(string projectNumber);
         Task<ProjectResource> GetAProjectResource(string projectNumber);
