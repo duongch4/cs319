@@ -69,13 +69,12 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllProjects([FromQuery] DateTime key, [FromQuery] int page)
+        public async Task<IActionResult> GetAllProjects([FromQuery] string key, [FromQuery] int page)
         {
-            key = (key == new DateTime()) ? DateTime.Today : key; // key not provided => will be Default new DateTime()
             page = (page == 0) ? 1 : page;
             try
             {
-                var projects = await projectsRepository.GetProjectsWithEndDateAfterSpecificDate(key, page);
+                var projects = await projectsRepository.GetProjectsOrderedByKey(key, page);
                 if (projects == null || !projects.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
@@ -540,16 +539,16 @@ namespace Web.API.Controllers
         {
             try
             {
-                Position position = await positionsRepository.GetAPosition(reqBody.positionId);
+                Position position = await positionsRepository.GetAPosition(reqBody.PositionID);
                 if (position == null)
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
                 }
-                position.Id = reqBody.positionId;
-                position.ResourceId = reqBody.userId;
+                position.Id = reqBody.PositionID;
+                position.ResourceId = reqBody.UserID;
 
                 position = await positionsRepository.UpdateAPosition(position);
-                var posIdAndResourceId = new { reqBody.positionId, reqBody.userId };
+                var posIdAndResourceId = new { reqBody.PositionID, reqBody.UserID };
                 var response = new UpdatedResponse<object>(posIdAndResourceId, "Successfully updated");
                 return StatusCode(StatusCodes.Status201Created, response);
             }

@@ -10,7 +10,7 @@ namespace Web.API.Application.Repository
     {
         // GET
         Task<IEnumerable<ProjectResource>> GetAllProjects();
-        Task<IEnumerable<ProjectResource>> GetProjectsWithEndDateAfterSpecificDate(DateTime dateTime, int page);
+        Task<IEnumerable<ProjectResource>> GetProjectsOrderedByKey(string key, int page);
         Task<IEnumerable<Project>> GetMostRecentProjects();
         Task<Project> GetAProject(string projectNumber);
         Task<ProjectResource> GetAProjectResource(string projectNumber);

@@ -1,5 +1,6 @@
 ﻿using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Application.Communication;
 using Web.API.Resources;
 using System;
 using System.Collections.Generic;
@@ -39,9 +40,10 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<ProjectResource>(sql, new { DateTimeNow = DateTime.Today });
         }
 
-        public async Task<IEnumerable<ProjectResource>> GetProjectsWithEndDateAfterSpecificDate(DateTime dateTime, int page)
+        public async Task<IEnumerable<ProjectResource>> GetProjectsOrderedByKey(string key, int page)
         {
-            Log.Information("DateTime: {@dt}", dateTime);
+            var orderKey = this.GetOrderKey(key);
+
             var sql = @"
                 SELECT
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
@@ -55,7 +57,9 @@ namespace Web.API.Infrastructure.Data
                     AND p.ManagerId = u.Id
                     AND p.ProjectEndDate > @DateTimeSpecific
                 ORDER BY
-                    p.ProjectStartDate
+                    CASE WHEN @OrderKey = 1 THEN p.Title END ASC,
+                    CASE WHEN @OrderKey = 2 THEN p.ProjectStartDate END ASC,
+                    CASE WHEN @OrderKey = 3 THEN p.ProjectEndDate END ASC
                     OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                     FETCH NEXT @RowsPerPage ROWS ONLY
             ;";
@@ -63,10 +67,27 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<ProjectResource>(sql, new
             {
-                DateTimeSpecific = dateTime,
+                DateTimeSpecific = DateTime.Today,
+                OrderKey = orderKey,
                 PageNumber = page,
                 RowsPerPage = 50
             });
+        }
+
+        private int GetOrderKey(string key)
+        {
+            if (key == OrderKeyProject.Title.Value)
+            {
+                return 1;
+            }
+            else if (key == OrderKeyProject.EndDate.Value)
+            {
+                return 3;
+            }
+            else
+            {
+                return 2;
+            }
         }
 
         public async Task<IEnumerable<Project>> GetMostRecentProjects()
