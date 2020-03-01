@@ -8,20 +8,26 @@ import AvailabilityCard from './AvailabilityCard';
 import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
+import {CLIENT_DEV_ENV} from '../../config/config';
 
 class UserDetails extends Component {
     state = {
         userProfile: {}
     };
 
-    componentDidMount() {
-        if (Object.keys(this.props.userProfile).length === 0) {
-            this.props.loadSpecificUser(this.props.match.params.user_id)
-                .then(() => {
-                    this.setState({ userProfile: this.props.userProfile });
-                })
+    static getDerivedStateFromProps(props, state){
+      if(CLIENT_DEV_ENV){
+            props.loadSpecificUser(props.match.params.user_id);
+            return { 
+                userProfile: props.userProfile
+            };
+        } else {
+            props.loadSpecificUser(props.match.params.user_id)
+            .then(() => {
+                return { userProfile: props.userProfile }; // TODO: @Kaye Before integration, make sure this works
+            })
         }
-    };
+    }
 
     render() {
         let userDetails = this.state.userProfile;
@@ -87,7 +93,7 @@ class UserDetails extends Component {
 }
 
 UserDetails.propTypes = {
-    userProfile: PropTypes.object.isRequired
+    userProfile: PropTypes.object
 };
 
 const mapStateToProps = state => {
