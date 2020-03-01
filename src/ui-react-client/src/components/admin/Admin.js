@@ -6,6 +6,7 @@ import {loadMasterlists, createDiscpline, createSkill, createProvince,createCity
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import EditIcon from '@material-ui/icons/Edit';
 
 class Admin extends Component {
     state = {
@@ -114,6 +115,26 @@ class Admin extends Component {
         }
     }
 
+    edit = (elem) => {
+        console.log(elem)
+    }
+
+    listGen = (inputList) => {
+        let list = []
+        inputList.forEach(elem =>{
+            list.push(<div key={list.length}>
+                <List>
+                    <ListItem>
+                    <ListItemText primary={elem} />
+                    <EditIcon onClick={()=>this.edit(elem)}/>
+                    </ListItem>
+                    
+                </List>
+            </div>)
+        })
+        return list
+    }
+
     render() {
         let disciplinesObj = this.state.masterlist.disciplines
         let skills = []
@@ -131,10 +152,10 @@ class Admin extends Component {
             })
         }
 
-        let disciplineList = listGen(disciplines)
-        let skillList = listGen(skills)
-        let provinceList = listGen(provinces)
-        let cityList = listGen(cities)
+        let disciplineList = this.listGen(disciplines)
+        let skillList = this.listGen(skills)
+        let provinceList = this.listGen(provinces)
+        let cityList = this.listGen(cities)
         
         let disciplineDropDown = []
         disciplines.forEach(elem => {
@@ -194,20 +215,6 @@ class Admin extends Component {
             </div>
         )
     }
-}
-
-function listGen (inputList) {
-    let list = []
-    inputList.forEach(elem =>{
-        list.push(<div key={list.length}>
-            <List>
-                <ListItem button>
-                <ListItemText primary={elem} />
-                </ListItem>
-            </List>
-        </div>)
-    })
-    return list
 }
 
 Admin.propTypes = {
