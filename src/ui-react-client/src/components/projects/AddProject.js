@@ -6,6 +6,7 @@ import {createProject} from '../../redux/actions/projectProfileActions.js';
 import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
+import {CLIENT_DEV_ENV} from '../../config/config';
 
 class AddProject extends Component {
     state = {
@@ -28,12 +29,20 @@ class AddProject extends Component {
             usersSummary: [],
             openings: [],
         },
-        masterlist: {},
+        masterlist: this.props.masterlist,
         pending: true
     };
 
     componentDidMount() {
-        this.props.loadMasterlists()
+        if (CLIENT_DEV_ENV) {
+            this.props.loadMasterlists()
+            this.setState({
+                ...this.state,
+                masterlist: this.props.masterlist,
+                pending: false
+            })
+        } else {
+            this.props.loadMasterlists()
             .then(() => {
                 this.setState({
                     ...this.state,
@@ -41,6 +50,8 @@ class AddProject extends Component {
                     pending: false
                 })
             })
+        }
+        
     }
 
     addOpening = (opening) => {
