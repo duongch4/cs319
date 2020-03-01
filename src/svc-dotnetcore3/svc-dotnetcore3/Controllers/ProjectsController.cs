@@ -52,6 +52,7 @@ namespace Web.API.Controllers
         /// </remarks>
         /// <param name="key" />
         /// <param name="page" />
+        /// <returns>Payload: List of ProjectSummary</returns>
         /// <response code="200">
         ///     Returns at most the top 50 projects that match the provided keyValue.
         ///     When no key value is provided, it returns a list of the top 50 projects whose end dates are after the current date.
@@ -80,7 +81,7 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
                 }
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
-                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good");
+                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good", new { page = page });
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
