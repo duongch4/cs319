@@ -209,7 +209,6 @@ namespace Web.API.Infrastructure.Data
                 DisciplineName = skill.ResourceDisciplineName,
                 SkillName = skill.Name
             });
-            Log.Information(result);
             return result;
         }
     }
