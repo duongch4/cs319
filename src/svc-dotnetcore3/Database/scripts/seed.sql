@@ -66,10 +66,10 @@ Set IDENTITY_INSERT [dbo].[Positions] ON
 Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (1, 4, 1, 90, null, 'Binger', '10+', 0 );
 Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (2, 1, 2, 170, 4, 'Mission Control', '3-5', 1);
 Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (3, 5, 2, 170, 3, 'Intel', '1-2', 1);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (4, 2, 5, 150, null, 'Preventing evil Cap','3-5', 0);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (4, 2, 5, 150, 1, 'Preventing evil Cap','3-5', 1);
 Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (5, 1, 4, 120, 1, 'Time Cop', '10+', 1);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (6, 3, 3, 165, null, 'In the dot', '10+', 0);
-Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (7, 1, 6, 120, 5, 'Protect the Machine', '3-5',1);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (6, 3, 3, 165, 1, 'In the dot', '10+', 0);
+Insert [dbo].[Positions] ([Id], [DisciplineId], [ProjectId], [ProjectedMonthlyHours], [ResourceId], [PositionName], [YearsOfExperience], [IsConfirmed]) values (7, 1, 6, 120, 5, 'Protect the Machine', '3-5', 0);
 Set IDENTITY_INSERT [dbo].[Positions] OFF
 
 Insert [dbo].[PositionSkills] ([PositionId], [SkillId], [SkillDisciplineId]) values (1, 40, 4);
