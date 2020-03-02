@@ -40,10 +40,8 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<ProjectResource>(sql, new { DateTimeNow = DateTime.Today });
         }
 
-        public async Task<IEnumerable<ProjectResource>> GetProjectsOrderedByKey(string key, int page)
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page)
         {
-            var orderKey = this.GetOrderKey(key);
-
             var sql = @"
                 SELECT
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
@@ -57,9 +55,21 @@ namespace Web.API.Infrastructure.Data
                     AND p.ManagerId = u.Id
                     AND p.ProjectEndDate > @DateTimeSpecific
                 ORDER BY
-                    CASE WHEN @OrderKey = 1 THEN p.Title END ASC,
-                    CASE WHEN @OrderKey = 2 THEN p.ProjectStartDate END ASC,
-                    CASE WHEN @OrderKey = 3 THEN p.ProjectEndDate END ASC
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
+
+                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN l.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN l.City END DESC
+
                     OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                     FETCH NEXT @RowsPerPage ROWS ONLY
             ;";
@@ -69,25 +79,10 @@ namespace Web.API.Infrastructure.Data
             {
                 DateTimeSpecific = DateTime.Today,
                 OrderKey = orderKey,
+                Order = order,
                 PageNumber = page,
                 RowsPerPage = 50
             });
-        }
-
-        private int GetOrderKey(string key)
-        {
-            if (key == OrderKeyProject.Title.Value)
-            {
-                return 1;
-            }
-            else if (key == OrderKeyProject.EndDate.Value)
-            {
-                return 3;
-            }
-            else
-            {
-                return 2;
-            }
         }
 
         public async Task<IEnumerable<Project>> GetMostRecentProjects()

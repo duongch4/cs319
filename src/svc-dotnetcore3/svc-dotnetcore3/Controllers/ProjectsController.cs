@@ -50,7 +50,8 @@ namespace Web.API.Controllers
         ///     GET /api/projects?key={keyValue}&#38;page={pageNumber}
         ///
         /// </remarks>
-        /// <param name="key" />
+        /// <param name="orderKey" />
+        /// <param name="order" />
         /// <param name="page" />
         /// <returns>Payload: List of ProjectSummary</returns>
         /// <response code="200">
@@ -69,18 +70,26 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllProjects([FromQuery] string key, [FromQuery] int page)
+        public async Task<IActionResult> GetAllProjects([FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
         {
+            orderKey = (orderKey == null) ? "startDate" : orderKey;
+            order = (order == null) ? "asc" : order;
             page = (page == 0) ? 1 : page;
             try
             {
-                var projects = await projectsRepository.GetProjectsOrderedByKey(key, page);
+                var projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
                 if (projects == null || !projects.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
                 }
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
-                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good", new { page = page });
+                var extra = new {
+                    page = page,
+                    size = resource.Count(),
+                    order = order,
+                    orderKey = orderKey
+                };
+                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good", extra);
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -137,7 +146,7 @@ namespace Web.API.Controllers
 
                 var projectManager = mapper.Map<ProjectResource, ProjectManager>(project);
 
-                var users = await usersRepository.GetAllUsersResourceOnProject(project.Id, project.ManagerId);
+                var users = await usersRepository.GetAllUserResourcesOnProject(project.Id, project.ManagerId);
                 if (users == null || !users.Any())
                 {
                     users = new UserResource[] { };
