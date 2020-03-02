@@ -2,11 +2,11 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadUsersAllData = action => {
-  return action.userSummaries;
+  return action.users;
 };
 
 export const usersReducer = (
-    state = initialState.userSummaries,
+    state = initialState.users,
     action
 ) => {
   switch (action.type) {

@@ -11,8 +11,7 @@ const rootReducer = combineReducers({
   projects: projects,
   masterlist: masterlist,
   userProfile: userProfile,
-  projectProfile: projectProfile,
-  userProfiles: userProfiles
+  projectProfile: projectProfile
 });
 
 export default rootReducer;

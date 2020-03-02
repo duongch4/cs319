@@ -1,5 +1,5 @@
 export default {
-    userSummaries: [
+    users: [
         {
             firstName: "Jason",
             lastName: "Bourne",
@@ -43,7 +43,7 @@ export default {
             },
             isConfirmed: false
         }],
-    projectSummaries: [{
+    projects: [{
         title: "Martensville Athletic Pavillion",
         location: {
             province: "Seskatchewan",

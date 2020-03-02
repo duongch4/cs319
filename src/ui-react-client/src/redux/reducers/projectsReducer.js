@@ -2,7 +2,7 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadProjectsData = (action) => {
-  return action.projectSummaries;
+  return action.projects;
 };
 
 const executeUpdateProjectSummaryArray = (state, action) => {
@@ -32,7 +32,7 @@ const executeDeleteProjectSummary = (state, action) => {
 };
 
 export const projectsReducer = (
-  state = initialState.projectSummaries,
+  state = initialState.projects,
   action,
 ) => {
   switch (action.type) {
