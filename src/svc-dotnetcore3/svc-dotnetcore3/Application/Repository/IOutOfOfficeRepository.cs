@@ -7,7 +7,7 @@ namespace Web.API.Application.Repository
     public interface IOutOfOfficeRepository
     {
         //GET
-        Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(User user);
+        Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(int userId);
         Task<OutOfOffice> DeleteOutOfOffice(OutOfOffice avail);
         Task<OutOfOffice> InsertOutOfOffice(OutOfOffice avail);
     }

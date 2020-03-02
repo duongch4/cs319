@@ -146,10 +146,10 @@ namespace Web.API.Controllers
 
                 var projects = await projectsRepository.GetAllProjectsOfUser(user);
                 var positions = await positionsRepository.GetPositionsOfUser(user);
-                var disciplines = await disciplinesRepository.GetUserDisciplines(user);
-                var skills = await skillsRepository.GetUserSkills(user);
+                var disciplines = await disciplinesRepository.GetUserDisciplines(userIdInt);
+                var skills = await skillsRepository.GetUserSkills(userIdInt);
                 var utilization = positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours);
-                var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
+                var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userIdInt);
                 IEnumerable<RDisciplineResource> disciplineResources = Enumerable.Empty<RDisciplineResource>();
                 foreach (var discipline in disciplines)
                 {
@@ -282,12 +282,12 @@ namespace Web.API.Controllers
             {
                 UserSummary summary = userProfile.UserSummary;
                 Location location = await locationsRepository.GetALocation(userProfile.UserSummary.Location.City);
-                User updateUser = createUserFromSummary(summary, location);
-                var changedUser = await usersRepository.UpdateAUser(updateUser);
-                var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, updateUser);
-                var avails = await processOutOfOfficeChanges(userProfile.Availability, updateUser);
+                // User updateUser = createUserFromSummary(summary, location);
+                var changedUser = await usersRepository.UpdateAUser(summary, location);
+                var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, userId);
+                var avails = await processOutOfOfficeChanges(userProfile.Availability, userId);
                 var tmp = new { changedUser, disciplines, avails };
-                var response = new OkResponse<int>(updateUser.Id, "Successfully updated");
+                var response = new OkResponse<int>(userId, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -331,14 +331,14 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<Object> processDisciplineSkillChanges(IEnumerable<RDisciplineResource> profile, User user)
+        private async Task<Object> processDisciplineSkillChanges(IEnumerable<RDisciplineResource> profile, int userId)
         {
-            var profileDisciplines = createResourceDisciplinesFromProfile(profile, user.Id);
-            var profileSkills = createResourceSkillsFromProfile(profile, user.Id);
+            var profileDisciplines = createResourceDisciplinesFromProfile(profile, userId);
+            var profileSkills = createResourceSkillsFromProfile(profile, userId);
             // Log.Logger.Information("finish getting profile Skills" + profileSkills);
-            var disciplinesDB = await disciplinesRepository.GetUserDisciplines(user);
+            var disciplinesDB = await disciplinesRepository.GetUserDisciplines(userId);
             // Log.Logger.Information("finish getting Discipline DB");
-            var skillsDB = await skillsRepository.GetUserSkills(user);
+            var skillsDB = await skillsRepository.GetUserSkills(userId);
             // Log.Logger.Information("finish getting skill DB");
             bool isSameDisc = disciplinesDB.SequenceEqual(profileDisciplines);
             bool isSameSkill = skillsDB.SequenceEqual(profileSkills);
@@ -434,10 +434,10 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, User user)
+        private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, int userId)
         {
-            var profileAvailability = createOutOfOfficeFromProfile(profile, user.Id);
-            var availabilityDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user);
+            var profileAvailability = createOutOfOfficeFromProfile(profile, userId);
+            var availabilityDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userId);
             var result = Enumerable.Empty<OutOfOffice>();
             bool isSameAvail = profileAvailability.SequenceEqual(availabilityDB);
             if (!isSameAvail)

@@ -25,7 +25,7 @@ namespace Web.API.Application.Repository
         Task<User> GetPMOfProject(Project project);
 
         //PUT
-        Task<User> UpdateAUser(User user);
+        Task<int> UpdateAUser(UserSummary user, Location location);
         Task<IEnumerable<UserResource>> GetAllUsersGeneral();
     }
 }
