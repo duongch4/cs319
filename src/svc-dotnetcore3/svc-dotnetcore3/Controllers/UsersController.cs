@@ -48,9 +48,12 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/users
+        ///     GET /api/users?orderKey={orderKey}&#38;order={order}&#38;page={pageNumber}
         ///
         /// </remarks>
+        /// <param name="orderKey" />
+        /// <param name="order" />
+        /// <param name="page" />
         /// <returns>All available users</returns>
         /// <response code="200">Returns all available users</response>
         /// <response code="400">Bad Request</response>
@@ -64,17 +67,26 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers([FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
         {
+            orderKey = (orderKey == null) ? "utilization" : orderKey;
+            order = (order == null) ? "desc" : order;
+            page = (page == 0) ? 1 : page;
             try
             {
-                var users = await usersRepository.GetAllUsersGeneral();
+                var users = await usersRepository.GetAllUserResources(orderKey, order, page);
                 if (users == null || !users.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
                 }
                 var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
-                var response = new OkResponse<IEnumerable<UserSummary>>(resource, "Everything is good");
+                var extra = new {
+                    page = page,
+                    size = resource.Count(),
+                    order = order,
+                    orderKey = orderKey
+                };
+                var response = new OkResponse<IEnumerable<UserSummary>>(resource, "Everything is good", extra);
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -455,6 +467,109 @@ namespace Web.API.Controllers
                 result = result.Append(added);
             }
             return result;
+        }
+
+        /// <summary>Search users</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /api/users/search
+        ///     {
+        ///         "filter": {
+        ///             "utilization": {
+        ///                 "min": 50,
+        ///                 "max": 160
+        ///             },
+        ///             "locations": [
+        ///                 {
+        ///                     "province": "British Columbia",
+        ///                     "city": "Vancouver"
+        ///                 },
+        ///                 {
+        ///                     "province": "Alberta",
+        ///                     "city": "Edmonton"
+        ///                 }
+        ///             ],
+        ///             "disciplines": {
+        ///                 "Intel": [
+        ///                     "Deception",
+        ///                     "False Identity Creation"
+        ///                 ],
+        ///                 "Martial Arts": [
+        ///                     "Kali"
+        ///                 ]
+        ///             },
+        ///             "yearsOfExps": [
+        ///                 "1-3",
+        ///                 "3-5",
+        ///                 "10+"
+        ///             ],
+        ///             "startDate": "2021-10-31T00:00:00",
+        ///             "endDate": "2022-02-12T00:00:00"
+        ///         },
+        ///         "orderKey": "utilization",
+        ///         "order": "asc",
+        ///         "page": 1
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="req"></param>
+        /// <returns>
+        /// Returns a list of 50 users that match provided search parameters.
+        /// The key (default is utilization) is a string that determines which filter should determine the order.
+        /// Order determines if it should be ascending or descending.
+        /// PageNumber determines which set of users are provided.
+        /// When no order/orderKey are provided, it returns the first set of 50 users sorted according to utilization in descending order. 
+        /// </returns>
+        /// <response code="200">Returns the requested users</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="404">If the requested user cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Route("users/search")]
+        [ProducesResponseType(typeof(OkResponse<IEnumerable<UserSummary>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SearchUsers([FromBody] RequestSearchUsers req)
+        {
+            if (req == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
+            }
+
+            try
+            {
+                var users = await usersRepository.GetAllUserResourcesOnFilter(req);
+                if (users == null || !users.Any())
+                {
+                    // users = new UserResource[] { };
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
+                }
+                var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
+                var extra = new {
+                    requestBody = req,
+                    size = usersSummary.Count()
+                };
+                var response = new OkResponse<IEnumerable<UserSummary>>(usersSummary, "Everything is Ok", extra);
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
         }
     }
 

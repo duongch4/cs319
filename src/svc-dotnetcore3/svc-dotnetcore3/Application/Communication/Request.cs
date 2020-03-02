@@ -15,9 +15,15 @@ namespace Web.API.Application.Communication
         public int UserID { get; set; }
     }
 
+    public class Utilization
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+    }
+
     public class Filter
     {
-        public IEnumerable<int> Utilizations { get; set; }
+        public Utilization Utilization { get; set; }
         public IEnumerable<LocationResource> Locations { get; set; }
         public Dictionary<string, IEnumerable<string>> Disciplines { get; set; }
         public IEnumerable<string> YearsOfExps { get; set; }
@@ -72,9 +78,11 @@ namespace Web.API.Application.Communication
         public Filter Filter { get; set; }
         
         /// <summary>Order Key</summary>
+        /// <example>utilization/province/city/discipline/yearsOfExp</example>
         public string OrderKey { get; set; }
         
         /// <summary>Order: Ascending/Descending</summary>
+        /// <example>asc/desc</example>
         public string Order { get; set; }
         
         /// <summary>Page Number</summary>
