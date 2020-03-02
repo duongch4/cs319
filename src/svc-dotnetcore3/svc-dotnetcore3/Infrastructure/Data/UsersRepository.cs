@@ -396,7 +396,7 @@ namespace Web.API.Infrastructure.Data
             return await connection.QuerySingleAsync<User>(sql, new { ProjectManagerId = project.ManagerId });
         }
 
-        public async Task<User> UpdateAUser(User user)
+        public async Task<int> UpdateAUser(UserSummary user, Location location) 
         {
             var sql = @"
                 update
@@ -413,12 +413,12 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             int result = await connection.ExecuteAsync(sql, new
             {
-                Id = user.Id,
+                Id = user.UserID,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                LocationId = user.LocationId
+                LocationId = location.Id
             });
-            return result == 1 ? user : null;
+            return result == 1 ? user.UserID : -1;
         }
 
         public async Task<IEnumerable<UserResource>> GetAllUsersGeneral()
