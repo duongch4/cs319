@@ -54,8 +54,7 @@ class CreateEditProjectDetails extends Component {
                     ...this.state.projectSummary,
                     location: {...this.state.location, city: e.target.value}
                 }
-            });
-            this.props.addProjDetails(this.state.projectSummary);
+            }, () => this.props.addProjDetails(this.state.projectSummary));
         } else if (e.target.id === "province") {
             let newCities = this.props.locations[e.target.value];
             this.setState({
@@ -65,8 +64,7 @@ class CreateEditProjectDetails extends Component {
                     location: {...this.state.location, province: e.target.value},
                 },
                 city_options: newCities
-            });
-            this.props.addProjDetails(this.state.projectSummary);
+            }, () => this.props.addProjDetails(this.state.projectSummary));
         } else {
             this.setState({
                 ...this.state,
@@ -74,8 +72,7 @@ class CreateEditProjectDetails extends Component {
                     ...this.state.projectSummary,
                     [e.target.id]: e.target.value
                 }
-            })
-            this.props.addProjDetails(this.state.projectSummary);
+            }, () => this.props.addProjDetails(this.state.projectSummary));
         }
     };
 
@@ -108,8 +105,8 @@ class CreateEditProjectDetails extends Component {
             <h2 className="darkGreenHeader">Project Details</h2>
             <div className="form-section">
                 <div className="form-row">
-                    <label htmlFor="name"><p className="form-label">Title</p></label>
-                    <input className="input-box" type="text" id="name" onChange={this.handleChange}
+                    <label htmlFor="title"><p className="form-label">Title</p></label>
+                    <input className="input-box" type="text" id="title" onChange={this.handleChange}
                            defaultValue={projSummary.title}/>
                 </div>
                 <label htmlFor="location" className="form-row">

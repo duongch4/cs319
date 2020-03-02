@@ -69,28 +69,8 @@ class AddProject extends Component {
     };
 
     onSubmit = () => {
-        this.props.createProject(this.state.project);
-        this.setState({
-            projectProfile: {
-                projectSummary: {
-                    title: "",
-                    location: {
-                        city: "",
-                        province: ""
-                    },
-                    projectStartDate: "",
-                    projectEndDate: "",
-                    projectNumber: ""
-                },
-                projectManager: {
-                    userID: null,
-                    firstName: "",
-                    lastName: ""
-                },
-                usersSummary: [],
-                openings: [],
-            }
-        })
+        let newProject = this.state.projectProfile;
+        this.props.createProject(newProject);
     };
 
     render() {
@@ -128,9 +108,8 @@ class AddProject extends Component {
                 </div>
             )
         }
-        ;
     }
-};
+}
 
 const mapStateToProps = state => {
     return {

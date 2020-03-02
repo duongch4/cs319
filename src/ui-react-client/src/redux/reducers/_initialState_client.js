@@ -185,18 +185,25 @@ export default {
             ],
             disciplines: [
                 {
-                    name: "Intel",
+                    discipline: "Intel",
                     yearsOfExp: "10+",
                     skills: [
                         "Deception"
                     ]
                 },
                 {
-                    name: "Language",
+                    discipline: "Language",
                     yearsOfExp: "10+",
                     skills: [
                         "Russian"
                     ]
+                }
+            ],
+            positions: [
+                {
+                    projectTitle: "Martensville Athletic Pavillion",
+                    disciplineName: "Intel",
+                    projectedMonthlyHours: 160
                 }
             ]
         }, {
@@ -241,7 +248,14 @@ export default {
                     skills: [
                         "Deception"
                     ]
-                }]
+                }],
+            positions: [
+                {
+                    projectTitle: "Martensville Athletic Pavillion",
+                    disciplineName: "Logistical Operations and Mental Health Analysis",
+                    projectedMonthlyHours: 160
+                }
+            ]
         }, {
             userSummary: {
                 firstName: "Pamela",
@@ -260,7 +274,8 @@ export default {
             },
             currentProjects: [],
             availability: [],
-            disciplines: []
+            disciplines: [],
+            positions: []
         }
     ],
     userProfile: {
@@ -312,6 +327,13 @@ export default {
                 skills: [
                     "Russian"
                 ]
+            }
+        ],
+        positions: [
+            {
+                projectTitle: "Martensville Athletic Pavillion",
+                disciplineName: "Intel",
+                projectedMonthlyHours: 160
             }
         ]
     },

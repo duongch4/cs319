@@ -34,6 +34,10 @@ namespace Web.API.Resources
         /// <example>true</example>
         public bool IsConfirmed { get; set; }
 
+        /// <summary>Utilization</summary>
+        /// <example>22</example>
+        public int Utilization { get; set; }
+
         /// <summary>Discipline</summary>
         /// <example>Weapons</example>
         public string DisciplineName { get; set; }

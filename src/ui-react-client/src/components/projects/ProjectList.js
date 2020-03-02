@@ -4,9 +4,7 @@ import ProjectCard from './ProjectCard';
 
 const ProjectList = ({ projects }) => {
   var projectList = [];
-  // console.log(projects);
   projects.forEach((project, index) => {
-    // console.log(project);
     projectList.push(
       <div key={projectList.length} className="card">
           <ProjectCard number={index + 1} project={project}
@@ -18,7 +16,7 @@ const ProjectList = ({ projects }) => {
       <div>
         {projectList}
       </div>)
-}
+};
 
 ProjectList.propTypes = {
   projects: PropTypes.array.isRequired,

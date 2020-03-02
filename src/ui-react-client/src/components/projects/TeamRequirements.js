@@ -9,7 +9,7 @@ class TeamRequirements extends Component {
           discipline: null,
           skills: [],
           yearsOfExp: null,
-          commitmentMonthlyHours: 1
+          commitmentMonthlyHours: 0
       }
     };
 
@@ -112,7 +112,7 @@ class TeamRequirements extends Component {
                               {skill_render}
                           </select>
                       </div>
-                      <label className="form-row" htmlFor= "yearsOfExperience">
+                      <label className="form-row" htmlFor= "yearsOfExp">
                           <p className="form-label">Years of Experience</p>
                           <select className="input-box" defaultValue={'DEFAULT'}
                                   id="yearsOfExp" onChange={this.handleChange}>
@@ -122,11 +122,11 @@ class TeamRequirements extends Component {
                       </label>
                       {!isUserPage && (
                           <div className="form-row">
-                              <label htmlFor= "commitment">
+                              <label htmlFor= "commitmentMonthlyHours">
                                   <p className="form-label">Expected Hourly Commitment Per Month</p>
                               </label>
                               <input className="input-box" type = "text"
-                                     id="commitment" onChange={this.handleChange}/>
+                                     id="commitmentMonthlyHours" onChange={this.handleChange}/>
                           </div>
                       )}
                   </div>

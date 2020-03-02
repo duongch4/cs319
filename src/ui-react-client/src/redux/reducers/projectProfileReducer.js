@@ -2,7 +2,6 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadSingleProjectData = action => {
-    // console.log(action.projectProfile);
     return action.projectProfile;
 };
 

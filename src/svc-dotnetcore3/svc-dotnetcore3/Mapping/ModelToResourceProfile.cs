@@ -2,6 +2,7 @@ using AutoMapper;
 using Web.API.Application.Models;
 using Web.API.Resources;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Web.API.Mapping
@@ -94,11 +95,6 @@ namespace Web.API.Mapping
                         Province = sourceMember.Province,
                         City = sourceMember.City
                     }
-                )
-            ).ForMember(
-                destinationMember => destinationMember.Utilization,
-                opt => opt.MapFrom(
-                    sourceMember => RandomNumber(0, 150)
                 )
             ).ForMember(
                 destinationMember => destinationMember.ResourceDiscipline,

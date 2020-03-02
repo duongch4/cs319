@@ -140,8 +140,6 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<ResourceDiscipline> InsertResourceDiscipline(ResourceDiscipline discipline)
         {
-            Log.Information("{@a}", discipline);
-
             var sql = @"
                 insert into ResourceDiscipline 
 	                values (@ResourceId, 
