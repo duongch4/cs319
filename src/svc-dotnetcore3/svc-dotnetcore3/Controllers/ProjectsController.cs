@@ -47,7 +47,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/projects?key={keyValue}&#38;page={pageNumber}
+        ///     GET /api/projects?orderKey={orderKey}&#38;order={order}&#38;page={pageNumber}
         ///
         /// </remarks>
         /// <param name="orderKey" />
@@ -112,7 +112,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/projects/2005-KJS4-46
+        ///     GET /api/projects/2009-VD9D-15
         ///
         /// </remarks>
         /// <param name="projectNumber"></param>
@@ -251,7 +251,7 @@ namespace Web.API.Controllers
         ///             },
         ///             "projectStartDate": "2020-10-31T00:00:00.0000000",
         ///             "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///             "projectNumber": "2005-KJS4-46"
+        ///             "projectNumber": "0000-0000-00"
         ///         },
         ///         "projectManager": {
         ///             "userID": 5,
@@ -353,7 +353,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT /api/projects/2005-KJS4-46
+        ///     PUT /api/projects/0000-0000-00
         ///     {
         ///         "projectSummary": {
         ///             "title": "POST Title",
@@ -363,7 +363,7 @@ namespace Web.API.Controllers
         ///             },
         ///             "projectStartDate": "2020-10-31T00:00:00.0000000",
         ///             "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///             "projectNumber": "2005-KJS4-46"
+        ///             "projectNumber": "0000-0000-00"
         ///         },
         ///         "projectManager": {
         ///             "userID": 5,
@@ -473,7 +473,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     DELETE /api/projects/2005-KJS4-46
+        ///     DELETE /api/projects/0000-0000-00
         ///
         /// </remarks>
         /// <param name="projectNumber"></param>
