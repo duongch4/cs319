@@ -14,6 +14,7 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req);
 
         Task<User> GetAUser(int userId);
+        Task<UserResource> GetAUserResource(int userId);
         Task<IEnumerable<User>> GetAllUsersAtLocation(Location location);
         Task<IEnumerable<User>> GetAllUsersWithDiscipline(Discipline discipline);
         Task<IEnumerable<User>> GetAllUsersWithSkill(Skill skill);

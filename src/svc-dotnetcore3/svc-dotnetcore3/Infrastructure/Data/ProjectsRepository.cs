@@ -150,6 +150,28 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<Project>(sql, new { UserId = user.Id });
         }
 
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(int userId)
+        {
+            var sql = @"
+                SELECT
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City
+                FROM
+                    Positions as pos, Projects as p, Users u, Locations l
+                WHERE
+                    pos.ResourceId = u.Id
+                    AND pos.ResourceId = @UserId 
+                    AND pos.ProjectId = p.Id
+                    AND l.Id = p.LocationId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ProjectResource>(sql, new { UserId = userId });
+        }
+
         public async Task<string> CreateAProject(ProjectProfile projectProfile, int locationId)
         {
             using var connection = new SqlConnection(connectionString);

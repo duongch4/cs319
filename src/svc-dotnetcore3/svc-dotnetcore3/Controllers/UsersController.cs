@@ -126,57 +126,39 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAUser(string userId)
+        public async Task<IActionResult> GetAUser(int userId)
         {
-            if (userId == null)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given userId is null"));
-            }
             try
             {
-                var userIdInt = Int32.Parse(userId);
-                var user = await usersRepository.GetAUser(userIdInt);
+                var user = await usersRepository.GetAUserResource(userId);
                 if (user == null)
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No users with userId '{userId}' found"));
                 }
+                var userSummary = mapper.Map<UserResource, UserSummary>(user);
 
-                var location = await locationsRepository.GetUserLocation(user);
-                var userResource = new UserResource{
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Username = user.Username,
-                    LocationId = user.LocationId,
-                    Province = location.Province,
-                    City = location.City,
-                    IsConfirmed = false,
-                    DisciplineName = null,
-                    YearsOfExperience = null
-                 };
-                var userSummary = mapper.Map<UserResource, UserSummary>(userResource);
-
-                var projects = await projectsRepository.GetAllProjectsOfUser(user);
-                var positions = await positionsRepository.GetPositionsOfUser(user);
-                var disciplines = await disciplinesRepository.GetUserDisciplines(userIdInt);
-                var skills = await skillsRepository.GetUserSkills(userIdInt);
-                var utilization = positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours);
-                var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userIdInt);
-                IEnumerable<RDisciplineResource> disciplineResources = Enumerable.Empty<RDisciplineResource>();
+                var projects = await projectsRepository.GetAllProjectResourcesOfUser(userId);
+                var positions = await positionsRepository.GetPositionsOfUser(userId);
+                var disciplines = await disciplinesRepository.GetUserDisciplines(userId);
+                var skills = await skillsRepository.GetUserSkills(userId);
+                // var utilization = Math.Ceiling(positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours) / 176.0m * 100.0m);
+                var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userId);
+                IEnumerable<ResourceDisciplineResource> disciplineResources = Enumerable.Empty<ResourceDisciplineResource>();
                 foreach (var discipline in disciplines)
                 {
                     var discSkills = skills.Where(x => x.ResourceDisciplineName == discipline.Name);
-                    var disc = new RDisciplineResource{
+                    var disc = new ResourceDisciplineResource{
+                        DisciplineID = discipline.DisciplineId,
                         Discipline = discipline.Name,
                         YearsOfExp = discipline.YearsOfExperience,
-                        Skills = discSkills.Select(x => x.Name).ToList()
+                        Skills = discSkills.Select(x => x.Name).ToHashSet()
                     };
                     disciplineResources = disciplineResources.Append(disc);
                 }
                 var userProfile = new UserProfile{
                     UserSummary = userSummary,
                     Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice),
-                    CurrentProjects = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectDirectMappingResource>>(projects),
+                    CurrentProjects = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects),
                     Disciplines = disciplineResources,
                     Positions = positions
                 };
@@ -205,67 +187,67 @@ namespace Web.API.Controllers
         /// Sample request:
         ///
         ///     PUT /api/users/3
-        /// {
-        ///     "userSummary": {
-        ///       "userID": 3,
-        ///       "firstName": "Nat",
-        ///       "lastName": "Romanov",
-        ///       "location": {
-        ///         "province": "Alberta",
-        ///         "city": "Calgary"
-        ///       },
-        ///       "utilization": 117,
-        ///       "resourceDiscipline": {
-        ///         "discipline": null,
-        ///         "yearsOfExp": null
-        ///       },
-        ///       "isConfirmed": false
-        ///     },
-        ///     "currentProjects": [
-        ///       {
-        ///         "projectNumber": "2005-KJS4-46",
-        ///         "title": "Budapest",
-        ///         "locationId": 19,
-        ///         "projectStartDate": "2020-04-19T00:00:00",
-        ///         "projectEndDate": "2020-07-01T00:00:00"
-        ///       }
-        ///     ],
-        ///     "availability": [
-        ///       {
-        ///         "fromDate": "2020-04-07T00:00:00",
-        ///         "toDate": "2020-04-19T00:00:00",
-        ///         "reason": "Maternal Leave"
-        ///       },
-        ///       {
-        ///         "fromDate": "2020-10-31T00:00:00",
-        ///         "toDate": "2020-11-11T00:00:00",
-        ///         "reason": "Maternal Leave"
-        ///       }
-        ///     ],
-        ///     "disciplines": [
-        ///       {
-        ///         "discipline": "Language",
-        ///         "yearsOfExp": "10+",
-        ///         "skills": [
-        ///           "Russian"
+        ///     {
+        ///         "userSummary": {
+        ///           "userID": 3,
+        ///           "firstName": "Nat",
+        ///           "lastName": "Romanov",
+        ///           "location": {
+        ///             "province": "Alberta",
+        ///             "city": "Calgary"
+        ///           },
+        ///           "utilization": 117,
+        ///           "resourceDiscipline": {
+        ///             "discipline": null,
+        ///             "yearsOfExp": null
+        ///           },
+        ///           "isConfirmed": false
+        ///         },
+        ///         "currentProjects": [
+        ///           {
+        ///             "projectNumber": "2005-KJS4-46",
+        ///             "title": "Budapest",
+        ///             "locationId": 19,
+        ///             "projectStartDate": "2020-04-19T00:00:00",
+        ///             "projectEndDate": "2020-07-01T00:00:00"
+        ///           }
+        ///         ],
+        ///         "availability": [
+        ///           {
+        ///             "fromDate": "2020-04-07T00:00:00",
+        ///             "toDate": "2020-04-19T00:00:00",
+        ///             "reason": "Maternal Leave"
+        ///           },
+        ///           {
+        ///             "fromDate": "2020-10-31T00:00:00",
+        ///             "toDate": "2020-11-11T00:00:00",
+        ///             "reason": "Maternal Leave"
+        ///           }
+        ///         ],
+        ///         "disciplines": [
+        ///           {
+        ///             "discipline": "Language",
+        ///             "yearsOfExp": "10+",
+        ///             "skills": [
+        ///               "Russian"
+        ///             ]
+        ///           },
+        ///           {
+        ///             "discipline": "Weapons",
+        ///             "yearsOfExp": "10+",
+        ///              "skills": [
+        ///                 "Glock", "Sniper Rifle"
+        ///               ]
+        ///             }
+        ///         ],
+        ///         "positions": [
+        ///           {
+        ///             "projectTitle": "Budapest",
+        ///             "disciplineName": "Intel",
+        ///             "projectedMonthlyHours": 170
+        ///           }
         ///         ]
-        ///       },
-        ///       {
-        ///         "discipline": "Weapons",
-        ///         "yearsOfExp": "10+",
-        ///          "skills": [
-        ///             "Glock", "Sniper Rifle"
-        ///           ]
-        ///         }
-        ///     ],
-        ///     "positions": [
-        ///       {
-        ///         "projectTitle": "Budapest",
-        ///         "disciplineName": "Intel",
-        ///         "projectedMonthlyHours": 170
-        ///       }
-        ///     ]
-        ///   }
+        ///     }
         ///
         /// </remarks>
         /// <param name="userProfile"></param>
@@ -328,7 +310,7 @@ namespace Web.API.Controllers
             return user;
         }
 
-        private IEnumerable<ResourceDiscipline> createResourceDisciplinesFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        private IEnumerable<ResourceDiscipline> createResourceDisciplinesFromProfile(IEnumerable<ResourceDisciplineResource> disciplines, int userId)
         {
             var result = Enumerable.Empty<ResourceDiscipline>();
             foreach (var discipline in disciplines)
@@ -343,10 +325,10 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<Object> processDisciplineSkillChanges(IEnumerable<RDisciplineResource> profile, int userId)
+        private async Task<Object> processDisciplineSkillChanges(IEnumerable<ResourceDisciplineResource> disciplines, int userId)
         {
-            var profileDisciplines = createResourceDisciplinesFromProfile(profile, userId);
-            var profileSkills = createResourceSkillsFromProfile(profile, userId);
+            var profileDisciplines = createResourceDisciplinesFromProfile(disciplines, userId);
+            var profileSkills = createResourceSkillsFromProfile(disciplines, userId);
             // Log.Logger.Information("finish getting profile Skills" + profileSkills);
             var disciplinesDB = await disciplinesRepository.GetUserDisciplines(userId);
             // Log.Logger.Information("finish getting Discipline DB");
@@ -365,7 +347,7 @@ namespace Web.API.Controllers
             return null;
         }
 
-        private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<RDisciplineResource> disciplines, int userId)
+        private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<ResourceDisciplineResource> disciplines, int userId)
         {
             var result = Enumerable.Empty<ResourceSkill>();
             foreach (var disc in disciplines)
@@ -499,10 +481,12 @@ namespace Web.API.Controllers
         ///             },
         ///             "locations": [
         ///                 {
+        ///                     "locationID": 8,
         ///                     "province": "British Columbia",
         ///                     "city": "Vancouver"
         ///                 },
         ///                 {
+        ///                     "locationID": 5,
         ///                     "province": "Alberta",
         ///                     "city": "Edmonton"
         ///                 }
