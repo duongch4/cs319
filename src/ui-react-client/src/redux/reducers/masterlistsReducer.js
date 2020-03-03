@@ -45,6 +45,17 @@ export const executeCreateCity = (action, state) => {
     return newState
 }
 
+export const executeEditCity = (action, state) => {
+    // let newLocation = state.locations
+    // state.locations[action.location.province].indexOf(action.location.city)
+    // newLocation[action.location.province] = [...state.locations[action.location.province], action.location.city]
+    // let newState = {
+    //     ...state,
+    //     locations: newLocation
+    // }
+    return state
+}
+
 export const masterlistsReducer = (
     state = initialState.masterlist,
     action
@@ -60,6 +71,8 @@ export const masterlistsReducer = (
             return executeCreateProvince(action, state);
         case types.CREATE_CITY:
             return executeCreateCity(action,state);
+        case types.EDIT_CITY:
+            return executeEditCity(action, state);
         default:
             return state;
     }

@@ -2,7 +2,14 @@ import React, { Component}  from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {loadMasterlists, createDiscpline, createSkill, createProvince,createCity} from '../../redux/actions/masterlistsActions';
+import {
+    loadMasterlists, 
+    createDiscpline, 
+    createSkill, 
+    createProvince, 
+    createCity,
+    editCity
+    } from '../../redux/actions/masterlistsActions';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -96,9 +103,62 @@ class Admin extends Component {
         }
     }
 
-    edit = (elem) => {
-        console.log(elem)
+    edit = (elem, name, id) => {
+        // TODO: bring in id with elem
+        switch(name) {
+            case "discipline":
+            this.setState({
+                ...this.state,
+                discipline: {
+                    ...this.state.discipline,
+                    name: elem,
+                    // id:
+                    // TODO: need to be able to change the city
+                    }
+                }, console.log(this.state))
+                return;
+                // return this.props.editDiscpline(this.state.discipline);
+            case "skill":
+            this.setState({
+                ...this.state,
+                location: {
+                    ...this.state.location,
+                    province: this.state.selectedprovince,
+                    city: elem,
+                    // TODO: need to be able to change the city
+                    }
+                }, console.log(this.state))
+                return;
+                // return this.props.editSkill(this.state.skill);
+            case "province":
+            this.setState({
+                ...this.state,
+                location: {
+                    ...this.state.location,
+                    province: this.state.selectedprovince,
+                    city: elem,
+                    // TODO: need to be able to change the city
+                    }
+                }, console.log(this.state))
+                return;
+                // return this.props.editProvince(this.state.location);
+            case "city":
+                this.setState({
+                    ...this.state,
+                    location: {
+                        ...this.state.location,
+                        province: this.state.selectedprovince,
+                        city: elem,
+                        // TODO: need to be able to change the city
+                        }
+                }, console.log(this.state))
+                return;
+                // return this.props.editCity(this.state.location);
+            default:
+                console.log("ERR")
+        }
     }
+
     changeSelected = (elem, name) => {
         switch(name) {
             case "discipline":
@@ -135,7 +195,7 @@ class Admin extends Component {
                 <List>
                     <ListItem button name={name} onClick={() => this.changeSelected(elem, name)}>
                     <ListItemText primary={elem} />
-                    <EditIcon onClick={()=>this.edit(elem)}/>
+                    <EditIcon onClick={()=>this.edit(elem, name)}/>
                     </ListItem>
                 </List>
             </div>)
@@ -221,7 +281,8 @@ const mapDispatchToProps = {
     createDiscpline,
     createSkill,
     createProvince,
-    createCity
+    createCity,
+    editCity
 };
   
 export default connect(

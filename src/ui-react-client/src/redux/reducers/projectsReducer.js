@@ -32,7 +32,7 @@ const executeDeleteProjectSummary = (state, action) => {
 };
 
 export const projectsReducer = (
-  state = initialState.projectSummaries,
+  state = initialState.projects,
   action,
 ) => {
   switch (action.type) {

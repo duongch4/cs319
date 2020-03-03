@@ -41,6 +41,14 @@ export const createCityData = location => {
     }
 }
 
+export const editCityData = location => {
+    return {
+        type: types.EDIT_CITY,
+        location: location
+    }
+}
+
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -93,6 +101,16 @@ export const createCity = (location) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createCityData(location))
+        } else {
+            // TODO
+        }
+    } 
+}
+
+export const editCity = (location) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(editCityData(location))
         } else {
             // TODO
         }

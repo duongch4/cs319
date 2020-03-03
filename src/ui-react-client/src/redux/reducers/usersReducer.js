@@ -6,7 +6,7 @@ const executeLoadUsersAllData = action => {
 };
 
 export const usersReducer = (
-    state = initialState.userSummaries,
+    state = initialState.users,
     action
 ) => {
   switch (action.type) {

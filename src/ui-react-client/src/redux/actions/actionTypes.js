@@ -22,3 +22,4 @@ export const CREATE_DISCIPLINE = 'CREATE_DISCIPLINE';
 export const CREATE_SKILL = 'CREATE_SKILL';
 export const CREATE_PROVINCE = 'CREATE_PROVINCE';
 export const CREATE_CITY = 'CREATE_CITY';
+export const EDIT_CITY = 'EDIT_CITY';
