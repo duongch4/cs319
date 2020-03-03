@@ -482,8 +482,6 @@ namespace Web.API.Infrastructure.Data
                 connection.Open();
                 locationsReq = await connection.QueryAsync<LocationResource>(sqlGetAllLocations);
                 connection.Close();
-
-                Log.Information("{@a}", locationsReq);
             }
 
             foreach (var location in locationsReq)
