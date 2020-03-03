@@ -46,13 +46,7 @@ export const executeCreateCity = (action, state) => {
 }
 
 export const executeEditCity = (action, state) => {
-    // let newLocation = state.locations
-    // state.locations[action.location.province].indexOf(action.location.city)
-    // newLocation[action.location.province] = [...state.locations[action.location.province], action.location.city]
-    // let newState = {
-    //     ...state,
-    //     locations: newLocation
-    // }
+    // TODO
     return state
 }
 
