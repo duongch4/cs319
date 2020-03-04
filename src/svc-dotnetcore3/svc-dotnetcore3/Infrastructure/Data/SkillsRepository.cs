@@ -127,7 +127,7 @@ namespace Web.API.Infrastructure.Data
             return skill;
         }
 
-        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(User user)
+        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(int userId)
         {
             var sql = @"
             select 
@@ -145,7 +145,7 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<ResourceSkill>(sql, new
             {
-                Id = user.Id
+                Id = userId
             });
         }
 
@@ -209,7 +209,6 @@ namespace Web.API.Infrastructure.Data
                 DisciplineName = skill.ResourceDisciplineName,
                 SkillName = skill.Name
             });
-            Log.Information(result);
             return result;
         }
     }
