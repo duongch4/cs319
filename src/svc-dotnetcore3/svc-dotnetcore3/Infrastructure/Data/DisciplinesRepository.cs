@@ -106,7 +106,7 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId)
         {
             var sql = @"
-                select rd.ResourceId, d.Name, rd.YearsOfExperience
+                select rd.ResourceId, d.Name, rd.YearsOfExperience, rd.DisciplineId
                 from ResourceDiscipline as rd, Disciplines as d
                 where d.Id = rd.DisciplineId and rd.ResourceId = @Id;";
 
