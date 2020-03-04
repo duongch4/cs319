@@ -1,8 +1,8 @@
 DROP TABLE OutOfOffice;
 DROP TABLE PositionSkills;
 DROP TABLE ResourceSkill;
-DROP TABLE ResourceDiscipline;
 DROP TABLE Positions;
+DROP TABLE ResourceDiscipline;
 DROP TABLE Skills;
 DROP TABLE Projects;
 DROP TABLE Users;
@@ -63,6 +63,16 @@ CREATE TABLE [dbo].[Skills]
 	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id])
 )
 
+CREATE TABLE [dbo].[ResourceDiscipline]
+(
+	[ResourceId] [int] NOT NULL,
+	[DisciplineId] [int] NOT NULL,
+	[YearsOfExperience] NVARCHAR(10),
+	CONSTRAINT [FK_ResourceDiscipline_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE CASCADE,
+	CONSTRAINT [FK_ResourceDiscipline_Users] FOREIGN KEY ([ResourceId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE,
+	CONSTRAINT [PK_ResourceDiscipline] PRIMARY KEY ([ResourceId], [DisciplineId])
+)
+
 CREATE TABLE [dbo].Positions
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
@@ -76,16 +86,6 @@ CREATE TABLE [dbo].Positions
 	CONSTRAINT [FK_Positions_Projects] FOREIGN KEY (ProjectId) REFERENCES Projects([Id]) ON DELETE CASCADE,
 	CONSTRAINT [FK_Positions_Disciplines] FOREIGN KEY (DisciplineId) REFERENCES Disciplines([Id]),
 	CONSTRAINT [FK_Positions_Users] FOREIGN KEY (ResourceId) REFERENCES [Users]([Id])
-)
-
-CREATE TABLE [dbo].[ResourceDiscipline]
-(
-	[ResourceId] [int] NOT NULL,
-	[DisciplineId] [int] NOT NULL,
-	[YearsOfExperience] NVARCHAR(10),
-	CONSTRAINT [FK_ResourceDiscipline_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE CASCADE,
-	CONSTRAINT [FK_ResourceDiscipline_Users] FOREIGN KEY ([ResourceId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE,
-	CONSTRAINT [PK_ResourceDiscipline] PRIMARY KEY ([ResourceId], [DisciplineId])
 )
 
 CREATE TABLE [dbo].[ResourceSkill]

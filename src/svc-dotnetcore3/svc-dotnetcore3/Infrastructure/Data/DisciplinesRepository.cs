@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using Dapper;
 using System.Threading.Tasks;
+using Serilog;
+
 namespace Web.API.Infrastructure.Data
 {
     public class DisciplinesRespository : IDisciplinesRepository
@@ -101,16 +103,19 @@ namespace Web.API.Infrastructure.Data
             return discipline;
         }
 
-        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(User user)
+        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId)
         {
             var sql = @"
-                select rd.ResourceId, d.Name, rd.YearsOfExperience
+                select rd.ResourceId, d.Name, rd.YearsOfExperience, rd.DisciplineId
                 from ResourceDiscipline as rd, Disciplines as d
-                where d.Id = rd.DisciplineId and rd.ResourceId = " + user.Id + ";";
+                where d.Id = rd.DisciplineId and rd.ResourceId = @Id;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ResourceDiscipline>(sql);
+            return await connection.QueryAsync<ResourceDiscipline>(sql, new
+            {
+                Id = userId
+            });
         }
 
         public async Task<ResourceDiscipline> DeleteResourceDiscipline(ResourceDiscipline discipline)

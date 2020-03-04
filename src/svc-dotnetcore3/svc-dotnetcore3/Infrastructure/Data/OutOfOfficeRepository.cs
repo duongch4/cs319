@@ -17,14 +17,14 @@ namespace Web.API.Infrastructure.Data
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(User user)
+        public async Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(int userId)
         {
             var sql = @"
                 select * from OutOfOffice where ResourceId = @Id;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<OutOfOffice>(sql, new {Id = user.Id});
+            return await connection.QueryAsync<OutOfOffice>(sql, new {Id = userId});
         }
 
         public async Task<OutOfOffice> DeleteOutOfOffice(OutOfOffice avail) {

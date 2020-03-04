@@ -4,6 +4,10 @@ namespace Web.API.Resources
 {
     public class OpeningPositionsSummary
     {
+        /// <summary>Position Id</summary>
+        /// <example>1</example>
+        public int PositionID { get; set; }
+        
         /// <summary>Commitment Monthly Hours</summary>
         /// <example>160</example>
         public int CommitmentMonthlyHours { get; set; }

@@ -1,3 +1,6 @@
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
+
 import { runWithAdal } from 'react-adal';
 import { authContext } from './config/adalConfig';
 

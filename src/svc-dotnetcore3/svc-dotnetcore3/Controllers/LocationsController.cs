@@ -15,7 +15,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
