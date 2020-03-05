@@ -58,7 +58,6 @@ class CreateEditProjectDetails extends Component {
                     ...this.state.projectSummary,
                     location: {
                         ...this.state.projectSummary.location,
-                        locationID: 0,
                         city: e.target.value
                     }
                 }
@@ -71,7 +70,6 @@ class CreateEditProjectDetails extends Component {
                     ...this.state.projectSummary,
                     location: {
                         ...this.state.projectSummary.location,
-                        locationID: 0,
                         province: e.target.value
                     },
                 },
