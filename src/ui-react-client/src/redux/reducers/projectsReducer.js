@@ -6,6 +6,7 @@ const executeLoadProjectsData = (action) => {
 };
 
 const executeUpdateProjectSummaryArray = (state, action) => {
+  console.log(state);
   return state.projects.map(project => {
     if (project.projectNumber === action.projectSummary.projectNumber) {
       return action.projectSummary;

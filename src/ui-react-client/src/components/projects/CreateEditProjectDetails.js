@@ -8,7 +8,10 @@ class CreateEditProjectDetails extends Component {
     state = {
         projectSummary: {
             title: "",
-            location: {city: "", province: ""},
+            location: {
+                locationID: 0,
+                city: "",
+                province: ""},
             projectStartDate: new Date(),
             projectEndDate: new Date(),
             projectNumber: ""
@@ -35,6 +38,7 @@ class CreateEditProjectDetails extends Component {
                     title: currentProj.title,
                     location: {
                         ...this.state.projectSummary.location,
+                        locationID: currentProj.location.locationID,
                         city: currentProj.location.city,
                         province: currentProj.location.province
                     },
@@ -52,7 +56,11 @@ class CreateEditProjectDetails extends Component {
                 ...this.state,
                 projectSummary: {
                     ...this.state.projectSummary,
-                    location: {...this.state.location, city: e.target.value}
+                    location: {
+                        ...this.state.projectSummary.location,
+                        locationID: 0,
+                        city: e.target.value
+                    }
                 }
             }, () => this.props.addProjDetails(this.state.projectSummary));
         } else if (e.target.id === "province") {
@@ -61,7 +69,11 @@ class CreateEditProjectDetails extends Component {
                 ...this.state,
                 projectSummary: {
                     ...this.state.projectSummary,
-                    location: {...this.state.location, province: e.target.value},
+                    location: {
+                        ...this.state.projectSummary.location,
+                        locationID: 0,
+                        province: e.target.value
+                    },
                 },
                 city_options: newCities
             }, () => this.props.addProjDetails(this.state.projectSummary));
@@ -79,13 +91,13 @@ class CreateEditProjectDetails extends Component {
     handleChangeStartDate = (date) => {
         this.setState({
             startDate: date
-        }, () => this.props.addProjDetails(this.state))
+        }, () => this.props.addProjDetails(this.state.projectSummary))
     };
 
     handleChangeEndDate = (date) => {
         this.setState({
             endDate: date
-        }, () => this.props.addProjDetails(this.state))
+        }, () => this.props.addProjDetails(this.state.projectSummary))
     };
 
     render() {
