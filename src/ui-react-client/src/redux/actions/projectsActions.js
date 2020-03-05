@@ -6,6 +6,14 @@ import _initialState_client from '../reducers/_initialState_client';
 
 const baseURL = `${SVC_ROOT}api/projects/`;
 
+
+export const createProject = project => {
+  return {
+    type: types.CREATE_PROJECT,
+    project: project,
+  };
+};
+
 export const loadProjectsData = projectSummaries => {
   return {
     type: types.LOAD_PROJECTS_ALL,
@@ -68,3 +76,5 @@ export const createProjectSummaries = (projectSummary) => {
         dispatch(createProjectSummary(projectSummary))
     }
 };
+
+
