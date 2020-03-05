@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using Dapper;
 using System.Threading.Tasks;
 using Serilog;
+using Web.API.Resources;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -67,6 +68,22 @@ namespace Web.API.Infrastructure.Data
             discipline.Id = await connection.QuerySingleAsync<int>(sql, new { Name = discipline.Name });
             return discipline;
         }
+
+        public async Task<int> CreateADiscipline(DisciplineResource discipline)
+        {
+            var sql = @"
+                insert into Disciplines
+                    (Name)
+                values
+                    (@Name);
+                select cast(scope_identity() as int);
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            discipline.Id = await connection.QuerySingleAsync<int>(sql, new { Name = discipline.Name });
+            return discipline.Id;
+        }
         // PUT
         public async Task<Discipline> UpdateADiscipline(Discipline discipline)
         {
@@ -88,8 +105,29 @@ namespace Web.API.Infrastructure.Data
             });
             return (result == 1) ? discipline : null;
         }
+
+        public async Task<int> UpdateADiscipline(DisciplineResource discipline)
+        {
+            var sql = @"
+                update
+                    Disciplines
+                set 
+                    Name = @Name
+                where 
+                    Id = @Id
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            int result = await connection.ExecuteAsync(sql, new
+            {
+                Id = discipline.Id,
+                Name = discipline.Name
+            });
+            return (result == 1) ? discipline.Id : -1;
+        }
         // DELETE
-        public async Task<Discipline> DeleteADiscipline(int disciplineId)
+        public async Task<int> DeleteADiscipline(int disciplineId)
         {
             var discipline = await GetADiscipline(disciplineId);
             var sql = @"
@@ -100,7 +138,7 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.ExecuteAsync(sql, new { DisciplineId = disciplineId });
-            return discipline;
+            return disciplineId;
         }
 
         public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId)

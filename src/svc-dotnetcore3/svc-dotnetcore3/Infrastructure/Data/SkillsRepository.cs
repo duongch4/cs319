@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Serilog;
+using Web.API.Resources;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -88,6 +89,27 @@ namespace Web.API.Infrastructure.Data
             });
 
             return skill;
+        }
+
+        public async Task<int> CreateASkill(DisciplineSkillResource skill)
+        {
+            var sql = @"
+                insert into Skills
+                    (DisciplineId, Name)
+                values
+                    (@DisciplineId, @Name);
+                select cast(scope_identity() as int);
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            skill.SkillId = await connection.QuerySingleAsync<int>(sql, new
+            {
+                DisciplineId = skill.DisciplineId,
+                Name = skill.Name
+            });
+
+            return skill.SkillId;
         }
         //PUT
         public async Task<Skill> UpdateASkill(Skill skill)
