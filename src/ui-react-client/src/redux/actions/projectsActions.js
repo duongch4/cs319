@@ -9,7 +9,7 @@ const baseURL = `${SVC_ROOT}api/projects/`;
 export const loadProjectsData = projectSummaries => {
   return {
     type: types.LOAD_PROJECTS_ALL,
-    projectSummaries: projectSummaries,
+    projects: projectSummaries,
   };
 };
 

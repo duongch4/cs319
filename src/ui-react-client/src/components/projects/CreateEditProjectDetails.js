@@ -19,11 +19,7 @@ class CreateEditProjectDetails extends Component {
     };
 
     componentDidMount() {
-        this.setState({
-            ...this.state,
-            province_options: Object.keys(this.props.locations),
-            pending: false
-        });
+        let provinces = Array.from(Object.keys(this.props.locations));
         let currentProj = this.props.currentProject;
         if (currentProj) {
             let projStart = new Date(currentProj.projectStartDate);
@@ -41,8 +37,16 @@ class CreateEditProjectDetails extends Component {
                     projectStartDate: projStart,
                     projectEndDate: projEnd,
                     projectNumber: currentProj.projectNumber
-                }
+                },
+                province_options: provinces,
+                pending: false
             })
+        } else {
+            this.setState({
+                ...this.state,
+                province_options: provinces,
+                pending: false
+            });
         }
     }
 
