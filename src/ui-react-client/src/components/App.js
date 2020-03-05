@@ -25,9 +25,10 @@ const App = () => {
         <Route exact path="/" component={HomePage} />
         <Route exact path="/users" component={UsersPage} />
         <Route exact path="/projects" component={ProjectsPage} />
+        <Route exact path="/common/Search.js" component={Search} />
         <Route path="/locations" component={LocationsPage} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
-        <Route path="/search" component={Search} />
+        <Route path="/search" component={Search}/>
         <Route path="/users/:user_id" component={UserDetails} />
         <Route path="/add_project" component={AddProject} />
         <Route path="/editproject/:project_number" component={EditProject} />
