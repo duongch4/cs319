@@ -8,7 +8,7 @@ const executeLoadSingleProjectData = action => {
 const executeCreateProjectData = (state, action) => {
     return {
         projects: [
-            ...state.projects,
+            ...state.projects, // TODO: This errors on the front end - check integration
             action.projectProfile
         ]
     };
@@ -31,7 +31,7 @@ export const projectProfileReducer = (
         case types.LOAD_SINGLE_PROJECT:
             return executeLoadSingleProjectData(action);
         case types.CREATE_PROJECT:
-            return executeCreateProjectData(action);
+            return executeCreateProjectData(state, action);
         case types.UPDATE_PROJECT:
             return executeUpdateProjectData(action);
         case types.DELETE_PROJECT:

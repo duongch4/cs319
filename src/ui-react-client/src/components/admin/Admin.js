@@ -48,11 +48,12 @@ class Admin extends Component {
             ...this.state,
             skill: {
                 ...this.state.skill,
-                disciplineID: Object.keys(this.state.masterlist.disciplines)[0]
+                disciplineID: Object.values(this.state.masterlist.disciplines)[0].disciplineID
             },
             location: {
                 ...this.state.location,
-                province: Object.keys(this.state.masterlist.locations)[0],
+                province: Object.keys(this.state.masterlist.locations)[0], // TODO
+                id: Object.values(Object.values(this.state.masterlist.locations)[0])[0]
             },
             selectedprovince: Object.keys(this.state.masterlist.locations)[0]
         })
@@ -95,14 +96,18 @@ class Admin extends Component {
         }
     }
 
-    changeSelected = (elem, name) => {
+    setLocationID = (city) => {
+        // TODO: Lisa for deleting cities/provinces
+    }
+
+    changeSelected = (elem, name, id) => {
         switch(name) {
             case "discipline":
                 return this.setState({
                     ...this.state,
                     skill: {
                         ...this.state.skill,
-                        disciplineID: elem
+                        disciplineID: id
                     }
                 })
                
@@ -113,11 +118,12 @@ class Admin extends Component {
                     ...this.state,
                     location: {
                         ...this.state.location,
-                        province: elem
+                        province: elem,
                     }, 
                     selectedprovince: elem
                 });
             case "city":
+                this.setLocationID(elem)
                 return;
             default:
                 console.log("ERR")
@@ -138,28 +144,45 @@ class Admin extends Component {
         return list
     }
 
+    listGenID = (inputList, name, param) => {
+        let list = []
+        Object.keys(inputList).forEach(elem =>{
+            list.push(<div key={list.length}>
+                <List>
+                    <ListItem button name={name} onClick={() => this.changeSelected(elem, name, inputList[elem][param])}>
+                    <ListItemText primary={elem} />
+                    </ListItem>
+                </List>
+            </div>)
+        })
+        return list
+    }
+
     render() {
         const disciplinesObj = this.state.masterlist.disciplines
-        const skills = []
-        const disciplines = Object.keys(disciplinesObj)
-        const selectedDiscipline = this.state.skill.disciplineID ? this.state.skill.disciplineID : disciplines[0]
-        for(var skillArr of disciplinesObj[selectedDiscipline]) {
-            skills.push(skillArr)
+        const disciplines = disciplinesObj
+        
+        var disciplineName = null
+        for(var discipline in disciplinesObj) {
+            if(disciplinesObj[discipline].disciplineID === this.state.skill.disciplineID){
+                disciplineName = discipline
+            }
+            
         }
+        const selectedDiscipline = disciplineName ? disciplineName : Object.keys(disciplines)[0]
+        const skills = disciplinesObj[selectedDiscipline].skills ? disciplinesObj[selectedDiscipline].skills : []
+
         const provinces = Object.keys(this.state.masterlist.locations)
         const locations = this.state.masterlist.locations
-        const cities = []
         const selectedProvince = this.state.selectedprovince ? this.state.selectedprovince : provinces[0]
-        for(var cityArr of locations[selectedProvince]){
-            cities.push(cityArr)
-        }
+        const cities = Object.keys(locations[selectedProvince]) ? Object.keys(locations[selectedProvince]) : []
 
-        const disciplineList = this.listGen(disciplines, "discipline")
+        const disciplineList = this.listGenID(disciplines, "discipline", "disciplineID")
         let skillList = this.listGen(skills, "skill")
-        const provinceList = this.listGen(provinces, "province")
+        const provinceList = this.listGen(provinces, "province", "id")
         let cityList = this.listGen(cities, "city")
 
-        skillList = skillList.length > 0 ? skillList : <div>No Skills Avaialbe for Selected Discipline</div>
+        skillList = skillList.length > 0 ? skillList : <div>No Skills Available for Selected Discipline</div>
         cityList = cityList.length > 0 ? cityList : <div>No Cities Available for Selected Province</div> 
         return (
             <div className="activity-container">

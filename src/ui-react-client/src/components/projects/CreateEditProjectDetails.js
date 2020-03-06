@@ -73,7 +73,7 @@ class CreateEditProjectDetails extends Component {
                         province: e.target.value
                     },
                 },
-                city_options: newCities
+                city_options: Object.keys(newCities)
             }, () => this.props.addProjDetails(this.state.projectSummary));
         } else {
             this.setState({
