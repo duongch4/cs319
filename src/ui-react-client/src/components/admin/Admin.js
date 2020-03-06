@@ -224,7 +224,7 @@ class Admin extends Component {
         const provinceList = this.listGen(provinces, "province")
         let cityList = this.listGen(cities, "city")
 
-        skillList = skillList.length > 0 ? skillList : <div>No Skills Avaialbe for Selected Discipline</div>
+        skillList = skillList.length > 0 ? skillList : <div>No Skills Available for Selected Discipline</div>
         cityList = cityList.length > 0 ? cityList : <div>No Cities Available for Selected Province</div> 
         return (
             <div className="activity-container">
