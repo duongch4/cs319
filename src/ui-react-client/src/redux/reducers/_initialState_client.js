@@ -454,30 +454,30 @@ export default {
     },
     masterlist: {
         disciplines: {
-            "Environmental Design": [
-                "Skill 1",
-                "Skill 2"
-            ],
-            "Waste Management": [
-                "Skill A",
-                "Skill B"
-            ],
-            "Parks and Recreation": [
-                "Skill A1",
-                "Skill B2"
-            ]
+            "Environmental Design": {
+                disciplineID: 1,
+                skills: ["Skill 1","Skill 2"]
+            },
+            "Waste Management": {
+                disciplineID: 2,
+                skills: ["Skill A","Skill B"]
+            },
+            "Parks and Recreation": {
+                disciplineID: 3,
+                skills: ["Skill 1A","Skill 2B"]
+            }
         },
         locations: {
-            "British Columbia": [
-                "Vancouver",
-                "Richmond"
-            ],
-            "Seskatchewan": [
-                "Saskatoon"
-            ],
-            "Ontario": [
-                "Toronto"
-            ]
+            "British Columbia": {
+                "Vancouver": 1,
+                "Richmond": 2
+            },
+            "Seskatchewan": {
+                "Saskatoon": 3
+            },
+            "Ontario": {
+                "Toronto": 4
+            }
         },
         yearsOfExp: [
             "3-5",
