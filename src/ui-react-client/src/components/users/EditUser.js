@@ -51,6 +51,7 @@ class EditUser extends Component {
 
     addDisciplines = (opening) => {
         let discipline = {
+            disciplineID: 0,
             discipline: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills
@@ -74,6 +75,7 @@ class EditUser extends Component {
                     lastName: userProfile.lastName,
                     location: {
                         ...this.state.userProfile.location,
+                        locationID: userProfile.location.locationID,
                         city: userProfile.location.city,
                         province: userProfile.location.province
                     }

@@ -9,7 +9,7 @@ const baseURL = `${SVC_ROOT}api/users/`;
 export const loadUsersAllData = userSummaries => {
   return {
       type: types.LOAD_USERS_ALL,
-      userSummaries: userSummaries };
+      users: userSummaries };
 };
 
 export const loadUsers = () => {

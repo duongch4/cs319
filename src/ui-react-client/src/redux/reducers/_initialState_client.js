@@ -5,56 +5,68 @@ export default {
             lastName: "Bourne",
             userID: 100,
             location: {
+                locationID: 2,
                 province: "British Columbia",
                 city: "Vancouver"
             },
             utilization: 100,
             resourceDiscipline: {
+                disciplineID: 456,
                 discipline: "Intel",
                 yearsOfExp: "3-5"
             },
             isConfirmed: true
-        }, {
+        },
+        {
             firstName: "Nicky",
             lastName: "Parsons",
             userID: 101,
             location: {
+                locationID: 2,
                 province: "British Columbia",
                 city: "Vancouver"
             },
             utilization: 75,
             resourceDiscipline: {
+                disciplineID: 123,
                 discipline: "Logistical Operations and Mental Health Analysis",
                 yearsOfExp: "3-5"
             },
             isConfirmed: true
-        }, {
+        },
+        {
             firstName: "Pamela",
             lastName: "Landy",
             userID: 102,
             location: {
+                locationID: 3,
                 province: "Ontario",
                 city: "Toronto"
             },
             utilization: 100,
             resourceDiscipline: {
+                disciplineID: 789,
                 discipline: "Reconnaisance",
                 yearsOfExp: "10+"
             },
             isConfirmed: false
         }],
-    projects: [{
+    projects: [
+        {
         title: "Martensville Athletic Pavillion",
         location: {
+            locationID: 1,
             province: "Seskatchewan",
             city: "Saskatoon"
         },
         projectStartDate: "2020-10-31T00:00:00.0000000",
         projectEndDate: "2021-12-31T00:00:00.0000000",
         projectNumber: "2009-VD9D-15"
-    }, {
+    },
+        {
         title: "University of British Columbia Science Building",
         location: {
+            locationID: 2,
             province: "British Columbia",
             city: "Vancouver"
         },
@@ -67,6 +79,7 @@ export default {
             projectSummary: {
                 title: "Martensville Athletic Pavillion",
                 location: {
+                    locationID: 1,
                     province: "Seskatchewan",
                     city: "Saskatoon"
                 },
@@ -85,11 +98,13 @@ export default {
                     lastName: "Parsons",
                     userID: 101,
                     location: {
+                        locationID: 2,
                         province: "British Columbia",
                         city: "Vancouver"
                     },
                     utilization: 100,
                     resourceDiscipline: {
+                        disciplineID: 123,
                         discipline: "Logistical Operations and Mental Health Analysis",
                         yearsOfExp: "3-5"
                     },
@@ -100,11 +115,13 @@ export default {
                     lastName: "Landy",
                     userID: 102,
                     location: {
+                        locationID: 4,
                         province: "Ontario",
                         city: "Toronto"
                     },
                     utilization: 100,
                     resourceDiscipline: {
+                        disciplineID: 101,
                         discipline: "Reconnaisance",
                         yearsOfExp: "10+"
                     },
@@ -113,6 +130,7 @@ export default {
             ],
             openings: [
                 {
+                    positionID: 1,
                     discipline: "Environmental Design",
                     skills: [
                         "skill1", "skill2"
@@ -121,16 +139,19 @@ export default {
                     commitmentMonthlyHours: 160
                 },
                 {
+                    positionID: 2,
                     discipline: "Waste Management",
                     skills: [],
                     yearsOfExp: "1-3",
                     commitmentMonthlyHours: 160
                 }
             ]
-        }, {
+        },
+        {
             projectSummary: {
                 title: "University of British Columbia Science Building",
                 location: {
+                    locationID: 2,
                     province: "British Columbia",
                     city: "Vancouver"
                 },
@@ -154,11 +175,13 @@ export default {
                 firstName: "Jason",
                 lastName: "Bourne",
                 location: {
+                    locationID: 2,
                     province: "British Columbia",
                     city: "Vancouver"
                 },
                 utilization: 100,
                 resourceDiscipline: {
+                    disciplineID: 123,
                     discipline: "Logistical Operations and Mental Health Analysis",
                     yearsOfExp: "3-5"
                 },
@@ -168,6 +191,7 @@ export default {
                 {
                     title: "Martensville Athletic Pavillion",
                     location: {
+                        locationID: 1,
                         province: "Seskatchewan",
                         city: "Saskatoon"
                     },
@@ -185,6 +209,7 @@ export default {
             ],
             disciplines: [
                 {
+                    disciplineID: 105,
                     discipline: "Intel",
                     yearsOfExp: "10+",
                     skills: [
@@ -192,6 +217,7 @@ export default {
                     ]
                 },
                 {
+                    disciplineID: 106,
                     discipline: "Language",
                     yearsOfExp: "10+",
                     skills: [
@@ -201,6 +227,8 @@ export default {
             ],
             positions: [
                 {
+                    positionID: 1,
+                    positionName: "Spy",
                     projectTitle: "Martensville Athletic Pavillion",
                     disciplineName: "Intel",
                     projectedMonthlyHours: 160
@@ -212,11 +240,13 @@ export default {
                 lastName: "Parsons",
                 userID: 101,
                 location: {
+                    locationID: 2,
                     province: "British Columbia",
                     city: "Vancouver"
                 },
                 utilization: 75,
                 resourceDiscipline: {
+                    disciplineID: 123,
                     discipline: "Logistical Operations and Mental Health Analysis",
                     yearsOfExp: "3-5"
                 },
@@ -226,6 +256,7 @@ export default {
                 {
                     title: "Martensville Athletic Pavillion",
                     location: {
+                        locationID: 1,
                         province: "Seskatchewan",
                         city: "Saskatoon"
                     },
@@ -243,6 +274,7 @@ export default {
             ],
             disciplines: [
                 {
+                    disciplineID: 107,
                     name: "Intel",
                     yearsOfExp: "10+",
                     skills: [
@@ -251,6 +283,8 @@ export default {
                 }],
             positions: [
                 {
+                    positionID: 1,
+                    positionName: "Analyst",
                     projectTitle: "Martensville Athletic Pavillion",
                     disciplineName: "Logistical Operations and Mental Health Analysis",
                     projectedMonthlyHours: 160
@@ -262,11 +296,13 @@ export default {
                 lastName: "Landy",
                 userID: 102,
                 location: {
+                    locationID: 3,
                     province: "Ontario",
                     city: "Toronto"
                 },
                 utilization: 100,
                 resourceDiscipline: {
+                    disciplineID: 102,
                     discipline: "Reconnaisance",
                     yearsOfExp: "10+"
                 },
@@ -284,11 +320,13 @@ export default {
             firstName: "Jason",
             lastName: "Bourne",
             location: {
+                locationID: 2,
                 province: "British Columbia",
                 city: "Vancouver"
             },
             utilization: 100,
             resourceDiscipline: {
+                disciplineID: 123,
                 discipline: "Logistical Operations and Mental Health Analysis",
                 yearsOfExp: "3-5"
             },
@@ -298,6 +336,7 @@ export default {
             {
                 title: "Martensville Athletic Pavillion",
                 location: {
+                    locationID: 1,
                     province: "Seskatchewan",
                     city: "Saskatoon"
                 },
@@ -315,6 +354,7 @@ export default {
         ],
         disciplines: [
             {
+                disciplineID: 105,
                 name: "Intel",
                 yearsOfExp: "10+",
                 skills: [
@@ -322,6 +362,7 @@ export default {
                 ]
             },
             {
+                disciplineID: 106,
                 name: "Language",
                 yearsOfExp: "10+",
                 skills: [
@@ -331,6 +372,8 @@ export default {
         ],
         positions: [
             {
+                positionID: 1,
+                positionName: "Spy",
                 projectTitle: "Martensville Athletic Pavillion",
                 disciplineName: "Intel",
                 projectedMonthlyHours: 160
@@ -341,6 +384,7 @@ export default {
         projectSummary: {
             title: "Martensville Athletic Pavillion",
             location: {
+                locationID: 1,
                 province: "Seskatchewan",
                 city: "Saskatoon"
             },
@@ -359,11 +403,13 @@ export default {
                 lastName: "Parsons",
                 userID: 101,
                 location: {
+                    locationID: 2,
                     province: "British Columbia",
                     city: "Vancouver"
                 },
                 utilization: 100,
                 resourceDiscipline: {
+                    disciplineID: 123,
                     discipline: "Logistical Operations and Mental Health Analysis",
                     yearsOfExp: "3-5"
                 },
@@ -374,11 +420,13 @@ export default {
                 lastName: "Landy",
                 userID: 102,
                 location: {
+                    locationID: 3,
                     province: "Ontario",
                     city: "Toronto"
                 },
                 utilization: 100,
                 resourceDiscipline: {
+                    disciplineID: 103,
                     discipline: "Reconnaisance",
                     yearsOfExp: "10+"
                 },
@@ -387,6 +435,7 @@ export default {
         ],
         openings: [
             {
+                positionID: 1,
                 discipline: "Environmental Design",
                 skills: [
                     "skill1", "skill2"
@@ -395,6 +444,7 @@ export default {
                 commitmentMonthlyHours: 160
             },
             {
+                positionID: 2,
                 discipline: "Waste Management",
                 skills: [],
                 yearsOfExp: "1-3",

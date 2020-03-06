@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 class TeamRequirements extends Component {
     state = {
       opening: {
+          positionID: 0,
           discipline: null,
           skills: [],
           yearsOfExp: null,
@@ -14,11 +15,11 @@ class TeamRequirements extends Component {
     };
 
     handleChange = (e) => {
-      if (e.target.id === "commitment") {
+      if (e.target.id === "commitmentMonthlyHours") {
           this.setState({
               opening: {
                   ...this.state.opening,
-                  commitmentMonthlyHours: e.target.value
+                  commitmentMonthlyHours: parseInt(e.target.value)
               }
           });
       } else if (e.target.id === "skills") {
@@ -51,6 +52,7 @@ class TeamRequirements extends Component {
       this.props.addOpening(this.state.opening);
       this.setState({
           opening: {
+              positionID: 0,
               discipline: null,
               skills: [],
               yearsOfExp: null,

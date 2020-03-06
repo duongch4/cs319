@@ -64,7 +64,6 @@ export const createProject = (project) => {
                 .post(baseURL, project,{ headers })
                 .then(response => {
                     dispatch(createProjectData(project));
-                    alert('Successfully created project ' + response.data.payload.projectNumber);
                 })
                 .catch(error => {
                     throw error;
@@ -78,12 +77,12 @@ export const updateProject = (project) => {
         if (CLIENT_DEV_ENV) {
             dispatch(updateProjectData(project));
         } else {
+
             return axios
                 .put(`${baseURL + project.projectSummary.projectNumber}`,
-                    { headers })
+                    project, { headers })
                 .then(response => {
                     dispatch(updateProjectData(project));
-                    dispatch(updateProjectSummary(project.projectSummary));
                     alert('Successfully update project' + response.data.payload.projectNumber);
                 })
         }
