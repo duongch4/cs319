@@ -3,7 +3,9 @@ import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {CLIENT_DEV_ENV} from '../../config/config';
 import {Button} from "@material-ui/core";
-
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
+import SearchIcon from '@material-ui/icons/Search';
 
 class Search extends Component {
     state = {
@@ -13,6 +15,7 @@ class Search extends Component {
             searchWord: "",
             province: null,
             cities: [],
+            yearsOfExp: [],
         },
         masterlist: this.props.masterlist,
         pending: true
@@ -72,7 +75,14 @@ class Search extends Component {
             searchWord: e.target.value
           }
         });
-      } else {
+      } else if (e.target.id === "yearsOfExp") {
+        this.setState({
+          search: {
+            ...this.state.search,
+            yearsOfExp: e.target.value
+          }
+        });
+      }else {
         this.setState({
             search: {
                 ...this.state.search,
@@ -83,9 +93,12 @@ class Search extends Component {
     };
 
     onSubmit = () => {
-      // submit parameters
+      console.log("submit");
     };
 
+    saveFilter = () => {
+      // adds sticker tiles to top
+    };
 
   render(){
     var disciplines = this.props.masterlist.disciplines;
@@ -126,6 +139,12 @@ class Search extends Component {
         cities_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
       })
     }
+    var yearsOfExperience = this.props.masterlist.yearsOfExp;
+
+    var range_render = [];
+    yearsOfExperience.forEach((yearsOfExperience, i) => {
+        range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
+    });
 
     return (
       <div className="activity-container">
@@ -134,11 +153,19 @@ class Search extends Component {
             <form onSubmit={this.handleSubmit}>
               <div className="form-row">
                 <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
+                <SearchIcon style={{backgroundColor: "#87c34b"}} 
+                onClick={() => this.onSubmit()} />
               </div>
-              <div id="filters">
+              <div id="filters" style = {{backgroundColor: "#87c34b"}}>
               <div className="form-row">
                   <div className="form-section opening">
-                  <div className="form-row"> Location
+                  <div className="form-row">
+                  <Fab
+                      style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
+                      size={"small"}
+                      color="primary" aria-label="add">
+                  <AddIcon />
+                </Fab> Location
                           <select className="input-box" defaultValue={'DEFAULT'}
                                   id="province" onChange={this.handleChange}>
                               <option value="DEFAULT" disabled>Province</option>
@@ -150,7 +177,13 @@ class Search extends Component {
                               {cities_render}
                           </select>
                           </div>
-                      <div className="form-row"> Disciplines
+                      <div className="form-row"> 
+                      <Fab
+                        style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
+                        size={"small"}
+                        color="primary" aria-label="add">
+                       <AddIcon />
+                      </Fab> Disciplines
                           <select className="input-box" defaultValue={'DEFAULT'}
                                   id="discipline" onChange={this.handleChange}>
                               <option value="DEFAULT" disabled>Discipline</option>
@@ -164,12 +197,20 @@ class Search extends Component {
                           </div>
                           </div>
                           </div>
-              </div>
+                          <label className="form-row" htmlFor= "yearsOfExp">
+                          <p className="form-label">Years of Experience</p>
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="yearsOfExp" onChange={this.handleChange}>
+                              <option value="DEFAULT" disabled>Select a range</option>
+                              {range_render}
+                          </select>
+                      </label>
                       <Button variant="contained"
                                 style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}}
                                 disableElevation
-                                onClick={() => this.onSubmit()}>Apply Filters</Button>
-                    </form>
+                                onClick={() => this.saveFilter()}>Apply Filters</Button>
+              </div>
+            </form>
         </div>
       </div>
     );
