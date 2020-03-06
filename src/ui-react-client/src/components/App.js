@@ -13,7 +13,7 @@ import UserDetails from './users/UserDetails.js';
 import EditProject from './projects/EditProject';
 import EditUser from './users/EditUser.js';
 import Admin from './admin/Admin.js'
-import Search from './common/Search.js';
+import Search from './common/search/Search.js';
 
 
 const App = () => {

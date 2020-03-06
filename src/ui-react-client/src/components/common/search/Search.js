@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {loadMasterlists} from "../../redux/actions/masterlistsActions";
+import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
-import {CLIENT_DEV_ENV} from '../../config/config';
+import {CLIENT_DEV_ENV} from '../../../config/config';
 import {Button} from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
