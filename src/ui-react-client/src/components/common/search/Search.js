@@ -159,7 +159,10 @@ class Search extends Component {
             <div id="filters" style={ {backgroundColor: "#87c34b"}}>
                 <div className="form-row">
                     <div className="form-section opening">
-                        <div className="form-row">
+                        <div className="form-row"> 
+                          <h2 className="darkGreenHeader">Filter</h2>
+                          </div>
+                          <div className="form-row">
                             <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
                                 <AddIcon />
                             </Fab> Location
@@ -188,7 +191,10 @@ class Search extends Component {
                     </div>
                 </div>
                 <label className="form-row" htmlFor="yearsOfExp">
-                    <p className="form-label">Years of Experience</p>
+                    <p className="form-label">
+                    <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
+                      <AddIcon />
+                    </Fab> Years of Experience</p>
                     <select className="input-box" defaultValue={ 'DEFAULT'} id="yearsOfExp" onChange={this.handleChange}>
                         <option value="DEFAULT" disabled>Select a range</option>
                         {range_render}
@@ -197,6 +203,9 @@ class Search extends Component {
                 <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
             </div>
         </form>
+    </div>
+    <div>
+      <h2 className="greenHeader">Results</h2>
     </div>
 </div>
     );
