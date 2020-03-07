@@ -6,9 +6,7 @@ import {Button} from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import SearchIcon from '@material-ui/icons/Search';
-import { searchResults } from './searchResults';
-import UserList from '../../users/UserList';
-import { loadUsers } from "../../../redux/actions/usersActions";
+import {performUserSearch} from "../../../redux/actions/searchActions";
 
 class Search extends Component {
     state = {
@@ -153,9 +151,8 @@ class Search extends Component {
     };
 
     onSubmit = () => {
-      let filters = this.state.searchFilter;
-      console.log(filters);
-  };
+      this.props.performUserSearch(this.state.searchFilter);
+    };
 
     saveFilter = () => {
       // adds sticker tiles to top
@@ -278,7 +275,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  loadMasterlists
+  loadMasterlists,
+  performUserSearch,
 };
 
 export default connect(
