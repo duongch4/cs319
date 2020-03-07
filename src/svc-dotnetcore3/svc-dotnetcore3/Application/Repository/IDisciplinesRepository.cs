@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
+using Web.API.Resources;
 
 namespace Web.API.Application.Repository
 {
@@ -10,6 +11,7 @@ namespace Web.API.Application.Repository
         //GET
         Task<Discipline> GetADiscipline(int disciplineId);
         Task<IEnumerable<Discipline>> GetAllDisciplines();
+        Task<IEnumerable<DisciplineResource>> GetAllDisciplinesWithSkills();
         Task<IEnumerable<Discipline>> GetDisciplinesByName(string disciplineName);
 
         // POST
