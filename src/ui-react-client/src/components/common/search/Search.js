@@ -24,7 +24,7 @@ class Search extends Component {
         users: this.props.users,
         pending: true
     };
-    
+  
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
             this.props.loadMasterlists()
@@ -96,8 +96,20 @@ class Search extends Component {
     };
 
     onSubmit = () => {
-      // this.props.loadUsers()
-    };
+      var filters = {"filter": {
+        "utilization": {},
+        "locations": [{"province": this.state.search.province,
+                        "city": this.state.search.cities}],
+        "disciplines": {},
+        "yearsOfExps": [],
+      },
+      "orderKey": "utilization", // default
+      "order": "desc", // default
+      "page": 1 // default
+    }
+    console.log(filters);
+  
+  };
 
     saveFilter = () => {
       // adds sticker tiles to top
@@ -160,7 +172,7 @@ class Search extends Component {
                 <div className="form-row">
                     <div className="form-section opening">
                         <div className="form-row"> 
-                          <h2 className="darkGreenHeader">Filter</h2>
+                          <h2 className="darkGreenHeader">Add Filters</h2>
                           </div>
                           <div className="form-row">
                             <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
