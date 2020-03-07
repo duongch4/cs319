@@ -6,6 +6,9 @@ import {Button} from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import SearchIcon from '@material-ui/icons/Search';
+import { searchResults } from './searchResults';
+import UserList from '../../users/UserList';
+import { loadUsers } from "../../../redux/actions/usersActions";
 
 class Search extends Component {
     state = {
@@ -18,6 +21,7 @@ class Search extends Component {
             yearsOfExp: [],
         },
         masterlist: this.props.masterlist,
+        users: this.props.users,
         pending: true
     };
     
@@ -39,7 +43,6 @@ class Search extends Component {
                 })
             })
         }
-        
     }
 
     handleChange = (e) => {
@@ -93,7 +96,7 @@ class Search extends Component {
     };
 
     onSubmit = () => {
-      console.log("submit");
+      // this.props.loadUsers()
     };
 
     saveFilter = () => {
@@ -119,8 +122,6 @@ class Search extends Component {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
     }
-
-    console.log(this.state.masterlist.locations);
 
     var provinces = this.props.masterlist.locations; 
     var provinces_render = [];
@@ -148,71 +149,56 @@ class Search extends Component {
 
     return (
       <div className="activity-container">
-        <div className="form-section">
-          <h2 className="greenHeader">Search</h2>
-            <form onSubmit={this.handleSubmit}>
-              <div className="form-row">
+    <div className="form-section">
+        <h2 className="greenHeader">Search</h2>
+        <form onSubmit={this.handleSubmit}>
+            <div className="form-row">
                 <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
-                <SearchIcon style={{backgroundColor: "#87c34b"}} 
-                onClick={() => this.onSubmit()} />
-              </div>
-              <div id="filters" style = {{backgroundColor: "#87c34b"}}>
-              <div className="form-row">
-                  <div className="form-section opening">
-                  <div className="form-row">
-                  <Fab
-                      style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
-                      size={"small"}
-                      color="primary" aria-label="add">
-                  <AddIcon />
-                </Fab> Location
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="province" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Province</option>
-                              {provinces_render}
-                          </select>
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="city" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>City</option>
-                              {cities_render}
-                          </select>
-                          </div>
-                      <div className="form-row"> 
-                      <Fab
-                        style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
-                        size={"small"}
-                        color="primary" aria-label="add">
-                       <AddIcon />
-                      </Fab> Disciplines
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="discipline" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Discipline</option>
-                              {discipline_render}
-                          </select>
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="skills" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Skills</option>
-                              {skill_render}
-                          </select>
-                          </div>
-                          </div>
-                          </div>
-                          <label className="form-row" htmlFor= "yearsOfExp">
-                          <p className="form-label">Years of Experience</p>
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="yearsOfExp" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Select a range</option>
-                              {range_render}
-                          </select>
-                      </label>
-                      <Button variant="contained"
-                                style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}}
-                                disableElevation
-                                onClick={() => this.saveFilter()}>Apply Filters</Button>
-              </div>
-            </form>
-        </div>
-      </div>
+                <SearchIcon style={{backgroundColor: "#87c34b"}} onClick={()=> this.onSubmit()} />
+            </div>
+            <div id="filters" style={ {backgroundColor: "#87c34b"}}>
+                <div className="form-row">
+                    <div className="form-section opening">
+                        <div className="form-row">
+                            <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
+                                <AddIcon />
+                            </Fab> Location
+                            <select className="input-box" defaultValue={ 'DEFAULT'} id="province" onChange={this.handleChange}>
+                                <option value="DEFAULT" disabled>Province</option>
+                                {provinces_render}
+                            </select>
+                            <select className="input-box" defaultValue={ 'DEFAULT'} id="city" onChange={this.handleChange}>
+                                <option value="DEFAULT" disabled>City</option>
+                                {cities_render}
+                            </select>
+                        </div>
+                        <div className="form-row">
+                            <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
+                                <AddIcon />
+                            </Fab> Disciplines
+                            <select className="input-box" defaultValue={ 'DEFAULT'} id="discipline" onChange={this.handleChange}>
+                                <option value="DEFAULT" disabled>Discipline</option>
+                                {discipline_render}
+                            </select>
+                            <select className="input-box" defaultValue={ 'DEFAULT'} id="skills" onChange={this.handleChange}>
+                                <option value="DEFAULT" disabled>Skills</option>
+                                {skill_render}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <label className="form-row" htmlFor="yearsOfExp">
+                    <p className="form-label">Years of Experience</p>
+                    <select className="input-box" defaultValue={ 'DEFAULT'} id="yearsOfExp" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>Select a range</option>
+                        {range_render}
+                    </select>
+                </label>
+                <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
+            </div>
+        </form>
+    </div>
+</div>
     );
   }
 };
