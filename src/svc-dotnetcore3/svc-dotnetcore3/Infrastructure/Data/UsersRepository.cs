@@ -324,6 +324,7 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req)
         {
+            // TODO: Search for Name: FirstName/LastName string!!!
             using var connection = new SqlConnection(connectionString);
 
             var filteredLocations = await GetFilteredLocations(connection, req.Filter.Locations);

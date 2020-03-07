@@ -42,6 +42,7 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page)
         {
+            // TODO: Search for Title string!!!
             var sql = @"
                 SELECT
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,

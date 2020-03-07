@@ -6,11 +6,11 @@ namespace Web.API.Application.Communication
 {
     public class RequestProjectAssign
     {
-        /// <summary>Position ID</summary>
+        /// <summary>Position Id</summary>
         /// <example>1</example>
         public int PositionID { get; set; }
         
-        /// <summary>User ID</summary>
+        /// <summary>User Id</summary>
         /// <example>1</example>
         public int UserID { get; set; }
     }
