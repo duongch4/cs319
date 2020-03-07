@@ -12,17 +12,36 @@ import { loadUsers } from "../../../redux/actions/usersActions";
 
 class Search extends Component {
     state = {
-        search: {
-            discipline: null,
-            skills: [],
-            searchWord: "",
-            province: null,
-            cities: [],
-            yearsOfExp: [],
-        },
-        masterlist: this.props.masterlist,
-        users: this.props.users,
-        pending: true
+      searchFilter: {
+        filter: {
+          utilization: {
+            min: 0,
+            max: 100
+          },
+          locations: [
+            {
+              province: null,
+              city: null,
+            }
+          ],
+          disciplines: {
+
+          },
+          yearsOfExps: [],
+          startDate: null,
+          endDate: null,
+      },
+      orderKey: "utilization",
+      order: "desc",
+      page: 1,
+    },
+      masterlist: this.props.masterlist,
+      cities: [],
+      skills:[],
+      currProvince: "",
+      currentDiscipline: "",
+      users: this.props.users,
+      pending: true
     };
   
     componentDidMount() {
@@ -47,68 +66,95 @@ class Search extends Component {
 
     handleChange = (e) => {
       if (e.target.id === "city") {
-        var cities_arr = [...this.state.search.cities, e.target.value];
         this.setState({
-            search: {
-                ...this.state.search,
-                cities: cities_arr
-            }
+          searchFilter: {
+            ...this.state.searchFilter,
+            filter: {
+              ...this.state.searchFilter.filter,
+              locations:
+              [
+                {
+                  province: this.state.currProvince,
+                  city: e.target.value,
+                }
+              ]
+            },
+          },  
         });
       } else if (e.target.id === "province") {
         let newCities = this.props.masterlist.locations[e.target.value];
         this.setState({
-            search: {
-                ...this.state.search,
-                province: e.target.value,
+          searchFilter: {
+            ...this.state.searchFilter,
+            filter: {
+              ...this.state.searchFilter.filter,
+              locations:
+              [
+                {
+                  province: e.target.value,
+                }
+              ]
             },
-            cities: newCities
+          },
+            cities: newCities,
+            currProvince: e.target.value,
         });
     } else if (e.target.id === "skills") {
-        var skills_arr = [...this.state.search.skills, e.target.value];
           this.setState({
-            search: {
-              ...this.state.search,
-              skills: skills_arr
+            searchFilter: {
+              ...this.state.searchFilter,
+              filter: {
+                ...this.state.searchFilter.filter,
+                disciplines:
+                {
+                  ...this.state.searchFilter.filter.disciplines,
+                  [this.state.currentDiscipline]: [e.target.value],
+                }
+              },
             }
          });
       } else if (e.target.id === "search") {
         this.setState({
-          search: {
-            ...this.state.search,
+          searchFilter: {
+            ...this.state.searchFilter,
+          filter: {
+            ...this.state.searchFilter.filter,
             searchWord: e.target.value
           }
+        }
         });
       } else if (e.target.id === "yearsOfExp") {
         this.setState({
-          search: {
-            ...this.state.search,
-            yearsOfExp: e.target.value
+          searchFilter: {
+            ...this.state.searchFilter,
+          filter: {
+            ...this.state.searchFilter.filter,
+            yearsOfExps: [e.target.value]
           }
+        }
         });
       }else {
         this.setState({
-            search: {
-                ...this.state.search,
-                discipline: e.target.value
+          searchFilter: {
+            ...this.state.searchFilter,
+          filter: {
+            ...this.state.searchFilter.filter,
+            disciplines:
+            {
+              ...this.state.searchFilter.filter.disciplines,
+              [e.target.value]: [],
             }
+          },
+        },
+          skills: this.props.masterlist.disciplines[e.target.value],
+          currentDiscipline: e.target.value,
         })
     }
     };
 
     onSubmit = () => {
-      var filters = {"filter": {
-        "utilization": {},
-        "locations": [{"province": this.state.search.province,
-                        "city": this.state.search.cities}],
-        "disciplines": {},
-        "yearsOfExps": [],
-      },
-      "orderKey": "utilization", // default
-      "order": "desc", // default
-      "page": 1 // default
-    }
-    console.log(filters);
-  
+      let filters = this.state.searchFilter;
+      console.log(filters);
   };
 
     saveFilter = () => {
@@ -126,16 +172,17 @@ class Search extends Component {
 
     var skills = [];
     var skill_render = [];
-    if (this.state.search.discipline === null){
+    if (Object.keys(this.state.searchFilter.filter.disciplines).length == 0){
       skill_render = <option disabled>Please select a discipline</option>
     } else {
-      skills = disciplines[this.state.search.discipline];
+      skills = this.state.skills;
       skills.forEach((skill, i) => {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
     }
 
     var provinces = this.props.masterlist.locations; 
+
     var provinces_render = [];
     var all_provinces_key = Array.from(Object.keys(provinces));
     all_provinces_key.forEach((province, i) => {
@@ -144,10 +191,10 @@ class Search extends Component {
 
     var cities = [];
     var cities_render = [];
-    if (this.state.search.province=== null){
+    if (this.state.searchFilter.filter.locations.province === null){
       cities_render = <option disabled>Please select a province</option>
     } else {
-      cities = provinces[this.state.search.province];
+      cities = this.state.cities;
       cities.forEach((city, i) => {
         cities_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
       })
