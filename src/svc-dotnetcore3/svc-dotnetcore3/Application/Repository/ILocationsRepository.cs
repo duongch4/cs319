@@ -17,13 +17,13 @@ namespace Web.API.Application.Repository
 
         Task<Location> GetUserLocation(User user);
         //POST 
-        // Task<Location> CreateALocation(Location location);
+        Task<int> CreateALocation(LocationResource location);
 
         // //PUT
         // Task<Location> UpdateALocation(Location location);
 
         //DELETE
-        // Task<Location> DeleteALocation(Location locationCode);
+        Task<Location> DeleteALocation(int locationId);
 
         Task<Location> GetLocationIdByCityProvince(LocationResource location);
     }

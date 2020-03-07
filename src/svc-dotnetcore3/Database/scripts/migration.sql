@@ -11,18 +11,17 @@ DROP TABLE Disciplines;
 
 CREATE TABLE [dbo].[Disciplines]
 (
-	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
-	[Name] NVARCHAR(100) NOT NULL UNIQUE
+    [Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+    [Name] NVARCHAR(100) NOT NULL UNIQUE
 )
-
 CREATE TABLE [dbo].[Locations]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
 	[Province] [nvarchar](100),
 	[City] [nvarchar](100) NOT NULL,
-	CONSTRAINT [PK_Locations] PRIMARY KEY CLUSTERED ([Id])
+	CONSTRAINT [PK_Locations] PRIMARY KEY CLUSTERED ([Id]),
+	CONSTRAINT [UK_City_Province] UNIQUE ([City], [Province])
 )
-
 CREATE TABLE [dbo].[Users]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
@@ -34,9 +33,8 @@ CREATE TABLE [dbo].[Users]
 	[IsManager] [bit] NOT NULL,
 	CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id]),
 	CONSTRAINT [UK_Users_Username] UNIQUE ([Username]),
-	CONSTRAINT [FK_Users_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([Id])
+	CONSTRAINT [FK_Users_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([Id]) ON DELETE NO ACTION
 )
-
 CREATE TABLE [dbo].[Projects]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
@@ -53,26 +51,27 @@ CREATE TABLE [dbo].[Projects]
 	CONSTRAINT [FK_Projects_User] FOREIGN KEY ([ManagerId]) REFERENCES [Users]([Id]),
 	CONSTRAINT [UK_Projects_Number] UNIQUE ([Number])
 )
-
+​
 CREATE TABLE [dbo].[Skills]
 (
 	[Id] INT NOT NULL IDENTITY(1,1),
 	[DisciplineId] INT NOT NULL,
 	[Name] NVARCHAR(100) NOT NULL,
-	CONSTRAINT [FK_Skills_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE CASCADE,
-	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id])
+	CONSTRAINT [FK_Skills_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE NO ACTION,
+	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id]),
+	CONSTRAINT [UK_Skills_Disciplines] UNIQUE ([DisciplineId], [Name])
 )
-
-CREATE TABLE [dbo].[ResourceDiscipline]
+​
+  CREATE TABLE [dbo].[ResourceDiscipline]
 (
 	[ResourceId] [int] NOT NULL,
 	[DisciplineId] [int] NOT NULL,
 	[YearsOfExperience] NVARCHAR(10),
-	CONSTRAINT [FK_ResourceDiscipline_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE CASCADE,
-	CONSTRAINT [FK_ResourceDiscipline_Users] FOREIGN KEY ([ResourceId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE,
+	CONSTRAINT [FK_ResourceDiscipline_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE NO ACTION,
+	CONSTRAINT [FK_ResourceDiscipline_Users] FOREIGN KEY ([ResourceId]) REFERENCES [Users] ([Id]) ON DELETE NO ACTION,
 	CONSTRAINT [PK_ResourceDiscipline] PRIMARY KEY ([ResourceId], [DisciplineId])
 )
-
+​
 CREATE TABLE [dbo].Positions
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
@@ -87,7 +86,7 @@ CREATE TABLE [dbo].Positions
 	CONSTRAINT [FK_Positions_Disciplines] FOREIGN KEY (DisciplineId) REFERENCES Disciplines([Id]),
 	CONSTRAINT [FK_Positions_Users] FOREIGN KEY (ResourceId) REFERENCES [Users]([Id])
 )
-
+​
 CREATE TABLE [dbo].[ResourceSkill]
 (
 	[ResourceId] [int] Not Null,
@@ -95,13 +94,12 @@ CREATE TABLE [dbo].[ResourceSkill]
 	[SkillDisciplineId] [int] Not Null,
 	[SkillId] [int] Not Null,
 	CONSTRAINT [FK_ResourceSkill_ResourceDiscipline] FOREIGN KEY ([ResourceId], [ResourceDisciplineId]) 
-		REFERENCES [ResourceDiscipline] ([ResourceId], [DisciplineId]) ON DELETE CASCADE,
+		REFERENCES [ResourceDiscipline] ([ResourceId], [DisciplineId]) ON DELETE NO ACTION,
 	CONSTRAINT [FK_ResourceSkill_Skills] FOREIGN KEY ([SkillDisciplineId], [SkillId]) 
 		REFERENCES [Skills] ([DisciplineId], [Id]),
 	CONSTRAINT [PK_ResourseSkill] PRIMARY KEY ([ResourceId], [ResourceDisciplineId], [SkillDisciplineId], [SkillId]),
 	CONSTRAINT [CK_DisciplinesMatch] CHECK ([ResourceDisciplineId] = [SkillDisciplineId])
 )
-
 CREATE TABLE [dbo].PositionSkills
 (
 	[PositionId] INT NOT NULL,
@@ -111,7 +109,6 @@ CREATE TABLE [dbo].PositionSkills
 	CONSTRAINT [FK_PositionSkills_Positions] FOREIGN KEY (PositionId) REFERENCES Positions([Id]) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT [PK_PositionSkills] PRIMARY KEY ([SkillId], [SkillDisciplineId], [PositionId]),
 )
-
 CREATE TABLE [dbo].[OutOfOffice]
 (
 	[ResourceId][int] NOT NULL,

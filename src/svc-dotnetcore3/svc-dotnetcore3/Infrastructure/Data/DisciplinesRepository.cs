@@ -127,7 +127,7 @@ namespace Web.API.Infrastructure.Data
             return (result == 1) ? discipline.Id : -1;
         }
         // DELETE
-        public async Task<int> DeleteADiscipline(int disciplineId)
+        public async Task<Discipline> DeleteADiscipline(int disciplineId)
         {
             var discipline = await GetADiscipline(disciplineId);
             var sql = @"
@@ -138,7 +138,7 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.ExecuteAsync(sql, new { DisciplineId = disciplineId });
-            return disciplineId;
+            return discipline;
         }
 
         public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId)

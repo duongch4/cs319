@@ -106,14 +106,44 @@ namespace Web.API.Controllers {
             }
         }
 
-        // [HttpDelete]
-        // [Route("admin/disciplines/{disciplineID}")]
-        // [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // public async Task<IActionResult> DeleteADiscipline([FromRoute] int disciplineID) {}
+        [HttpDelete]
+        [Route("admin/disciplines/{disciplineID}")]
+        [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteADiscipline([FromRoute] int disciplineID) {
+            if (disciplineID == 0)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given discipline ID is invalid"));
+            }
+
+            try
+            {
+                var deleted = await disciplinesRepository.DeleteADiscipline(disciplineID);
+                if (deleted == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given discipline cannot be found on database"));
+                }
+                var response = new DeletedResponse<int>(deleted.Id, $"Successfully deleted discipline '{deleted.Id}'");
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
 
         [HttpPost]
         [Route("admin/disciplines/{disciplineID}/skills")]
@@ -122,7 +152,7 @@ namespace Web.API.Controllers {
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateASkill([FromBody] DisciplineSkillResource skill, int disciplineID) {
-            if (skill == null || disciplineID == 0)
+            if (skill == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given skill is null / Request Body cannot be read"));
             }
@@ -162,49 +192,84 @@ namespace Web.API.Controllers {
         // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         // public async Task<IActionResult> UpdateASkill([FromBody] DisciplineSkillResource skill, int disciplineID, int skillID) {}
 
-        // [HttpDelete]
-        // [Route("admin/disciplines/{disciplineID}/skills/{skillID}")]
-        // [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // public async Task<IActionResult> DeleteASkill([FromRoute] int disciplineID, [FromRoute] int skillID) {}
+        [HttpDelete]
+        [Route("admin/disciplines/{disciplineID}/skills/{skillName}")]
+        [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteASkill([FromRoute] int disciplineID, [FromRoute] string skillName) {
+            if (skillName == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given skill is invalid"));
+            }
 
-        // [HttpPost]
-        // [Route("admin/locations")]
-        // [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // public async Task<IActionResult> CreateALocation([FromBody] LocationResource location) {
-        //     if (location == null)
-        //     {
-        //         return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given skill is null / Request Body cannot be read"));
-        //     }
+            if (disciplineID == 0)
+            {
+                 return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given discipline ID is invalid"));
+            }
 
-        //     try
-        //     {
-        //         // var location = await locationsRepository.GetALocation(projectProfile.ProjectSummary.Location.City);
-        //         // var createdProjectNumber = await projectsRepository.CreateAProject(projectProfile, location.Id);
-        //         // var response = new CreatedResponse<string>(createdProjectNumber, $"Successfully created project number '{createdProjectNumber}'");
-        //         // return StatusCode(StatusCodes.Status201Created, response);
-        //     }
-        //     catch (Exception err)
-        //     {
-        //         var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-        //         if (err is SqlException)
-        //         {
-        //             var error = new InternalServerException(errMessage);
-        //             return StatusCode(StatusCodes.Status500InternalServerError, error);
-        //         }
-        //         else
-        //         {
-        //             var error = new BadRequestException(errMessage);
-        //             return StatusCode(StatusCodes.Status400BadRequest, error);
-        //         }
-        //     }
-        // }
+            try
+            {
+                var deleted = await skillsRepository.DeleteASkill(skillName, disciplineID);
+                if (deleted == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given skill cannot be found on database"));
+                }
+
+                var response = new DeletedResponse<int>(deleted.Id, $"Successfully deleted skill '{deleted.Id}'");
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("admin/locations")]
+        [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateALocation([FromBody] LocationResource location) {
+            if (location == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given location is null / Request Body cannot be read"));
+            }
+
+            try
+            {
+                var createdLocationID = await locationsRepository.CreateALocation(location);
+                var response = new CreatedResponse<int>(createdLocationID, $"Successfully created location '{createdLocationID}'");
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
 
         // [HttpPut]
         // [Route("admin/locations/{locationID}")]
@@ -214,13 +279,43 @@ namespace Web.API.Controllers {
         // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         // public async Task<IActionResult> UpdateALocation([FromBody] LocationResource location, int locationID) {}
 
-        // [HttpDelete]
-        // [Route("admin/locations/{locationID}")]
-        // [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // public async Task<IActionResult> DeleteALocation([FromRoute] int locationID) {}
+        [HttpDelete]
+        [Route("admin/locations/{locationID}")]
+        [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteALocation([FromRoute] int locationID) {
+            if (locationID == 0)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given location ID is invalid"));
+            }
+
+            try
+            {
+                var deleted = await locationsRepository.DeleteALocation(locationID);
+                if (deleted == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given location cannot be found on database"));
+                }
+                var response = new DeletedResponse<int>(deleted.Id, $"Successfully deleted location '{deleted.Id}'");
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
     }
 }

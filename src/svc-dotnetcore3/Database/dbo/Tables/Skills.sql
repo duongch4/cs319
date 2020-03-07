@@ -4,5 +4,6 @@
 	[DisciplineId] INT NOT NULL,
 	[Name] NVARCHAR(100) NOT NULL,
 	CONSTRAINT [FK_Skills_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]),
-	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id])
+	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id]),
+	CONSTRAINT [UK_Skills_Disciplines] UNIQUE ([DisciplineId], [Name])
 )

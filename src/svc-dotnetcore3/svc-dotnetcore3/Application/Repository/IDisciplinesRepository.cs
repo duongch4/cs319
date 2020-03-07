@@ -22,7 +22,7 @@ namespace Web.API.Application.Repository
         Task<int> UpdateADiscipline(DisciplineResource discipline);
 
         // DELETE
-        Task<int> DeleteADiscipline(int disciplineId);
+        Task<Discipline> DeleteADiscipline(int disciplineId);
 
         Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId);
         Task<ResourceDiscipline> DeleteResourceDiscipline(ResourceDiscipline discipline);

@@ -69,6 +69,18 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Skill>(sql, new { SkillId = skillId });
         }
+        public async Task<Skill> GetASkill(string skillName, int disciplineId)
+        {
+            var sql = @"
+                select *
+                from Skills
+                where Name = @SkillName and DisciplineId = @DisciplineId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Skill>(sql, new { SkillName = skillName, DisciplineId = disciplineId });
+        }
         //POST
         public async Task<Skill> CreateASkill(Skill skill)
         {
@@ -145,7 +157,21 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.ExecuteAsync(sql, new { SkillId = skillId });
+            await connection.ExecuteAsync(sql, new { SkillId = skillId});
+            return skill;
+        }
+
+        public async Task<Skill> DeleteASkill(string skillName, int disciplineId)
+        {
+            var skill = await GetASkill(skillName, disciplineId);
+            var sql = @"
+                delete from Skills
+                where Name = @SkillName and DisciplineId = @DisciplineId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.ExecuteAsync(sql, new { SkillName = skillName, DisciplineId = disciplineId});
             return skill;
         }
 
