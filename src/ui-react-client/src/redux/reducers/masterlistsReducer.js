@@ -17,7 +17,13 @@ export const executeCreateDiscipline = (action, state) => {
 
 export const executeCreateSkill = (action, state) => {
     let newDisciplines = state.disciplines
-    newDisciplines[action.skill.disciplineID] = [...state.disciplines[action.skill.disciplineID], action.skill.name]
+    for(var discipline in newDisciplines){
+        if(newDisciplines[discipline].disciplineID === action.skill.disciplineID){
+            newDisciplines[discipline].skills = state.disciplines[discipline].skills 
+                ? [...state.disciplines[discipline].skills, action.skill.name]
+                : [action.skill.name]
+        }
+    }
     let newState = {
         ...state,
         disciplines: newDisciplines
@@ -37,7 +43,13 @@ export const executeCreateProvince = (action, state) => {
 
 export const executeCreateCity = (action, state) => {
     let newLocation = state.locations
-    newLocation[action.location.province] = [...state.locations[action.location.province], action.location.city]
+    let newCity = state.locations[action.location.province]
+    newCity[action.location.city] = 0
+    for(var province in newLocation){
+        if(province === action.location.province){
+            newLocation[action.location.province] = newCity
+        }
+    }
     let newState = {
         ...state,
         locations: newLocation
