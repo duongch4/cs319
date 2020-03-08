@@ -94,9 +94,9 @@ namespace Web.API.Controllers
 
                 var resource = new MasterResource
                 {
-                    disciplines = disciplinesResource,
-                    locations = locations,
-                    yearsOfExp = yearsOfExp
+                    Disciplines = disciplinesResource,
+                    Locations = locations,
+                    YearsOfExp = yearsOfExp
                 };
 
                 var response = new OkResponse<MasterResource>(resource, "Everything is good");

@@ -3,6 +3,7 @@ import {CLIENT_DEV_ENV, SVC_ROOT} from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
 import _initialState_client from '../reducers/_initialState_client';
+import {updateUserSummary} from "./usersActions";
 
 const baseURL = `${SVC_ROOT}api/users/`;
 
@@ -24,7 +25,7 @@ export const loadSpecificUser = (userID) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
       let user = _initialState_client.userProfiles.filter(userProfile => {
-        return userProfile.userSummary.userID === userID;
+        return String(userProfile.userSummary.userID) === String(userID); // redux thinks one is a string and the other is a number
       });
       dispatch(loadUserProfileData(user[0]));
     } else {
@@ -40,15 +41,17 @@ export const loadSpecificUser = (userID) => {
   };
 };
 
-export const updateSpecificUser = (user) => {
+export const updateSpecificUser = (user, history) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
       dispatch(updateUserProfileData(user));
     } else {
       return axios
-          .put(baseURL, user, { headers })
+          .put(baseURL + user.userSummary.userID, user, { headers })
           .then(response => {
             dispatch(updateUserProfileData(user));
+            dispatch(updateUserSummary(user.userSummary));
+            history.push('/users');
           })
           .catch(error => {
             throw error;

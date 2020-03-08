@@ -43,15 +43,22 @@ namespace Web.API.Controllers
             this.mapper = mapper;
         }
 
-        /// <summary>Get all projects</summary>
+        /// <summary>Get projects for a specific page number</summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/projects
+        ///     GET /api/projects?orderKey={orderKey}&#38;order={order}&#38;page={pageNumber}
         ///
         /// </remarks>
-        /// <returns>All available projects</returns>
-        /// <response code="200">Returns all available projects</response>
+        /// <param name="orderKey" />
+        /// <param name="order" />
+        /// <param name="page" />
+        /// <returns>Payload: List of ProjectSummary</returns>
+        /// <response code="200">
+        ///     Returns at most the top 50 projects that match the provided keyValue.
+        ///     When no key value is provided, it returns a list of the top 50 projects whose end dates are after the current date.
+        ///     The projects are sorted according to their start dates.
+        /// </response>
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no projects are found</response>
@@ -63,17 +70,26 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllProjects()
+        public async Task<IActionResult> GetAllProjects([FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
         {
+            orderKey = (orderKey == null) ? "startDate" : orderKey;
+            order = (order == null) ? "asc" : order;
+            page = (page == 0) ? 1 : page;
             try
             {
-                var projects = await projectsRepository.GetAllProjects();
+                var projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
                 if (projects == null || !projects.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
                 }
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
-                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good");
+                var extra = new {
+                    page = page,
+                    size = resource.Count(),
+                    order = order,
+                    orderKey = orderKey
+                };
+                var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good", extra);
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -96,7 +112,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/projects/2005-KJS4-46
+        ///     GET /api/projects/2009-VD9D-15
         ///
         /// </remarks>
         /// <param name="projectNumber"></param>
@@ -130,10 +146,10 @@ namespace Web.API.Controllers
 
                 var projectManager = mapper.Map<ProjectResource, ProjectManager>(project);
 
-                var users = await usersRepository.GetAllUsersResourceOnProject(project.Id, project.ManagerId);
+                var users = await usersRepository.GetAllUserResourcesOnProject(project.Id, project.ManagerId);
                 if (users == null || !users.Any())
                 {
-                    users = new UserResource[]{};
+                    users = new UserResource[] { };
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
 
@@ -141,7 +157,7 @@ namespace Web.API.Controllers
                 if (openingPositions == null || !openingPositions.Any())
                 {
                     // return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
-                    openingPositions = new OpeningPositionsResource[]{};
+                    openingPositions = new OpeningPositionsResource[] { };
                 }
                 var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
 
@@ -235,7 +251,7 @@ namespace Web.API.Controllers
         ///             },
         ///             "projectStartDate": "2020-10-31T00:00:00.0000000",
         ///             "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///             "projectNumber": "2005-KJS4-46"
+        ///             "projectNumber": "0000-0000-00"
         ///         },
         ///         "projectManager": {
         ///             "userID": 5,
@@ -337,7 +353,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT /api/projects/2005-KJS4-46
+        ///     PUT /api/projects/0000-0000-00
         ///     {
         ///         "projectSummary": {
         ///             "title": "POST Title",
@@ -347,7 +363,7 @@ namespace Web.API.Controllers
         ///             },
         ///             "projectStartDate": "2020-10-31T00:00:00.0000000",
         ///             "projectEndDate": "2021-02-12T00:00:00.0000000",
-        ///             "projectNumber": "2005-KJS4-46"
+        ///             "projectNumber": "0000-0000-00"
         ///         },
         ///         "projectManager": {
         ///             "userID": 5,
@@ -457,7 +473,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     DELETE /api/projects/2005-KJS4-46
+        ///     DELETE /api/projects/0000-0000-00
         ///
         /// </remarks>
         /// <param name="projectNumber"></param>
@@ -507,7 +523,7 @@ namespace Web.API.Controllers
             }
         }
 
-        
+
         /// <summary>Assigning a Resource to a Project</summary>
         /// <remarks>
         /// Sample request:
@@ -532,15 +548,16 @@ namespace Web.API.Controllers
         {
             try
             {
-                Position position = await positionsRepository.GetAPosition(reqBody.positionId);
-                if (position == null) {
+                Position position = await positionsRepository.GetAPosition(reqBody.PositionID);
+                if (position == null)
+                {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
                 }
-                position.Id = reqBody.positionId; 
-                position.ResourceId = reqBody.userId;
+                position.Id = reqBody.PositionID;
+                position.ResourceId = reqBody.UserID;
 
                 position = await positionsRepository.UpdateAPosition(position);
-                var posIdAndResourceId = new {reqBody.positionId, reqBody.userId};
+                var posIdAndResourceId = new { reqBody.PositionID, reqBody.UserID };
                 var response = new UpdatedResponse<object>(posIdAndResourceId, "Successfully updated");
                 return StatusCode(StatusCodes.Status201Created, response);
             }

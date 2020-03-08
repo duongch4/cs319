@@ -41,17 +41,19 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Position>(sql, new { PositionId = positionId });
         }
-        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(User user)
+        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(int userId)
         {
             var sql = @"
-                select d.Name as DisciplineName, pos.ProjectedMonthlyHours, p.Title as ProjectTitle
+                select
+                    d.Name as DisciplineName, pos.ProjectedMonthlyHours,
+                    p.Title as ProjectTitle, pos.Id AS PositionID, pos.PositionName
                 from Disciplines as d, Positions as pos, Projects as p
                 where pos.DisciplineId = d.Id and pos.ProjectId = p.Id and pos.ResourceId = @UserId;
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<PositionResource>(sql, new { UserId = user.Id });
+            return await connection.QueryAsync<PositionResource>(sql, new { UserId = userId });
         }
         public async Task<IEnumerable<Position>> GetAllUnassignedPositionsOfProject(Project project)
         {
@@ -71,20 +73,22 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<OpeningPositionsResource>> GetAllUnassignedPositionsResourceOfProject(int projectId)
         {
             var sql = @"
-                select
-                    p.ProjectedMonthlyHours AS CommitmentMonthlyHours, d.Name AS Discipline,
-                    rd.YearsOfExperience, STRING_AGG (s.Name, ',') as Skills
-                from
-                    Positions p, ResourceDiscipline rd, Disciplines d, Skills s
-                where
+                SELECT
+                    p.Id, p.YearsOfExperience,
+                    p.ProjectedMonthlyHours AS CommitmentMonthlyHours,
+                    d.Name AS Discipline,
+                    STRING_AGG (s.Name, ',') as Skills
+                FROM
+                    Positions p, Disciplines d, Skills s
+                WHERE
                     p.ProjectId = @ProjectId
-                    AND p.ResourceId IS NOT NULL
+                    AND p.ResourceId IS NULL
                     AND p.DisciplineId = d.Id
                     AND p.DisciplineId = s.DisciplineId
-                    AND p.DisciplineId = rd.DisciplineId
-                group by
-                    p.DisciplineId, p.ProjectedMonthlyHours,
-                    d.Name, rd.YearsOfExperience
+                GROUP BY
+                    p.Id, p.YearsOfExperience,
+                    p.ProjectedMonthlyHours,
+                    d.Name
             ;";
             
             using var connection = new SqlConnection(connectionString);

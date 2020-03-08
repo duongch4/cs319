@@ -1,11 +1,15 @@
 ﻿using Dapper;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Application.Communication;
 using Web.API.Resources;
+
+using Serilog;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -47,7 +51,7 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId });
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAtLocation(Location location) 
+        public async Task<IEnumerable<User>> GetAllUsersAtLocation(Location location)
         {
             var sql = @"
                 select 
@@ -58,10 +62,10 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<User>(sql, new { LocationId = location.Id});
+            return await connection.QueryAsync<User>(sql, new { LocationId = location.Id });
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersWithDiscipline(Discipline discipline) 
+        public async Task<IEnumerable<User>> GetAllUsersWithDiscipline(Discipline discipline)
         {
             var sql = @"
                 select 
@@ -72,7 +76,7 @@ namespace Web.API.Infrastructure.Data
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<User>(sql, new { DisciplineId = discipline.Id});
+            return await connection.QueryAsync<User>(sql, new { DisciplineId = discipline.Id });
         }
 
         public async Task<IEnumerable<User>> GetAllUsersWithSkill(Skill skill)
@@ -86,7 +90,7 @@ namespace Web.API.Infrastructure.Data
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<User>(sql, new { SkillId = skill.Id});
+            return await connection.QueryAsync<User>(sql, new { SkillId = skill.Id });
         }
 
         // //TODO: @Chi plz
@@ -100,7 +104,7 @@ namespace Web.API.Infrastructure.Data
         //     return null;
         // }
 
-        public async Task<IEnumerable<User>> GetAllUsersOnProject(Project project) 
+        public async Task<IEnumerable<User>> GetAllUsersOnProject(Project project)
         {
             var sql = @"
                 select 
@@ -112,30 +116,446 @@ namespace Web.API.Infrastructure.Data
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<User>(sql, new { ProjectId = project.Id});
+            return await connection.QueryAsync<User>(sql, new { ProjectId = project.Id });
         }
 
-        public async Task<IEnumerable<UserResource>> GetAllUsersResourceOnProject(int projectId, int projectManagerId)
+        public async Task<UserResource> GetAUserResource(int userId)
         {
             var sql = @"
-                select
-                    u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
-                    p.IsConfirmed, d.Name AS DisciplineName, rd.YearsOfExperience,
-                    l.Province, l.City
-                from
-                    Users u, Positions p, Locations l, ResourceDiscipline rd, Disciplines d
-                where
-                    p.ProjectId = @ProjectId
-                    AND p.ResourceId = u.Id
-                    AND u.Id != @ProjectManagerId
-                    AND u.LocationId = l.Id
-                    AND rd.ResourceId = u.Id
-                    AND rd.DisciplineId = d.Id
+                SELECT
+                    CEILING(SUM(ij.ProjectedMonthlyHours)/176.0*100.0) AS Utilization,
+                    ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                    ij.IsConfirmed,
+                    ij.Province, ij.City
+                FROM
+                (
+                    SELECT
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
+                        p.IsConfirmed, p.ProjectedMonthlyHours,
+                        l.Province, l.City
+                    FROM
+                        Users u
+                    LEFT JOIN Positions p ON p.ResourceId = u.Id
+                    LEFT JOIN Projects proj
+                        ON
+                            proj.Id = p.ProjectId
+                            AND proj.ProjectEndDate <= @DateInTwoYears
+                    INNER JOIN Locations l ON u.LocationId = l.Id
+                ) AS ij
+                GROUP BY
+                    ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                    ij.IsConfirmed,
+                    ij.Province, ij.City
+                HAVING
+                    ij.Id = @UserId
+            ";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var users = await connection.QueryAsync<UserResource>(sql, new
+            {
+                DateInTwoYears = DateTime.Today.AddYears(2),
+                UserId = userId
+            });
+
+            if (users == null || !users.Any() || users.Count() > 2) return null;
+            foreach (var user in users)
+            {
+                if (user.IsConfirmed) return user;
+                else user.Utilization = 0;
+            }
+            return users.First();
+        }
+
+        public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnProject(int projectId, int projectManagerId)
+        {
+            var sql = @"
+                SELECT
+                    Utilization,
+                    util.Id, FirstName, LastName, Username,
+                    util.IsConfirmed, p.DisciplineId, p.YearsOfExperience,
+                    LocationId, Province, City,
+                    d.Name AS DisciplineName,
+                    STRING_AGG (s.Name, ',') as Skills
+                FROM
+                (
+                    SELECT
+                        CEILING(SUM(ij.ProjectedMonthlyHours)/176.0*100.0) AS Utilization,
+                        ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                        ij.IsConfirmed,
+                        ij.Province, ij.City
+                    FROM
+                    (
+                        SELECT
+                            u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
+                            p.IsConfirmed, p.ProjectedMonthlyHours,
+                            l.Province, l.City
+                        FROM
+                            Users u
+                        LEFT JOIN Positions p ON p.ResourceId = u.Id
+                        LEFT JOIN Projects proj
+                            ON
+                                proj.Id = p.ProjectId
+                                AND proj.ProjectEndDate <= @DateInTwoYears
+                        INNER JOIN Locations l ON u.LocationId = l.Id
+                    ) AS ij
+                    GROUP BY
+                        ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                        ij.IsConfirmed,
+                        ij.Province, ij.City
+                ) AS util
+                INNER JOIN Positions p
+                    ON
+                        p.ResourceId = util.Id
+                        AND p.ProjectId = @ProjectId
+                INNER JOIN Disciplines d
+                    ON
+                        d.Id = p.DisciplineId
+                INNER JOIN Skills s
+                    ON
+                        s.DisciplineId = d.Id
+                WHERE
+                    util.Id != @ProjectManagerId
+                GROUP BY
+                    Utilization,
+                    util.Id, FirstName, LastName, Username,
+                    util.IsConfirmed, p.DisciplineId, p.YearsOfExperience,
+                    LocationId, Province, City,
+                    d.Name
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN util.Utilization END ASC,
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN util.Utilization END DESC
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<UserResource>(sql, new { ProjectId = projectId, ProjectManagerId = projectManagerId });
+            return await connection.QueryAsync<UserResource>(sql, new
+            {
+                DateInTwoYears = DateTime.Today.AddYears(2),
+                ProjectId = projectId,
+                ProjectManagerId = projectManagerId,
+                OrderKey = "utilization",
+                Order = "asc"
+            });
+        }
+
+        public async Task<IEnumerable<UserResource>> GetAllUserResources(string orderKey, string order, int page)
+        {
+            var sql = @"
+                SELECT *
+                FROM
+                (
+                    SELECT
+                        CEILING(SUM(ij.ProjectedMonthlyHours)/176.0*100.0) AS Utilization,
+                        ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                        ij.IsConfirmed,
+                        ij.Province, ij.City
+                    FROM
+                    (
+                        SELECT
+                            u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
+                            p.IsConfirmed, p.ProjectedMonthlyHours,
+                            l.Province, l.City
+                        FROM
+                            Users u
+                        LEFT JOIN Positions p ON p.ResourceId = u.Id
+                        LEFT JOIN Projects proj
+                            ON
+                                proj.Id = p.ProjectId
+                                AND proj.ProjectEndDate <= @DateInTwoYears
+                        INNER JOIN Locations l ON u.LocationId = l.Id
+                    ) AS ij
+                    GROUP BY
+                        ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                        ij.IsConfirmed,
+                        ij.Province, ij.City
+                ) AS util
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN util.Utilization END ASC,
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN util.Utilization END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN util.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN util.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN util.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN util.City END DESC
+                    
+                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                    FETCH NEXT @RowsPerPage ROWS ONLY
+            ;";
+
+            // CASE WHEN @OrderKey = 'startDate' THEN final.ProjectEndDate END ASC,
+            // CASE WHEN @OrderKey = 'endDate' THEN final.ProjectEndDate END ASC
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var users = await connection.QueryAsync<UserResource>(sql, new
+            {
+                DateInTwoYears = DateTime.Today.AddYears(2),
+                OrderKey = orderKey,
+                Order = order,
+                PageNumber = page,
+                RowsPerPage = 50
+            });
+
+            if (users == null || !users.Any()) return null;
+
+            IEnumerable<UserResource> result = Enumerable.Empty<UserResource>();
+            var ids = new HashSet<int>();
+            foreach (var user in users)
+            {
+                if (user.IsConfirmed)
+                {
+                    ids.Add(user.Id);
+                    result = result.Append(user);
+                }
+            }
+            foreach (var user in users)
+            {
+                if (!ids.Contains(user.Id))
+                {
+                    ids.Add(user.Id);
+                    user.Utilization = 0;
+                    result = result.Append(user);
+                }
+            }
+            return result;
+        }
+
+        public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req)
+        {
+            using var connection = new SqlConnection(connectionString);
+
+            var filteredLocations = await GetFilteredLocations(connection, req.Filter.Locations);
+            var filteredProvinces = filteredLocations["provinces"];
+            var filteredCities = filteredLocations["cities"];
+
+            var filteredUtilization = GetFilteredUtilization(req.Filter.Utilization);
+
+            var filteredDisciplinesSkills = await GetFilteredDisciplines(connection, req.Filter.Disciplines);
+            var filteredDisciplines = filteredDisciplinesSkills["disciplines"];
+            var filteredSkills = filteredDisciplinesSkills["skills"];
+
+            var filteredYearsOfExps = await GetFilteredYearsOfExps(connection, req.Filter.YearsOfExps);
+
+            var sql = @"
+                SELECT
+                    Utilization,
+                    util.Id, FirstName, LastName, Username,
+                    util.IsConfirmed, rd.DisciplineId, rd.YearsOfExperience, 
+                    LocationId, Province, City,
+                    d.Name AS DisciplineName,
+                    STRING_AGG (s.Name, ',') as Skills
+                FROM
+                (
+                    SELECT
+                        CEILING(SUM(ij.ProjectedMonthlyHours)/176.0*100.0) AS Utilization,
+                        ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                        ij.IsConfirmed,
+                        ij.Province, ij.City
+                    FROM
+                    (
+                        SELECT
+                            u.Id, u.FirstName, u.LastName, u.Username, u.LocationId,
+                            p.IsConfirmed, p.ProjectedMonthlyHours,
+                            l.Province, l.City
+                        FROM
+                            Users u
+                        LEFT JOIN Positions p ON p.ResourceId = u.Id
+                        LEFT JOIN Projects proj
+                            ON
+                                proj.Id = p.ProjectId
+                                AND proj.ProjectEndDate <= @DateInTwoYears
+                        INNER JOIN Locations l ON u.LocationId = l.Id
+                    ) AS ij
+                    GROUP BY
+                        ij.Id, ij.FirstName, ij.LastName, ij.Username, ij.LocationId,
+                        ij.IsConfirmed,
+                        ij.Province, ij.City
+                ) AS util
+                LEFT JOIN OutOfOffice o
+                    ON
+                        o.ResourceId = util.Id
+                        AND (o.FromDate > @EndDate OR o.ToDate < @StartDate)
+                INNER JOIN ResourceDiscipline rd
+                    ON
+                        rd.ResourceId = util.Id
+                        AND rd.YearsOfExperience IN @YearsOfExps
+                INNER JOIN Disciplines d
+                    ON
+                        rd.DisciplineId = d.Id
+                        AND d.Name IN @Disciplines
+                INNER JOIN Skills s
+                    ON
+                        s.DisciplineId = d.Id
+                        AND s.Name IN @Skills
+                WHERE
+                    util.Province IN @Provinces
+                    AND util.City IN @Cities
+                    AND util.Utilization >= @UtilMin
+                    AND util.Utilization <= @UtilMax
+                GROUP BY
+                    Utilization,
+                    util.Id, FirstName, LastName, Username,
+                    util.IsConfirmed, rd.DisciplineId, rd.YearsOfExperience,
+                    LocationId, Province, City,
+                    d.Name
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN util.Utilization END ASC,
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN util.Utilization END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN util.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN util.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN util.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN util.City END DESC,
+
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'asc') THEN d.Name END ASC,
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'desc') THEN d.Name END DESC,
+                    
+                    CASE WHEN (@OrderKey = 'yearsOfExp' AND @Order = 'asc') THEN rd.YearsOfExperience END ASC,
+                    CASE WHEN (@OrderKey = 'yearsOfExp' AND @Order = 'desc') THEN rd.YearsOfExperience END DESC
+                    
+                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                    FETCH NEXT @RowsPerPage ROWS ONLY
+            ;";
+
+            // CASE WHEN @OrderKey = 'startDate' THEN final.ProjectEndDate END ASC,
+            // CASE WHEN @OrderKey = 'endDate' THEN final.ProjectEndDate END ASC
+
+            connection.Open();
+            var users = await connection.QueryAsync<UserResource>(sql, new
+            {
+                DateInTwoYears = DateTime.Today.AddYears(2),
+                Provinces = filteredProvinces,
+                Cities = filteredCities,
+                Disciplines = filteredDisciplines,
+                Skills = filteredSkills,
+                YearsOfExps = filteredYearsOfExps,
+                EndDate = req.Filter.EndDate,
+                StartDate = req.Filter.StartDate,
+                UtilMin = filteredUtilization.Min,
+                UtilMax = filteredUtilization.Max,
+                OrderKey = (req.OrderKey == null || req.OrderKey == "") ? "utilization" : req.OrderKey,
+                Order = (req.Order == null || req.Order == "") ? "desc" : req.Order,
+                PageNumber = (req.Page == 0) ? 1 : req.Page,
+                RowsPerPage = 50
+            });
+
+            if (users == null || !users.Any()) return null;
+
+            IEnumerable<UserResource> result = Enumerable.Empty<UserResource>();
+            var ids = new HashSet<int>();
+            var disciplineIds = new HashSet<int>();
+            foreach (var user in users)
+            {
+                if (user.IsConfirmed)
+                {
+                    ids.Add(user.Id);
+                    disciplineIds.Add(user.DisciplineId);
+                    result = result.Append(user);
+                }
+            }
+            foreach (var user in users)
+            {
+                if (!ids.Contains(user.Id) || !disciplineIds.Contains(user.DisciplineId))
+                {
+                    ids.Add(user.Id);
+                    disciplineIds.Add(user.DisciplineId);
+                    user.Utilization = 0;
+                    result = result.Append(user);
+                }
+            }
+            return result;
+        }
+
+        private async Task<Dictionary<string, HashSet<string>>> GetFilteredLocations(SqlConnection connection, IEnumerable<LocationResource> locationsReq)
+        {
+            var provinces = new HashSet<string>();
+            var cities = new HashSet<string>();
+            if (locationsReq == null || !locationsReq.Any())
+            {
+                var sqlGetAllLocations = @"
+                    SELECT *
+                    FROM Locations
+                ";
+                connection.Open();
+                locationsReq = await connection.QueryAsync<LocationResource>(sqlGetAllLocations);
+                connection.Close();
+            }
+
+            foreach (var location in locationsReq)
+            {
+                provinces.Add(location.Province);
+                cities.Add(location.City);
+            }
+
+            return new Dictionary<string, HashSet<string>>()
+            {
+                { "provinces", provinces },
+                { "cities", cities }
+            };
+        }
+
+        private async Task<Dictionary<string, HashSet<string>>> GetFilteredDisciplines(SqlConnection connection, Dictionary<string, IEnumerable<string>> disciplinesReq)
+        {
+            var disciplines = new HashSet<string>();
+            var skills = new HashSet<string>();
+            if (disciplinesReq == null)
+            {
+                var sqlGetAllDisciplines = @"
+                    SELECT Name
+                    FROM Disciplines
+                ";
+                connection.Open();
+                disciplines = (await connection.QueryAsync<Discipline>(sqlGetAllDisciplines)).Select(x => x.Name).ToHashSet();
+                connection.Close();
+
+                var sqlGetAllSkills = @"
+                    SELECT Name
+                    FROM Skills
+                ";
+                connection.Open();
+                skills = (await connection.QueryAsync<Skill>(sqlGetAllSkills)).Select(x => x.Name).ToHashSet();
+                connection.Close();
+            }
+            else
+            {
+                disciplines = disciplinesReq.Keys.ToHashSet();
+                skills = disciplinesReq.Values.SelectMany(x => x).ToHashSet();
+            }
+
+            return new Dictionary<string, HashSet<string>>()
+            {
+                { "disciplines", disciplines },
+                { "skills", skills }
+            };
+        }
+
+        private async Task<IEnumerable<string>> GetFilteredYearsOfExps(SqlConnection connection, IEnumerable<string> yearsOfExpsReq)
+        {
+            var result = new HashSet<string>();
+            if (yearsOfExpsReq == null || !yearsOfExpsReq.Any())
+            {
+                var sqlGetAllUsersYearsOfExps = @"
+                    SELECT YearsOfExperience
+                    FROM ResourceDiscipline
+                ";
+                connection.Open();
+                result = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience).ToHashSet();
+                connection.Close();
+            }
+            return result;
+        }
+
+        private Utilization GetFilteredUtilization(Utilization utilizationReq)
+        {
+            if (utilizationReq == null)
+            {
+                utilizationReq.Min = 0;
+                utilizationReq.Max = 100;
+            }
+            return utilizationReq;
         }
 
         // public async Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp)
@@ -154,12 +574,12 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QuerySingleAsync<User>(sql, new { ProjectManagerId = project.ManagerId});
+            return await connection.QuerySingleAsync<User>(sql, new { ProjectManagerId = project.ManagerId });
         }
 
-        public async Task<User> UpdateAUser(User user) 
+        public async Task<int> UpdateAUser(UserSummary user, Location location)
         {
-             var sql = @"
+            var sql = @"
                 update
                     Users
                 set 
@@ -174,12 +594,12 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             int result = await connection.ExecuteAsync(sql, new
             {
-                Id = user.Id,
+                Id = user.UserID,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                LocationId = user.LocationId
+                LocationId = location.Id
             });
-            return result == 1 ? user : null;
+            return result == 1 ? user.UserID : -1;
         }
 
         public async Task<IEnumerable<UserResource>> GetAllUsersGeneral()
