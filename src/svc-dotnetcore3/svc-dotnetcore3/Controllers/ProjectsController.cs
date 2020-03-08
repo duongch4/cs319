@@ -95,6 +95,7 @@ namespace Web.API.Controllers
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
                 var extra = new
                 {
+                    searchWord = searchWord,
                     page = page,
                     size = resource.Count(),
                     order = order,
