@@ -40,6 +40,43 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<ProjectResource>(sql, new { DateTimeNow = DateTime.Today });
         }
 
+        private IEnumerable<ProjectResource> GetSorted(IEnumerable<ProjectResource> projects, string orderKey, string order)
+        {
+            orderKey = (orderKey == null || orderKey == "") ? "utilization" : orderKey.ToLower();
+            order = (order == null || order == "") ? "desc" : order.ToLower();
+            switch(order)
+            {
+                case "desc":
+                    switch(orderKey)
+                    {
+                        case "title":
+                            return projects.OrderByDescending(project => project.Title);
+                        case "province":
+                            return projects.OrderByDescending(project => project.Province);
+                        case "city":
+                            return projects.OrderByDescending(project => project.City);
+                        case "enddate":
+                            return projects.OrderByDescending(project => project.ProjectEndDate);
+                        default:
+                            return projects.OrderByDescending(project => project.ProjectStartDate);
+                    }
+                default:
+                    switch(orderKey)
+                    {
+                        case "title":
+                            return projects.OrderBy(project => project.Title);
+                        case "province":
+                            return projects.OrderBy(project => project.Province);
+                        case "city":
+                            return projects.OrderBy(project => project.City);
+                        case "enddate":
+                            return projects.OrderBy(project => project.ProjectEndDate);
+                        default:
+                            return projects.OrderBy(project => project.ProjectStartDate);
+                    }
+            }
+        }
+
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page)
         {
             var sql = @"
@@ -55,34 +92,19 @@ namespace Web.API.Infrastructure.Data
                     AND p.ManagerId = u.Id
                     AND p.ProjectEndDate > @DateTimeSpecific
                 ORDER BY
-                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
-                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
-
-                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
-                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
-
-                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
-                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
-
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
-
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN l.City END ASC,
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN l.City END DESC
-
+                    p.Id
                     OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                     FETCH NEXT @RowsPerPage ROWS ONLY
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ProjectResource>(sql, new
+            var projects = await connection.QueryAsync<ProjectResource>(sql, new
             {
                 DateTimeSpecific = DateTime.Today,
-                OrderKey = orderKey,
-                Order = order,
                 PageNumber = page,
                 RowsPerPage = 50
             });
+            return GetSorted(projects, orderKey, order);
         }
 
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page)
@@ -100,35 +122,26 @@ namespace Web.API.Infrastructure.Data
                     AND p.ManagerId = u.Id
                     AND LOWER(TRIM(p.Title)) LIKE @SearchWord
                 ORDER BY
-                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
-                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
-
-                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
-                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
-
-                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
-                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
-
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
-
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN l.City END ASC,
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN l.City END DESC
-
+                    p.Id
                     OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                     FETCH NEXT @RowsPerPage ROWS ONLY
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ProjectResource>(sql, new
+            var projects = await connection.QueryAsync<ProjectResource>(sql, new
             {
-                SearchWord = $"%{searchWord}%",
-                OrderKey = orderKey,
-                Order = order,
+                SearchWord = GetFilteredSearchWord(searchWord),
                 PageNumber = page,
                 RowsPerPage = 50
             });
+            return GetSorted(projects, orderKey, order);
         }
+
+        private string GetFilteredSearchWord(string searchWordReq)
+        {
+            return (searchWordReq == null || searchWordReq == "") ? "%" : $"%{searchWordReq.ToLower()}%";
+        }
+
         public async Task<IEnumerable<Project>> GetMostRecentProjects()
         {
             var sql = @"
