@@ -46,7 +46,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT api/projects/2009-VD9D-15/assign/1
+        ///     PUT api/positions/1/assign/3
         ///
         /// </remarks>
         /// <param name= "openingId">The id of the opening the resource will be assigned to</param>
@@ -85,6 +85,74 @@ namespace Web.API.Controllers
                 var responseObject = new RequestProjectAssign();
                 responseObject.OpeningId = openingId;
                 responseObject.UserID = userId;
+                
+                foreach(rawUtilization utilization in resourceUtilizations) {
+                    if (utilization.isConfirmed) {
+                        responseObject.ConfirmedUtilization = utilization.utilization;
+                    }
+                }
+                var response = new UpdatedResponse<RequestProjectAssign>(responseObject, "Successfully updated");
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                }
+            }
+        }
+
+
+        /// <summary>Confirm a Resource for a Position</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT api/positions/1/confirm
+        ///
+        /// </remarks>
+        /// <param name= "openingId">The id of the opening the resource will be assigned to</param>
+        /// <param name = "userId"> The id of the resource being assigned to the opening </param>
+        /// <returns>The old deleted project</returns>
+        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPut]
+        [Route("/positions/{openingId}/confirm")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmResource([FromRoute] int openingId)
+        {
+            try
+            {
+                Position position = await positionsRepository.GetAPosition(openingId);
+                User user = await usersRepository.GetAUser(position.ResourceId);
+                if (position == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given position does not exist."));
+                }
+                if (user == null) {
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The position does not have a resource assigned."));
+                }
+                
+                position.IsConfirmed = true;
+                position = await positionsRepository.UpdateAPosition(position);
+
+                var resourceUtilizations = await utilizationRepository.GetUtilizationOfUser(position.ResourceId);
+                var responseObject = new RequestProjectAssign();
+                responseObject.OpeningId = openingId;
+                responseObject.UserID = position.ResourceId;
                 
                 foreach(rawUtilization utilization in resourceUtilizations) {
                     if (utilization.isConfirmed) {
