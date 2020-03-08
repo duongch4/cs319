@@ -7,23 +7,17 @@ import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}api/users/search`;
 
-export const getUsers = userSummary => {
+export const getUsers = userProfiles => {
     return {
       type: types.PERFORM_USER_SEARCH,
-      userSummary: userSummary
+      userProfiles: userProfiles
     };
   };
-
-export const loadUsersAllData = userSummaries => {
-return {
-    type: types.LOAD_USERS_ALL,
-    userSummaries: userSummaries };
-};
 
 export const performUserSearch = (filterParams) => {
 return dispatch => {
     if (CLIENT_DEV_ENV) {
-        dispatch(loadUsersAllData(_initialState.userSummaries));
+        dispatch(getUsers(filterParams));
     } else {
     return axios
         .get(`${baseURL}`, {headers})

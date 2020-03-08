@@ -151,7 +151,8 @@ class Search extends Component {
     };
 
     onSubmit = () => {
-      this.props.performUserSearch(this.state.searchFilter);
+      var results = this.props.performUserSearch(this.state.searchFilter);
+      console.log(results);
     };
 
     saveFilter = () => {
