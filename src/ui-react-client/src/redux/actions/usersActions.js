@@ -12,6 +12,13 @@ export const loadUsersAllData = userSummaries => {
       users: userSummaries };
 };
 
+export const updateUserSummary = userSummary => {
+    return {
+        type: types.UPDATE_USER_SUMMARIES,
+        userSummary: userSummary
+    }
+};
+
 export const loadUsers = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
