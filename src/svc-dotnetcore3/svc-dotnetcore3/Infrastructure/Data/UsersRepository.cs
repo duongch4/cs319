@@ -317,10 +317,10 @@ namespace Web.API.Infrastructure.Data
         {
             orderKey = (orderKey == null || orderKey == "") ? "utilization" : orderKey.ToLower();
             order = (order == null || order == "") ? "desc" : order.ToLower();
-            switch(order)
+            switch (order)
             {
                 case "asc":
-                    switch(orderKey)
+                    switch (orderKey)
                     {
                         case "firstname":
                             return users.OrderBy(user => user.FirstName);
@@ -331,14 +331,24 @@ namespace Web.API.Infrastructure.Data
                         case "city":
                             return users.OrderBy(user => user.City);
                         case "discipline":
+                            if (users.First().DisciplineName == null) return users.OrderBy(user => user.Utilization);
                             return users.OrderBy(user => user.DisciplineName);
                         case "yearsofexp":
-                            return users.OrderBy(user => user.YearsOfExperience);
+                            if (users.First().YearsOfExperience == null) return users.OrderBy(user => user.Utilization);
+                            return users.OrderBy(user =>
+                            {
+                                if (user.YearsOfExperience == "10+") return 10;
+                                else
+                                {
+                                    char[] sep = { '-' };
+                                    return Int32.Parse(user.YearsOfExperience.Split(sep)[0]);
+                                }
+                            });
                         default:
                             return users.OrderBy(user => user.Utilization);
                     }
                 default:
-                    switch(orderKey)
+                    switch (orderKey)
                     {
                         case "firstname":
                             return users.OrderByDescending(user => user.FirstName);
@@ -349,9 +359,19 @@ namespace Web.API.Infrastructure.Data
                         case "city":
                             return users.OrderByDescending(user => user.City);
                         case "discipline":
+                            if (users.First().DisciplineName == null) return users.OrderByDescending(user => user.Utilization);
                             return users.OrderByDescending(user => user.DisciplineName);
                         case "yearsofexp":
-                            return users.OrderByDescending(user => user.YearsOfExperience);
+                            if (users.First().YearsOfExperience == null) return users.OrderByDescending(user => user.Utilization);
+                            return users.OrderByDescending(user =>
+                            {
+                                if (user.YearsOfExperience == "10+") return 10;
+                                else
+                                {
+                                    char[] sep = { '-' };
+                                    return Int32.Parse(user.YearsOfExperience.Split(sep)[0]);
+                                }
+                            });
                         default:
                             return users.OrderByDescending(user => user.Utilization);
                     }
@@ -377,7 +397,7 @@ namespace Web.API.Infrastructure.Data
             var filteredSkills = filteredDisciplinesSkills["skills"];
 
             var filteredYearsOfExps = await GetFilteredYearsOfExps(connection, req.Filter.YearsOfExps);
-                        
+
             var filteredStartDate = GetFilteredStartDate(req.Filter.StartDate);
             var filteredEndDate = GetFilteredEndDate(req.Filter.EndDate);
 
@@ -567,6 +587,28 @@ namespace Web.API.Infrastructure.Data
             {
                 disciplines = disciplinesReq.Keys.ToHashSet();
                 skills = disciplinesReq.Values.SelectMany(x => x).ToHashSet();
+                foreach(var discipline in disciplinesReq.Keys.ToList())
+                {
+                    if (disciplinesReq[discipline] == null || !disciplinesReq[discipline].Any())
+                    {
+                        var sqlGetSkillsForDiscipline = @"
+                            SELECT
+                                s.Name
+                            FROM
+                                Skills s, Disciplines d
+                            WHERE
+                                s.DisciplineId = d.Id
+                                AND d.name = @DisciplineName
+                        ";
+                        connection.Open();
+                        skills.UnionWith(
+                            (await connection.QueryAsync<Skill>(sqlGetSkillsForDiscipline, new {
+                                DisciplineName = discipline
+                            })).Select(x => x.Name).ToHashSet()
+                        );
+                        connection.Close();
+                    }
+                }
             }
 
             return new Dictionary<string, HashSet<string>>()
@@ -578,18 +620,18 @@ namespace Web.API.Infrastructure.Data
 
         private async Task<IEnumerable<string>> GetFilteredYearsOfExps(SqlConnection connection, IEnumerable<string> yearsOfExpsReq)
         {
-            var result = new HashSet<string>();
             if (yearsOfExpsReq == null || !yearsOfExpsReq.Any())
             {
+                yearsOfExpsReq = new HashSet<string>();
                 var sqlGetAllUsersYearsOfExps = @"
                     SELECT YearsOfExperience
                     FROM ResourceDiscipline
                 ";
                 connection.Open();
-                result = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience).ToHashSet();
+                yearsOfExpsReq = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience).ToHashSet();
                 connection.Close();
             }
-            return result;
+            return yearsOfExpsReq;
         }
 
         private Utilization GetFilteredUtilization(Utilization utilizationReq)

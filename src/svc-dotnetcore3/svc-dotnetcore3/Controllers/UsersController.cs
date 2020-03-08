@@ -477,7 +477,6 @@ namespace Web.API.Controllers
         ///     POST /api/users/search
         ///     {
         ///         "filter": {
-        ///             "searchWord": "Bour",
         ///             "utilization": {
         ///                 "min": 50,
         ///                 "max": 160
@@ -511,6 +510,7 @@ namespace Web.API.Controllers
         ///             "startDate": "2021-10-31T00:00:00",
         ///             "endDate": "2022-02-12T00:00:00"
         ///         },
+        ///         "searchWord": "Bour",
         ///         "orderKey": "utilization",
         ///         "order": "asc",
         ///         "page": 1
