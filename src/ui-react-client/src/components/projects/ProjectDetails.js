@@ -51,7 +51,7 @@ class ProjectDetails extends Component {
                     }
                 })
             } else {
-                openingsRender.push(<p className="empty-statements">There are currently no openings for this
+                openingsRender.push(<p className="empty-statements" key={openingsRender.length}>There are currently no openings for this
                     project.</p>);
             }
 
@@ -64,7 +64,7 @@ class ProjectDetails extends Component {
                 })
             } else {
                 teamMembersRender.push(
-                    <p className="empty-statements">There are currently no resources assigned to this project.</p>
+                    <p className="empty-statements" key={teamMembersRender.length}>There are currently no resources assigned to this project.</p>
                 )
             }
 
