@@ -42,7 +42,6 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page)
         {
-            // TODO: Search for Title string!!!
             var sql = @"
                 SELECT
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
@@ -86,6 +85,50 @@ namespace Web.API.Infrastructure.Data
             });
         }
 
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page)
+        {
+            var sql = @"
+                SELECT
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City 
+                FROM
+                    Projects p, Locations l, Users u
+                WHERE
+                    p.LocationId = l.Id
+                    AND p.ManagerId = u.Id
+                    AND LOWER(TRIM(p.Title)) LIKE @SearchWord
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
+
+                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN l.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN l.City END DESC
+
+                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                    FETCH NEXT @RowsPerPage ROWS ONLY
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ProjectResource>(sql, new
+            {
+                SearchWord = (searchWord == null) ? null : $"%{searchWord.ToLower()}%",
+                OrderKey = orderKey,
+                Order = order,
+                PageNumber = page,
+                RowsPerPage = 50
+            });
+        }
         public async Task<IEnumerable<Project>> GetMostRecentProjects()
         {
             var sql = @"

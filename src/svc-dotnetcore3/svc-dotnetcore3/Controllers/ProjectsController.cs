@@ -50,6 +50,7 @@ namespace Web.API.Controllers
         ///     GET /api/projects?orderKey={orderKey}&#38;order={order}&#38;page={pageNumber}
         ///
         /// </remarks>
+        /// <param name="searchWord" />
         /// <param name="orderKey" />
         /// <param name="order" />
         /// <param name="page" />
@@ -70,20 +71,30 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllProjects([FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
+        public async Task<IActionResult> GetAllProjects([FromQuery] string searchWord, [FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
         {
             orderKey = (orderKey == null) ? "startDate" : orderKey;
             order = (order == null) ? "asc" : order;
             page = (page == 0) ? 1 : page;
             try
             {
-                var projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
+                IEnumerable<ProjectResource> projects;
+                if (searchWord == null)
+                {
+                    projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
+                }
+                else
+                {
+                    projects = await projectsRepository.GetAllProjectResourcesWithTitle(searchWord, orderKey, order, page);
+                }
+
                 if (projects == null || !projects.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
                 }
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
-                var extra = new {
+                var extra = new
+                {
                     page = page,
                     size = resource.Count(),
                     order = order,

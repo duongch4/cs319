@@ -5,7 +5,6 @@ using Web.API.Resources;
 
 namespace Web.API.Application.Repository
 {
-    //TODO
     public interface IDisciplinesRepository
     {
         //GET
