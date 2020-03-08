@@ -4,12 +4,14 @@ import {connect} from 'react-redux';
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import {Button} from "@material-ui/core";
 import '../common.css'
+import './SearchStyles.css'
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
 import {performUserSearch} from "../../../redux/actions/searchActions";
+import FilterStickers from "./FilterStickers";
 
 class FilterTab extends Component {
     state = {
@@ -220,19 +222,26 @@ class FilterTab extends Component {
                 <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
                 <SearchIcon style={{backgroundColor: "#87c34b", color: "white", borderRadius: "3px"}} size={"large"} onClick={()=> this.onSubmit()} />
             </div>
-            <div id="filter-closed" className="card-summary" style={ {backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px",display:  (showing ? 'none' : 'block') }}>
+            <div id="filter-closed" style={ {backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px",display:  (showing ? 'none' : 'block')}}>
                 <div style={{padding: "10px"}} >
-                <h2  style={{color: "white"}} >Add Filters</h2>
-                <Arrow  onClick={()=> this.setState({ showing: !showing })}>toggle </Arrow>
+                <h2  style={{color: "white"}} >Add Filters
+                <Arrow  style={{float:"right"}} size={"large"} onClick={()=> this.setState({ showing: !showing })}>toggle </Arrow>
+                </h2>
                 </div>
             </div>
             <div id="filters" style={ {backgroundColor: "#87c34b", paddingLeft: "30px", paddingRight: "30px", display:  (showing ? 'block' : 'none')}}>
+                <div style={{padding: "10px"}}> 
+                    <h2  style={{color: "white"}} >Add Filters
+                        <ExpandLessRoundedIcon style={{float:"right"}} onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
+                    </h2>
+                </div>
+                <div className="filter-sticker">
+                    <p>
+                    adsfsdfasfasdf
+                    </p>
+                </div>
                 <div className="form-row">
                     <div className="form-section opening">
-                        <div className="form-row"> 
-                          <h2  style={{color: "white"}} >Add Filters</h2>
-                          <ExpandLessRoundedIcon  onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
-                          </div>
                           <div className="form-row">
                             <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
                                 <AddIcon style={{float: "right"}}/>
