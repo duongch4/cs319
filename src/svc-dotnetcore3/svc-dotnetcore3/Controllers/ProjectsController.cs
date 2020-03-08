@@ -81,11 +81,11 @@ namespace Web.API.Controllers
                 IEnumerable<ProjectResource> projects;
                 if (searchWord == null)
                 {
-                    projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
+                    projects = await projectsRepository.GetAllProjectResources(orderKey.ToLower(), order.ToLower(), page);
                 }
                 else
                 {
-                    projects = await projectsRepository.GetAllProjectResourcesWithTitle(searchWord, orderKey, order, page);
+                    projects = await projectsRepository.GetAllProjectResourcesWithTitle(searchWord.ToLower(), orderKey.ToLower(), order.ToLower(), page);
                 }
 
                 if (projects == null || !projects.Any())

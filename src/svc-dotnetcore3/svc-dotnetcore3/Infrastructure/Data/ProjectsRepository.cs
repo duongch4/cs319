@@ -58,11 +58,11 @@ namespace Web.API.Infrastructure.Data
                     CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
                     CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
 
-                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
-                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
 
-                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
-                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
 
                     CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
                     CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
@@ -103,11 +103,11 @@ namespace Web.API.Infrastructure.Data
                     CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
                     CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
 
-                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
-                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
 
-                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
-                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
 
                     CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
                     CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
@@ -122,7 +122,7 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<ProjectResource>(sql, new
             {
-                SearchWord = $"%{searchWord.ToLower()}%",
+                SearchWord = $"%{searchWord}%",
                 OrderKey = orderKey,
                 Order = order,
                 PageNumber = page,
