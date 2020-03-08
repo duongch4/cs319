@@ -122,7 +122,7 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<ProjectResource>(sql, new
             {
-                SearchWord = (searchWord == null) ? null : $"%{searchWord.ToLower()}%",
+                SearchWord = $"%{searchWord.ToLower()}%",
                 OrderKey = orderKey,
                 Order = order,
                 PageNumber = page,
