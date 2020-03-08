@@ -55,7 +55,7 @@ class EditUserDetails extends Component {
                             province: e.target.value,
                             locationID: 0
                         }},
-                    city_options: Object.keys(newCities)
+                    city_options: newCities
                 }, () => this.props.addUserDetails(this.state.userSummary));
         } else {
             this.setState({
