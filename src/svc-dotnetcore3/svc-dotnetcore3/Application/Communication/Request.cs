@@ -74,6 +74,10 @@ namespace Web.API.Application.Communication
 
     public class RequestSearchUsers
     {
+        /// <summary>Search Word for User's Last Name or First Name</summary>
+        /// <example>Bour</example>
+        public string SearchWord { get; set; }
+
         /// <summary>Filter Object</summary>
         public Filter Filter { get; set; }
         

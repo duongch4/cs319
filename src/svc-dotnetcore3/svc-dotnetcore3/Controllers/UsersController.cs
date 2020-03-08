@@ -51,6 +51,7 @@ namespace Web.API.Controllers
         ///     GET /api/users?orderKey={orderKey}&#38;order={order}&#38;page={pageNumber}
         ///
         /// </remarks>
+        /// <param name="searchWord" />
         /// <param name="orderKey" />
         /// <param name="order" />
         /// <param name="page" />
@@ -67,20 +68,21 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllUsers([FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
+        public async Task<IActionResult> GetAllUsers([FromQuery] string searchWord, [FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
         {
             orderKey = (orderKey == null) ? "utilization" : orderKey;
             order = (order == null) ? "desc" : order;
             page = (page == 0) ? 1 : page;
             try
             {
-                var users = await usersRepository.GetAllUserResources(orderKey, order, page);
+                var users = await usersRepository.GetAllUserResources(searchWord, orderKey, order, page);
                 if (users == null || !users.Any())
                 {
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
                 }
                 var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new {
+                    searchWord = searchWord,
                     page = page,
                     size = resource.Count(),
                     order = order,
@@ -475,6 +477,7 @@ namespace Web.API.Controllers
         ///     POST /api/users/search
         ///     {
         ///         "filter": {
+        ///             "searchWord": "Bour",
         ///             "utilization": {
         ///                 "min": 50,
         ///                 "max": 160
@@ -546,7 +549,6 @@ namespace Web.API.Controllers
                 var users = await usersRepository.GetAllUserResourcesOnFilter(req);
                 if (users == null || !users.Any())
                 {
-                    // users = new UserResource[] { };
                     return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);

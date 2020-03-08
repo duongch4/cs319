@@ -239,7 +239,7 @@ namespace Web.API.Infrastructure.Data
             });
         }
 
-        public async Task<IEnumerable<UserResource>> GetAllUserResources(string orderKey, string order, int page)
+        public async Task<IEnumerable<UserResource>> GetAllUserResources(string searchWord, string orderKey, string order, int page)
         {
             var sql = @"
                 SELECT *
@@ -270,30 +270,21 @@ namespace Web.API.Infrastructure.Data
                         ij.IsConfirmed,
                         ij.Province, ij.City
                 ) AS util
+                WHERE
+                    LOWER(TRIM(util.FirstName)) LIKE @SearchWord
+                    OR LOWER(TRIM(util.LastName)) LIKE @SearchWord 
                 ORDER BY
-                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN util.Utilization END ASC,
-                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN util.Utilization END DESC,
-
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN util.Province END ASC,
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN util.Province END DESC,
-
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN util.City END ASC,
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN util.City END DESC
-                    
+                    util.Id
                     OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                     FETCH NEXT @RowsPerPage ROWS ONLY
             ;";
-
-            // CASE WHEN @OrderKey = 'startDate' THEN final.ProjectEndDate END ASC,
-            // CASE WHEN @OrderKey = 'endDate' THEN final.ProjectEndDate END ASC
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             var users = await connection.QueryAsync<UserResource>(sql, new
             {
                 DateInTwoYears = DateTime.Today.AddYears(2),
-                OrderKey = orderKey,
-                Order = order,
+                SearchWord = GetFilteredSearchWord(searchWord),
                 PageNumber = page,
                 RowsPerPage = 50
             });
@@ -319,13 +310,61 @@ namespace Web.API.Infrastructure.Data
                     result = result.Append(user);
                 }
             }
-            return result;
+            return GetSorted(result, orderKey, order);
+        }
+
+        private IEnumerable<UserResource> GetSorted(IEnumerable<UserResource> users, string orderKey, string order)
+        {
+            orderKey = (orderKey == null || orderKey == "") ? "utilization" : orderKey.ToLower();
+            order = (order == null || order == "") ? "desc" : order.ToLower();
+            switch(order)
+            {
+                case "asc":
+                    switch(orderKey)
+                    {
+                        case "firstname":
+                            return users.OrderBy(user => user.FirstName);
+                        case "lastname":
+                            return users.OrderBy(user => user.LastName);
+                        case "province":
+                            return users.OrderBy(user => user.Province);
+                        case "city":
+                            return users.OrderBy(user => user.City);
+                        case "discipline":
+                            return users.OrderBy(user => user.DisciplineName);
+                        case "yearsofexp":
+                            return users.OrderBy(user => user.YearsOfExperience);
+                        default:
+                            return users.OrderBy(user => user.Utilization);
+                    }
+                default:
+                    switch(orderKey)
+                    {
+                        case "firstname":
+                            return users.OrderByDescending(user => user.FirstName);
+                        case "lastname":
+                            return users.OrderByDescending(user => user.LastName);
+                        case "province":
+                            return users.OrderByDescending(user => user.Province);
+                        case "city":
+                            return users.OrderByDescending(user => user.City);
+                        case "discipline":
+                            return users.OrderByDescending(user => user.DisciplineName);
+                        case "yearsofexp":
+                            return users.OrderByDescending(user => user.YearsOfExperience);
+                        default:
+                            return users.OrderByDescending(user => user.Utilization);
+                    }
+            }
         }
 
         public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req)
         {
-            // TODO: Search for Name: FirstName/LastName string!!!
+            if (req.Filter == null) return await GetAllUserResources(req.SearchWord, req.OrderKey, req.Order, req.Page);
+
             using var connection = new SqlConnection(connectionString);
+
+            var filteredSearchWord = GetFilteredSearchWord(req.SearchWord);
 
             var filteredLocations = await GetFilteredLocations(connection, req.Filter.Locations);
             var filteredProvinces = filteredLocations["provinces"];
@@ -338,6 +377,9 @@ namespace Web.API.Infrastructure.Data
             var filteredSkills = filteredDisciplinesSkills["skills"];
 
             var filteredYearsOfExps = await GetFilteredYearsOfExps(connection, req.Filter.YearsOfExps);
+                        
+            var filteredStartDate = GetFilteredStartDate(req.Filter.StartDate);
+            var filteredEndDate = GetFilteredEndDate(req.Filter.EndDate);
 
             var sql = @"
                 SELECT
@@ -391,7 +433,11 @@ namespace Web.API.Infrastructure.Data
                         s.DisciplineId = d.Id
                         AND s.Name IN @Skills
                 WHERE
-                    util.Province IN @Provinces
+                    (
+                        LOWER(TRIM(util.FirstName)) LIKE @SearchWord
+                        OR LOWER(TRIM(util.LastName)) LIKE @SearchWord
+                    )
+                    AND util.Province IN @Provinces
                     AND util.City IN @Cities
                     AND util.Utilization >= @UtilMin
                     AND util.Utilization <= @UtilMax
@@ -402,27 +448,10 @@ namespace Web.API.Infrastructure.Data
                     LocationId, Province, City,
                     d.Name
                 ORDER BY
-                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN util.Utilization END ASC,
-                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN util.Utilization END DESC,
-
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN util.Province END ASC,
-                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN util.Province END DESC,
-
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN util.City END ASC,
-                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN util.City END DESC,
-
-                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'asc') THEN d.Name END ASC,
-                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'desc') THEN d.Name END DESC,
-                    
-                    CASE WHEN (@OrderKey = 'yearsOfExp' AND @Order = 'asc') THEN rd.YearsOfExperience END ASC,
-                    CASE WHEN (@OrderKey = 'yearsOfExp' AND @Order = 'desc') THEN rd.YearsOfExperience END DESC
-                    
+                    util.Id
                     OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                     FETCH NEXT @RowsPerPage ROWS ONLY
             ;";
-
-            // CASE WHEN @OrderKey = 'startDate' THEN final.ProjectEndDate END ASC,
-            // CASE WHEN @OrderKey = 'endDate' THEN final.ProjectEndDate END ASC
 
             connection.Open();
             var users = await connection.QueryAsync<UserResource>(sql, new
@@ -432,13 +461,12 @@ namespace Web.API.Infrastructure.Data
                 Cities = filteredCities,
                 Disciplines = filteredDisciplines,
                 Skills = filteredSkills,
+                SearchWord = filteredSearchWord,
                 YearsOfExps = filteredYearsOfExps,
-                EndDate = req.Filter.EndDate,
-                StartDate = req.Filter.StartDate,
+                EndDate = filteredEndDate,
+                StartDate = filteredStartDate,
                 UtilMin = filteredUtilization.Min,
                 UtilMax = filteredUtilization.Max,
-                OrderKey = (req.OrderKey == null || req.OrderKey == "") ? "utilization" : req.OrderKey,
-                Order = (req.Order == null || req.Order == "") ? "desc" : req.Order,
                 PageNumber = (req.Page == 0) ? 1 : req.Page,
                 RowsPerPage = 50
             });
@@ -467,7 +495,22 @@ namespace Web.API.Infrastructure.Data
                     result = result.Append(user);
                 }
             }
-            return result;
+            return GetSorted(result, req.OrderKey, req.Order);
+        }
+
+        private string GetFilteredSearchWord(string searchWordReq)
+        {
+            return (searchWordReq == null || searchWordReq == "") ? "%" : $"%{searchWordReq.ToLower()}%";
+        }
+
+        private DateTime GetFilteredStartDate(DateTime startDateReq)
+        {
+            return (startDateReq == null || startDateReq == new DateTime()) ? DateTime.Today : startDateReq;
+        }
+
+        private DateTime GetFilteredEndDate(DateTime endDateReq)
+        {
+            return (endDateReq == null || endDateReq == new DateTime()) ? DateTime.Today.AddYears(2) : endDateReq;
         }
 
         private async Task<Dictionary<string, HashSet<string>>> GetFilteredLocations(SqlConnection connection, IEnumerable<LocationResource> locationsReq)
@@ -553,10 +596,14 @@ namespace Web.API.Infrastructure.Data
         {
             if (utilizationReq == null)
             {
-                utilizationReq.Min = 0;
-                utilizationReq.Max = 100;
+                utilizationReq = new Utilization()
+                {
+                    Min = Int32.MinValue,
+                    Max = Int32.MaxValue
+                };
+                return utilizationReq;
             }
-            return utilizationReq;
+            else return utilizationReq;
         }
 
         // public async Task<IEnumerable<User>> GetAllUsersWithYearsOfExp(Discipline discipline, int yrsOfExp)
