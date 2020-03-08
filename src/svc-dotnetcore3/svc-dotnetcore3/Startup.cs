@@ -153,6 +153,7 @@ namespace Web.API
             services.AddScoped<ISkillsRepository>(sp => new SkillsRepository(connectionString));
             services.AddScoped<IUsersRepository>(sp => new UsersRepository(connectionString));
             services.AddScoped<IOutOfOfficeRepository>(sp => new OutOfOfficeRepository(connectionString));
+            services.AddScoped<IUtilizationRepository>(sp => new UtilizationRepository(connectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

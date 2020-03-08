@@ -524,59 +524,59 @@ namespace Web.API.Controllers
         }
 
 
-        /// <summary>Assigning a Resource to a Project</summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     PUT api/projects/2009-VD9D-15/assign/1
-        ///
-        /// </remarks>
-        /// <param name= "reqBody">The requestBody</param>
-        /// <returns>The old deleted project</returns>
-        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="401">Unauthorized Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpPut]
-        [Route("projects/{projectNumber}/assign/{positionId}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AssignAResource([FromBody] RequestProjectAssign reqBody)
-        {
-            try
-            {
-                Position position = await positionsRepository.GetAPosition(reqBody.PositionID);
-                if (position == null)
-                {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
-                }
-                position.Id = reqBody.PositionID;
-                position.ResourceId = reqBody.UserID;
+    //     /// <summary>Assigning a Resource to a Project</summary>
+    //     /// <remarks>
+    //     /// Sample request:
+    //     ///
+    //     ///     PUT api/projects/2009-VD9D-15/assign/1
+    //     ///
+    //     /// </remarks>
+    //     /// <param name= "reqBody">The requestBody</param>
+    //     /// <returns>The old deleted project</returns>
+    //     /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+    //     /// <response code="400">Bad Request</response>
+    //     /// <response code="401">Unauthorized Request</response>
+    //     /// <response code="500">Internal Server Error</response>
+    //     [HttpPut]
+    //     [Route("projects/{projectNumber}/assign/{positionId}")]
+    //     [ProducesResponseType(StatusCodes.Status201Created)]
+    //     [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+    //     [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+    //     [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+    //     [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+    //     public async Task<IActionResult> AssignAResource([FromBody] RequestProjectAssign reqBody)
+    //     {
+    //         try
+    //         {
+    //             Position position = await positionsRepository.GetAPosition(reqBody.PositionID);
+    //             if (position == null)
+    //             {
+    //                 return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
+    //             }
+    //             position.Id = reqBody.PositionID;
+    //             position.ResourceId = reqBody.UserID;
 
-                position = await positionsRepository.UpdateAPosition(position);
-                var posIdAndResourceId = new { reqBody.PositionID, reqBody.UserID };
-                var response = new UpdatedResponse<object>(posIdAndResourceId, "Successfully updated");
-                return StatusCode(StatusCodes.Status201Created, response);
-            }
-            catch (Exception err)
-            {
-                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-                if (err is SqlException)
-                {
-                    var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
-                }
-                else
-                {
-                    var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
-                }
-            }
-        }
-    }
+    //             position = await positionsRepository.UpdateAPosition(position);
+    //             var posIdAndResourceId = new { reqBody.PositionID, reqBody.UserID };
+    //             var response = new UpdatedResponse<object>(posIdAndResourceId, "Successfully updated");
+    //             return StatusCode(StatusCodes.Status201Created, response);
+    //         }
+    //         catch (Exception err)
+    //         {
+    //             var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+    //             if (err is SqlException)
+    //             {
+    //                 var error = new InternalServerException(errMessage);
+    //                 return StatusCode(StatusCodes.Status500InternalServerError, error);
+    //             }
+    //             else
+    //             {
+    //                 var error = new BadRequestException(errMessage);
+    //                 return StatusCode(StatusCodes.Status400BadRequest, error);
+    //             }
+    //         }
+    //     }
+    // }
 
     // [Authorize]
     // public class OldProjectsController : ControllerBase
@@ -599,4 +599,5 @@ namespace Web.API.Controllers
     //         return Ok(viewModel);
     //     }
     // }
+    }
 }
