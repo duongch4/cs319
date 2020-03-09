@@ -12,6 +12,9 @@ import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
 import {performUserSearch} from "../../../redux/actions/searchActions";
 import FilterStickers from "./FilterStickers";
+import CloseIcon from '@material-ui/icons/Close';
+import DisciplineSearch from "./DisciplineSearch";
+import LocationsSearch from "./LocationsSearch";
 
 class FilterTab extends Component {
     state = {
@@ -45,7 +48,9 @@ class FilterTab extends Component {
       currentDiscipline: "",
       users: this.props.users,
       pending: true,
-      showing: false
+      showing: false,
+      showSticker: true,
+      stickerHTML: null,
     };
   
     componentDidMount() {
@@ -162,11 +167,71 @@ class FilterTab extends Component {
     };
 
     saveFilter = () => {
-      // adds sticker tiles to top
+        var filters = [];
+        var results = this.state.searchFilter; 
+        var province = results.filter.locations[0].province;
+        var city = results.filter.locations[0].city; 
+
+        if (province != null) {
+            filters.push(province);
+        }
+
+        this.addDisciplines();
+
+        // const { showSticker } = true;
+        // const showStickers = [];
+        // const filterStickers = [];
+
+        // if (this.state.searchFilter.filter.locations.province !== null) {
+        //     filterStickers.push(this.state.searchFilter.filter.locations[0].province);
+        // } 
+
+        // filterStickers.forEach(filter => {
+        //         showStickers.push(
+        //         <div className="filter-sticker" key={filterStickers.length} style={{color:"white", display: (showSticker ? 'block' : 'none')}}>
+        //         {filter}
+        //         <CloseIcon onClick={()=> this.closeFilter()}/>
+        //         </div>
+        //         )
+        //     });
+        // this.setState({
+        //     ...this.state,
+        //     stickerHTML: filterStickers,
+        // }); 
+    }
+    
+    addDisciplines = (opening) => {
+        let discipline = {
+            discipline: opening.discipline,
+            yearsOfExp: opening.yearsOfExp,
+            skills: opening.skills
+        };
+        const disciplines = [...this.state.searchFilter.filter.disciplines, discipline];
+        this.setState({
+            ...this.state,
+            filter: {
+                ...this.state.searchFilter.filter,
+                disciplines: disciplines
+            }
+        })
+        console.log(this.state.searchFilter.filter.discipline)
     };
 
+    closeFilter = () => {
+
+    }
+    
     showFilter = () => {
         // this.refs[filters].style.display = "visible";
+    }
+
+    Stickers() {
+        const filtersArr = this.state.savedFilters;
+        if (filtersArr.length != 0){
+            return (
+                <FilterStickers filters={this.state.savedFilters}/>
+            )
+        }
     }
 
   render(){
@@ -189,31 +254,17 @@ class FilterTab extends Component {
       })
     }
 
-    var provinces = this.props.masterlist.locations; 
-
-    var provinces_render = [];
-    var all_provinces_key = Array.from(Object.keys(provinces));
-    all_provinces_key.forEach((province, i) => {
-      provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)
-    });
-
-    var cities = [];
-    var cities_render = [];
-    if (this.state.searchFilter.filter.locations.province === null){
-      cities_render = <option disabled>Please select a province</option>
-    } else {
-      cities = this.state.cities;
-      cities.forEach((city, i) => {
-        cities_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
-      })
-    }
+    
     var yearsOfExperience = this.props.masterlist.yearsOfExp;
 
     var range_render = [];
     yearsOfExperience.forEach((yearsOfExperience, i) => {
         range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
     });
-    const { showing } = this.state;
+
+    const {showing} = this.state;
+    const html_sticker = this.state.stickerHTML;
+    console.log(html_sticker);
 
     return (
     <div className="form-section">
@@ -235,63 +286,17 @@ class FilterTab extends Component {
                         <ExpandLessRoundedIcon style={{float:"right"}} onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
                     </h2>
                 </div>
-                <div className="filter-sticker">
-                    <p>
-                    adsfsdfasfasdf
-                    </p>
-                </div>
                 <div className="form-row">
-                    <div className="form-section opening">
-                          <div className="form-row">
-                            <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
-                                <AddIcon style={{float: "right"}}/>
-                            </Fab> 
-                            <div style={{color: "white", padding: "5px"}}>
-                                Location
-                            </div>
-                            <select className="input-box" defaultValue={ 'DEFAULT'} style={{padding: "5px"}} id="province" onChange={this.handleChange}>
-                                <option value="DEFAULT" disabled>Province</option>
-                                {provinces_render}
-                            </select>
-                            <select className="input-box" defaultValue={ 'DEFAULT'} style={{padding: "5px"}} id="city" onChange={this.handleChange}>
-                                <option value="DEFAULT" disabled>City</option>
-                                {cities_render}
-                            </select>
-                        </div>
-                        <div className="form-row">
-                            <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
-                                <AddIcon />
-                            </Fab> 
-                            <div style={{color: "white", padding: "5px"}}>
-                                Discipline
-                            </div>
-                            <select className="input-box" defaultValue={ 'DEFAULT'} id="discipline" onChange={this.handleChange}>
-                                <option value="DEFAULT" disabled>Discipline</option>
-                                {discipline_render}
-                            </select>
-                            <select className="input-box" defaultValue={ 'DEFAULT'} id="skills" onChange={this.handleChange}>
-                                <option value="DEFAULT" disabled>Skills</option>
-                                {skill_render}
-                            </select>
-                        </div>
-                    </div>
                 </div>
-                <label className="form-row" htmlFor="yearsOfExp">
-                    <p className="form-label">
-                    <Fab style={{ backgroundColor: "#87c34b", boxShadow: "none"}} size={ "small"} color="primary" aria-label="add">
-                      <AddIcon />
-                    </Fab></p>
-                    <div style={{color: "white", padding: "5px"}}>
-                                Years of Experience
-                            </div>
-                    <select className="input-box" defaultValue={ 'DEFAULT'} id="yearsOfExp" onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>Select a range</option>
-                        {range_render}
-                    </select>
-                </label>
+                <div className="form-section opening">
+                        <LocationsSearch provinces={this.props.masterlist.locations}/>
+                        <DisciplineSearch disciplines={this.props.masterlist.disciplines}
+                                          masterYearsOfExperience={this.props.masterlist.yearsOfExp}
+                                          addOpening={(opening) => this.addDisciplines(opening)}/>
                 <div style={{padding: "20px"}}>
                 <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                 </div>
+            </div>
             </div>
         </form>
     </div>
