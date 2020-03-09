@@ -2,6 +2,7 @@ using AutoMapper;
 using Web.API.Application.Models;
 using Web.API.Resources;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Web.API.Mapping
@@ -17,11 +18,8 @@ namespace Web.API.Mapping
             SetLocationProfile();
             SetUserProfile();
             SetSkillProfile();
-            // SetProjectProfile();
             SetOutOfOffice();
-            SetRDiscipline();
             SetRSkill();
-            SetProject();
         }
 
         private void SetProjectSummary()
@@ -32,6 +30,7 @@ namespace Web.API.Mapping
                 opt => opt.MapFrom(
                     sourceMember => new LocationResource
                     {
+                        LocationID = sourceMember.LocationId,
                         Province = sourceMember.Province,
                         City = sourceMember.City
                     }
@@ -70,6 +69,11 @@ namespace Web.API.Mapping
                 opt => opt.MapFrom(
                     sourceMember => sourceMember.YearsOfExperience
                 )
+            ).ForMember(
+                destinationMember => destinationMember.PositionID,
+                opt => opt.MapFrom(
+                    sourceMember => sourceMember.Id
+                )
             ).ReverseMap();
         }
 
@@ -85,28 +89,28 @@ namespace Web.API.Mapping
 
         private void SetUserSummary()
         {
+            char[] sep = { ',' };
+
             CreateMap<UserResource, UserSummary>(
             ).ForMember(
                 destinationMember => destinationMember.Location,
                 opt => opt.MapFrom(
                     sourceMember => new LocationResource
                     {
+                        LocationID = sourceMember.LocationId,
                         Province = sourceMember.Province,
                         City = sourceMember.City
                     }
-                )
-            ).ForMember(
-                destinationMember => destinationMember.Utilization,
-                opt => opt.MapFrom(
-                    sourceMember => RandomNumber(0, 150)
                 )
             ).ForMember(
                 destinationMember => destinationMember.ResourceDiscipline,
                 opt => opt.MapFrom(
                     sourceMember => new ResourceDisciplineResource
                     {
+                        DisciplineID = sourceMember.DisciplineId,
                         Discipline = sourceMember.DisciplineName,
                         YearsOfExp = sourceMember.YearsOfExperience,
+                        Skills = (sourceMember.Skills == null) ? new HashSet<string>() : new HashSet<string>(sourceMember.Skills.Split(sep))
                     }
                 )
             ).ForMember(
@@ -130,26 +134,12 @@ namespace Web.API.Mapping
                 opt => opt.MapFrom(sourceMember => sourceMember.Name)
             ).ReverseMap();
         }
-        private void SetProject()
-        {
-            CreateMap<Project, ProjectDirectMappingResource>(
-            ).ForMember(
-                destinationMember => destinationMember.ProjectNumber,
-                opt => opt.MapFrom(
-                    sourceMember => sourceMember.Number
-                )
-            );
-        }
 
         private void SetOutOfOffice()
         {
             CreateMap<OutOfOffice, OutOfOfficeResource>();
         }
 
-        private void SetRDiscipline()
-        {
-            CreateMap<ResourceDiscipline, RDisciplineResource>();
-        }
         private void SetRSkill()
         {
             CreateMap<ResourceSkill, RSkillResource>();

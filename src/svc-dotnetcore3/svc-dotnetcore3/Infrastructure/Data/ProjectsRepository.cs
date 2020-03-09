@@ -1,5 +1,6 @@
 ﻿using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Application.Communication;
 using Web.API.Resources;
 using System;
 using System.Collections.Generic;
@@ -23,20 +24,65 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<ProjectResource>> GetAllProjects()
         {
             var sql = @"
-                select
+                SELECT
                     p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
                     p.ManagerId, p.LocationId, p.Number,
                     u.FirstName, u.LastName,
                     l.Province, l.City 
-                from
+                FROM
                     Projects p, Locations l, Users u
-                where
+                WHERE
                     p.LocationId = l.Id
                     AND p.ManagerId = u.Id
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryAsync<ProjectResource>(sql);
+            return await connection.QueryAsync<ProjectResource>(sql, new { DateTimeNow = DateTime.Today });
+        }
+
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page)
+        {
+            var sql = @"
+                SELECT
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City 
+                FROM
+                    Projects p, Locations l, Users u
+                WHERE
+                    p.LocationId = l.Id
+                    AND p.ManagerId = u.Id
+                    AND p.ProjectEndDate > @DateTimeSpecific
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN p.Title END ASC,
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN p.Title END DESC,
+
+                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'asc') THEN p.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startDate' AND @Order = 'desc') THEN p.ProjectStartDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'asc') THEN p.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'endDate' AND @Order = 'desc') THEN p.ProjectEndDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN l.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN l.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN l.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN l.City END DESC
+
+                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                    FETCH NEXT @RowsPerPage ROWS ONLY
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ProjectResource>(sql, new
+            {
+                DateTimeSpecific = DateTime.Today,
+                OrderKey = orderKey,
+                Order = order,
+                PageNumber = page,
+                RowsPerPage = 50
+            });
         }
 
         public async Task<IEnumerable<Project>> GetMostRecentProjects()
@@ -102,6 +148,28 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryAsync<Project>(sql, new { UserId = user.Id });
+        }
+
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(int userId)
+        {
+            var sql = @"
+                SELECT
+                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                    p.ManagerId, p.LocationId, p.Number,
+                    u.FirstName, u.LastName,
+                    l.Province, l.City
+                FROM
+                    Positions as pos, Projects as p, Users u, Locations l
+                WHERE
+                    pos.ResourceId = u.Id
+                    AND pos.ResourceId = @UserId 
+                    AND pos.ProjectId = p.Id
+                    AND l.Id = p.LocationId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<ProjectResource>(sql, new { UserId = userId });
         }
 
         public async Task<string> CreateAProject(ProjectProfile projectProfile, int locationId)

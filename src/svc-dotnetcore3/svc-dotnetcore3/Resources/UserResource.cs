@@ -34,6 +34,14 @@ namespace Web.API.Resources
         /// <example>true</example>
         public bool IsConfirmed { get; set; }
 
+        /// <summary>Utilization</summary>
+        /// <example>22</example>
+        public int Utilization { get; set; }
+
+        /// <summary>Discipline Id</summary>
+        /// <example>1</example>
+        public int DisciplineId { get; set; }
+
         /// <summary>Discipline</summary>
         /// <example>Weapons</example>
         public string DisciplineName { get; set; }
@@ -41,5 +49,9 @@ namespace Web.API.Resources
         /// <summary>Years of Experience</summary>
         /// <example>10+</example>
         public string YearsOfExperience { get; set; }
+
+        /// <summary>Skills</summary>
+        /// <example>String that lists all skills separated by comma: "Deception,False Identity Creation"</example>
+        public string Skills { get; set; }
     }
 }

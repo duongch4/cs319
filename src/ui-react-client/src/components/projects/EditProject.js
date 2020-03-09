@@ -2,12 +2,12 @@ import React, {Component} from 'react';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
 import TeamRequirements from './TeamRequirements'
-import {updateProject, loadSingleProject} from '../../redux/actions/projectProfileActions.js';
+import {updateProject, loadSingleProject, deleteProject} from '../../redux/actions/projectProfileActions.js';
 import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import UserCard from "../users/UserCard";
-
+import {CLIENT_DEV_ENV} from '../../config/config';
 
 class EditProject extends Component {
     state = {
@@ -17,21 +17,37 @@ class EditProject extends Component {
     };
 
     componentDidMount() {
-        var promise_masterlist = this.props.loadMasterlists();
-        var promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number);
-        Promise.all([promise_masterlist, promise_singleProject])
-           .then(() => {
-               this.setState(
-                   {
-                       ...this.state,
-                       masterlist: this.props.masterlist,
-                       projectProfile: this.props.projectProfile,
-                       pending: false
-                   })});
+        if (CLIENT_DEV_ENV) {
+            this.props.loadSingleProject(this.props.match.params.project_number);
+            this.props.loadMasterlists();
+            this.setState((state, props) => ({
+                ...this.state,
+                masterlist: props.masterlist,
+                projectProfile: props.projectProfile,
+                pending: false
+            }));
+        } else {
+            var promise_masterlist = this.props.loadMasterlists();
+            var promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number);
+            Promise.all([promise_masterlist, promise_singleProject])
+               .then(() => {
+                   this.setState((state, props) =>
+                       ({
+                           ...this.state,
+                           masterlist: props.masterlist,
+                           projectProfile: props.projectProfile,
+                           pending: false
+                       }))});
+        }
+       
     }
 
     onSubmit = () => {
-        this.props.updateProject(this.state.projectProfile);
+        this.props.updateProject(this.state.projectProfile, this.props.history);
+    };
+
+    onDelete = () => {
+        this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history);
     };
 
     addOpening = (opening) => {
@@ -50,11 +66,11 @@ class EditProject extends Component {
                 ...this.state.projectProfile,
                 projectSummary: {
                     ...this.state.projectProfile.projectSummary,
-                    title: project.projectSummary.title,
-                    projectNumber: project.projectSummary.projectNumber,
-                    projectStartDate: project.projectSummary.projectStartDate,
-                    projectEndDate: project.projectSummary.projectEndDate,
-                    location: project.projectSummary.location
+                    title: project.title,
+                    projectNumber: project.projectNumber,
+                    projectStartDate: project.projectStartDate,
+                    projectEndDate: project.projectEndDate,
+                    location: project.location
                 }
             }
         })
@@ -116,6 +132,12 @@ class EditProject extends Component {
                                 onClick={() => this.onSubmit()}>
                             Save
                         </Button>
+                        <Button variant="contained"
+                                style={{backgroundColor: "#EB5757", color: "#ffffff", size: "small"}}
+                                disableElevation
+                                onClick={() => this.onDelete()}>
+                            Delete
+                        </Button>
                     </div>
                 </div>
             );
@@ -137,7 +159,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
     loadMasterlists,
     updateProject,
-    loadSingleProject
+    loadSingleProject,
+    deleteProject
 };
 
 export default connect(

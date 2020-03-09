@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 class TeamRequirements extends Component {
     state = {
       opening: {
+          positionID: 0,
           discipline: null,
           skills: [],
           yearsOfExp: null,
@@ -14,11 +15,11 @@ class TeamRequirements extends Component {
     };
 
     handleChange = (e) => {
-      if (e.target.id === "commitment") {
+      if (e.target.id === "commitmentMonthlyHours") {
           this.setState({
               opening: {
                   ...this.state.opening,
-                  commitmentMonthlyHours: e.target.value
+                  commitmentMonthlyHours: parseInt(e.target.value)
               }
           });
       } else if (e.target.id === "skills") {
@@ -51,6 +52,7 @@ class TeamRequirements extends Component {
       this.props.addOpening(this.state.opening);
       this.setState({
           opening: {
+              positionID: 0,
               discipline: null,
               skills: [],
               yearsOfExp: null,
@@ -75,7 +77,7 @@ class TeamRequirements extends Component {
     if (this.state.opening.discipline === null){
       skill_render = <option disabled>Please select a discipline</option>
     } else {
-      skills = disciplines[this.state.opening.discipline];
+        skills = disciplines[this.state.opening.discipline];
       skills.forEach((skill, i) => {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
