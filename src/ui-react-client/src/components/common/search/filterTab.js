@@ -24,12 +24,7 @@ class FilterTab extends Component {
             min: 0,
             max: 100
           },
-          locations: [
-            {
-              province: null,
-              city: null,
-            }
-          ],
+          locations: [],
           disciplines: {},
           yearsOfExps: [],
           startDate: null,
@@ -92,36 +87,39 @@ class FilterTab extends Component {
 
     addDisciplines = (disciplinesNew) => {
         const name = disciplinesNew.name;
-        const years = disciplinesNew.yearsOfExp;
+        const newYear = this.state.searchFilter.filter.yearsOfExps;
+        const year = (disciplinesNew.yearsOfExp != null) ? newYear.push(disciplinesNew.yearsOfExp) : newYear;
         const skills = disciplinesNew.skills;
-        console.log(disciplinesNew);
         this.setState({
             ...this.state,
             searchFilter: {
                 ...this.setState.searchFilter,
                 filter: {
                     ...this.state.searchFilter.filter,
-                    disciplines: this.state.searchFilter.filter.disciplines[name] = skills,
-                    yearsOfExps: this.state.searchFilter.filter.yearsOfExps.push(years),
+                    disciplines: {
+                        [name]: skills,
+                    }
+                },
+                yearsOfExps: year,
                 }
-            }
         })
         console.log(this.state.searchFilter.filter);
     }
 
     addLocations = (locationsNew) => {
-        const newObj = {province: locationsNew[0].province}
-        console.log(locationsNew);
+        const locationCurr = [{province: locationsNew.province, city: locationsNew.city}];
+        console.log(locationCurr);
         this.setState({
             ...this.state,
             searchFilter: {
                 ...this.setState.searchFilter,
                 filter: {
                     ...this.state.searchFilter.filter,
-                    locations: this.state.searchFilter.filter.locations.push(newObj),
+                    locations: locationCurr,
                 }
             }
         })
+        console.log(this.state.searchFilter);
     }
 
     saveFilter = () => {
@@ -147,6 +145,10 @@ class FilterTab extends Component {
 
     closeFilter = () => {
 
+    }
+    
+    addNewDisciplines = (extra_disciplines) => {
+       console.log('test');
     }
     
     showFilter = () => {
@@ -194,6 +196,9 @@ class FilterTab extends Component {
     const html_sticker = this.state.stickerHTML;
     console.log(html_sticker);
 
+    const extra_disciplines = [];
+    const {i} = 0;
+
     return (
     <div className="form-section">
         <form onSubmit={this.handleSubmit}>
@@ -219,9 +224,11 @@ class FilterTab extends Component {
                 <div className="form-section opening">
                         <LocationsSearch provinces={this.props.masterlist.locations}
                                         addLocations={this.addLocations}/>
+                        <div>
                         <DisciplineSearch disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addDisciplines={this.addDisciplines}/>
+                        </div>
                 <div style={{padding: "20px"}}>
                 <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                 </div>

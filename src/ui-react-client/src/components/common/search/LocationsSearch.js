@@ -11,15 +11,11 @@ class LocationsSearch extends Component {
       }
 
     state = {
-      locations: [
+      locations:
         {
             province: null, 
             city: null,
         },
-      ],
-      locationsAvailable: {
-          count: 1,
-      },
       cities: [],
     };
 
@@ -28,41 +24,31 @@ class LocationsSearch extends Component {
             this.setState({
                 ...this.state,
                   locations:
-                  [
                     {
+                        ...this.state.locations,
                       city: e.target.value,
                     }
-                  ]
                 });
           } else if (e.target.id === "province") {
             let newCities = this.props.provinces[e.target.value];
             this.setState({
                 ...this.state,
                   locations:
-                  [
                     {
+                        ...this.state.locations,
                       province: e.target.value,
-                    }
-                  ],
+                    },
                   cities: newCities,
                 });
         };
+        console.log(this.state.locations);
+        this.props.addLocations(this.state.locations);
     }
-
-    closeDiscipline(id) {
-        this.setState({
-            ...this.state.locations,
-            locationsAvailable: {
-                count: (this.state.locationsAvailable.count) - 1
-            }
-        });
-
-    };
 
     handleSubmit = (e) =>{
       e.preventDefault();
     //   this.props.addOpening(this.state.opening);
-      this.props.addLocations(this.state.locations);
+    //   this.props.addLocations(this.state.locations);
     };
 
   render(){
@@ -74,9 +60,9 @@ class LocationsSearch extends Component {
       provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)
     });
 
-    var cities = provinces[this.state.locations[0].province];
+    var cities = provinces[this.state.locations.province];
     var cities_render = [];
-    if (this.state.locations[0].province === null){
+    if (this.state.locations.province === null){
       cities_render = <option disabled>Please select a province</option>
     } else {
       cities = this.state.cities;
@@ -85,35 +71,21 @@ class LocationsSearch extends Component {
       })
     }
 
-    var inputType = null; 
-    var locationsHTML = [];
-    for (var i = 1; i <= this.state.locationsAvailable.count; i++) {
-        var id = "locations_" + i;
-        if (i <= 1){
-            inputType = (<input className="add" type="submit" value="+"/>);
-        } else {
-            inputType = (<input className="add" type="submit" value="-" onClick={()=> this.closeDiscipline("locations_" + i)}/>);
-        }
-
-        locationsHTML.push(<div className="form-section">
-        <label htmlFor= "location" className="form-row">
-            {inputType}
-                <select className="input-box" id="province" onChange={this.handleChange}>
-                    {provinces_render}
-                </select>
-                <select className="input-box" id="city" onChange={this.handleChange}>
-                    {cities_render}
-                </select>
-            </label>
-        </div>);
-    }
-
      return(
         <div className="form-section">
-            <h2 key={1} className="darkGreenHeader">Locations</h2>
-                <form onSubmit={this.handleSubmit}>
-                    {locationsHTML}
-                </form>
+            <div className="form-row">
+            <select className="input-box" defaultValue={'DEFAULT'}
+                        id="province" onChange={this.handleChange}>
+                    <option value="DEFAULT" disabled>Province</option>
+                    {provinces_render}
+                </select>
+                <select className="input-box" defaultValue={'DEFAULT'}
+                        id="city" onChange={this.handleChange}>
+                    <option value="DEFAULT" disabled>City</option>
+                    {cities_render}
+                </select>
+            
+        </div>
         </div>
      );
        
