@@ -6,7 +6,6 @@ import { ReactDOM } from 'react-dom';
 
 class DisciplineSearch extends Component {
     constructor(props){
-        // this.addDisciplines = this.addDisciplines.bind(this);
         super();
       }
 
@@ -21,80 +20,47 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
+        console.log(e.target.value);
+
         if (e.target.id === "skills") {
-        var skills_arr = [...this.state.disciplines.skills, e.target.value];
+        var skills_arr = [e.target.value];
           this.setState({
             disciplines: {
               ...this.state.disciplines,
               skills: skills_arr
             }
-         });
+         }, this.updateSkill(e.target.value));
       } else if (e.target.id === "yearsOfExp") {
           this.setState({
             disciplines: {
                 ...this.state.disciplines,
               yearsOfExp: e.target.value
              }
-            });
+            }, this.updateYears(e.target.value));
       } else {
            var skills_arr = [...this.state.disciplines.skills, e.target.value];
           this.setState({
             disciplines: {
                   ...this.state.disciplines,
-                  name: e.target.value
+                  name: e.target.value,
+                  skills: [],
               }
-          });
+          },this.updateDisciplines(e.target.value, []));
       }
     this.props.addDisciplines(this.state.disciplines);
     };
 
-    closeDiscipline(id) {
-        // const disciplinesNew = [...this.state.disciplines];
-        // console.log(disciplinesNew);
-        // this.setState({
-        //     ...this.state,
-        //     disciplinesAvailable: {
-        //         count: (this.state.disciplinesAvailable.count) - 1
-        //     }
-        // });
-        // console.log(this.state);
-    };
-
-    addDiscipline(id) {
-        // const obj = {name: null,
-        //     skills: [],
-        //     yearsOfExp: null};
-
-        // const disciplinesNew = [...this.state.disciplines, obj];
-        // this.setState({
-        //         ...this.state,
-        //         disciplines: disciplinesNew,
-        //         disciplinesAvailable: {
-        //             count: (this.state.disciplinesAvailable.count) + 1
-        //         }
-        // })
-        // this.props.addDisciplines(this.state.disciplines[0]);     
-        // console.log(this.state);
-    };
-
-    searchNotNull(myArray){
-        for (var i=0; i < myArray.length; i++) {
-            if (myArray[i].name != null) {
-                return myArray[i];
-            }
-        }
+    updateSkill = (val) => {
+        this.state.disciplines.skills = [val];
+    }
+    updateYears = (val) => {
+        this.state.disciplines.yearsOfExp = val;
     }
 
-    handleSubmit = (e) =>{
-      e.preventDefault();
-    //   this.setState({
-    //       ...this.state.disciplines,
-    //       disciplinesAvailable: {
-    //           count: (this.state.disciplinesAvailable.count) + 1
-    //       }
-    //   })
-    //   console.log(this.state);
-    };
+    updateDisciplines = (name, skills) => {
+        this.state.disciplines.name = name;
+        this.state.disciplines.skills = skills;
+    }
 
   render(){
     var disciplines = this.props.disciplines;
@@ -122,45 +88,6 @@ class DisciplineSearch extends Component {
         range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
     });
 
-    // var inputType = null; 
-    // var disciplineHTML = [];
-    // for (var i = 1; i <= this.state.disciplinesAvailable.count; i++) {
-    //     var id = "disciplines_" + i;
-    //     if (i <= 1){
-    //         inputType = (<input className="add" type="submit" value="+" onClick={()=> this.addDiscipline("disciplines_" + i)}/>);
-    //     } else {
-    //         inputType = (<input className="add" type="submit" value="-" onClick={()=> this.closeDiscipline("disciplines_" + i)}/>);
-    //     }
-    //     console.log("i: " + i);
-
-        // disciplineHTML.push(<div className="form-row" id={id}>
-        // {inputType}
-        // <div className="form-section opening">
-        //     <div className="form-row">
-        //         <select className="input-box" defaultValue={'DEFAULT'}
-        //                 id="discipline" onChange={this.handleChange}>
-        //             <option value="DEFAULT" disabled>Discipline</option>
-        //             {discipline_render}
-        //         </select>
-        //         <select className="input-box" defaultValue={'DEFAULT'}
-        //                 id="skills" onChange={this.handleChange}>
-        //             <option value="DEFAULT" disabled>Skills</option>
-        //             {skill_render}
-        //         </select>
-        //     </div>
-        //     <label className="form-row" htmlFor= "yearsOfExp">
-        //         <p className="form-label">Years of Experience</p>
-        //         <select className="input-box" defaultValue={'DEFAULT'}
-        //                 id="yearsOfExp" onChange={this.handleChange}>
-        //             <option value="DEFAULT" disabled>Select a range</option>
-        //             {range_render}
-        //         </select>
-        //     </label>
-        // </div>
-        // </div>);
-    
-    
-
         return (
         <div className="form-section">
                 <div className="form-section opening">
@@ -170,11 +97,22 @@ class DisciplineSearch extends Component {
                     <option value="DEFAULT" disabled>Discipline</option>
                     {discipline_render}
                 </select>
-                <select className="input-box" defaultValue={'DEFAULT'}
-                        id="skills" onChange={this.handleChange}>
-                    <option value="DEFAULT" disabled>Skills</option>
-                    {skill_render}
-                </select>
+
+
+                {(this.state.disciplines.skills.length == 0) && 
+                <select className="input-box" defaultValue={'DEFAULT'} value="DEFAULT"
+                id="skills" onChange={this.handleChange}>
+            <option value="DEFAULT" disabled>Skills</option>
+            {skill_render}
+             </select>}
+                {(this.state.disciplines.skills.length  !== 0) && 
+               <select className="input-box" defaultValue={'DEFAULT'} value={this.state.disciplines.skills[0]}
+               id="skills" onChange={this.handleChange}>
+                <option value="DEFAULT" disabled>Skills</option>
+            {skill_render}
+            </select>}
+
+                
             </div>
             <label className="form-row" htmlFor= "yearsOfExp">
                 <p className="form-label">Years of Experience</p>

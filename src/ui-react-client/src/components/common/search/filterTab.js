@@ -103,12 +103,10 @@ class FilterTab extends Component {
                 yearsOfExps: year,
                 }
         })
-        console.log(this.state.searchFilter.filter);
     }
 
     addLocations = (locationsNew) => {
         const locationCurr = [{province: locationsNew.province, city: locationsNew.city}];
-        console.log(locationCurr);
         this.setState({
             ...this.state,
             searchFilter: {
@@ -119,7 +117,6 @@ class FilterTab extends Component {
                 }
             }
         })
-        console.log(this.state.searchFilter);
     }
 
     saveFilter = () => {
@@ -134,13 +131,6 @@ class FilterTab extends Component {
     }
     
     addOpening = (disciplines) => {
-        // const openings = [...this.state.projectProfile.openings, opening]
-        // this.setState({
-        //     projectProfile: {
-        //         ...this.state.projectProfile,
-        //         openings
-        //     }
-        // })
     };
 
     closeFilter = () => {
@@ -148,11 +138,9 @@ class FilterTab extends Component {
     }
     
     addNewDisciplines = (extra_disciplines) => {
-       console.log('test');
     }
     
     showFilter = () => {
-        // this.refs[filters].style.display = "visible";
     }
 
     Stickers() {
