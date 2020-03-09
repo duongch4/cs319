@@ -5,6 +5,11 @@ import { ReactDOM } from 'react-dom';
 
 
 class LocationsSearch extends Component {
+    constructor(props){
+        // this.addDisciplines = this.addDisciplines.bind(this);
+        super();
+      }
+
     state = {
       locations: [
         {
@@ -25,7 +30,6 @@ class LocationsSearch extends Component {
                   locations:
                   [
                     {
-                    ...this.state.locations,
                       city: e.target.value,
                     }
                   ]
@@ -37,7 +41,6 @@ class LocationsSearch extends Component {
                   locations:
                   [
                     {
-                    ...this.state.locations,
                       province: e.target.value,
                     }
                   ],
@@ -59,12 +62,7 @@ class LocationsSearch extends Component {
     handleSubmit = (e) =>{
       e.preventDefault();
     //   this.props.addOpening(this.state.opening);
-      this.setState({
-          ...this.state.locations,
-          locationsAvailable: {
-              count: (this.state.locationsAvailable.count) + 1
-          }
-      })
+      this.props.addLocations(this.state.locations);
     };
 
   render(){
@@ -76,7 +74,7 @@ class LocationsSearch extends Component {
       provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)
     });
 
-    var cities = [];
+    var cities = provinces[this.state.locations[0].province];
     var cities_render = [];
     if (this.state.locations[0].province === null){
       cities_render = <option disabled>Please select a province</option>

@@ -5,14 +5,19 @@ import { ReactDOM } from 'react-dom';
 
 
 class DisciplineSearch extends Component {
+    constructor(props){
+        // this.addDisciplines = this.addDisciplines.bind(this);
+        super();
+      }
+
     state = {
       disciplines: [
         {
-            name: null,
-            skills: [],
-            yearsOfExp: null,
+        name: null,
+        skills: [],
+        yearsOfExp: null,
         },
-      ],
+    ],
       disciplinesAvailable: {
           count: 1,
       },
@@ -21,39 +26,58 @@ class DisciplineSearch extends Component {
 
     handleChange = (e) => {
        if (e.target.id === "skills") {
-        var skills_arr = [...this.state.disciplines.skills, e.target.value];
+        var skills_arr = [...this.state.disciplines[0].skills, e.target.value];
           this.setState({
-            disciplines: {
-              ...this.state.disciplines,
+            disciplines: [{
+              ...this.state.disciplines[0],
               skills: skills_arr
-            }
+            }]
          });
       } else if (e.target.id === "yearsOfExp") {
           this.setState({
-            disciplines: {
-                ...this.state.disciplines,
+            disciplines: [{
+                ...this.state.disciplines[0],
               yearsOfExp: e.target.value
-             }
+             }]
             })
       } else {
-           var skills_arr = [...this.state.disciplines.skills, e.target.value];
+           var skills_arr = [...this.state.disciplines[0].skills, e.target.value];
           this.setState({
-            disciplines: {
-                  ...this.state.disciplines,
+            disciplines: [{
+                  ...this.state.disciplines[0],
                   name: e.target.value
-              }
+              }]
           })
       }
     };
 
     closeDiscipline(id) {
-        this.setState({
-            ...this.state.opening,
-            disciplinesAvailable: {
-                count: (this.state.disciplinesAvailable.count) - 1
-            }
-        });
+        // const disciplinesNew = [...this.state.disciplines];
+        // console.log(disciplinesNew);
+        // this.setState({
+        //     ...this.state,
+        //     disciplinesAvailable: {
+        //         count: (this.state.disciplinesAvailable.count) - 1
+        //     }
+        // });
+        // console.log(this.state);
+    };
 
+    addDiscipline(id) {
+        // const obj = {name: null,
+        //     skills: [],
+        //     yearsOfExp: null};
+
+        // const disciplinesNew = [...this.state.disciplines, obj];
+        // this.setState({
+        //         ...this.state,
+        //         disciplines: disciplinesNew,
+        //         disciplinesAvailable: {
+        //             count: (this.state.disciplinesAvailable.count) + 1
+        //         }
+        // })
+        this.props.addDisciplines(this.state.disciplines[0]);     
+        // console.log(this.state);
     };
 
     searchNotNull(myArray){
@@ -66,14 +90,13 @@ class DisciplineSearch extends Component {
 
     handleSubmit = (e) =>{
       e.preventDefault();
-    //   this.props.addOpening(this.state.opening);
-      this.setState({
-          ...this.state.disciplines,
-          disciplinesAvailable: {
-              count: (this.state.disciplinesAvailable.count) + 1
-          }
-      })
-      console.log(this.state);
+    //   this.setState({
+    //       ...this.state.disciplines,
+    //       disciplinesAvailable: {
+    //           count: (this.state.disciplinesAvailable.count) + 1
+    //       }
+    //   })
+    //   console.log(this.state);
     };
 
   render(){
@@ -91,10 +114,8 @@ class DisciplineSearch extends Component {
     if (this.state.disciplines[0].name === null){
       skill_render = <option disabled>Please select a discipline</option>
     } else {
-        var disc = this.searchNotNull(this.state.disciplines);
-        console.log(disc);
-      skills = disciplines[disc];
-      skills.forEach((skill, i) => {
+        skills = disciplines[this.state.disciplines[0].name];
+        skills.forEach((skill, i) => {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
     }
@@ -109,10 +130,11 @@ class DisciplineSearch extends Component {
     for (var i = 1; i <= this.state.disciplinesAvailable.count; i++) {
         var id = "disciplines_" + i;
         if (i <= 1){
-            inputType = (<input className="add" type="submit" value="+"/>);
+            inputType = (<input className="add" type="submit" value="+" onClick={()=> this.addDiscipline("disciplines_" + i)}/>);
         } else {
             inputType = (<input className="add" type="submit" value="-" onClick={()=> this.closeDiscipline("disciplines_" + i)}/>);
         }
+        console.log("i: " + i);
 
         disciplineHTML.push(<div className="form-row" id={id}>
         {inputType}

@@ -30,9 +30,7 @@ class FilterTab extends Component {
               city: null,
             }
           ],
-          disciplines: {
-
-          },
+          disciplines: {},
           yearsOfExps: [],
           startDate: null,
           endDate: null,
@@ -74,55 +72,7 @@ class FilterTab extends Component {
     }
 
     handleChange = (e) => {
-      if (e.target.id === "city") {
-        this.setState({
-          searchFilter: {
-            ...this.state.searchFilter,
-            filter: {
-              ...this.state.searchFilter.filter,
-              locations:
-              [
-                {
-                  province: this.state.currProvince,
-                  city: e.target.value,
-                }
-              ]
-            },
-          },  
-        });
-      } else if (e.target.id === "province") {
-        let newCities = this.props.masterlist.locations[e.target.value];
-        this.setState({
-          searchFilter: {
-            ...this.state.searchFilter,
-            filter: {
-              ...this.state.searchFilter.filter,
-              locations:
-              [
-                {
-                  province: e.target.value,
-                }
-              ]
-            },
-          },
-            cities: newCities,
-            currProvince: e.target.value,
-        });
-    } else if (e.target.id === "skills") {
-          this.setState({
-            searchFilter: {
-              ...this.state.searchFilter,
-              filter: {
-                ...this.state.searchFilter.filter,
-                disciplines:
-                {
-                  ...this.state.searchFilter.filter.disciplines,
-                  [this.state.currentDiscipline]: [e.target.value],
-                }
-              },
-            }
-         });
-      } else if (e.target.id === "search") {
+       if (e.target.id === "search") {
         this.setState({
           searchFilter: {
             ...this.state.searchFilter,
@@ -132,39 +82,47 @@ class FilterTab extends Component {
           }
         }
         });
-      } else if (e.target.id === "yearsOfExp") {
-        this.setState({
-          searchFilter: {
-            ...this.state.searchFilter,
-          filter: {
-            ...this.state.searchFilter.filter,
-            yearsOfExps: [e.target.value]
-          }
-        }
-        });
-      }else {
-        this.setState({
-          searchFilter: {
-            ...this.state.searchFilter,
-          filter: {
-            ...this.state.searchFilter.filter,
-            disciplines:
-            {
-              ...this.state.searchFilter.filter.disciplines,
-              [e.target.value]: [],
-            }
-          },
-        },
-          skills: this.props.masterlist.disciplines[e.target.value],
-          currentDiscipline: e.target.value,
-        })
-    }
+      }
     };
 
     onSubmit = () => {
-      var results = this.props.performUserSearch(this.state.searchFilter);
-      console.log(results);
+    //   var results = this.props.performUserSearch(this.state.searchFilter);
+      console.log(this.state.searchFilter);
     };
+
+    addDisciplines = (disciplinesNew) => {
+        const name = disciplinesNew.name;
+        const years = disciplinesNew.yearsOfExp;
+        const skills = disciplinesNew.skills;
+        console.log(disciplinesNew);
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.setState.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    disciplines: this.state.searchFilter.filter.disciplines[name] = skills,
+                    yearsOfExps: this.state.searchFilter.filter.yearsOfExps.push(years),
+                }
+            }
+        })
+        console.log(this.state.searchFilter.filter);
+    }
+
+    addLocations = (locationsNew) => {
+        const newObj = {province: locationsNew[0].province}
+        console.log(locationsNew);
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.setState.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    locations: this.state.searchFilter.filter.locations.push(newObj),
+                }
+            }
+        })
+    }
 
     saveFilter = () => {
         var filters = [];
@@ -175,46 +133,16 @@ class FilterTab extends Component {
         if (province != null) {
             filters.push(province);
         }
-
-        this.addDisciplines();
-
-        // const { showSticker } = true;
-        // const showStickers = [];
-        // const filterStickers = [];
-
-        // if (this.state.searchFilter.filter.locations.province !== null) {
-        //     filterStickers.push(this.state.searchFilter.filter.locations[0].province);
-        // } 
-
-        // filterStickers.forEach(filter => {
-        //         showStickers.push(
-        //         <div className="filter-sticker" key={filterStickers.length} style={{color:"white", display: (showSticker ? 'block' : 'none')}}>
-        //         {filter}
-        //         <CloseIcon onClick={()=> this.closeFilter()}/>
-        //         </div>
-        //         )
-        //     });
-        // this.setState({
-        //     ...this.state,
-        //     stickerHTML: filterStickers,
-        // }); 
     }
     
-    addDisciplines = (opening) => {
-        let discipline = {
-            discipline: opening.discipline,
-            yearsOfExp: opening.yearsOfExp,
-            skills: opening.skills
-        };
-        const disciplines = [...this.state.searchFilter.filter.disciplines, discipline];
-        this.setState({
-            ...this.state,
-            filter: {
-                ...this.state.searchFilter.filter,
-                disciplines: disciplines
-            }
-        })
-        console.log(this.state.searchFilter.filter.discipline)
+    addOpening = (disciplines) => {
+        // const openings = [...this.state.projectProfile.openings, opening]
+        // this.setState({
+        //     projectProfile: {
+        //         ...this.state.projectProfile,
+        //         openings
+        //     }
+        // })
     };
 
     closeFilter = () => {
@@ -289,10 +217,11 @@ class FilterTab extends Component {
                 <div className="form-row">
                 </div>
                 <div className="form-section opening">
-                        <LocationsSearch provinces={this.props.masterlist.locations}/>
+                        <LocationsSearch provinces={this.props.masterlist.locations}
+                                        addLocations={this.addLocations}/>
                         <DisciplineSearch disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                          addOpening={(opening) => this.addDisciplines(opening)}/>
+                                          addDisciplines={this.addDisciplines}/>
                 <div style={{padding: "20px"}}>
                 <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                 </div>
