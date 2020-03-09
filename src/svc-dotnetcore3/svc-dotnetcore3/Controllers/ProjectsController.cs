@@ -88,7 +88,8 @@ namespace Web.API.Controllers
 
                 if (projects == null || !projects.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No projects data found"));
+                    var error = new NotFoundException("No projects data found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
                 var extra = new
@@ -108,12 +109,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -143,14 +144,16 @@ namespace Web.API.Controllers
         {
             if (projectNumber == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project number is null"));
+                var error = new BadRequestException("The given project number is null");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
             try
             {
                 var project = await projectsRepository.GetAProjectResource(projectNumber);
                 if (project == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No project at projectNumber '{projectNumber}' found"));
+                    var error = new NotFoundException($"No project at projectNumber '{projectNumber}' found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var projectSummary = mapper.Map<ProjectResource, ProjectSummary>(project);
 
@@ -166,7 +169,6 @@ namespace Web.API.Controllers
                 var openingPositions = await positionsRepository.GetAllUnassignedPositionsResourceOfProject(project.Id);
                 if (openingPositions == null || !openingPositions.Any())
                 {
-                    // return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No Opening Positions at projectNumber '{projectNumber}' found"));
                     openingPositions = new OpeningPositionsResource[] { };
                 }
                 var openingPositionsSummary = mapper.Map<IEnumerable<OpeningPositionsResource>, IEnumerable<OpeningPositionsSummary>>(openingPositions);
@@ -188,12 +190,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -225,7 +227,8 @@ namespace Web.API.Controllers
                 var mostRecentProjects = await projectsRepository.GetMostRecentProjects();
                 if (mostRecentProjects == null || !mostRecentProjects.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No projects found"));
+                    var error = new NotFoundException($"No projects found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectProfile>>(mostRecentProjects);
                 var response = new OkResponse<IEnumerable<ProjectProfile>>(resource, "Everything is good");
@@ -237,12 +240,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -333,7 +336,8 @@ namespace Web.API.Controllers
         {
             if (projectProfile == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project is null / Request Body cannot be read"));
+                var error = new BadRequestException("The given project is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
             try
@@ -349,12 +353,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -446,7 +450,16 @@ namespace Web.API.Controllers
         {
             if (projectProfile == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project profile is null / Request Body cannot be read"));
+                var error = new BadRequestException("The given project profile is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if (projectProfile.ProjectSummary.ProjectNumber != projectNumber)
+            {
+                var errMessage = $"The project number on URL '{projectNumber}'" +
+                    $" does not match with '{projectProfile.ProjectSummary.ProjectNumber}' in Request Body's Project Summary";
+                var error = new BadRequestException(errMessage);
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
             try
@@ -457,11 +470,11 @@ namespace Web.API.Controllers
                 if (updated == null)
                 {
                     var errMessage = $"Query returns failure status on updating project number '{projectProfile.ProjectSummary.ProjectNumber}'";
-                    return StatusCode(StatusCodes.Status500InternalServerError, new InternalServerException(errMessage));
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 var response = new UpdatedResponse<string>(updated, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);
-                // return Ok(projectProfile);
             }
             catch (Exception err)
             {
@@ -469,12 +482,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -504,7 +517,8 @@ namespace Web.API.Controllers
         {
             if (projectNumber == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given project number is null"));
+                var error = new BadRequestException("The given project number is null");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
             try
@@ -512,7 +526,8 @@ namespace Web.API.Controllers
                 var deleted = await projectsRepository.DeleteAProject(projectNumber);
                 if (deleted == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given project number cannot be found on database"));
+                    var error = new NotFoundException("The given project number cannot be found on database");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var response = new DeletedResponse<string>(deleted.Number, $"Successfully deleted project with number '{deleted.Number}'");
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -523,12 +538,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest,  new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -561,7 +576,8 @@ namespace Web.API.Controllers
                 Position position = await positionsRepository.GetAPosition(reqBody.PositionID);
                 if (position == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given positionId cannot be found in the database"));
+                    var error = new NotFoundException("The given positionId cannot be found in the database");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 position.Id = reqBody.PositionID;
                 position.ResourceId = reqBody.UserID;
@@ -577,12 +593,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
