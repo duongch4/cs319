@@ -500,7 +500,8 @@ namespace Web.API.Controllers
         ///                 ],
         ///                 "Martial Arts": [
         ///                     "Kali"
-        ///                 ]
+        ///                 ],
+        ///                 "Weapons": []
         ///             },
         ///             "yearsOfExps": [
         ///                 "1-3",
@@ -510,7 +511,7 @@ namespace Web.API.Controllers
         ///             "startDate": "2021-10-31T00:00:00",
         ///             "endDate": "2022-02-12T00:00:00"
         ///         },
-        ///         "searchWord": "Bour",
+        ///         "searchWord": "e",
         ///         "orderKey": "utilization",
         ///         "order": "asc",
         ///         "page": 1

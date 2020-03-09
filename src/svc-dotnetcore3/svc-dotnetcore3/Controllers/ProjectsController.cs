@@ -26,24 +26,22 @@ namespace Web.API.Controllers
         private readonly IUsersRepository usersRepository;
         private readonly IPositionsRepository positionsRepository;
         private readonly ILocationsRepository locationsRepository;
-        private readonly ISkillsRepository skillsRepository;
         private readonly IMapper mapper;
 
         public ProjectsController(
             IProjectsRepository projectsRepository, IUsersRepository usersRepository,
             IPositionsRepository positionsRepository, ILocationsRepository locationsRepository,
-            ISkillsRepository skillsRepository, IMapper mapper
+            IMapper mapper
         )
         {
             this.projectsRepository = projectsRepository;
             this.usersRepository = usersRepository;
             this.positionsRepository = positionsRepository;
             this.locationsRepository = locationsRepository;
-            this.skillsRepository = skillsRepository;
             this.mapper = mapper;
         }
 
-        /// <summary>Get projects for a specific page number</summary>
+        /// <summary>Get projects with optional query string</summary>
         /// <remarks>
         /// Sample request:
         ///
@@ -79,7 +77,7 @@ namespace Web.API.Controllers
             try
             {
                 IEnumerable<ProjectResource> projects;
-                if (searchWord == null)
+                if (searchWord == null || searchWord == "")
                 {
                     projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
                 }
@@ -589,26 +587,4 @@ namespace Web.API.Controllers
             }
         }
     }
-
-    // [Authorize]
-    // public class OldProjectsController : ControllerBase
-    // {
-    //     private readonly IProjectsRepository projectsRepository;
-    //     private readonly IMapper mapper;
-
-    //     public OldProjectsController(IProjectsRepository projectsRepository, IMapper mapper)
-    //     {
-    //         this.projectsRepository = projectsRepository;
-    //         this.mapper = mapper;
-    //     }
-
-    //     [HttpGet]
-    //     [Route("/projects")]
-    //     public async Task<IActionResult> GetAllProjects()
-    //     {
-    //         var response = await projectsRepository.GetAllProjects();
-    //         var viewModel = mapper.Map<IEnumerable<Project>>(response);
-    //         return Ok(viewModel);
-    //     }
-    // }
 }
