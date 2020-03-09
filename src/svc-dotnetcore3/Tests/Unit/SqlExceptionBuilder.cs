@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Linq;
 
-namespace Tests.Unit.Controllers
+namespace Tests.Unit
 {
     public class SqlExceptionBuilder
     {

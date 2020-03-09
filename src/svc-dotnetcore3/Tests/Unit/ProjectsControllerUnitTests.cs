@@ -14,9 +14,9 @@ using Xunit;
 
 using Serilog;
 
-namespace Tests.Unit.Controllers
+namespace Tests.Unit
 {
-    public class ProjectsControllerTest
+    public class ProjectsControllerUnitTests
     {
         private readonly Mock<IProjectsRepository> _mockProjectsRepo;
         private readonly Mock<IUsersRepository> _mockUsersRepo;
@@ -25,7 +25,7 @@ namespace Tests.Unit.Controllers
         private readonly Mock<IMapper> _mockMapper;
         private readonly ProjectsController _controller;
 
-        public ProjectsControllerTest()
+        public ProjectsControllerUnitTests()
         {
             _mockProjectsRepo = new Mock<IProjectsRepository>();
             _mockUsersRepo = new Mock<IUsersRepository>();
