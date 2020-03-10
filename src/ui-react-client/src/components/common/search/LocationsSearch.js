@@ -3,10 +3,9 @@ import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { ReactDOM } from 'react-dom';
 
-
 class LocationsSearch extends Component {
     constructor(props){
-        super();
+        super(props);
       }
 
     state = {
@@ -19,7 +18,6 @@ class LocationsSearch extends Component {
     };
 
     handleChange = (e) => {
-        console.log(e.target.value)
         if (e.target.id === "city") {
             this.setState({
                 ...this.state,

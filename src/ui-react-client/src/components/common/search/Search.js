@@ -21,7 +21,7 @@ const Search = ({
   return (
       <div className="activity-container">
         <h2 className="greenHeader">Search</h2>
-        <FilterTab style={{padding: "10px"}}/>
+        <FilterTab />
       </div>
       );
 };

@@ -11,7 +11,7 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
 import {performUserSearch} from "../../../redux/actions/searchActions";
-import FilterStickers from "./FilterStickers";
+// import FilterStickers from "./FilterStickers";
 import CloseIcon from '@material-ui/icons/Close';
 import DisciplineSearch from "./DisciplineSearch";
 import LocationsSearch from "./LocationsSearch";
@@ -43,7 +43,15 @@ class FilterTab extends Component {
       pending: true,
       showing: false,
       showSticker: true,
-      stickerHTML: null,
+      stickerHTML: [],
+      locations_view: [],
+        disciplines_view: [],
+        disciplines_temp: [],
+        years_temp: [],
+        locations_temp: [],
+        location_count: 1,
+        discipline_count: 1,
+
     };
   
     componentDidMount() {
@@ -82,52 +90,67 @@ class FilterTab extends Component {
 
     onSubmit = () => {
     //   var results = this.props.performUserSearch(this.state.searchFilter);
-      console.log(this.state.searchFilter);
+    console.log(this.state.searchFilter.filter);
     };
 
     addDisciplines = (disciplinesNew) => {
         const name = disciplinesNew.name;
         const newYear = this.state.searchFilter.filter.yearsOfExps;
-        const year = (disciplinesNew.yearsOfExp != null) ? newYear.push(disciplinesNew.yearsOfExp) : newYear;
         const skills = disciplinesNew.skills;
+
         this.setState({
             ...this.state,
-            searchFilter: {
-                ...this.setState.searchFilter,
-                filter: {
-                    ...this.state.searchFilter.filter,
-                    disciplines: {
-                        [name]: skills,
-                    }
-                },
-                yearsOfExps: year,
-                }
+            disciplines_temp: [...this.state.disciplines_temp, {
+                    [name]: skills,
+            }],
+            years_temp: newYear,
         })
     }
 
     addLocations = (locationsNew) => {
-        const locationCurr = [{province: locationsNew.province, city: locationsNew.city}];
         this.setState({
             ...this.state,
-            searchFilter: {
-                ...this.setState.searchFilter,
-                filter: {
-                    ...this.state.searchFilter.filter,
-                    locations: locationCurr,
-                }
-            }
+            locations_temp: [...this.state.locations_temp, locationsNew],
         })
     }
 
     saveFilter = () => {
-        var filters = [];
-        var results = this.state.searchFilter; 
-        var province = results.filter.locations[0].province;
-        var city = results.filter.locations[0].city; 
+        console.log(this.state);
+        this.addLocationToFilter();
 
-        if (province != null) {
-            filters.push(province);
-        }
+        var discNew = this.state.disciplines_temp;
+        
+        var obj = {};
+        discNew.forEach((disc, i) => {
+            var discKey =  Object.keys(disc);
+            var discVal = disc[discKey];
+            obj[discKey] = discVal;
+        });
+ 
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.state.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    locations: this.state.locations_temp,
+                    disciplines: obj,
+                    yearsOfExp: this.state.years_temp,
+                    },
+                },
+        });
+        this.state.searchFilter.filter.locations = this.state.locations_temp;
+        this.state.searchFilter.filter.disciplines = obj;
+        this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
+    }
+
+    addLocationToFilter = () => {
+        var views = this.state.locations_view;
+        // console.log(views);
+    }
+
+    deleteFilter = (filter) => {
+
     }
     
     addOpening = (disciplines) => {
@@ -143,14 +166,75 @@ class FilterTab extends Component {
     showFilter = () => {
     }
 
-    Stickers() {
-        const filtersArr = this.state.savedFilters;
-        if (filtersArr.length != 0){
-            return (
-                <FilterStickers filters={this.state.savedFilters}/>
-            )
-        }
+    newLocation = () => {
+        this.setState({
+            ...this.state,
+            location_count: this.state.location_count + 1,
+        });
+        this.state.location_count = this.state.location_count + 1;
+        var key = "location_" + this.state.location_count;
+       var newLoc = (
+       <div className="form-row" key={key} >
+        <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(key)}/>
+        <LocationsSearch provinces={this.props.masterlist.locations}
+                                        addLocations={this.addLocations}/>  
+       </div>
+       );
+        this.setState( {
+            ...this.state,
+            locations_view: [...this.state.locations_view, newLoc]
+        })
     }
+
+    deleteLocation = (key) => {
+        var extraLocations = this.state.locations_view;
+        var i = null;
+        extraLocations.forEach((location, index) => {
+            if (location.key == key) {
+                this.state.locations_view.splice(index, 1);
+                this.setState({
+                    ...this.state,
+                    locations_view: this.state.locations_view.splice(i, 1),
+                });
+            }
+        });  
+    }
+
+    deleteDiscipline = (key) => {
+        console.log(key);
+        var extra_disciplines = this.state.disciplines_view;
+        extra_disciplines.forEach((discipline, index) => {
+            if (discipline.key == key) {
+                this.state.disciplines_view.splice(index, 1);
+                this.setState({
+                    ...this.state,
+                    disciplines_view: this.state.disciplines_view.splice(index, 1),
+                });
+            }
+        });  
+    }
+
+    newDisciplines = () => {
+        this.setState({
+            ...this.state,
+            discipline_count: this.state.discipline_count + 1,
+        });
+        this.state.discipline_count = this.state.discipline_count + 1;
+        var key = "disciplines_" + this.state.discipline_count;
+        console.log(key);
+        var newDisc = (
+            <div className="form-row" key={key}>
+            <input className="add" type="button" value="-" onClick={()=> this.deleteDiscipline(key)}/>
+             <DisciplineSearch disciplines={this.props.masterlist.disciplines}
+                                        masterYearsOfExperience={this.props.masterlist.yearsOfExp}
+                                        addDisciplines={this.addDisciplines}/>
+            </div>
+            );
+             this.setState( {
+                 ...this.state,
+                 disciplines_view: [...this.state.disciplines_view, newDisc]
+             })
+        }
 
   render(){
     var disciplines = this.props.masterlist.disciplines;
@@ -171,7 +255,6 @@ class FilterTab extends Component {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
     }
-
     
     var yearsOfExperience = this.props.masterlist.yearsOfExp;
 
@@ -181,11 +264,15 @@ class FilterTab extends Component {
     });
 
     const {showing} = this.state;
-    const html_sticker = this.state.stickerHTML;
-    console.log(html_sticker);
 
     const extra_disciplines = [];
     const {i} = 0;
+
+    const stickerRender = [];
+
+    var locationCount = 1;
+    var disc_count = 1;
+
 
     return (
     <div className="form-section">
@@ -207,16 +294,25 @@ class FilterTab extends Component {
                         <ExpandLessRoundedIcon style={{float:"right"}} onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
                     </h2>
                 </div>
-                <div className="form-row">
+                <div className="form-row" id="stickers">
+                    {this.state.stickerHTML}
                 </div>
                 <div className="form-section opening">
-                        <LocationsSearch provinces={this.props.masterlist.locations}
-                                        addLocations={this.addLocations}/>
-                        <div>
-                        <DisciplineSearch disciplines={this.props.masterlist.disciplines}
-                                          masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                          addDisciplines={this.addDisciplines}/>
-                        </div>
+                   <div className="form-row">
+                   <input className="add" type="button" value="+" onClick={()=> this.newLocation()}/>
+                   <div key="locationSearch">
+                   <LocationsSearch provinces={this.props.masterlist.locations}
+                                        addLocations={this.addLocations}/>  
+                   </div>
+                   </div>
+                   {this.state.locations_view}
+                    <div className="form-row">
+                    <input className="add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
+                    <DisciplineSearch disciplines={this.props.masterlist.disciplines}
+                                        masterYearsOfExperience={this.props.masterlist.yearsOfExp}
+                                        addDisciplines={this.addDisciplines}/>
+                    </div>
+                    {this.state.disciplines_view}
                 <div style={{padding: "20px"}}>
                 <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                 </div>
