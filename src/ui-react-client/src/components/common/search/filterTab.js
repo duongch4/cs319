@@ -5,48 +5,55 @@ import {CLIENT_DEV_ENV} from '../../../config/config';
 import {Button} from "@material-ui/core";
 import '../common.css'
 import './SearchStyles.css'
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
 import {performUserSearch} from "../../../redux/actions/searchActions";
-// import FilterStickers from "./FilterStickers";
-import CloseIcon from '@material-ui/icons/Close';
 import DisciplineSearch from "./DisciplineSearch";
 import LocationsSearch from "./LocationsSearch";
+import AddLocation from './AddLocation';
 
 class FilterTab extends Component {
-    state = {
-      searchFilter: {
-        filter: {
-          utilization: {
-            min: 0,
-            max: 100
-          },
-          locations: [],
-          disciplines: {},
-          yearsOfExps: [],
-          startDate: null,
-          endDate: null,
-      },
-      orderKey: "utilization",
-      order: "desc",
-      page: 1,
-    },
-    masterlist: this.props.masterlist,
-    skills:[],
-    users: this.props.users,
-    pending: true,
-    showing: false,
-    locations_view: [],
-    disciplines_view: [],
-    disciplines_temp: [],
-    years_temp: [],
-    locations_temp: [],
-    location_count: 1,
-    discipline_count: 1,
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+                searchFilter: {
+                  filter: {
+                    utilization: {
+                      min: 0,
+                      max: 100
+                    },
+                    locations: [],
+                    disciplines: {},
+                    yearsOfExps: [],
+                    startDate: null,
+                    endDate: null,
+                },
+                orderKey: "utilization",
+                order: "desc",
+                page: 1,
+              },
+              masterlist: this.props.masterlist,
+              skills:[],
+              users: this.props.users,
+              pending: true,
+              showing: false,
+              locations_view: [],
+              disciplines_view: [],
+              disciplines_temp: [],
+              years_temp: [],
+              locations_temp: [],
+              location_count: 1,
+              discipline_count: 1,
+        }
+    }
+
+    handler(location) {
+        this.setState({
+          location_temp: location,
+        })
+        console.log(location);
+      }
   
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
@@ -104,8 +111,10 @@ class FilterTab extends Component {
     addLocations = (locationsNew) => {
         this.setState({
             ...this.state,
-            locations_temp: [...this.state.locations_temp, locationsNew],
+            locations_temp: locationsNew,
         })
+        this.state.locations_temp = locationsNew;
+        console.log(this.state);
     }
 
     saveFilter = () => {
@@ -142,8 +151,8 @@ class FilterTab extends Component {
         });
         this.state.location_count = this.state.location_count + 1;
         var key = "location_" + this.state.location_count;
-       var newLoc = (
-       <div className="form-row" key={key} >
+        var newLoc = (
+        <div className="form-row" key={key} >
         <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(key)}/>
         <LocationsSearch provinces={this.props.masterlist.locations}
                                         addLocations={this.addLocations}/>  
@@ -259,11 +268,7 @@ class FilterTab extends Component {
                 </div>
                 <div className="form-section opening">
                    <div className="form-row">
-                   <input className="add" type="button" value="+" onClick={()=> this.newLocation()}/>
-                   <div key="locationSearch">
-                   <LocationsSearch provinces={this.props.masterlist.locations}
-                                        addLocations={this.addLocations}/>  
-                   </div>
+                   <AddLocation locations={this.props.masterlist.locations}/>
                    </div>
                    {this.state.locations_view}
                     <div className="form-row">

@@ -9,11 +9,13 @@ class LocationsSearch extends Component {
       }
 
     state = {
-      locations:
-        {
+      key: this.props.keyName,
+      locations: [
+          {
             province: null, 
             city: null,
-        },
+          },
+      ], 
       cities: [],
     };
 
@@ -37,7 +39,8 @@ class LocationsSearch extends Component {
                   cities: newCities,
                 }, this.updateProvince(e.target.value, null));
         };
-        this.props.addLocations(this.state.locations);
+        console.log("key: " + this.state.keyName);
+        this.props.addLocations(this.state);
     }
 
     updateProvince = (province, city) => {
@@ -51,7 +54,6 @@ class LocationsSearch extends Component {
 
   render(){
     var provinces = this.props.provinces; 
-
     var provinces_render = [];
     var all_provinces_key = Array.from(Object.keys(provinces));
     provinces_render.push(<option value="DEFAULT" disabled>Province</option>);
@@ -75,7 +77,7 @@ class LocationsSearch extends Component {
         <div className="form-section">
             <div className="form-row">
             <select className="input-box" defaultValue={'DEFAULT'}
-                        id="province" onChange={this.handleChange}>
+                        id="province" onChange={this.handleChange} ref={this.locationRef}>
                     {provinces_render}
                 </select>
                 {(this.state.locations.city == null) && 
