@@ -1,30 +1,35 @@
-import React, {useEffect} from 'react';
+import React, {Component} from 'react';
 import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
-import {CLIENT_DEV_ENV} from '../../../config/config';
-import FilterTab from "./filterTab";
+import FilterTab from "./FilterTab";
+import SearchResults from "./SearchResults";
+import initialState from '../../../redux/reducers/_initialState';
 
-const Search = ({
-  masterlist,
-  loadMasterlists,
-}) => {
-  useEffect(() => {
-      if (CLIENT_DEV_ENV) {
-        loadMasterlists()
-      } else {
-        loadMasterlists()
-        .catch(error => {
-          alert('Loading projects failed' + error);
-        });
-      }
-  }, [masterlist, loadMasterlists]);
-  return (
+class Search extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+    };
+    this.handleResultChange = this.handleResultChange.bind(this);
+  }
+
+  handleResultChange(data) {
+    this.setState({
+      data,
+    });
+  }
+
+  render() {
+    return (
       <div className="activity-container">
-        <h2 className="greenHeader">Search</h2>
-        <FilterTab />
+        <FilterTab onDataFetched={this.handleResultChange} />
+        {(this.state.data.length != 0) &&
+        <SearchResults data={initialState.users} />}
       </div>
-      );
-};
+    )
+  }
+}
 
 const mapStateToProps = state => {
   return {

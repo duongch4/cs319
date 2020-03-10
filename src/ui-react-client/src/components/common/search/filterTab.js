@@ -34,24 +34,18 @@ class FilterTab extends Component {
       order: "desc",
       page: 1,
     },
-      masterlist: this.props.masterlist,
-      cities: [],
-      skills:[],
-      currProvince: "",
-      currentDiscipline: "",
-      users: this.props.users,
-      pending: true,
-      showing: false,
-      showSticker: true,
-      stickerHTML: [],
-      locations_view: [],
-        disciplines_view: [],
-        disciplines_temp: [],
-        years_temp: [],
-        locations_temp: [],
-        location_count: 1,
-        discipline_count: 1,
-
+    masterlist: this.props.masterlist,
+    skills:[],
+    users: this.props.users,
+    pending: true,
+    showing: false,
+    locations_view: [],
+    disciplines_view: [],
+    disciplines_temp: [],
+    years_temp: [],
+    locations_temp: [],
+    location_count: 1,
+    discipline_count: 1,
     };
   
     componentDidMount() {
@@ -89,8 +83,8 @@ class FilterTab extends Component {
     };
 
     onSubmit = () => {
-    //   var results = this.props.performUserSearch(this.state.searchFilter);
-    console.log(this.state.searchFilter.filter);
+        //not connected yet... fake data being passed out
+       this.props.onDataFetched(this.state.searchFilter);
     };
 
     addDisciplines = (disciplinesNew) => {
@@ -115,9 +109,6 @@ class FilterTab extends Component {
     }
 
     saveFilter = () => {
-        console.log(this.state);
-        this.addLocationToFilter();
-
         var discNew = this.state.disciplines_temp;
         
         var obj = {};
@@ -142,28 +133,6 @@ class FilterTab extends Component {
         this.state.searchFilter.filter.locations = this.state.locations_temp;
         this.state.searchFilter.filter.disciplines = obj;
         this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
-    }
-
-    addLocationToFilter = () => {
-        var views = this.state.locations_view;
-        // console.log(views);
-    }
-
-    deleteFilter = (filter) => {
-
-    }
-    
-    addOpening = (disciplines) => {
-    };
-
-    closeFilter = () => {
-
-    }
-    
-    addNewDisciplines = (extra_disciplines) => {
-    }
-    
-    showFilter = () => {
     }
 
     newLocation = () => {
@@ -264,15 +233,6 @@ class FilterTab extends Component {
     });
 
     const {showing} = this.state;
-
-    const extra_disciplines = [];
-    const {i} = 0;
-
-    const stickerRender = [];
-
-    var locationCount = 1;
-    var disc_count = 1;
-
 
     return (
     <div className="form-section">
