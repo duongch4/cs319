@@ -94,13 +94,21 @@ class CreateEditProjectDetails extends Component {
 
     handleChangeStartDate = (date) => {
         this.setState({
-            startDate: date
+            ...this.state,
+            projectSummary: {
+                ...this.state.projectSummary,
+                projectStartDate: date
+            }
         }, () => this.props.addProjDetails(this.state.projectSummary))
     };
 
     handleChangeEndDate = (date) => {
         this.setState({
-            endDate: date
+            ...this.state,
+            projectSummary: {
+                ...this.state.projectSummary,
+                projectEndDate: date
+            }
         }, () => this.props.addProjDetails(this.state.projectSummary))
     };
 
