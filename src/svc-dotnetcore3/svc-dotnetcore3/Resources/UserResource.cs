@@ -2,7 +2,7 @@ namespace Web.API.Resources
 {
     public class UserResource
     {
-        /// <summary>User ID</summary>
+        /// <summary>User Id</summary>
         /// <example>5</example>
         public int Id { get; set; }
 
@@ -18,7 +18,7 @@ namespace Web.API.Resources
         /// <example>shaw</example>
         public string Username { get; set; }
 
-        /// <summary>Location ID</summary>
+        /// <summary>Location Id</summary>
         /// <example>8</example>
         public int LocationId { get; set; }
 
