@@ -4,7 +4,7 @@ namespace Web.API.Resources
 {
     public class UserSummary
     {
-        /// <summary>User ID</summary>
+        /// <summary>User Id</summary>
         /// <example>1</example>
         public int UserID { get; set; }
 

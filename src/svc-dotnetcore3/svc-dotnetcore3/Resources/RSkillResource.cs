@@ -5,7 +5,7 @@ namespace Web.API.Resources
         /// <summary>Discipline Name</summary>
         /// <example>Weapons</example>
         public int ResourceDisciplineName { get; set; }
-        /// <summary>Unique ID of the Skill</summary>
+        /// <summary>Unique Id of the Skill</summary>
         /// <example>11</example>
         public int SkillId {get; set;}
         /// <summary>Skill Name</summary>

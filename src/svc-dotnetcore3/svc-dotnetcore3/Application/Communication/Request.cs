@@ -6,11 +6,11 @@ namespace Web.API.Application.Communication
 {
     public class RequestProjectAssign
     {
-        /// <summary>Position ID</summary>
+        /// <summary>Position Id</summary>
         /// <example>1</example>
         public int PositionID { get; set; }
         
-        /// <summary>User ID</summary>
+        /// <summary>User Id</summary>
         /// <example>1</example>
         public int UserID { get; set; }
     }
@@ -74,6 +74,10 @@ namespace Web.API.Application.Communication
 
     public class RequestSearchUsers
     {
+        /// <summary>Search Word for User's Last Name or First Name</summary>
+        /// <example>Bour</example>
+        public string SearchWord { get; set; }
+
         /// <summary>Filter Object</summary>
         public Filter Filter { get; set; }
         
