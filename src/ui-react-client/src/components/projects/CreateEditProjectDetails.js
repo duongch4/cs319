@@ -25,7 +25,7 @@ class CreateEditProjectDetails extends Component {
         let provinces = Object.keys(this.props.locations);
         let currentProj = this.props.currentProject;
         if (currentProj) {
-            let cities = this.props.locations[currentProj.location.province];
+            let cities = Object.keys(this.props.locations[currentProj.location.province]);
             let projStart = new Date(currentProj.projectStartDate);
             let projEnd = new Date(currentProj.projectEndDate);
             this.setState({
@@ -58,25 +58,30 @@ class CreateEditProjectDetails extends Component {
 
     handleChange = (e) => {
         if (e.target.id === "city") {
+            let locationID = this.props.locations[this.state.projectSummary.location.province][e.target.value];
             this.setState({
                 ...this.state,
                 projectSummary: {
                     ...this.state.projectSummary,
                     location: {
                         ...this.state.projectSummary.location,
-                        city: e.target.value
+                        city: e.target.value,
+                        locationID: locationID
                     }
                 }
             }, () => this.props.addProjDetails(this.state.projectSummary));
         } else if (e.target.id === "province") {
-            let newCities = this.props.locations[e.target.value];
+            let newCities = Object.keys(this.props.locations[e.target.value]);
+            document.getElementById('city').value = null; // wipe the value from the city field
             this.setState({
                 ...this.state,
                 projectSummary: {
                     ...this.state.projectSummary,
                     location: {
                         ...this.state.projectSummary.location,
-                        province: e.target.value
+                        province: e.target.value,
+                        city: null,
+                        locationID: 0
                     },
                 },
                 city_options: newCities
@@ -127,13 +132,13 @@ class CreateEditProjectDetails extends Component {
                 </div>
                 <label htmlFor="location" className="form-row">
                     <p className="form-label">Location</p>
-                    <select className="input-box" defaultValue={'DEFAULT'} id="province"
+                    <select className="input-box" placeholder="Province" defaultValue={projSummary.location.province} id="province"
                             onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>{projSummary.location.province}</option>
+                        <option value="DEFAULT" disabled>Province</option>
                         {province_render}
                     </select>
-                    <select className="input-box" defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>{projSummary.location.city}</option>
+                    <select className="input-box" placeholder="City" defaultValue={projSummary.location.city} id="city" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>City</option>
                         {city_render}
                     </select>
                 </label>

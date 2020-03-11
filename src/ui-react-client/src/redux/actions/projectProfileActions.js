@@ -97,7 +97,7 @@ export const deleteProject = (number, history) => {
             dispatch(deleteProjectData(number))
         } else {
             return axios
-                .delete(`${baseURL + number}`)
+                .delete(`${baseURL + number}`, { headers })
                 .then(response => {
                     dispatch(deleteProjectData());
                     dispatch(deleteProjectSummaryData(number));

@@ -67,7 +67,7 @@ class TeamRequirements extends Component {
     var isUserPage = this.props.isUserPage;
 
     var discipline_render = [];
-    var all_disciplines_keys = Array.from(Object.keys(disciplines));
+    var all_disciplines_keys = Object.keys(disciplines);
     all_disciplines_keys.forEach((discipline, i) => {
         discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
     });
@@ -77,7 +77,7 @@ class TeamRequirements extends Component {
     if (this.state.opening.discipline === null){
       skill_render = <option disabled>Please select a discipline</option>
     } else {
-        skills = disciplines[this.state.opening.discipline];
+        skills = disciplines[this.state.opening.discipline].skills;
       skills.forEach((skill, i) => {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })

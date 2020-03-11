@@ -18,7 +18,8 @@ class EditUserDetails extends Component {
     };
 
     componentDidMount() {
-        let provinces = Array.from(Object.keys(this.props.locations));
+        let provinces = Object.keys(this.props.locations);
+        let cities = Object.keys(this.props.locations[this.props.userProfile.location.province]);
         this.setState({
             ...this.state,
             userSummary: {
@@ -28,23 +29,26 @@ class EditUserDetails extends Component {
                 location: this.props.userProfile.location
             },
             province_options: provinces,
+            city_options: cities
         })
     }
 
     handleChange = (e) => {
         if (e.target.id === "city") {
+            let locationID = this.props.locations[this.state.userSummary.location.province][e.target.value];
             this.setState({
                 ...this.state,
                 userSummary: {
                     ...this.state.userSummary,
                     location: {
                         ...this.state.userSummary.location,
-                        locationID: 0,
+                        locationID: locationID,
                         city: e.target.value
                     }
                     }}, () => this.props.addUserDetails(this.state.userSummary));
         } else if (e.target.id === "province") {
-            let newCities = this.props.locations[e.target.value];
+            let newCities = Object.keys(this.props.locations[e.target.value]);
+            document.getElementById('city').value = null; // wipe the value from the city field
             this.setState(
                 {
                     ...this.state,
@@ -53,6 +57,7 @@ class EditUserDetails extends Component {
                         location: {
                             ...this.state.userSummary.location,
                             province: e.target.value,
+                            city: null,
                             locationID: 0
                         }},
                     city_options: newCities
@@ -90,12 +95,12 @@ class EditUserDetails extends Component {
                 </div>
                 <label htmlFor= "location" className="form-row">
                     <p className="form-label">Location</p>
-                    <select className="input-box" defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>{userProfile.location.province}</option>
+                    <select className="input-box" defaultValue={userProfile.location.province} id="province" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>Province</option>
                         {province_render}
                     </select>
-                    <select className="input-box" defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>{userProfile.location.city}</option>
+                    <select className="input-box" defaultValue={userProfile.location.city} id="city" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>City</option>
                         {city_render}
                     </select>
                 </label>
