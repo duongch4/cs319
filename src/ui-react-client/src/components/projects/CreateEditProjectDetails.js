@@ -72,7 +72,7 @@ class CreateEditProjectDetails extends Component {
             }, () => this.props.addProjDetails(this.state.projectSummary));
         } else if (e.target.id === "province") {
             let newCities = Object.keys(this.props.locations[e.target.value]);
-            document.getElementById('city').value = null; // wipe the value from the city field
+            let locationID = this.props.locations[this.state.projectSummary.location.province][newCities[0]];
             this.setState({
                 ...this.state,
                 projectSummary: {
@@ -80,8 +80,8 @@ class CreateEditProjectDetails extends Component {
                     location: {
                         ...this.state.projectSummary.location,
                         province: e.target.value,
-                        city: null,
-                        locationID: 0
+                        city: newCities[0],
+                        locationID: locationID
                     },
                 },
                 city_options: newCities

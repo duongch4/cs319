@@ -48,7 +48,7 @@ class EditUserDetails extends Component {
                     }}, () => this.props.addUserDetails(this.state.userSummary));
         } else if (e.target.id === "province") {
             let newCities = Object.keys(this.props.locations[e.target.value]);
-            document.getElementById('city').value = null; // wipe the value from the city field
+            let locationID = this.props.locations[this.state.userSummary.location.province][newCities[0]];
             this.setState(
                 {
                     ...this.state,
@@ -57,8 +57,8 @@ class EditUserDetails extends Component {
                         location: {
                             ...this.state.userSummary.location,
                             province: e.target.value,
-                            city: null,
-                            locationID: 0
+                            city: newCities[0],
+                            locationID: locationID
                         }},
                     city_options: newCities
                 }, () => this.props.addUserDetails(this.state.userSummary));
@@ -84,7 +84,6 @@ class EditUserDetails extends Component {
         this.state.province_options.forEach((province, i) => {
             province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
         });
-
         return (
             <div className="form-section">
                 <h2 className="darkGreenHeader">Personal Details</h2>
@@ -95,8 +94,8 @@ class EditUserDetails extends Component {
                 </div>
                 <label htmlFor= "location" className="form-row">
                     <p className="form-label">Location</p>
-                    <select className="input-box" defaultValue={userProfile.location.province} id="province" onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>Province</option>
+                    <select className="input-box" defaultValue={'DEFAULT'} id="province" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>{userProfile.location.province}</option>
                         {province_render}
                     </select>
                     <select className="input-box" defaultValue={userProfile.location.city} id="city" onChange={this.handleChange}>
