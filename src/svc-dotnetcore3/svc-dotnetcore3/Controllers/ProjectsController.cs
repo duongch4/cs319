@@ -340,6 +340,11 @@ namespace Web.API.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
+            if (projectProfile.ProjectSummary.ProjectNumber == null || projectProfile.ProjectSummary.ProjectNumber == "")
+            {
+                var error = new BadRequestException("The Project Number cannot be null or empty string!");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
             try
             {
                 var location = await locationsRepository.GetALocation(projectProfile.ProjectSummary.Location.City);
