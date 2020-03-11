@@ -10,7 +10,7 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<User>> GetAllUsers();
-        Task<IEnumerable<UserResource>> GetAllUserResources(string orderKey, string order, int page);
+        Task<IEnumerable<UserResource>> GetAllUserResources(string searchWord, string orderKey, string order, int page);
         Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req);
 
         Task<User> GetAUser(int userId);
