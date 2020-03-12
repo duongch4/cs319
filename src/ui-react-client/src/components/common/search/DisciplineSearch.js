@@ -6,10 +6,11 @@ import { ReactDOM } from 'react-dom';
 
 class DisciplineSearch extends Component {
     constructor(props){
-        super();
+        super(props);
       }
 
     state = {
+      key: this.props.keyName,
       disciplines: 
         {
         name: null,
@@ -20,8 +21,6 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
-        console.log(e.target.value);
-
         if (e.target.id === "skills") {
         var skills_arr = [e.target.value];
           this.setState({
@@ -47,7 +46,7 @@ class DisciplineSearch extends Component {
               }
           },this.updateDisciplines(e.target.value, []));
       }
-    this.props.addDisciplines(this.state.disciplines);
+    this.props.addDisciplines(this.state);
     };
 
     updateSkill = (val) => {

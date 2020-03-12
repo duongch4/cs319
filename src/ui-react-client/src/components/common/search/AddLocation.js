@@ -42,9 +42,6 @@ class AddLocation extends Component {
                 status: Object.assign({}, this.state.status, {[key]: location}),
             });
             this.state.status = Object.assign({}, this.state.status, {[key]: location});
-            console.log("in addlocation:");
-            console.log(this.state.status);
-            console.log((Object.values(this.state.status)));
             this.props.updateLocations(Object.values(this.state.status));
         }
 

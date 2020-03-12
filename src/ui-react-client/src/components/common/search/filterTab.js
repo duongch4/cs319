@@ -12,6 +12,7 @@ import {performUserSearch} from "../../../redux/actions/searchActions";
 import DisciplineSearch from "./DisciplineSearch";
 import LocationsSearch from "./LocationsSearch";
 import AddLocation from './AddLocation';
+import AddDisciplines from './AddDisciplines';
 
 class FilterTab extends Component {
     constructor(props) {
@@ -47,14 +48,7 @@ class FilterTab extends Component {
               discipline_count: 1,
         }
     }
-
-    handler(location) {
-        this.setState({
-          location_temp: location,
-        })
-        console.log(location);
-      }
-  
+    
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
             this.props.loadMasterlists()
@@ -94,30 +88,7 @@ class FilterTab extends Component {
        this.props.onDataFetched(this.state.searchFilter);
     };
 
-    addDisciplines = (disciplinesNew) => {
-        const name = disciplinesNew.name;
-        const newYear = this.state.searchFilter.filter.yearsOfExps;
-        const skills = disciplinesNew.skills;
-
-        this.setState({
-            ...this.state,
-            disciplines_temp: [...this.state.disciplines_temp, {
-                    [name]: skills,
-            }],
-            years_temp: newYear,
-        })
-    }
-
     saveFilter = () => {
-        var discNew = this.state.disciplines_temp;
-        
-        var obj = {};
-        discNew.forEach((disc, i) => {
-            var discKey =  Object.keys(disc);
-            var discVal = disc[discKey];
-            obj[discKey] = discVal;
-        });
- 
         this.setState({
             ...this.state,
             searchFilter: {
@@ -125,92 +96,29 @@ class FilterTab extends Component {
                 filter: {
                     ...this.state.searchFilter.filter,
                     locations: this.state.locations_temp,
-                    disciplines: obj,
-                    yearsOfExp: this.state.years_temp,
                     },
                 },
         });
         this.state.searchFilter.filter.locations = this.state.locations_temp;
-        this.state.searchFilter.filter.disciplines = obj;
-        this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
     }
 
     updateLocations = (newLocation) => {
         this.setState({
             ...this.state,
-            searchFilter: {
-                ...this.state.searchFilter,
-                filter: {
-                    ...this.state.searchFilter.filter,
-                    locations: newLocation.slice(),
-                    },
-                },
+            locations_temp: newLocation.slice(),
         });
-        this.state.searchFilter.filter.locations = newLocation.slice();
+        this.state.locations_temp = newLocation.slice();
     }
 
-    deleteDiscipline = (key) => {
-        console.log(key);
-        var extra_disciplines = this.state.disciplines_view;
-        extra_disciplines.forEach((discipline, index) => {
-            if (discipline.key == key) {
-                this.state.disciplines_view.splice(index, 1);
-                this.setState({
-                    ...this.state,
-                    disciplines_view: this.state.disciplines_view.splice(index, 1),
-                });
-            }
-        });  
-    }
-
-    newDisciplines = () => {
+    updateDisciplines = (newDiscipline) => {
         this.setState({
             ...this.state,
-            discipline_count: this.state.discipline_count + 1,
+            disciplines_temp: newDiscipline.slice(),
         });
-        this.state.discipline_count = this.state.discipline_count + 1;
-        var key = "disciplines_" + this.state.discipline_count;
-        console.log(key);
-        var newDisc = (
-            <div className="form-row" key={key}>
-            <input className="add" type="button" value="-" onClick={()=> this.deleteDiscipline(key)}/>
-             <DisciplineSearch disciplines={this.props.masterlist.disciplines}
-                                        masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                        addDisciplines={this.addDisciplines}/>
-            </div>
-            );
-             this.setState( {
-                 ...this.state,
-                 disciplines_view: [...this.state.disciplines_view, newDisc]
-             })
-        }
+        this.state.disciplines_temp = newDiscipline.slice();
+    }
 
   render(){
-    var disciplines = this.props.masterlist.disciplines;
-
-    var discipline_render = [];
-    var all_disciplines_keys = Array.from(Object.keys(disciplines));
-    all_disciplines_keys.forEach((discipline, i) => {
-        discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
-    });
-
-    var skills = [];
-    var skill_render = [];
-    if (Object.keys(this.state.searchFilter.filter.disciplines).length == 0){
-      skill_render = <option disabled>Please select a discipline</option>
-    } else {
-      skills = this.state.skills;
-      skills.forEach((skill, i) => {
-          skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
-      })
-    }
-    
-    var yearsOfExperience = this.props.masterlist.yearsOfExp;
-
-    var range_render = [];
-    yearsOfExperience.forEach((yearsOfExperience, i) => {
-        range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
-    });
 
     const {showing} = this.state;
 
@@ -244,10 +152,9 @@ class FilterTab extends Component {
                    </div>
                    {this.state.locations_view}
                     <div className="form-row">
-                    <input className="add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
-                    <DisciplineSearch disciplines={this.props.masterlist.disciplines}
-                                        masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                        addDisciplines={this.addDisciplines}/>
+                    <AddDisciplines disciplines={this.props.masterlist.disciplines}
+                                        yearsOfExp={this.props.masterlist.yearsOfExp}
+                                        updateDisciplines={this.updateDisciplines}/>
                     </div>
                     {this.state.disciplines_view}
                 <div style={{padding: "20px"}}>
