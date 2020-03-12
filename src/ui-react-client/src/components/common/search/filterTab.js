@@ -108,15 +108,6 @@ class FilterTab extends Component {
         })
     }
 
-    addLocations = (locationsNew) => {
-        this.setState({
-            ...this.state,
-            locations_temp: locationsNew,
-        })
-        this.state.locations_temp = locationsNew;
-        console.log(this.state);
-    }
-
     saveFilter = () => {
         var discNew = this.state.disciplines_temp;
         
@@ -144,38 +135,18 @@ class FilterTab extends Component {
         this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
     }
 
-    newLocation = () => {
+    updateLocations = (newLocation) => {
         this.setState({
             ...this.state,
-            location_count: this.state.location_count + 1,
+            searchFilter: {
+                ...this.state.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    locations: newLocation.slice(),
+                    },
+                },
         });
-        this.state.location_count = this.state.location_count + 1;
-        var key = "location_" + this.state.location_count;
-        var newLoc = (
-        <div className="form-row" key={key} >
-        <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(key)}/>
-        <LocationsSearch provinces={this.props.masterlist.locations}
-                                        addLocations={this.addLocations}/>  
-       </div>
-       );
-        this.setState( {
-            ...this.state,
-            locations_view: [...this.state.locations_view, newLoc]
-        })
-    }
-
-    deleteLocation = (key) => {
-        var extraLocations = this.state.locations_view;
-        var i = null;
-        extraLocations.forEach((location, index) => {
-            if (location.key == key) {
-                this.state.locations_view.splice(index, 1);
-                this.setState({
-                    ...this.state,
-                    locations_view: this.state.locations_view.splice(i, 1),
-                });
-            }
-        });  
+        this.state.searchFilter.filter.locations = newLocation.slice();
     }
 
     deleteDiscipline = (key) => {
@@ -268,7 +239,8 @@ class FilterTab extends Component {
                 </div>
                 <div className="form-section opening">
                    <div className="form-row">
-                   <AddLocation locations={this.props.masterlist.locations}/>
+                   <AddLocation locations={this.props.masterlist.locations}
+                                updateLocations={this.updateLocations}/>
                    </div>
                    {this.state.locations_view}
                     <div className="form-row">

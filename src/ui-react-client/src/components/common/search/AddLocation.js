@@ -8,7 +8,7 @@ class AddLocation extends Component {
     constructor(props){
         super(props);
         this.state = {
-            status: [{"locationSearch": {province: null, city: null}}],
+            status: {"locationSearch": {province: null, city: null}},
             count: 1,
             view: [],
             curr: [],
@@ -17,7 +17,6 @@ class AddLocation extends Component {
 
       newLocations = () => {
         var keyId = ("location_" + (this.state.count + 1));
-        console.log(keyId);
         var newLoc = (
             <div className="form-row" key={keyId} >
             <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(keyId)}/>
@@ -27,63 +26,56 @@ class AddLocation extends Component {
            </div>
            );
            this.setState( {
-            status: this.state.status.concat([{[keyId]: {province: null, city: null}}]),
+            status: {...this.state.status, [keyId]:{province: null, city: null} },
             count: this.state.count + 1,
             view: [...this.state.view, newLoc],
         })
+        this.state.status = {...this.state.status, [keyId]:{province: null, city: null}};
         this.state.count = this.state.count + 1;
+        this.state.view = [...this.state.view, newLoc];
       }
       
       addLocations = (state) => {
-            this.setState({
-                curr: this.state.curr.concat([{[state.key]: state.locations}]),
+            var key = state.key;
+            var location = state.locations;
+             this.setState({
+                status: Object.assign({}, this.state.status, {[key]: location}),
             });
-            this.state.curr = [state.key = state.locations];
+            this.state.status = Object.assign({}, this.state.status, {[key]: location});
+            console.log("in addlocation:");
+            console.log(this.state.status);
+            console.log((Object.values(this.state.status)));
+            this.props.updateLocations(Object.values(this.state.status));
         }
 
         deleteLocation = (keyId) => {
-            var status_arr = this.state.status;
-            var view_arr = this.state.view;
-            var curr_arr = this.state.curr;
-            curr_arr.forEach((curr, index) => {
-                if (Object.keys(curr) == keyId) {
-                    this.state.curr.splice(index,1);
-                    this.setState({
-                        ...this.state,
-                        curr: this.state.curr.splice(index,1),
-                    });
-                }
-            });
-            status_arr.forEach((component, index) => {
-                if (Object.keys(component) == keyId) {
-                    this.state.status.splice(index, 1);
-                    this.setState({
-                        ...this.state,
-                        status: this.state.status.splice(index, 1),
-                    });
-                }
-            });
+            delete this.state.status[keyId];
+            var view_arr = this.state.view.slice();
+            var mockState = this.state.view.slice();
             view_arr.forEach((location, index) => {
-                if (location.key == keyId) {
-                    this.state.view.splice(index, 1);
+                if (location.key === keyId) {
+                    mockState.splice(index, 1);
                     this.setState({
                         ...this.state,
-                        view: this.state.view.splice(index, 1),
+                        view: mockState,
                     });
+                    this.state.view = mockState;
                 }
             });
             }
 
+    onSubmit = () => {
+    }
+
       render(){
-          console.log(this.state);
           return(
-                <div>
-                    <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
-                <div key="locationSearch">
+              <div>
+                <div className="form-row" key={"locationSearch"} >
+                <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
                     <LocationsSearch provinces={this.props.locations}
                                  addLocations={this.addLocations}
-                                 keyName={"locationSearch"}/>  
-                </div>
+                                 keyName={"locationSearch"}/>
+                                 </div>
                 {this.state.view}
               </div>
             );
