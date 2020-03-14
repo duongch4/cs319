@@ -26,6 +26,6 @@ namespace Web.API.Application.Repository
         //DELETE
         Task<Location> DeleteALocation(int locationId);
 
-        Task<Location> GetLocationIdByCityProvince(LocationResource location);
+        // Task<Location> GetLocationIdByCityProvince(LocationResource location);
     }
 }
