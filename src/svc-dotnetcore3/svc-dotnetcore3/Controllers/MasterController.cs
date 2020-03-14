@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using Web.API.Application.Communication;
@@ -21,28 +20,18 @@ namespace Web.API.Controllers
     [ApiExplorerSettings(GroupName = "v1")]
     public class MasterController : ControllerBase
     {
-        private readonly IProjectsRepository projectsRepository;
-        private readonly IUsersRepository usersRepository;
-        private readonly IPositionsRepository positionsRepository;
         private readonly ILocationsRepository locationsRepository;
         private readonly IDisciplinesRepository disciplinesRepository;
-        private readonly ISkillsRepository skillsRepository;
         private readonly IResourceDisciplineRepository resourceDisciplineRepository;
         private readonly IMapper mapper;
 
         public MasterController(
-            IProjectsRepository projectsRepository, IUsersRepository usersRepository,
-            IPositionsRepository positionsRepository, ILocationsRepository locationsRepository,
-            IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository,
+            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository,
             IResourceDisciplineRepository resourceDisciplineRepository, IMapper mapper
         )
         {
-            this.projectsRepository = projectsRepository;
-            this.usersRepository = usersRepository;
-            this.positionsRepository = positionsRepository;
             this.locationsRepository = locationsRepository;
             this.disciplinesRepository = disciplinesRepository;
-            this.skillsRepository = skillsRepository;
             this.resourceDisciplineRepository = resourceDisciplineRepository;
             this.mapper = mapper;
         }
@@ -71,30 +60,32 @@ namespace Web.API.Controllers
         {
             try
             {
-                var disciplines = await disciplinesRepository.GetAllDisciplines();
-                if (disciplines == null || !disciplines.Any())
+                var disciplineResources = await disciplinesRepository.GetAllDisciplinesWithSkills();
+                if (disciplineResources == null || !disciplineResources.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No disciplines data found"));
+                    var error = new NotFoundException("No disciplines data found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
+                var disciplines = MapDisciplines(disciplineResources);
 
-                Dictionary<string, IEnumerable<string>> disciplinesResource = new Dictionary<string, IEnumerable<string>>();
-                foreach (var discipline in disciplines)
+                var locationResources = await locationsRepository.GetAllLocationsGroupByProvince();
+                if (locationResources == null || !locationResources.Any())
                 {
-                    var skills = await skillsRepository.GetSkillsWithDiscipline(discipline.Name);
-                    var skillsResource = mapper.Map<IEnumerable<Skill>, IEnumerable<SkillResource>>(skills);
-                    disciplinesResource.Add(discipline.Name, skillsResource.Select(skillsResource => skillsResource.Name));
+                    var error = new NotFoundException("No locations data found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
+                var locations = MapLocations(locationResources);
 
-                var locations = locationsRepository.GetStaticLocations();
                 var yearsOfExp = await resourceDisciplineRepository.GetAllYearsOfExp();
                 if (yearsOfExp == null || !yearsOfExp.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No yearsOfExp data found"));
+                    var error = new NotFoundException("No yearsOfExp data found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
 
                 var resource = new MasterResource
                 {
-                    Disciplines = disciplinesResource,
+                    Disciplines = disciplines,
                     Locations = locations,
                     YearsOfExp = yearsOfExp
                 };
@@ -108,14 +99,40 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
+        }
+
+        private Dictionary<string, MasterDiscipline> MapDisciplines(IEnumerable<DisciplineResource> disciplineResources)
+        {
+            char[] sep = { ',' };
+            return disciplineResources.ToDictionary(
+                disciplineResource => disciplineResource.Name,
+                disciplineResource => new MasterDiscipline() { DisciplineID = disciplineResource.Id, Skills = disciplineResource.Skills.Split(sep) }
+            );
+        }
+
+        private Dictionary<string, Dictionary<string, int>> MapLocations(IEnumerable<MasterLocation> locationResources)
+        {
+            char[] sep = { ',' };
+            char[] innerSep = { '-' };
+            return locationResources.ToDictionary<MasterLocation, string, Dictionary<string, int>>(
+                locationResource => locationResource.Province,
+                locationResource =>
+                {
+                    var pairs = locationResource.CitiesIds.Split(sep).ToDictionary(
+                        pair => pair.Split(innerSep)[0],
+                        pair => Int32.Parse(pair.Split(innerSep)[1])
+                    );
+                    return pairs;
+                }
+            );
         }
     }
 }

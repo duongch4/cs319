@@ -9,6 +9,7 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<Location>> GetAllLocations();
+        Task<IEnumerable<MasterLocation>> GetAllLocationsGroupByProvince();
         // Task<Location> GetALocationWithCity(string city);
         Task<Location> GetALocation(int locationId);
         Task<Location> GetALocation(string city);
