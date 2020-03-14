@@ -1,5 +1,6 @@
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -39,6 +40,24 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryAsync<Discipline>(sql);
+        }
+
+        public async Task<IEnumerable<DisciplineResource>> GetAllDisciplinesWithSkills()
+        {
+            var sql = @"
+                SELECT
+                    d.Id, d.Name, STRING_AGG (s.Name, ',') as Skills
+                FROM
+                    Disciplines d, Skills s
+                WHERE
+                    d.Id = s.DisciplineId
+                GROUP BY
+                    d.Id, d.Name
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<DisciplineResource>(sql);
         }
         public async Task<IEnumerable<Discipline>> GetDisciplinesByName(string disciplineName)
         {

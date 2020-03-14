@@ -28,15 +28,31 @@ namespace Web.API.Infrastructure.Data
         public async Task<IEnumerable<Location>> GetAllLocations()
         {
             var sql = @"
-                select
+                SELECT
                     Id, Province, City
-                from
+                FROM
                     Locations
             ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryAsync<Location>(sql);
+        }
+
+        public async Task<IEnumerable<MasterLocation>> GetAllLocationsGroupByProvince()
+        {
+            var sql = @"
+                SELECT
+                    Province, STRING_AGG(CONVERT(nvarchar(max),CONCAT(City, '-', Id)), ',') as CitiesIds
+                FROM
+                    Locations
+                GROUP BY
+                    Province
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<MasterLocation>(sql);
         }
 
         public async Task<Location> GetALocation(int locationId) {

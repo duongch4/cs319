@@ -29,7 +29,7 @@ namespace Web.API.Resources
         /// <example>Designing the new Pawnee Commons</example>
         public string Title { get; set; }
 
-        /// <summary>Location ID</summary>
+        /// <summary>Location Id</summary>
         /// <example>5</example>
         public int LocationId { get; set; }
 
