@@ -7,10 +7,10 @@ import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}api/users/search`;
 
-export const getUsers = userProfiles => {
+export const getUsers = users => {
     return {
       type: types.PERFORM_USER_SEARCH,
-      userProfiles: userProfiles
+      users: users
     };
   };
 
@@ -20,9 +20,9 @@ return dispatch => {
         dispatch(getUsers(filterParams));
     } else {
     return axios
-        .get(`${baseURL}`, {headers})
+        .post(`${baseURL}`,filterParams, {headers})
         .then(response => {
-            dispatch(getUsers(filterParams));
+            dispatch(getUsers(response.data.payload));
         })
         .catch(error => {
             throw error;

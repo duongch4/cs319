@@ -1,7 +1,6 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ReactDOM } from 'react-dom';
 import YearsSearch from './YearsSearch';
 
 class AddYears extends Component {

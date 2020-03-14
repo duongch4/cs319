@@ -4,81 +4,27 @@ import CloseIcon from '@material-ui/icons/Close';
 
 class FilterStickers extends Component {
     constructor(props){
-        super();
+        super(props);
       }
 
     state = {
        showSticker: true,
-       filterStickers: [],
-       filter: null,
+       key: this.props.keyId,
+       type: this.props.type,
+       label: this.props.filterName,
     }
 
     closeTab = () => {
-        this.setState({
-            showSticker: false,
-            filterStickers: [],
-            render: true,
-        });
-        this.state.showSticker = false;
-        this.state.render = true;
-    }
-
-    getLocations = (locations) => {
-        var loc_arr = [];
-        if (locations.length == 0) {
-            return loc_arr;
-        } else {
-            locations.forEach((location) => {
-                loc_arr.push(location);
-            } );
-        }
-        return loc_arr;
-    }
-
-    getDisciplines = (disciplines) => {
-        var disciplines = {};
-        if (Object.keys(disciplines).length == 0) {
-            return disciplines;
-        } else {
-            disciplines.forEach((discipline) => {
-                disciplines.push(discipline);
-            } );
-        }
-        return disciplines;
+        this.props.deleteFilter(this.state.key, this.state.type);
     }
 
     render(){
-        const filter = this.props.filter;
-        var locations = filter.filter.locations; // arr of objects 
-        var disciplines = filter.filter.disciplines; // object {name: skills, name: skills}
-        var yearsOfExp = filter.filter.yearsOfExps; //arr
-       
-        var sticker_arr = [];
-        if (locations.length != 0) {
-            sticker_arr.push(locations);
-        }
-        if (Object.keys(disciplines).length != 0) {
-            sticker_arr.push(disciplines);
-        }
-        if (yearsOfExp.length != 0) {
-            sticker_arr.push(yearsOfExp);
-        }
-        
-
-        // if (filterStickers.length != 0) {
-        //     var filter_render = [];
-        //     filter_render.push(
-        //     <div className="filter-sticker" key={filterStickers.length} style={{color:"white", display: (showSticker ? 'block' : 'none')}}>
-        //     {filterStickers[1]}, {filterStickers[0]}
-        //     <CloseIcon onClick={()=> this.closeTab(location)}/>
-        //     </div>
-        //     )
-        // }
-        console.log(this.state.showSticker);
+        const showSticker = this.state.showSticker;
             return (
-                <div>
-                hi
-                </div>
+                <div className="filter-sticker" style={{color:"white", display: (showSticker ? 'block' : 'none')}}>
+                 {this.state.label}
+                    <CloseIcon onClick={()=> this.closeTab()}/>
+                   </div>
             );
     }
 }

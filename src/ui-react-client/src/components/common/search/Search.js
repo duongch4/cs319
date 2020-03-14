@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
-import FilterTab from "./FilterTab";
+import FilterTab from "./filterTab";
 import SearchResults from "./SearchResults";
 import initialState from '../../../redux/reducers/_initialState';
 
