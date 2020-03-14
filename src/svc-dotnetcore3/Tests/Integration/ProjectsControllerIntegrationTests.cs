@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using Newtonsoft.Json;
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+// using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Tests.Integration
 {
