@@ -17,7 +17,7 @@ export const createProject = project => {
 export const loadProjectsData = projectSummaries => {
   return {
     type: types.LOAD_PROJECTS_ALL,
-    projectSummaries: projectSummaries,
+    projects: projectSummaries,
   };
 };
 

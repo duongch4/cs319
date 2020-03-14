@@ -14,6 +14,7 @@ class AddProject extends Component {
             projectSummary: {
                 title: "",
                 location: {
+                    locationID: 0,
                     city: "",
                     province: ""
                 },
@@ -22,7 +23,7 @@ class AddProject extends Component {
                 projectNumber: ""
             },
             projectManager: {
-                userID: null,
+                userID: 0,
                 firstName: "",
                 lastName: ""
             },
@@ -35,7 +36,7 @@ class AddProject extends Component {
 
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadMasterlists()
+            this.props.loadMasterlists();
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
@@ -55,7 +56,7 @@ class AddProject extends Component {
     }
 
     addOpening = (opening) => {
-        const openings = [...this.state.projectProfile.openings, opening]
+        const openings = [...this.state.projectProfile.openings, opening];
         this.setState({
             projectProfile: {
                 ...this.state.projectProfile,

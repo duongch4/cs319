@@ -1,11 +1,15 @@
 import React,{ Component } from 'react';
 import './ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
+import Select from 'react-select';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 
 class TeamRequirements extends Component {
     state = {
       opening: {
+          positionID: 0,
           discipline: null,
           skills: [],
           yearsOfExp: null,
@@ -14,22 +18,15 @@ class TeamRequirements extends Component {
     };
 
     handleChange = (e) => {
-      if (e.target.id === "commitment") {
+      if (e.target.id === "commitmentMonthlyHours") {
           this.setState({
               opening: {
                   ...this.state.opening,
-                  commitmentMonthlyHours: e.target.value
+                  commitmentMonthlyHours: parseInt(e.target.value)
               }
           });
-      } else if (e.target.id === "skills") {
-        var skills_arr = [...this.state.opening.skills, e.target.value];
-          this.setState({
-            opening: {
-              ...this.state.opening,
-              skills: skills_arr
-            }
-         });
-      } else if (e.target.id === "yearsOfExp") {
+      }
+       else if (e.target.id === "yearsOfExp") {
           this.setState({
               opening: {
                 ...this.state.opening,
@@ -46,11 +43,29 @@ class TeamRequirements extends Component {
       }
     };
 
-    handleSubmit = (e) =>{
+    handleChangeSkills = (e) => {
+        if (e){
+          var skills_array = e.map(function (e) { return e.label; });
+            this.setState({
+              opening: {
+                ...this.state.opening,
+                skills: skills_array
+              }
+           })
+        }
+       };
+
+    handleSubmit = (e) => {
+      e.target.elements.discipline.value = "DEFAULT";
+      e.target.elements.yearsOfExp.value = "DEFAULT";
+      if (e.target.elements.commitmentMonthlyHours) {
+        e.target.elements.commitmentMonthlyHours.value = null;
+      }
       e.preventDefault();
       this.props.addOpening(this.state.opening);
       this.setState({
           opening: {
+              positionID: 0,
               discipline: null,
               skills: [],
               yearsOfExp: null,
@@ -71,13 +86,17 @@ class TeamRequirements extends Component {
     });
 
     var skills = [];
-    var skill_render = [];
-    if (this.state.opening.discipline === null){
-      skill_render = <option disabled>Please select a discipline</option>
-    } else {
-      skills = disciplines[this.state.opening.discipline];
+    if (this.state.opening.discipline){
+      skills = disciplines[this.state.opening.discipline].skills;
+      var skill_format = [];
+      var skill_keys = [];
       skills.forEach((skill, i) => {
-          skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
+        var single_skill = {};
+        single_skill['label'] = skill;
+        single_skill['value'] = skill;
+        skill_format.push(single_skill);
+        skill_keys.push('skills_' + i);
+
       })
     }
 
@@ -85,6 +104,7 @@ class TeamRequirements extends Component {
     yearsOfExperience.forEach((yearsOfExperience, i) => {
         range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
     });
+
 
     var header = [];
     if (isUserPage) {
@@ -103,14 +123,11 @@ class TeamRequirements extends Component {
                       <div className="form-row">
                           <select className="input-box" defaultValue={'DEFAULT'}
                                   id="discipline" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Discipline</option>
+                              <option value={'DEFAULT'} disabled>Discipline</option>
                               {discipline_render}
                           </select>
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="skills" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Skills</option>
-                              {skill_render}
-                          </select>
+                          <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
+                            placeholder='Skills' />
                       </div>
                       <label className="form-row" htmlFor= "yearsOfExp">
                           <p className="form-label">Years of Experience</p>
@@ -125,7 +142,7 @@ class TeamRequirements extends Component {
                               <label htmlFor= "commitmentMonthlyHours">
                                   <p className="form-label">Expected Hourly Commitment Per Month</p>
                               </label>
-                              <input className="input-box" type = "text"
+                              <input className="input-box" type="text"
                                      id="commitmentMonthlyHours" onChange={this.handleChange}/>
                           </div>
                       )}

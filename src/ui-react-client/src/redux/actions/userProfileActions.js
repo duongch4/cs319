@@ -46,7 +46,7 @@ export const updateSpecificUser = (user) => {
       dispatch(updateUserProfileData(user));
     } else {
       return axios
-          .put(baseURL, user, { headers })
+          .put(baseURL + user.userSummary.userID, user, { headers })
           .then(response => {
             dispatch(updateUserProfileData(user));
           })

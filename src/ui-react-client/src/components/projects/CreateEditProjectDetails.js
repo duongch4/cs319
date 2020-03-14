@@ -8,7 +8,10 @@ class CreateEditProjectDetails extends Component {
     state = {
         projectSummary: {
             title: "",
-            location: {city: "", province: ""},
+            location: {
+                locationID: 0,
+                city: "",
+                province: ""},
             projectStartDate: new Date(),
             projectEndDate: new Date(),
             projectNumber: ""
@@ -19,13 +22,10 @@ class CreateEditProjectDetails extends Component {
     };
 
     componentDidMount() {
-        this.setState({
-            ...this.state,
-            province_options: Object.keys(this.props.locations),
-            pending: false
-        });
+        let provinces = Object.keys(this.props.locations);
         let currentProj = this.props.currentProject;
         if (currentProj) {
+            let cities = this.props.locations[currentProj.location.province];
             let projStart = new Date(currentProj.projectStartDate);
             let projEnd = new Date(currentProj.projectEndDate);
             this.setState({
@@ -35,14 +35,24 @@ class CreateEditProjectDetails extends Component {
                     title: currentProj.title,
                     location: {
                         ...this.state.projectSummary.location,
+                        locationID: currentProj.location.locationID,
                         city: currentProj.location.city,
                         province: currentProj.location.province
                     },
                     projectStartDate: projStart,
                     projectEndDate: projEnd,
                     projectNumber: currentProj.projectNumber
-                }
+                },
+                province_options: provinces,
+                city_options: cities,
+                pending: false
             })
+        } else {
+            this.setState({
+                ...this.state,
+                province_options: provinces,
+                pending: false
+            });
         }
     }
 
@@ -52,7 +62,10 @@ class CreateEditProjectDetails extends Component {
                 ...this.state,
                 projectSummary: {
                     ...this.state.projectSummary,
-                    location: {...this.state.location, city: e.target.value}
+                    location: {
+                        ...this.state.projectSummary.location,
+                        city: e.target.value
+                    }
                 }
             }, () => this.props.addProjDetails(this.state.projectSummary));
         } else if (e.target.id === "province") {
@@ -61,9 +74,12 @@ class CreateEditProjectDetails extends Component {
                 ...this.state,
                 projectSummary: {
                     ...this.state.projectSummary,
-                    location: {...this.state.location, province: e.target.value},
+                    location: {
+                        ...this.state.projectSummary.location,
+                        province: e.target.value
+                    },
                 },
-                city_options: newCities
+                city_options: Object.keys(newCities)
             }, () => this.props.addProjDetails(this.state.projectSummary));
         } else {
             this.setState({
@@ -78,14 +94,22 @@ class CreateEditProjectDetails extends Component {
 
     handleChangeStartDate = (date) => {
         this.setState({
-            startDate: date
-        }, () => this.props.addProjDetails(this.state))
+            ...this.state,
+            projectSummary: {
+                ...this.state.projectSummary,
+                projectStartDate: date
+            }
+        }, () => this.props.addProjDetails(this.state.projectSummary))
     };
 
     handleChangeEndDate = (date) => {
         this.setState({
-            endDate: date
-        }, () => this.props.addProjDetails(this.state))
+            ...this.state,
+            projectSummary: {
+                ...this.state.projectSummary,
+                projectEndDate: date
+            }
+        }, () => this.props.addProjDetails(this.state.projectSummary))
     };
 
     render() {
