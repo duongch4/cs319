@@ -78,8 +78,7 @@ namespace Web.API.Controllers
                 var users = await usersRepository.GetAllUserResources(searchWord, orderKey, order, page);
                 if (users == null || !users.Any())
                 {
-                    var error = new NotFoundException("No users data found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
                 }
                 var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new {
@@ -98,12 +97,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
         }
@@ -136,8 +135,7 @@ namespace Web.API.Controllers
                 var user = await usersRepository.GetAUserResource(userId);
                 if (user == null)
                 {
-                    var error = new NotFoundException($"No users with userId '{userId}' found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No users with userId '{userId}' found"));
                 }
                 var userSummary = mapper.Map<UserResource, UserSummary>(user);
 
@@ -176,12 +174,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
         }
@@ -273,14 +271,14 @@ namespace Web.API.Controllers
         {
             if (userProfile == null)
             {
-                var error = new BadRequestException("The given user is null / Request Body cannot be read");
-                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
             }
 
             try
             {
                 UserSummary summary = userProfile.UserSummary;
                 Location location = await locationsRepository.GetALocation(userProfile.UserSummary.Location.City);
+                // User updateUser = createUserFromSummary(summary, location);
                 var changedUser = await usersRepository.UpdateAUser(summary, location);
                 var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, userId);
                 var avails = await processOutOfOfficeChanges(userProfile.Availability, userId);
@@ -294,12 +292,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
         }
@@ -502,8 +500,7 @@ namespace Web.API.Controllers
         ///                 ],
         ///                 "Martial Arts": [
         ///                     "Kali"
-        ///                 ],
-        ///                 "Weapons": []
+        ///                 ]
         ///             },
         ///             "yearsOfExps": [
         ///                 "1-3",
@@ -513,7 +510,7 @@ namespace Web.API.Controllers
         ///             "startDate": "2021-10-31T00:00:00",
         ///             "endDate": "2022-02-12T00:00:00"
         ///         },
-        ///         "searchWord": "e",
+        ///         "searchWord": "Bour",
         ///         "orderKey": "utilization",
         ///         "order": "asc",
         ///         "page": 1
@@ -552,8 +549,7 @@ namespace Web.API.Controllers
                 var users = await usersRepository.GetAllUserResourcesOnFilter(req);
                 if (users == null || !users.Any())
                 {
-                    var error = new NotFoundException("No users data found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new {
@@ -569,14 +565,36 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
         }
     }
+
+    // [Authorize]
+    // public class OldUsersController : ControllerBase
+    // {
+    //     private readonly IUsersRepository usersRepository;
+    //     private readonly IMapper mapper;
+
+    //     public OldUsersController(IUsersRepository usersRepository, IMapper mapper)
+    //     {
+    //         this.usersRepository = usersRepository;
+    //         this.mapper = mapper;
+    //     }
+
+    //     [HttpGet]
+    //     [Route("/users")]
+    //     public async Task<ActionResult<IEnumerable<User>>> GetAllUsersOld()
+    //     {
+    //         var response = await usersRepository.GetAllUsers();
+    //         var viewModel = mapper.Map<IEnumerable<User>>(response);
+    //         return Ok(viewModel);
+    //     }
+    // }
 }
