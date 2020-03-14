@@ -27,18 +27,20 @@ namespace Tests.Integration
         private Dictionary<string, string> _settings;
         public ProjectsControllerIntegrationTests(WebApplicationFactory<Startup> factory)
         {
-            _settings = new Dictionary<string, string>();
+            // _settings = new Dictionary<string, string>();
             var projectDir = Directory.GetCurrentDirectory();
+            // var configPath = Path.Combine(projectDir, "appsettings.json");
             var configPath = Path.Combine(projectDir, "appsettings.IntegrationTests.json");
             _factory = factory.WithWebHostBuilder(builder =>
             {
-                builder.UseSetting("Environment", "Integration"); // Default is Development which we dont want since we want to test for Authorization
-                builder.ConfigureAppConfiguration((context, config) => {
-                    var AzureAd = config.AddJsonFile(configPath).Build().GetSection("AzureAd");
-                    _settings.Add("Authority", AzureAd.GetValue<string>("Instance") + AzureAd.GetValue<string>("Tenant"));
-                    _settings.Add("TenantId", AzureAd.GetValue<string>("Tenant"));
-                    _settings.Add("ClientId", AzureAd.GetValue<string>("ClientId"));
-                });
+                builder.UseSetting("Environment", "Development"); // Development to by-pass Auth
+                // builder.UseSetting("Environment", "Integration"); // Default is Development which we dont want since we want to test for Authorization
+                // builder.ConfigureAppConfiguration((context, config) => {
+                //     var AzureAd = config.AddJsonFile(configPath).Build().GetSection("AzureAd");
+                //     _settings.Add("Authority", AzureAd.GetValue<string>("Instance") + AzureAd.GetValue<string>("Tenant"));
+                //     _settings.Add("Tenant", AzureAd.GetValue<string>("Tenant"));
+                //     _settings.Add("ClientId", AzureAd.GetValue<string>("ClientId"));
+                // });
             });
             _client = _factory.CreateClient();
         }
@@ -47,15 +49,14 @@ namespace Tests.Integration
         public async Task GetAllProjects()
         {
             var response = await _client.GetAsync("/api/projects");
-            Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
+            // Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
 
-            // response.EnsureSuccessStatusCode(); // Status Code: 200-299
+            response.EnsureSuccessStatusCode(); // Status Code: 200-299
 
-            // var responseString = await response.Content.ReadAsStringAsync();
-            // var responseJSON = JsonConvert.DeserializeObject<OkResponse<IEnumerable<ProjectSummary>>>(responseString);
-            // var responseJSON = JsonConvert.DeserializeObject<object>(responseString);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseJSON = JsonConvert.DeserializeObject<OkResponse<IEnumerable<ProjectSummary>>>(responseString);
 
-            // Assert.Contains("Google", responseString)
+            Assert.Contains("Google", responseString);
         }
     }
 }
