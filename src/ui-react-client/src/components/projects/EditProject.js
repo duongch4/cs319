@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Openings from './Openings'
 import CreateEditProjectDetails from './CreateEditProjectDetails'
 import TeamRequirements from './TeamRequirements'
-import {updateProject, loadSingleProject} from '../../redux/actions/projectProfileActions.js';
+import {updateProject, loadSingleProject, deleteProject} from '../../redux/actions/projectProfileActions.js';
 import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
@@ -43,7 +43,11 @@ class EditProject extends Component {
     }
 
     onSubmit = () => {
-        this.props.updateProject(this.state.projectProfile);
+        this.props.updateProject(this.state.projectProfile, this.props.history);
+    };
+
+    onDelete = () => {
+        this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history);
     };
 
     addOpening = (opening) => {
@@ -128,6 +132,12 @@ class EditProject extends Component {
                                 onClick={() => this.onSubmit()}>
                             Save
                         </Button>
+                        <Button variant="contained"
+                                style={{backgroundColor: "#EB5757", color: "#ffffff", size: "small"}}
+                                disableElevation
+                                onClick={() => this.onDelete()}>
+                            Delete
+                        </Button>
                     </div>
                 </div>
             );
@@ -149,7 +159,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
     loadMasterlists,
     updateProject,
-    loadSingleProject
+    loadSingleProject,
+    deleteProject
 };
 
 export default connect(

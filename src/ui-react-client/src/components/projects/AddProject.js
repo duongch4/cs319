@@ -20,12 +20,12 @@ class AddProject extends Component {
                 },
                 projectStartDate: "",
                 projectEndDate: "",
-                projectNumber: ""
+                projectNumber: "2020-" + Math.floor(Math.random() * 10000) + "-00"
             },
             projectManager: {
-                userID: 0,
-                firstName: "",
-                lastName: ""
+                userID: 2,
+                firstName: "Charles",
+                lastName: "Bartowski"
             },
             usersSummary: [],
             openings: [],
@@ -82,7 +82,7 @@ class AddProject extends Component {
 
     onSubmit = () => {
         let newProject = this.state.projectProfile;
-        this.props.createProject(newProject);
+        this.props.createProject(newProject, this.props.history);
     };
 
     render() {
