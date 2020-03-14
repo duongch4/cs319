@@ -2,11 +2,11 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadProjectsData = (action) => {
-  return action.projectSummaries;
+  return action.projects;
 };
 
 const executeUpdateProjectSummaryArray = (state, action) => {
-  return state.projects.map(project => {
+  return state.map(project => {
     if (project.projectNumber === action.projectSummary.projectNumber) {
       return action.projectSummary;
     } else {
@@ -15,20 +15,14 @@ const executeUpdateProjectSummaryArray = (state, action) => {
   })
 };
 
-const executeCreateProjectSummary = (state, action) => {
-  return [
-      ...state.projects,
-      action.projectSummary
-  ]
+const executeAddProjectSummary = (state, action) => {
+  let projects = state.map(project => project);
+  projects.push(action.projectSummary);
+  return projects;
 };
 
 const executeDeleteProjectSummary = (state, action) => {
-  let newProjects = state.projects.slice();
-  let index = newProjects.indexOf(project => project.projectNumber === action.projectSummary.projectNumber);
-  if (index > -1) {
-    newProjects.splice(index, 1);
-  }
-  return newProjects;
+  return state.filter(project => project.projectNumber !== action.projectNumber);
 };
 
 export const projectsReducer = (
@@ -42,8 +36,8 @@ export const projectsReducer = (
       return executeUpdateProjectSummaryArray(state, action);
     case types.DELETE_PROJECT_SUMMARY:
       return executeDeleteProjectSummary(state, action);
-    case types.CREATE_PROJECT_SUMMARY:
-      return executeCreateProjectSummary(state, action);
+    case types.ADD_PROJECT_SUMMARY:
+      return executeAddProjectSummary(state, action);
     default:
       return state;
   }

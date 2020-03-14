@@ -9,27 +9,27 @@ const baseURL = `${SVC_ROOT}api/projects/`;
 export const loadProjectsData = projectSummaries => {
   return {
     type: types.LOAD_PROJECTS_ALL,
-    projectSummaries: projectSummaries,
+    projects: projectSummaries,
   };
 };
 
-export const updateProjectSummary = projectSummary => {
-    return {
-        type: types.UPDATE_PROJECT_SUMMARY,
-        projectSummary: projectSummary
-    }
-};
-
-export const deleteProjectSummary = projectSummary => {
+export const deleteProjectSummaryData = projectNumber => {
     return {
         type: types.DELETE_PROJECT_SUMMARY,
+        projectNumber: projectNumber
+    }
+};
+
+export const addProjectSummaryData = projectSummary => {
+    return {
+        type: types.ADD_PROJECT_SUMMARY,
         projectSummary: projectSummary
     }
 };
 
-export const createProjectSummary = projectSummary => {
+export const updateProjectSummaryData = projectSummary => {
     return {
-        type: types.CREATE_PROJECT_SUMMARY,
+        type: types.UPDATE_PROJECT_SUMMARY,
         projectSummary: projectSummary
     }
 };
@@ -49,22 +49,4 @@ export const loadProjects = () => {
           });
     }
   };
-};
-
-export const updateProjectSummaries = (projectSummary) => {
-    return dispatch => {
-        dispatch(updateProjectSummary(projectSummary))
-    }
-};
-
-export const deleteProjectSummaries = (projectSummary) => {
-    return dispatch => {
-        dispatch(deleteProjectSummary(projectSummary))
-    }
-};
-
-export const createProjectSummaries = (projectSummary) => {
-    return dispatch => {
-        dispatch(createProjectSummary(projectSummary))
-    }
 };

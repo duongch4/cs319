@@ -2,8 +2,8 @@ import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
-import _initialState_dev from '../reducers/_initialState_client';
-import {updateProjectSummary} from "./projectsActions";
+import _initialState_client from '../reducers/_initialState_client';
+import {addProjectSummaryData, deleteProjectSummaryData, updateProjectSummaryData} from "./projectsActions";
 
 const baseURL = `${SVC_ROOT}api/projects/`;
 
@@ -28,17 +28,16 @@ export const updateProjectData = projectProfile => {
     };
 };
 
-export const deleteProjectData = projectProfile => {
+export const deleteProjectData = () => {
     return {
-        type: types.DELETE_PROJECT,
-        projectProfile: projectProfile,
+        type: types.DELETE_PROJECT
     };
 };
 
 export const loadSingleProject = (projectNumber) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
-            let project = _initialState_dev.projectProfiles.filter(projectProfile => {
+            let project = _initialState_client.projectProfiles.filter(projectProfile => {
                 return projectProfile.projectSummary.projectNumber === projectNumber;
             });
             dispatch(loadSingleProjectData(project[0]));
@@ -55,7 +54,7 @@ export const loadSingleProject = (projectNumber) => {
     };
 };
 
-export const createProject = (project) => {
+export const createProject = (project, history) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProjectData(project))
@@ -64,7 +63,8 @@ export const createProject = (project) => {
                 .post(baseURL, project,{ headers })
                 .then(response => {
                     dispatch(createProjectData(project));
-                    alert('Successfully created project ' + response.data.payload.projectNumber);
+                    dispatch(addProjectSummaryData(project.projectSummary));
+                    history.push('/projects');
                 })
                 .catch(error => {
                     throw error;
@@ -73,33 +73,38 @@ export const createProject = (project) => {
     };
 };
 
-export const updateProject = (project) => {
+export const updateProject = (project, history) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(updateProjectData(project));
         } else {
+
             return axios
                 .put(`${baseURL + project.projectSummary.projectNumber}`,
-                    { headers })
+                    project, { headers })
                 .then(response => {
                     dispatch(updateProjectData(project));
-                    dispatch(updateProjectSummary(project.projectSummary));
-                    alert('Successfully update project' + response.data.payload.projectNumber);
+                    dispatch(updateProjectSummaryData(project.projectSummary));
+                    history.push('/projects');
                 })
         }
     };
 };
 
-export const deleteProject = number => {
-    //TODO: Delete project api
+export const deleteProject = (number, history) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
-
+            dispatch(deleteProjectData(number))
         } else {
             return axios
                 .delete(`${baseURL + number}`)
                 .then(response => {
-                    // stuff here
+                    dispatch(deleteProjectData());
+                    dispatch(deleteProjectSummaryData(number));
+                    history.push('/projects');
+                })
+                .catch(err => {
+                    alert(err);
                 });
         }
     };
