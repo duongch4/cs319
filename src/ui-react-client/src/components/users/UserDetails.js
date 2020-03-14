@@ -15,19 +15,26 @@ class UserDetails extends Component {
         userProfile: {}
     };
 
-    static getDerivedStateFromProps(props, state){
+    componentDidMount = () => {
       if(CLIENT_DEV_ENV){
-            props.loadSpecificUser(props.match.params.user_id);
-            return { 
-                userProfile: props.userProfile
-            };
+            this.props.loadSpecificUser(this.props.match.params.user_id);
+            this.setState( {
+                ...this.state,
+                userProfile: this.props.userProfile
+            });
         } else {
-            props.loadSpecificUser(props.match.params.user_id)
+            this.props.loadSpecificUser(this.props.match.params.user_id)
             .then(() => {
-                return { userProfile: props.userProfile }; // TODO: @Kaye Before integration, make sure this works
+                var userProfile = this.props.userProfile;
+                if (userProfile) {
+                    this.setState({
+                        ...this.state,
+                        userProfile: userProfile
+                    })
+                }
             })
         }
-    }
+    };
 
     render() {
         let userDetails = this.state.userProfile;
