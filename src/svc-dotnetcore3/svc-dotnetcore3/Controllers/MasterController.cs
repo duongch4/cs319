@@ -63,24 +63,21 @@ namespace Web.API.Controllers
                 var disciplineResources = await disciplinesRepository.GetAllDisciplinesWithSkills();
                 if (disciplineResources == null || !disciplineResources.Any())
                 {
-                    var error = new NotFoundException("No disciplines data found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No disciplines data found"));
                 }
                 var disciplines = MapDisciplines(disciplineResources);
 
                 var locationResources = await locationsRepository.GetAllLocationsGroupByProvince();
                 if (locationResources == null || !locationResources.Any())
                 {
-                    var error = new NotFoundException("No locations data found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No locations data found"));
                 }
                 var locations = MapLocations(locationResources);
 
                 var yearsOfExp = await resourceDisciplineRepository.GetAllYearsOfExp();
                 if (yearsOfExp == null || !yearsOfExp.Any())
                 {
-                    var error = new NotFoundException("No yearsOfExp data found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No yearsOfExp data found"));
                 }
 
                 var resource = new MasterResource
@@ -99,12 +96,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    return StatusCode(StatusCodes.Status500InternalServerError, error);
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    return StatusCode(StatusCodes.Status400BadRequest, error);
                 }
             }
         }
