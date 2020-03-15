@@ -6,12 +6,17 @@ export const executeLoadMasterlistsData = action => {
 };
 
 export const executeCreateDiscipline = (action, state) => {
+    console.log(action);
     let newDisciplines = state.disciplines
-    newDisciplines[action.disciplines.name] = []
+    newDisciplines[action.disciplines.name] = {
+        disciplineID: action.disciplines.id,
+        skills: []
+    }
     let newState = {
         ...state,
         disciplines: newDisciplines
     }
+    console.log(newDisciplines[action.disciplines.name]);
     return newState
 }
 
@@ -44,7 +49,7 @@ export const executeCreateProvince = (action, state) => {
 export const executeCreateCity = (action, state) => {
     let newLocation = state.locations
     let newCity = state.locations[action.location.province]
-    newCity[action.location.city] = 0
+    newCity[action.location.city] = action.location.id
     for(var province in newLocation){
         if(province === action.location.province){
             newLocation[action.location.province] = newCity
@@ -115,6 +120,8 @@ export const executeDeleteCity = (action, state) => {
             
             if(state.locations[key][item] !== action.id){
                 object[key] = {[item]: state.locations[key][item]}
+            } else {
+                object[key] = {}
             }
         })
         return object

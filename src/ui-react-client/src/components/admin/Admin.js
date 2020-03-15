@@ -105,7 +105,7 @@ class Admin extends Component {
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
-                selectedprovince: Object.keys(this.props.masterlist.locations)[0]
+                //selectedprovince: Object.keys(this.props.masterlist.locations)[0]
             })
         }
         

@@ -99,7 +99,8 @@ export const createDiscpline = (discipline) => {
                 .post(`${baseURL}admin/disciplines`, discipline, { headers })
                 .then(response => {
                     discipline.id = response.data.payload;
-                    dispatch(createDiscplineData(response.data.payload))
+                    console.log(discipline);
+                    dispatch(createDiscplineData(discipline))
                 })
                 .catch(error => {
                     throw error;
@@ -113,6 +114,7 @@ export const createSkill = (skill) => {
         if (CLIENT_DEV_ENV) {
             dispatch(createSkillData(skill))
         } else {
+            console.log(skill);
             return axios
                 .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
                 .then(response => {
