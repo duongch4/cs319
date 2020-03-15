@@ -104,6 +104,7 @@ class FilterTab extends Component {
         this.state.searchFilter.filter.locations = this.state.locations_temp;
         this.state.searchFilter.filter.disciplines = this.state.disciplines_temp;
         this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
+        console.log(this.state);
     }
 
     updateLocations = (newLocation) => {
@@ -123,11 +124,15 @@ class FilterTab extends Component {
     }
 
     updateDisciplines = (newDiscipline) => {
+        var discipline_obj = {};
+        newDiscipline.forEach((discipline) => {
+            discipline_obj[discipline.name] = discipline.skills;
+        });
         this.setState({
             ...this.state,
-            disciplines_temp: newDiscipline.slice(),
+            disciplines_temp: discipline_obj,
         });
-        this.state.disciplines_temp = newDiscipline.slice();
+        this.state.disciplines_temp = discipline_obj;
     }
 
     updateYears = (years) => {
