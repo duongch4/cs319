@@ -164,6 +164,10 @@ p {
     margin-left: 16px;
 }
 
+.css-2b097c-container{
+  width: 300px;
+}
+
 input.input-box, select.input-box {
     padding: 6px;
     display: flex;
