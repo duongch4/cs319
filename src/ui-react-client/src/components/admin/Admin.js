@@ -83,14 +83,17 @@ class Admin extends Component {
     }
 
     componentDidUpdate(prevProps){
-        if(this.props.masterlist.disciplines[this.state.discipline.name] === undefined){
+        let found = false;
+        Object.values(this.props.masterlist.disciplines).filter(elem => {
+            if(elem.disciplineID === this.state.skill.disciplineID){
+                found = true
+            }
+            return true;
+        })
+        if(!found){
             let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
             this.setState({
                 ...this.state,
-                discipline: {
-                    name: disciplineName,
-                    id: this.props.masterlist.disciplines[disciplineName].disciplineID
-                },
                 skill: {
                     ...this.state.skill,
                     disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID

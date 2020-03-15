@@ -66,7 +66,6 @@ class AddProject extends Component {
     };
 
     addProjDetails = (project) => {
-        console.log(project);
         this.setState({
             projectProfile: {
                 ...this.state.projectProfile,
