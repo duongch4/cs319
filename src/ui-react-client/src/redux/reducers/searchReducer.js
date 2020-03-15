@@ -3,15 +3,15 @@ import initialState from './_initialState';
 
 const executeSearch = (state, action) => {
     return {
-        userProfiles: [
+        userSummary: [
             ...state.userProfiles,
-            action.userProfiles
+            action.userSummary
         ]
     };
 };
 
 export const projectProfileReducer = (
-    state = initialState.userProfiles,
+    state = initialState.userSummary,
     action
 ) => {
     switch (action.type) {

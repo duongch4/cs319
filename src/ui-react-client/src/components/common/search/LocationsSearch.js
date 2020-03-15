@@ -54,7 +54,7 @@ class LocationsSearch extends Component {
 
     handleChangeCities = (e) => {
       if (e){
-        var cities_arr = e.map(function (e) { return e.label; });
+        var cities_arr = e.map(function (e) { return e.value; });
           this.setState({
             locations: {
               ...this.state.locations,
@@ -75,29 +75,17 @@ class LocationsSearch extends Component {
       provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)
     });
 
-    var cities = provinces[this.state.locations.province];
-    var cities_render = [];
-    if (this.state.locations.province === null){
-        cities_render = <option disabled>Please select a province</option>
-    } else {
-        cities = this.state.cities;
-        cities_render.push(<option value="DEFAULT" disabled>City</option>);
-        Object.keys(cities).forEach((city, i) => {
-        cities_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
-      })
-    }
-
     var cities = [];
     if (this.state.locations.province){
       cities =this.props.provinces[this.state.locations.province];
       var cities_format = [];
       var cities_key = [];
-      Object.keys(cities).forEach((city, i) => {
+      Object.entries(cities).forEach((city, i) => {
         var single_city = {};
-        single_city['label'] = city;
-        single_city['value'] = city;
+        single_city['label'] = city[0];
+        single_city['value'] = {city: city[0], id: city[1]};
         cities_format.push(single_city);
-        cities_key.push('skills_' + i);
+        cities_key.push('cities_' + i);
       });
     }
 

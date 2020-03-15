@@ -59,22 +59,22 @@ export const loadProjects = () => {
   };
 };
 
-export const updateProjectSummaries = (projectSummary) => {
-    return dispatch => {
-        dispatch(updateProjectSummary(projectSummary))
-    }
-};
+// export const updateProjectSummaries = (projectSummary) => {
+//     return dispatch => {
+//         dispatch(updateProjectSummary(projectSummary))
+//     }
+// };
 
-export const deleteProjectSummaries = (projectSummary) => {
-    return dispatch => {
-        dispatch(deleteProjectSummary(projectSummary))
-    }
-};
+// export const deleteProjectSummaries = (projectSummary) => {
+//     return dispatch => {
+//         dispatch(deleteProjectSummary(projectSummary))
+//     }
+// };
 
-export const createProjectSummaries = (projectSummary) => {
-    return dispatch => {
-        dispatch(createProjectSummary(projectSummary))
-    }
-};
+// export const createProjectSummaries = (projectSummary) => {
+//     return dispatch => {
+//         dispatch(createProjectSummary(projectSummary))
+//     }
+// };
 
 
