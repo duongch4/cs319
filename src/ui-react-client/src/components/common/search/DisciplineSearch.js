@@ -20,16 +20,8 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
-        if (e.target.id === "skills") {
-        var skills_arr = [e.target.value];
-          this.setState({
-            disciplines: {
-              ...this.state.disciplines,
-              skills: skills_arr
-            }
-         }, this.updateSkill(e.target.value));
-        } else {
-           var skills_arr = [...this.state.disciplines.skills, e.target.value];
+
+          var skills_arr = [...this.state.disciplines.skills, e.target.value];
           this.setState({
             disciplines: {
                   ...this.state.disciplines,
@@ -37,9 +29,10 @@ class DisciplineSearch extends Component {
                   skills: [],
               }
           },this.updateDisciplines(e.target.value, []));
-      }
+    
     this.props.addDisciplines(this.state);
     };
+    
 
     updateSkill = (val) => {
         this.state.disciplines.skills = [val];
@@ -48,6 +41,20 @@ class DisciplineSearch extends Component {
         this.state.disciplines.name = name;
         this.state.disciplines.skills = skills;
     }
+
+    handleChangeSkills = (e) => {
+        if (e){
+          var skills_array = e.map(function (e) { return e.label; });
+            this.setState({
+              disciplines: {
+                ...this.state.disciplines,
+                skills: skills_array
+              }
+           })
+          }
+          this.state.disciplines.skills = skills_array;
+        this.props.addDisciplines(this.state);
+       };
 
   render(){
     var disciplines = this.props.disciplines;

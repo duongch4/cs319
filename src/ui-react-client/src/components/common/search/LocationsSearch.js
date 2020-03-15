@@ -15,7 +15,7 @@ class LocationsSearch extends Component {
       locations: 
           {
             province: null, 
-            city: null,
+            cities: [],
           },
       cities: [],
     };
@@ -51,6 +51,20 @@ class LocationsSearch extends Component {
     updateCity = (val) => {
         this.state.locations.city = val;
     }
+
+    handleChangeCities = (e) => {
+      if (e){
+        var cities_arr = e.map(function (e) { return e.label; });
+          this.setState({
+            locations: {
+              ...this.state.locations,
+              cities: cities_arr
+            }
+         })
+        }
+      this.state.locations.cities = cities_arr;
+      this.props.addLocations(this.state);
+     };
 
   render(){
     var provinces = this.props.provinces; 
@@ -94,7 +108,7 @@ class LocationsSearch extends Component {
                     id="province" onChange={this.handleChange}>
               {provinces_render}
             </select>
-            <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeSkills} options={cities_format} isMulti
+            <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti
                             placeholder='Cities' />
               </div>
         </div>

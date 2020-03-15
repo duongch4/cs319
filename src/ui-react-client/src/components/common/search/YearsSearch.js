@@ -1,6 +1,7 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
+import Select from 'react-select';
 
 
 class YearsSearch extends Component {
@@ -25,23 +26,23 @@ class YearsSearch extends Component {
         };
 
   render(){
-    var range_render = [];
-    this.props.yearsOfExp.forEach((yearsOfExperience, i) => {
-        range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
+  
+    var year_format = [];
+    var year_key = [];
+    this.props.yearsOfExp.forEach((year, i) => {
+    var single_year = {};
+    single_year['label'] = year;
+    single_year['value'] = year;
+    year_format.push(single_year);
     });
 
-        return (
-        <div className="form-section">
-                <div className="form-section opening">
-            <label className="form-row" htmlFor= "yearsOfExp">
-                <select className="input-box" defaultValue={'DEFAULT'}
-                        id="yearsOfExp" onChange={this.handleChange}>
-                    <option value="DEFAULT" disabled>Select a range</option>
-                    {range_render}
-                </select>
-            </label>
+    return (
+    <div className="form-section">
+        <div className="form-row">
+        <Select id="years" key={year_key} className="input-box" onChange={this.handleChangeSkills} options={year_format} isMulti
+                        placeholder='Years' />
         </div>
-        </div>
+    </div>
         );
     }
 }

@@ -9,12 +9,9 @@ import SearchIcon from '@material-ui/icons/SearchRounded';
 import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
 import {performUserSearch} from "../../../redux/actions/searchActions";
-import DisciplineSearch from "./DisciplineSearch";
-import LocationsSearch from "./LocationsSearch";
 import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
-import AddYears from './AddYears';
-import Select from 'react-select';
+import YearsSearch from './YearsSearch';
 
 class FilterTab extends Component {
     constructor(props) {
@@ -122,7 +119,7 @@ class FilterTab extends Component {
     }
 
   render(){
-    console.log(this.props.masterlist);
+    console.log(this.state);
 
     const {showing} = this.state;
 
@@ -162,7 +159,7 @@ class FilterTab extends Component {
                     </div>
                     {this.state.disciplines_view}
                     <div className="form-row">
-                    <AddYears yearsOfExp={this.props.masterlist.yearsOfExp} />
+                    <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}/>
                     </div>
                     {this.state.disciplines_view}
                 <div style={{padding: "20px"}}>
