@@ -124,6 +124,7 @@ export const createCity = (location) => {
         if (CLIENT_DEV_ENV) {
             dispatch(createCityData(location))
         } else {
+            dispatch(createCityData(location))
             // TODO
         }
     } 

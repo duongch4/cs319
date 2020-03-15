@@ -42,6 +42,7 @@ export const executeCreateProvince = (action, state) => {
 }
 
 export const executeCreateCity = (action, state) => {
+    console.log(action)
     let newLocation = state.locations
     let newCity = state.locations[action.location.province]
     newCity[action.location.city] = 0

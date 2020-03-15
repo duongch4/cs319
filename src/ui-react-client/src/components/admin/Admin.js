@@ -81,16 +81,18 @@ class Admin extends Component {
             }
         }
     }
-
     componentDidUpdate(prevProps){
-        if(this.props.masterlist.disciplines[this.state.discipline.name] === undefined){
+        let found = false;
+        Object.values(this.props.masterlist.disciplines).filter(elem => {
+            if(elem.disciplineID === this.state.skill.disciplineID){
+                found = true
+            }
+            return true;
+        })
+        if(!found){
             let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
             this.setState({
                 ...this.state,
-                discipline: {
-                    name: disciplineName,
-                    id: this.props.masterlist.disciplines[disciplineName].disciplineID
-                },
                 skill: {
                     ...this.state.skill,
                     disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
@@ -102,12 +104,13 @@ class Admin extends Component {
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
-                selectedprovince: Object.keys(this.props.masterlist.locations)[0]
+                // selectedprovince: Object.keys(this.props.masterlist.locations)[0]
             })
         }
         
         
     }
+
 
     handleChange = (e) => {
         this.setState({
@@ -133,18 +136,20 @@ class Admin extends Component {
         e.preventDefault();
         switch(e.target.name) {
             case "discipline":
-                this.props.createDiscpline(this.state.discipline);
+                const discipline = this.state.discipline;
+                this.props.createDiscpline(discipline);
                 this.setState({
                     ...this.state,
                     discipline: {
                         name: "",
                         id: 0
                     }
-                })
+                }, () => console.log(this.state))
                 
                 return;
             case "skill":
-                this.props.createSkill(this.state.skill);
+                const skill = this.state.skill;
+                this.props.createSkill(skill);
                 this.setState({
                     ...this.state,
                     skill:{
@@ -154,7 +159,8 @@ class Admin extends Component {
                 })
                 return ;
             case "province":
-                this.props.createProvince(this.state.location);
+                const location = this.state.location;
+                this.props.createProvince(location);
                 this.setState({
                     ...this.state,
                     location:{
@@ -164,14 +170,23 @@ class Admin extends Component {
                 })
                 return;
             case "city":
-                this.props.createCity(this.state.location);
                 this.setState({
                     ...this.state,
-                    location:{
+                    location: {
                         ...this.state.location,
-                        city: ""
+                        province: this.state.selectedprovince
                     }
-                })
+                }, () =>  {
+                    this.props.createCity(this.state.location)
+                    this.setState({
+                        ...this.state,
+                        location:{
+                            ...this.state.location,
+                            city: "",
+                            province: "",
+                        }
+                    })})
+                
                 return;
             default:
                 console.log("ERR")
