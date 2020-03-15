@@ -51,7 +51,7 @@ class EditUser extends Component {
 
     addDisciplines = (opening) => {
         let discipline = {
-            disciplineID: 0,
+            disciplineID: this.state.masterlist.disciplines[opening.discipline].disciplineID,
             discipline: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills
