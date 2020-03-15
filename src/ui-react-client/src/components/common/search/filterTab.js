@@ -84,7 +84,6 @@ class FilterTab extends Component {
     };
 
     onSubmit = () => {
-        console.log(this.state.searchFilter);
        var results = this.props.performUserSearch(this.state.searchFilter);
     };
 
@@ -107,12 +106,10 @@ class FilterTab extends Component {
     }
 
     updateLocations = (newLocation) => {
-        console.log(newLocation);
         var loc_arr = [];
         newLocation.forEach((location) => {
             if(location.cities.length !== 0){
                 location.cities.forEach((city) => {
-                    console.log(city);
                     loc_arr.push({locationID: city.id, province: location.province, city: city.city});
                     this.setState({
                         ...this.state,
@@ -122,7 +119,6 @@ class FilterTab extends Component {
             }
         })
         this.state.locations_temp = loc_arr;
-        console.log(loc_arr);
     }
 
     updateDisciplines = (newDiscipline) => {

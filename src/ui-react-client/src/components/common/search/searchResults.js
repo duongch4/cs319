@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-// import {performUserSearch} from "../../redux/actions/userProfileActions";
 import SearchUserCard from "./SearchUserCard";
 
 class SearchResults extends Component {

@@ -69,7 +69,7 @@ class LocationsSearch extends Component {
   render(){
     var provinces = this.props.provinces; 
     var provinces_render = [];
-    var all_provinces_key = Array.from(Object.keys(provinces));
+    var all_provinces_key = Object.keys(provinces);
     provinces_render.push(<option value="DEFAULT" disabled>Province</option>);
     all_provinces_key.forEach((province, i) => {
       provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)

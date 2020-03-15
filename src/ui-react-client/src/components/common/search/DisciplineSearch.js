@@ -58,7 +58,7 @@ class DisciplineSearch extends Component {
     var disciplines = this.props.disciplines;
 
     var discipline_render = [];
-    var all_disciplines_keys = Array.from(Object.keys(disciplines));
+    var all_disciplines_keys = Object.keys(disciplines);
     all_disciplines_keys.forEach((discipline, i) => {
         discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
     });
