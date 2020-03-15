@@ -2,6 +2,7 @@ import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { ReactDOM } from 'react-dom';
+import Select from 'react-select';
 
 
 class DisciplineSearch extends Component {
@@ -59,14 +60,18 @@ class DisciplineSearch extends Component {
     });
 
     var skills = [];
-    var skill_render = [];
-    if (this.state.disciplines.name === null){
-      skill_render = <option disabled>Please select a discipline</option>
-    } else {
-        skills = disciplines[this.state.disciplines.name];
-        console.log(skills["skills"]);
-        skills["skills"].forEach((skill, i) => {
-          skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
+    if (this.state.disciplines.name){
+      console.log(this.props.disciplines[this.state.disciplines.name]["skills"]);
+      skills =this.props.disciplines[this.state.disciplines.name]["skills"];
+      var skill_format = [];
+      var skill_keys = [];
+      skills.forEach((skill, i) => {
+        var single_skill = {};
+        single_skill['label'] = skill;
+        single_skill['value'] = skill;
+        skill_format.push(single_skill);
+        skill_keys.push('skills_' + i);
+
       })
     }
 
@@ -75,29 +80,15 @@ class DisciplineSearch extends Component {
         return (
         <div className="form-section">
                 <div className="form-section opening">
-            <div className="form-row">
-                <select className="input-box" defaultValue={'DEFAULT'}
-                        id="discipline" onChange={this.handleChange}>
-                    <option value="DEFAULT" disabled>Discipline</option>
-                    {discipline_render}
-                </select>
-
-
-                {(this.state.disciplines.skills.length == 0) && 
-                <select className="input-box" defaultValue={'DEFAULT'} value="DEFAULT"
-                id="skills" onChange={this.handleChange}>
-            <option value="DEFAULT" disabled>Skills</option>
-            {skill_render}
-             </select>}
-                {(this.state.disciplines.skills.length  !== 0) && 
-               <select className="input-box" defaultValue={'DEFAULT'} value={this.state.disciplines.skills[0]}
-               id="skills" onChange={this.handleChange}>
-                <option value="DEFAULT" disabled>Skills</option>
-            {skill_render}
-            </select>}
-
-                
-            </div>
+                <div className="form-row">
+                          <select className="input-box" defaultValue={'DEFAULT'}
+                                  id="discipline" onChange={this.handleChange}>
+                              <option value={'DEFAULT'} disabled>Discipline</option>
+                              {discipline_render}
+                          </select>
+                          <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
+                            placeholder='Skills' />
+                      </div>
         </div>
         </div>
         );

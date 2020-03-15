@@ -14,6 +14,7 @@ import LocationsSearch from "./LocationsSearch";
 import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import AddYears from './AddYears';
+import Select from 'react-select';
 
 class FilterTab extends Component {
     constructor(props) {
@@ -161,7 +162,7 @@ class FilterTab extends Component {
                     </div>
                     {this.state.disciplines_view}
                     <div className="form-row">
-                    <AddYears />
+                    <AddYears yearsOfExp={this.props.masterlist.yearsOfExp} />
                     </div>
                     {this.state.disciplines_view}
                 <div style={{padding: "20px"}}>
