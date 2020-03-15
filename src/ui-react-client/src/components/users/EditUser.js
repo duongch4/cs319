@@ -6,6 +6,7 @@ import TeamRequirements from "../projects/TeamRequirements";
 import Openings from "../projects/Openings";
 import EditUserDetails from "./EditUserDetails";
 import { Button } from "@material-ui/core";
+import {CLIENT_DEV_ENV} from '../../config/config';
 
 class EditUser extends Component {
     state = {
@@ -15,14 +16,24 @@ class EditUser extends Component {
     };
 
     componentDidMount() {
-        this.props.loadMasterlists()
+        if(CLIENT_DEV_ENV){
+            this.props.loadMasterlists()
+            this.props.loadSpecificUser(this.props.match.params.user_id)
+            this.setState((state, props) => ({
+                ...this.state,
+                masterlist: props.masterlist,
+                userProfile: props.userProfile,
+                pending: false
+            }))
+        } else {
+            this.props.loadMasterlists()
             .then(() => {
                 this.setState({
                     ...this.state,
                     masterlist: this.props.masterlist
                 })
             });
-        this.props.loadSpecificUser(this.props.match.params.user_id)
+            this.props.loadSpecificUser(this.props.match.params.user_id)
             .then(() => {
                 this.setState({
                     ...this.state,
@@ -30,14 +41,17 @@ class EditUser extends Component {
                     pending: false
                 })
             });
+        }
+        
     }
 
     onSubmit = () => {
-        this.props.updateSpecificUser(this.state.userProfile)
+        this.props.updateSpecificUser(this.state.userProfile, this.props.history)
     };
 
     addDisciplines = (opening) => {
         let discipline = {
+            disciplineID: 0,
             discipline: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills
@@ -61,6 +75,7 @@ class EditUser extends Component {
                     lastName: userProfile.lastName,
                     location: {
                         ...this.state.userProfile.location,
+                        locationID: userProfile.location.locationID,
                         city: userProfile.location.city,
                         province: userProfile.location.province
                     }

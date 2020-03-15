@@ -8,18 +8,31 @@ import AvailabilityCard from './AvailabilityCard';
 import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
+import {CLIENT_DEV_ENV} from '../../config/config';
 
 class UserDetails extends Component {
     state = {
         userProfile: {}
     };
 
-    componentDidMount() {
-        if (Object.keys(this.props.userProfile).length === 0) {
+    componentDidMount = () => {
+      if(CLIENT_DEV_ENV){
+            this.props.loadSpecificUser(this.props.match.params.user_id);
+            this.setState( {
+                ...this.state,
+                userProfile: this.props.userProfile
+            });
+        } else {
             this.props.loadSpecificUser(this.props.match.params.user_id)
-                .then(() => {
-                    this.setState({ userProfile: this.props.userProfile });
-                })
+            .then(() => {
+                var userProfile = this.props.userProfile;
+                if (userProfile) {
+                    this.setState({
+                        ...this.state,
+                        userProfile: userProfile
+                    })
+                }
+            })
         }
     };
 
@@ -87,7 +100,7 @@ class UserDetails extends Component {
 }
 
 UserDetails.propTypes = {
-    userProfile: PropTypes.object.isRequired
+    userProfile: PropTypes.object
 };
 
 const mapStateToProps = state => {

@@ -6,12 +6,7 @@ const executeLoadSingleProjectData = action => {
 };
 
 const executeCreateProjectData = (state, action) => {
-    return {
-        projects: [
-            ...state.projects,
-            action.projectProfile
-        ]
-    };
+    return action.projectProfile;
 };
 
 const executeUpdateProjectData = (action) => {
@@ -19,7 +14,6 @@ const executeUpdateProjectData = (action) => {
 };
 
 const executeDeleteProjectData = () => {
-    // TODO maybe not the correct place for deleting data
     return {};
 };
 
@@ -31,7 +25,7 @@ export const projectProfileReducer = (
         case types.LOAD_SINGLE_PROJECT:
             return executeLoadSingleProjectData(action);
         case types.CREATE_PROJECT:
-            return executeCreateProjectData(action);
+            return executeCreateProjectData(state, action);
         case types.UPDATE_PROJECT:
             return executeUpdateProjectData(action);
         case types.DELETE_PROJECT:
