@@ -119,6 +119,7 @@ class FilterTab extends Component {
     }
 
   render(){
+    console.log(this.props);
 
     const {showing} = this.state;
 

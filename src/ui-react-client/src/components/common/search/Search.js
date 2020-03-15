@@ -10,12 +10,24 @@ class Search extends Component {
     super(props);
     this.state = {
       data: [],
+      masterlist: {},
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
 
+  componentDidMount() {
+        this.props.loadMasterlists()
+        .then(() => {
+            this.setState({
+                ...this.state,
+                masterlist: this.props.masterlist,
+            })
+        })
+    }
+
   handleResultChange(data) {
     this.setState({
+      ...this.state,
       data,
     });
   }
@@ -33,7 +45,7 @@ class Search extends Component {
 
 const mapStateToProps = state => {
   return {
-    masterlist: state.masterlist,
+      masterlist: state.masterlist,
   };
 };
 
