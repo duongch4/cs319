@@ -3,6 +3,7 @@ import {CLIENT_DEV_ENV, SVC_ROOT} from '../../config/config';
 import { headers } from '../../config/adalConfig';
 import axios from 'axios';
 import _initialState_client from '../reducers/_initialState_client';
+import {updateUserSummary} from "./usersActions";
 
 const baseURL = `${SVC_ROOT}api/users/`;
 
@@ -40,7 +41,7 @@ export const loadSpecificUser = (userID) => {
   };
 };
 
-export const updateSpecificUser = (user) => {
+export const updateSpecificUser = (user, history) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
       dispatch(updateUserProfileData(user));
@@ -49,6 +50,8 @@ export const updateSpecificUser = (user) => {
           .put(baseURL + user.userSummary.userID, user, { headers })
           .then(response => {
             dispatch(updateUserProfileData(user));
+            dispatch(updateUserSummary(user.userSummary));
+            history.push('/users/' + user.userSummary.userID);
           })
           .catch(error => {
             throw error;

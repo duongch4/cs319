@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Serilog;
+using Web.API.Resources;
 
 namespace Web.API.Infrastructure.Data
 {
@@ -68,6 +69,18 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Skill>(sql, new { SkillId = skillId });
         }
+        public async Task<Skill> GetASkill(string skillName, int disciplineId)
+        {
+            var sql = @"
+                select *
+                from Skills
+                where Name = @SkillName and DisciplineId = @DisciplineId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryFirstOrDefaultAsync<Skill>(sql, new { SkillName = skillName, DisciplineId = disciplineId });
+        }
         //POST
         public async Task<Skill> CreateASkill(Skill skill)
         {
@@ -88,6 +101,27 @@ namespace Web.API.Infrastructure.Data
             });
 
             return skill;
+        }
+
+        public async Task<int> CreateASkill(DisciplineSkillResource skill)
+        {
+            var sql = @"
+                insert into Skills
+                    (DisciplineId, Name)
+                values
+                    (@DisciplineId, @Name);
+                select cast(scope_identity() as int);
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            skill.SkillId = await connection.QuerySingleAsync<int>(sql, new
+            {
+                DisciplineId = skill.DisciplineId,
+                Name = skill.Name
+            });
+
+            return skill.SkillId;
         }
         //PUT
         public async Task<Skill> UpdateASkill(Skill skill)
@@ -123,7 +157,21 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.ExecuteAsync(sql, new { SkillId = skillId });
+            await connection.ExecuteAsync(sql, new { SkillId = skillId});
+            return skill;
+        }
+
+        public async Task<Skill> DeleteASkill(string skillName, int disciplineId)
+        {
+            var skill = await GetASkill(skillName, disciplineId);
+            var sql = @"
+                delete from Skills
+                where Name = @SkillName and DisciplineId = @DisciplineId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            await connection.ExecuteAsync(sql, new { SkillName = skillName, DisciplineId = disciplineId});
             return skill;
         }
 
