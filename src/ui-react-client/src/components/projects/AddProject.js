@@ -20,7 +20,7 @@ class AddProject extends Component {
                 },
                 projectStartDate: "",
                 projectEndDate: "",
-                projectNumber: "2020-" + Math.floor(Math.random() * 10000) + "-00"
+                projectNumber: ""
             },
             projectManager: {
                 userID: 2,
@@ -74,7 +74,8 @@ class AddProject extends Component {
                     title: project.title,
                     projectStartDate: project.projectStartDate,
                     projectEndDate: project.projectEndDate,
-                    location: project.location
+                    location: project.location,
+                    projectNumber: project.projectNumber
                 }
             }
         })

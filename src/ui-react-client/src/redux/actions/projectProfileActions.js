@@ -64,7 +64,7 @@ export const createProject = (project, history) => {
                 .then(response => {
                     dispatch(createProjectData(project));
                     dispatch(addProjectSummaryData(project.projectSummary));
-                    history.push('/projects');
+                    history.push('/projects/' + project.projectSummary.projectNumber);
                 })
                 .catch(error => {
                     throw error;
@@ -85,7 +85,7 @@ export const updateProject = (project, history) => {
                 .then(response => {
                     dispatch(updateProjectData(project));
                     dispatch(updateProjectSummaryData(project.projectSummary));
-                    history.push('/projects');
+                    history.push('/projects/' + project.projectSummary.projectNumber);
                 })
         }
     };
@@ -97,7 +97,7 @@ export const deleteProject = (number, history) => {
             dispatch(deleteProjectData(number))
         } else {
             return axios
-                .delete(`${baseURL + number}`)
+                .delete(`${baseURL + number}`, { headers })
                 .then(response => {
                     dispatch(deleteProjectData());
                     dispatch(deleteProjectSummaryData(number));
