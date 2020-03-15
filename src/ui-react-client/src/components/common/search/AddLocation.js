@@ -46,7 +46,8 @@ class AddLocation extends Component {
         }
 
         deleteLocation = (keyId) => {
-            delete this.state.status[keyId];
+            var status_mock = this.state.status;
+            delete status_mock[keyId];
             var view_arr = this.state.view.slice();
             var mockState = this.state.view.slice();
             view_arr.forEach((location, index) => {
@@ -54,9 +55,11 @@ class AddLocation extends Component {
                     mockState.splice(index, 1);
                     this.setState({
                         ...this.state,
+                        status: status_mock,
                         view: mockState,
                     });
                     this.state.view = mockState;
+                    this.state.status = status_mock;
                 }
             });
             }
