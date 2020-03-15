@@ -1,7 +1,6 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ReactDOM } from 'react-dom';
 import LocationsSearch from "./LocationsSearch";
 
 class AddLocation extends Component {
@@ -63,9 +62,6 @@ class AddLocation extends Component {
                 }
             });
             }
-
-    onSubmit = () => {
-    }
 
       render(){
           return(

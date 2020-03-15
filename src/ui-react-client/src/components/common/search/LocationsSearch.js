@@ -1,7 +1,6 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ReactDOM } from 'react-dom';
 import Select from 'react-select';
 
 
@@ -21,36 +20,16 @@ class LocationsSearch extends Component {
     };
 
     handleChange = (e) => {
-        if (e.target.id === "city") {
-            this.setState({
-                ...this.state,
-                  locations:
-                    {
-                      city: e.target.value,
-                    }
-                }, this.updateCity(e.target.value));
-          } else if (e.target.id === "province") {
-            let newCities = this.props.provinces[e.target.value];
-            this.setState({
-                ...this.state,
-                  locations:
-                    {
-                      province: e.target.value,
-                    },
-                  cities: newCities,
-                }, this.updateProvince(e.target.value, null));
-        };
-        this.props.addLocations(this.state);
+    this.setState({
+        ...this.state,
+          locations:
+            {
+              ...this.state.locations,
+              province: e.target.value,
+            },
+        }, this.props.addLocations(this.state));
     }
-
-    updateProvince = (province, city) => {
-        this.state.locations.province = province;
-        this.state.locations.city = city;
-    }
-
-    updateCity = (val) => {
-        this.state.locations.city = val;
-    }
+ 
 
     handleChangeCities = (e) => {
       if (e){
@@ -60,10 +39,8 @@ class LocationsSearch extends Component {
               ...this.state.locations,
               cities: cities_arr
             }
-         })
+         },this.props.addLocations(this.state));
         }
-      this.state.locations.cities = cities_arr;
-      this.props.addLocations(this.state);
      };
 
   render(){

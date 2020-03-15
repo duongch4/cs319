@@ -1,7 +1,6 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ReactDOM } from 'react-dom';
 import DisciplineSearch from "./DisciplineSearch";
 
 class AddDisciplines extends Component {
@@ -39,13 +38,6 @@ class AddDisciplines extends Component {
             count: this.state.count + 1,
             view: [...this.state.view, newDisc],
         })
-        this.state.status = {...this.state.status, [keyId]:{
-            name: null,
-            skills: [],
-            yearsOfExp: null,
-            }};
-        this.state.count = this.state.count + 1;
-        this.state.view = [...this.state.view, newDisc];
       }
       
       addDisciplines = (state) => {
@@ -54,7 +46,6 @@ class AddDisciplines extends Component {
              this.setState({
                 status: Object.assign({}, this.state.status, {[key]: disciplines}),
             });
-            this.state.status =  Object.assign({}, this.state.status, {[key]: disciplines});
             this.props.updateDisciplines(Object.values(this.state.status));
         }
 
@@ -71,14 +62,9 @@ class AddDisciplines extends Component {
                         status: status_mock,
                         view: mockState,
                     });
-                    this.state.view = mockState;
-                    this.state.status = status_mock;
                 }
             });
             }
-
-    onSubmit = () => {
-    }
 
       render(){
           return(
