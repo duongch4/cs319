@@ -1,7 +1,6 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ReactDOM } from 'react-dom';
 import Select from 'react-select';
 
 
@@ -61,7 +60,6 @@ class DisciplineSearch extends Component {
 
     var skills = [];
     if (this.state.disciplines.name){
-      console.log(this.props.disciplines[this.state.disciplines.name]["skills"]);
       skills =this.props.disciplines[this.state.disciplines.name]["skills"];
       var skill_format = [];
       var skill_keys = [];
@@ -74,8 +72,6 @@ class DisciplineSearch extends Component {
 
       })
     }
-
-    var range_render = [];
 
         return (
         <div className="form-section">

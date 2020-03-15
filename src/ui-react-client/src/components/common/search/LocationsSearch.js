@@ -2,6 +2,8 @@ import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { ReactDOM } from 'react-dom';
+import Select from 'react-select';
+
 
 class LocationsSearch extends Component {
     constructor(props){
@@ -71,6 +73,20 @@ class LocationsSearch extends Component {
       })
     }
 
+    var cities = [];
+    if (this.state.locations.province){
+      cities =this.props.provinces[this.state.locations.province];
+      var cities_format = [];
+      var cities_key = [];
+      Object.keys(cities).forEach((city, i) => {
+        var single_city = {};
+        single_city['label'] = city;
+        single_city['value'] = city;
+        cities_format.push(single_city);
+        cities_key.push('skills_' + i);
+      });
+    }
+
      return(
         <div className="form-section">
           <div className="form-row">
@@ -78,16 +94,8 @@ class LocationsSearch extends Component {
                     id="province" onChange={this.handleChange}>
               {provinces_render}
             </select>
-                {(this.state.locations.city == null) && 
-                <select className="input-box" defaultValue={'DEFAULT'} value="DEFAULT"
-                        id="city" onChange={this.handleChange}>
-                    {cities_render}
-                </select>}
-                {(this.state.locations.city != null) && 
-                <select className="input-box" defaultValue={'DEFAULT'} value={this.state.locations.city}
-                        id="city" onChange={this.handleChange}>
-                    {cities_render}
-                </select>}
+            <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeSkills} options={cities_format} isMulti
+                            placeholder='Cities' />
               </div>
         </div>
      );
