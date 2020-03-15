@@ -24,6 +24,18 @@ dotnet build src\svc-dotnetcore3\svc-dotnetcore3
 dotnet build src\svc-dotnetcore3\Tests
 ```
 
+## Testing With coverlet.msbuild + ReportGenerator
+```[cmd]
+dotnet test src\svc-dotnetcore3\Tests\Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput="./TestResults/Result.opencover.xml" /p:Threshold=100
+
+dotnet C:\\Users\bangc\.nuget\packages\reportgenerator\4.5.0\tools\netcoreapp3.0\ReportGenerator.dll "-reports:src\svc-dotnetcore3\Tests\TestResults\Result.opencover.xml" "-targetdir:src\svc-dotnetcore3\Tests\TestResults\CoverageReport"
+```
+
+## Testing With Native Microsoft Runsettings
+```[cmd]
+dotnet test src\svc-dotnetcore3\Tests\Tests.csproj --settings:src\svc-dotnetcore3\Tests\test.runsettings.xml
+```
+
 ## Deployment Testing
 ### Add Info to appsettings.json!!!
 ### Publish Mode (Build for Client as well here to deploy)
