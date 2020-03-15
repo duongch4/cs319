@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ProjectStyles.css';
 import {Button} from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const Openings = ({ opening, index, commitment, isAssignable, isRemovable, removeOpening}) => {
 
@@ -39,12 +40,7 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
         {isRemovable &&
             (<div className="card-summary-title assign">
                 <div>
-                    <Button variant="contained"
-                            style={{backgroundColor: "#EB5757", color: "#ffffff", size: "small" }}
-                            onClick={() => removeOpening(opening)}
-                            disableElevation>
-                        Remove
-                    </Button>
+                    <DeleteIcon style={{color: "#EB5757", cursor: "pointer"}} onClick={()=> removeOpening(opening)}/>
                 </div>
             </div>)}
     </div>
