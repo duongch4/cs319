@@ -115,15 +115,19 @@ export const executeDeleteProvince = (action, state) => {
 }
 
 export const executeDeleteCity = (action, state) => {
+    console.log(state);
     const newLocations = Object.keys(state.locations).reduce((object, key) => {
         Object.keys(state.locations[key]).forEach(item => {
-            
             if(state.locations[key][item] !== action.id){
-                object[key] = {[item]: state.locations[key][item]}
+                let newObj = object[key] ? object[key] : {};
+                newObj[item] = state.locations[key][item];
+                object[key] = newObj;
             } else {
                 if(object[key]){
-                    // Do nothing
+                    console.log("ALREADY HERE", key, item)
+                    // do nothing
                 } else {
+                    console.log("NOT HERE", key, item)
                     object[key] = {}
                 }
             }
