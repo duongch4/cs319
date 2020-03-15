@@ -10,19 +10,17 @@ class YearsSearch extends Component {
       }
 
     state = {
-        key: this.props.keyName,
-        yearsOfExp: null,
+        yearsOfExp: [],
     };
 
     handleChange = (e) => {
+        var years_arr = e.map(function (e) { return e.label; });
           this.setState({
-            disciplines: {
-                ...this.state.disciplines,
-              yearsOfExp: e.target.value,
-             }
-            });
-            this.state.yearsOfExp = e.target.value;
-            this.props.addYears(this.state);
+              ...this.state,
+            yearsOfExp: years_arr,
+         })
+        this.state.yearsOfExp = years_arr;
+        this.props.updateYears(this.state.yearsOfExp);
         };
 
   render(){
@@ -39,7 +37,7 @@ class YearsSearch extends Component {
     return (
     <div className="form-section">
         <div className="form-row">
-        <Select id="years" key={year_key} className="input-box" onChange={this.handleChangeSkills} options={year_format} isMulti
+        <Select id="years" key={year_key} className="input-box" onChange={this.handleChange} options={year_format} isMulti
                         placeholder='Years' />
         </div>
     </div>

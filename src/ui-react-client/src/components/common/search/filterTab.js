@@ -118,6 +118,15 @@ class FilterTab extends Component {
         this.state.disciplines_temp = newDiscipline.slice();
     }
 
+    updateYears = (years) => {
+        console.log(years);
+        this.setState({
+            ...this.state,
+            years_temp: years.slice(),
+        });
+        this.state.years_temp = years.slice();
+    }
+
   render(){
     console.log(this.state);
 
@@ -159,7 +168,8 @@ class FilterTab extends Component {
                     </div>
                     {this.state.disciplines_view}
                     <div className="form-row">
-                    <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}/>
+                    <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}
+                                updateYears={this.updateYears}/>
                     </div>
                     {this.state.disciplines_view}
                 <div style={{padding: "20px"}}>
