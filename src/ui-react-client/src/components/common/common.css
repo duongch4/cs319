@@ -151,6 +151,10 @@ p {
     margin-bottom: 24px;
 }
 
+.section-container button {
+    margin-right: 16px;
+}
+
 .form-label:first-child {
     margin-right: 16px;
     margin-left: 0px;
