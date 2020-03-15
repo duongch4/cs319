@@ -65,6 +65,16 @@ class AddProject extends Component {
         })
     };
 
+    removeOpening = (opening) => {
+        const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
+        this.setState({
+            projectProfile: {
+                ...this.state.projectProfile,
+                openings
+            }
+        })
+    }
+
     addProjDetails = (project) => {
         this.setState({
             projectProfile: {
@@ -98,6 +108,7 @@ class AddProject extends Component {
             this.state.projectProfile.openings.forEach((opening, index) => {
                 openings.push(<Openings key={"openings" + index} opening={opening}
                                         commitment={opening.commitmentMonthlyHours}
+                                        isRemovable={true} removeOpening={(opening) => this.removeOpening(opening)}
                                         index={index}/>)
             });
             return (
