@@ -121,7 +121,11 @@ export const executeDeleteCity = (action, state) => {
             if(state.locations[key][item] !== action.id){
                 object[key] = {[item]: state.locations[key][item]}
             } else {
-                object[key] = {}
+                if(object[key]){
+                    // Do nothing
+                } else {
+                    object[key] = {}
+                }
             }
         })
         return object
@@ -130,6 +134,7 @@ export const executeDeleteCity = (action, state) => {
           ...state,
           locations: newLocations
       }
+      console.log(newState);
     return newState;
 }
 
