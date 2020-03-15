@@ -49,9 +49,9 @@ class FilterStickers extends Component {
 
     render(){
         const filter = this.props.filter;
-        var locations = filter.filter.locations; // arr of objects 
-        var disciplines = filter.filter.disciplines; // object {name: skills, name: skills}
-        var yearsOfExp = filter.filter.yearsOfExps; //arr
+        var locations = filter.filter.locations; 
+        var disciplines = filter.filter.disciplines; 
+        var yearsOfExp = filter.filter.yearsOfExps; 
        
         var sticker_arr = [];
         if (locations.length != 0) {
@@ -64,20 +64,9 @@ class FilterStickers extends Component {
             sticker_arr.push(yearsOfExp);
         }
         
-
-        // if (filterStickers.length != 0) {
-        //     var filter_render = [];
-        //     filter_render.push(
-        //     <div className="filter-sticker" key={filterStickers.length} style={{color:"white", display: (showSticker ? 'block' : 'none')}}>
-        //     {filterStickers[1]}, {filterStickers[0]}
-        //     <CloseIcon onClick={()=> this.closeTab(location)}/>
-        //     </div>
-        //     )
-        // }
         console.log(this.state.showSticker);
             return (
                 <div>
-                hi
                 </div>
             );
     }

@@ -84,6 +84,7 @@ class FilterTab extends Component {
     };
 
     onSubmit = () => {
+        // TODO: figure out why the formatting isn't correct
        var results = this.props.performUserSearch(this.state.searchFilter);
     };
 
