@@ -1,6 +1,7 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
+import { ReactDOM } from 'react-dom';
 import DisciplineSearch from "./DisciplineSearch";
 
 class AddDisciplines extends Component {
@@ -10,6 +11,7 @@ class AddDisciplines extends Component {
             status: {"disciplineSearch":{
                 name: null,
                 skills: [],
+                yearsOfExp: null,
                 }},
             count: 1,
             view: [],
@@ -23,6 +25,7 @@ class AddDisciplines extends Component {
             <div className="form-row" key={keyId} >
             <input className="add" type="button" value="-" onClick={()=> this.deleteDiscipline(keyId)}/>
             <DisciplineSearch disciplines={this.props.disciplines}
+                                masterYearsOfExperience={this.props.yearsOfExp}
                                 addDisciplines={this.addDisciplines}
                                 keyName={keyId}/>
            </div>
@@ -31,6 +34,7 @@ class AddDisciplines extends Component {
             status: {...this.state.status, [keyId]:{
                 name: null,
                 skills: [],
+                yearsOfExp: null,
                 }},
             count: this.state.count + 1,
             view: [...this.state.view, newDisc],
@@ -38,6 +42,7 @@ class AddDisciplines extends Component {
         this.state.status = {...this.state.status, [keyId]:{
             name: null,
             skills: [],
+            yearsOfExp: null,
             }};
         this.state.count = this.state.count + 1;
         this.state.view = [...this.state.view, newDisc];
@@ -50,7 +55,7 @@ class AddDisciplines extends Component {
                 status: Object.assign({}, this.state.status, {[key]: disciplines}),
             });
             this.state.status =  Object.assign({}, this.state.status, {[key]: disciplines});
-            this.props.updateDisciplines(this.state.status);
+            this.props.updateDisciplines(Object.values(this.state.status));
         }
 
         deleteDiscipline = (keyId) => {
@@ -78,6 +83,7 @@ class AddDisciplines extends Component {
             <div className="form-row" key="disciplineSearch">
             <input className="add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
             <DisciplineSearch disciplines={this.props.disciplines}
+                                masterYearsOfExperience={this.props.yearsOfExp}
                                 addDisciplines={this.addDisciplines}
                                 keyName={"disciplineSearch"}/>
             </div>

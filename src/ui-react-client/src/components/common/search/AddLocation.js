@@ -1,6 +1,7 @@
 import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
+import { ReactDOM } from 'react-dom';
 import LocationsSearch from "./LocationsSearch";
 
 class AddLocation extends Component {
@@ -41,7 +42,7 @@ class AddLocation extends Component {
                 status: Object.assign({}, this.state.status, {[key]: location}),
             });
             this.state.status = Object.assign({}, this.state.status, {[key]: location});
-            this.props.updateLocations(this.state.status);
+            this.props.updateLocations(Object.values(this.state.status));
         }
 
         deleteLocation = (keyId) => {

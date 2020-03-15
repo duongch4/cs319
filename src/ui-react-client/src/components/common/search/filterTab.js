@@ -121,7 +121,6 @@ class FilterTab extends Component {
   render(){
 
     const {showing} = this.state;
-    console.log(this.props.masterlist);
 
     return (
     <div className="form-section">
