@@ -96,18 +96,30 @@ class FilterTab extends Component {
                 filter: {
                     ...this.state.searchFilter.filter,
                     locations: this.state.locations_temp,
+                    disciplines: this.state.disciplines_temp,
+                    yearsOfExps: this.state.years_temp,
                     },
                 },
         });
         this.state.searchFilter.filter.locations = this.state.locations_temp;
+        this.state.searchFilter.filter.disciplines = this.state.disciplines_temp;
+        this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
     }
 
     updateLocations = (newLocation) => {
-        this.setState({
-            ...this.state,
-            locations_temp: newLocation.slice(),
-        });
-        this.state.locations_temp = newLocation.slice();
+        var loc_arr = [];
+        newLocation.forEach((location) => {
+            if(location.cities.length !== 0){
+                location.cities.forEach((city) => {
+                    loc_arr.push({province: location.province, city: city});
+                    this.setState({
+                        ...this.state,
+                        locations_temp: loc_arr,
+                    });
+                });
+            }
+        })
+        this.state.locations_temp = loc_arr;
     }
 
     updateDisciplines = (newDiscipline) => {
@@ -119,7 +131,6 @@ class FilterTab extends Component {
     }
 
     updateYears = (years) => {
-        console.log(years);
         this.setState({
             ...this.state,
             years_temp: years.slice(),
@@ -128,8 +139,6 @@ class FilterTab extends Component {
     }
 
   render(){
-    console.log(this.state);
-
     const {showing} = this.state;
 
     return (
