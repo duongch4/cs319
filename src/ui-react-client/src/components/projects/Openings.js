@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './ProjectStyles.css';
 import {Button} from "@material-ui/core";
 
-const Openings = ({ opening, index, commitment, isAssignable }) => {
+const Openings = ({ opening, index, commitment, isAssignable, isRemovable, removeOpening}) => {
 
     const skills = [];
     if(opening.skills){
@@ -33,6 +33,17 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
                             style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                             disableElevation>
                         Assign
+                    </Button>
+                </div>
+            </div>)}
+        {isRemovable &&
+            (<div className="card-summary-title assign">
+                <div>
+                    <Button variant="contained"
+                            style={{backgroundColor: "#EB5757", color: "#ffffff", size: "small" }}
+                            onClick={() => removeOpening(opening)}
+                            disableElevation>
+                        Remove
                     </Button>
                 </div>
             </div>)}
