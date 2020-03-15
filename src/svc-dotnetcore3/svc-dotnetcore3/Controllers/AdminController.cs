@@ -404,108 +404,110 @@ namespace Web.API.Controllers {
             }
         }
     
-        // /// <summary>Create a new province</summary>
-        // /// <remarks>
-        // /// Sample request:
-        // ///
-        // ///     POST /api/admin/provinces
-        // ///
-        // /// </remarks>
-        // /// <param name="province"></param>
-        // /// <returns>The name of the newly created province</returns>
-        // /// <response code="200">Returns the province name</response>
-        // /// <response code="400">Bad Request</response>
-        // /// <response code="401">Unauthorized Request</response>
-        // /// <response code="500">Internal Server Error</response>
-        // [HttpPost]
-        // [Route("admin/provinces")]
-        // [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // public async Task<IActionResult> CreateAProvince([FromBody] string province) {
-        //     if (location == null)
-        //     {
-        //         var error = new BadRequestException("The given location is null / Request Body cannot be read");
-        //         return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-        //     }
+        /// <summary>Create a new province</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /api/admin/provinces
+        ///
+        /// </remarks>
+        /// <param name="province"></param>
+        /// <returns>The name of the newly created province</returns>
+        /// <response code="200">Returns the province name</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Route("admin/provinces")]
+        [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateAProvince([FromBody] string province) {
+            if (province == null)
+            {
+                var error = new BadRequestException("The given province is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
 
-        //     try
-        //     {
-        //         var createdLocationID = await locationsRepository.CreateALocation(location);
-        //         var response = new CreatedResponse<int>(createdLocationID, $"Successfully created location '{createdLocationID}'");
-        //         return StatusCode(StatusCodes.Status201Created, response);
-        //     }
-        //     catch (Exception err)
-        //     {
-        //         var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-        //         if (err is SqlException)
-        //         {
-        //             var error = new InternalServerException(errMessage);
-        //             return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
-        //         }
-        //         else
-        //         {
-        //             var error = new BadRequestException(errMessage);
-        //             return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-        //         }
-        //     }
-        // }
+            try
+            {
+                var createdProvinceName = await locationsRepository.CreateAProvince(province);
+                var response = new CreatedResponse<string>(createdProvinceName, $"Successfully created province '{createdProvinceName}'");
+                Log.Information("@{a}", response);
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                }
+                else
+                {
+                    Log.Information("second bad request");
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
+            }
+        }
 
-        // /// <summary>Delete a province</summary>
-        // /// <remarks>
-        // /// Sample request:
-        // ///
-        // ///     DELETE /api/admin/provinces/Alberta
-        // ///
-        // /// </remarks>
-        // /// <param name="province"></param>
-        // /// <returns>The name of the deleted province</returns>
-        // /// <response code="200">Returns the name of the deleted province</response>
-        // /// <response code="400">Bad Request</response>
-        // /// <response code="401">Unauthorized Request</response>
-        // /// <response code="404">If no provinces are found</response>
-        // /// <response code="500">Internal Server Error</response>
-        // [HttpDelete]
-        // [Route("admin/provinces/{province}")]
-        // [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        // [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        // [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        // public async Task<IActionResult> DeleteAProvince([FromRoute] string province) {
-        //     if (locationID == 0)
-        //     {
-        //         var error = new BadRequestException("The given location ID is invalid");
-        //         return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-        //     }
+        /// <summary>Delete a province</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     DELETE /api/admin/provinces/Alberta
+        ///
+        /// </remarks>
+        /// <param name="province"></param>
+        /// <returns>The name of the deleted province</returns>
+        /// <response code="200">Returns the name of the deleted province</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="404">If no provinces are found</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpDelete]
+        [Route("admin/provinces/{province}")]
+        [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteAProvince([FromRoute] string province) {
+            if (province == null)
+            {
+                var error = new BadRequestException("The given province is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
 
-        //     try
-        //     {
-        //         var deleted = await locationsRepository.DeleteALocation(locationID);
-        //         if (deleted == null)
-        //         {
-        //             var error = new NotFoundException("The given location cannot be found on database");
-        //             return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
-        //         }
-        //         var response = new DeletedResponse<int>(deleted.Id, $"Successfully deleted location '{deleted.Id}'");
-        //         return StatusCode(StatusCodes.Status200OK, response);
-        //     }
-        //     catch (Exception err)
-        //     {
-        //         var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-        //         if (err is SqlException)
-        //         {
-        //             var error = new InternalServerException(errMessage);
-        //             return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
-        //         }
-        //         else
-        //         {
-        //             var error = new BadRequestException(errMessage);
-        //             return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-        //         }
-        //     }
-        // }
+            try
+            {
+                var deleted = await locationsRepository.DeleteAProvince(province);
+                if (deleted == null)
+                {
+                    var error = new NotFoundException("The given province cannot be found on database");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                }
+                var response = new DeletedResponse<string>(deleted, $"Successfully deleted location '{deleted}'");
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
+            }
+        }
     
     }
 }

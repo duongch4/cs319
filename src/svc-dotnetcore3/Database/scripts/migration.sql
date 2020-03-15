@@ -14,13 +14,18 @@ CREATE TABLE [dbo].[Disciplines]
     [Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
     [Name] NVARCHAR(100) NOT NULL UNIQUE
 )
+CREATE TABLE [dbo].[Provinces]
+(
+	[Name] [nvarchar] (100) NOT NULL PRIMARY KEY
+)
 CREATE TABLE [dbo].[Locations]
 (
 	[Id] [int] NOT NULL IDENTITY(1,1),
 	[Province] [nvarchar](100),
 	[City] [nvarchar](100) NOT NULL,
 	CONSTRAINT [PK_Locations] PRIMARY KEY CLUSTERED ([Id]),
-	CONSTRAINT [UK_City_Province] UNIQUE ([City], [Province])
+	CONSTRAINT [FK_Locations_Provinces] FOREIGN KEY ([Province]) REFERENCES [Provinces]([Name]) ON DELETE NO ACTION,
+	CONSTRAINT [UK_Locations_CityProv] UNIQUE ([City] , [Province])
 )
 CREATE TABLE [dbo].[Users]
 (
@@ -118,3 +123,6 @@ CREATE TABLE [dbo].[OutOfOffice]
 		CONSTRAINT [FK_OutOfOffice_ResourceId] FOREIGN KEY ([ResourceId]) REFERENCES [Users]([Id])
 		CONSTRAINT [PK_OutOfOffice] PRIMARY KEY ([ResourceId], [FromDate], [ToDate])
 )
+
+
+
