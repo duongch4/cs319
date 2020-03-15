@@ -72,7 +72,6 @@ class Admin extends Component {
                         },
                         location: {
                             ...this.state.location,
-                            // province: Object.keys(masterlist.locations)[0],
                             id: Object.values(masterlist.locations).length > 0 ? Object.values(Object.values(masterlist.locations)[0])[0] : 0
                         },
                         selectedprovince: Object.keys(masterlist.locations)[0]
@@ -103,8 +102,7 @@ class Admin extends Component {
         else if(prevProps.masterlist !== this.props.masterlist){
             this.setState({
                 ...this.state,
-                masterlist: this.props.masterlist,
-                // selectedprovince: Object.keys(this.props.masterlist.locations)[0]
+                masterlist: this.props.masterlist
             })
         }
         
@@ -213,11 +211,6 @@ class Admin extends Component {
             case "discipline":
                 return this.setState({
                     ...this.state,
-                    // discipline: {
-                    //     ...this.state.discipline,
-                    //     id: id,
-                    //     name: elem
-                    // },
                     skill: {
                         ...this.state.skill,
                         disciplineID: id
@@ -272,7 +265,6 @@ class Admin extends Component {
     }
 
     render() {
-        console.log(this.state)
         const disciplinesObj = this.state.masterlist.disciplines
         
         var disciplineName = null
