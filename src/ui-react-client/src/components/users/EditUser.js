@@ -46,12 +46,12 @@ class EditUser extends Component {
     }
 
     onSubmit = () => {
-        this.props.updateSpecificUser(this.state.userProfile)
+        this.props.updateSpecificUser(this.state.userProfile, this.props.history)
     };
 
     addDisciplines = (opening) => {
         let discipline = {
-            disciplineID: 0,
+            disciplineID: this.state.masterlist.disciplines[opening.discipline].disciplineID,
             discipline: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills

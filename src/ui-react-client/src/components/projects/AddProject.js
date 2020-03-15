@@ -23,9 +23,9 @@ class AddProject extends Component {
                 projectNumber: ""
             },
             projectManager: {
-                userID: 0,
-                firstName: "",
-                lastName: ""
+                userID: 2,
+                firstName: "Charles",
+                lastName: "Bartowski"
             },
             usersSummary: [],
             openings: [],
@@ -66,6 +66,7 @@ class AddProject extends Component {
     };
 
     addProjDetails = (project) => {
+        console.log(project);
         this.setState({
             projectProfile: {
                 ...this.state.projectProfile,
@@ -74,7 +75,8 @@ class AddProject extends Component {
                     title: project.title,
                     projectStartDate: project.projectStartDate,
                     projectEndDate: project.projectEndDate,
-                    location: project.location
+                    location: project.location,
+                    projectNumber: project.projectNumber
                 }
             }
         })
@@ -82,7 +84,7 @@ class AddProject extends Component {
 
     onSubmit = () => {
         let newProject = this.state.projectProfile;
-        this.props.createProject(newProject);
+        this.props.createProject(newProject, this.props.history);
     };
 
     render() {

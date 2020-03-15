@@ -6,12 +6,7 @@ const executeLoadSingleProjectData = action => {
 };
 
 const executeCreateProjectData = (state, action) => {
-    return {
-        projects: [
-            ...state.projects, // TODO: This errors on the front end - check integration
-            action.projectProfile
-        ]
-    };
+    return action.projectProfile;
 };
 
 const executeUpdateProjectData = (action) => {
@@ -19,7 +14,6 @@ const executeUpdateProjectData = (action) => {
 };
 
 const executeDeleteProjectData = () => {
-    // TODO maybe not the correct place for deleting data
     return {};
 };
 
