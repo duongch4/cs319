@@ -13,6 +13,7 @@ import DisciplineSearch from "./DisciplineSearch";
 import LocationsSearch from "./LocationsSearch";
 import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
+import AddYears from './AddYears';
 
 class FilterTab extends Component {
     constructor(props) {
@@ -43,6 +44,7 @@ class FilterTab extends Component {
               disciplines_view: [],
               disciplines_temp: [],
               years_temp: [],
+              years_view: [],
               locations_temp: [],
               location_count: 1,
               discipline_count: 1,
@@ -119,7 +121,7 @@ class FilterTab extends Component {
     }
 
   render(){
-    console.log(this.props);
+    console.log(this.props.masterlist);
 
     const {showing} = this.state;
 
@@ -156,6 +158,10 @@ class FilterTab extends Component {
                     <AddDisciplines disciplines={this.props.masterlist.disciplines}
                                         yearsOfExp={this.props.masterlist.yearsOfExp}
                                         updateDisciplines={this.updateDisciplines}/>
+                    </div>
+                    {this.state.disciplines_view}
+                    <div className="form-row">
+                    <AddYears />
                     </div>
                     {this.state.disciplines_view}
                 <div style={{padding: "20px"}}>

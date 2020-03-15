@@ -15,7 +15,6 @@ class DisciplineSearch extends Component {
         {
         name: null,
         skills: [],
-        yearsOfExp: null,
         },
       skills_arr: [],
     };
@@ -29,14 +28,7 @@ class DisciplineSearch extends Component {
               skills: skills_arr
             }
          }, this.updateSkill(e.target.value));
-      } else if (e.target.id === "yearsOfExp") {
-          this.setState({
-            disciplines: {
-                ...this.state.disciplines,
-              yearsOfExp: e.target.value
-             }
-            }, this.updateYears(e.target.value));
-      } else {
+        } else {
            var skills_arr = [...this.state.disciplines.skills, e.target.value];
           this.setState({
             disciplines: {
@@ -52,10 +44,6 @@ class DisciplineSearch extends Component {
     updateSkill = (val) => {
         this.state.disciplines.skills = [val];
     }
-    updateYears = (val) => {
-        this.state.disciplines.yearsOfExp = val;
-    }
-
     updateDisciplines = (name, skills) => {
         this.state.disciplines.name = name;
         this.state.disciplines.skills = skills;
@@ -63,7 +51,6 @@ class DisciplineSearch extends Component {
 
   render(){
     var disciplines = this.props.disciplines;
-    var yearsOfExperience = this.props.masterYearsOfExperience;
 
     var discipline_render = [];
     var all_disciplines_keys = Array.from(Object.keys(disciplines));
@@ -77,15 +64,13 @@ class DisciplineSearch extends Component {
       skill_render = <option disabled>Please select a discipline</option>
     } else {
         skills = disciplines[this.state.disciplines.name];
-        skills.forEach((skill, i) => {
+        console.log(skills["skills"]);
+        skills["skills"].forEach((skill, i) => {
           skill_render.push(<option key={"skills_" + i} value={skill}>{skill}</option>)
       })
     }
 
     var range_render = [];
-    yearsOfExperience.forEach((yearsOfExperience, i) => {
-        range_render.push(<option key={"yearsOfExperience_" + i} value={yearsOfExperience}>{yearsOfExperience}</option>)
-    });
 
         return (
         <div className="form-section">
@@ -113,14 +98,6 @@ class DisciplineSearch extends Component {
 
                 
             </div>
-            <label className="form-row" htmlFor= "yearsOfExp">
-                <p className="form-label">Years of Experience</p>
-                <select className="input-box" defaultValue={'DEFAULT'}
-                        id="yearsOfExp" onChange={this.handleChange}>
-                    <option value="DEFAULT" disabled>Select a range</option>
-                    {range_render}
-                </select>
-            </label>
         </div>
         </div>
         );

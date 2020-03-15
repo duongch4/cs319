@@ -66,7 +66,7 @@ class LocationsSearch extends Component {
     } else {
         cities = this.state.cities;
         cities_render.push(<option value="DEFAULT" disabled>City</option>);
-        cities.forEach((city, i) => {
+        Object.keys(cities).forEach((city, i) => {
         cities_render.push(<option key={"cities_" + i} value={city}>{city}</option>)
       })
     }

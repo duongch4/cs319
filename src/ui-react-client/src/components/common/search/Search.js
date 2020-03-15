@@ -33,14 +33,19 @@ class Search extends Component {
   }
 
   render() {
+    if(Object.keys(this.state.masterlist).length === 0 ){
+      return <div/>
+    } else {
     return (
       <div className="activity-container">
-        <FilterTab onDataFetched={this.handleResultChange} />
+        <FilterTab onDataFetched={this.handleResultChange} 
+                  masterlist={this.state.masterlist}/>
         {(this.state.data.length != 0) &&
         <SearchResults data={initialState.users} />}
       </div>
     )
   }
+}
 }
 
 const mapStateToProps = state => {
