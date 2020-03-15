@@ -411,7 +411,7 @@ namespace Web.API.Controllers {
         ///     POST /api/admin/provinces
         ///
         /// </remarks>
-        /// <param name="province"></param>
+        /// <param name="location"></param>
         /// <returns>The name of the newly created province</returns>
         /// <response code="200">Returns the province name</response>
         /// <response code="400">Bad Request</response>
@@ -423,8 +423,8 @@ namespace Web.API.Controllers {
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateAProvince([FromBody] string province) {
-            if (province == null)
+        public async Task<IActionResult> CreateAProvince([FromBody] LocationResource location) {
+            if (location == null)
             {
                 var error = new BadRequestException("The given province is null / Request Body cannot be read");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
@@ -432,7 +432,7 @@ namespace Web.API.Controllers {
 
             try
             {
-                var createdProvinceName = await locationsRepository.CreateAProvince(province);
+                var createdProvinceName = await locationsRepository.CreateAProvince(location.Province);
                 var response = new CreatedResponse<string>(createdProvinceName, $"Successfully created province '{createdProvinceName}'");
                 Log.Information("@{a}", response);
                 return StatusCode(StatusCodes.Status201Created, response);

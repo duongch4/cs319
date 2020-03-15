@@ -6,19 +6,19 @@ Insert into Disciplines (Id, [Name]) values (4, N'Cryptography');
 Insert into Disciplines (Id, [Name]) values (5, N'Intel');
 Set IDENTITY_INSERT [dbo].[Disciplines] OFF
 
-Insert into Provinces values (N'Alberta');
-Insert into Provinces values (N'British Columbia');
-Insert into Provinces values (N'Manitoba');
-Insert into Provinces values (N'New Brunswick');
-Insert into Provinces values (N'Newfoundland and Labrador');
-Insert into Provinces values (N'Northwest Territories');
-Insert into Provinces values (N'Nova Scotia');
-Insert into Provinces values (N'Nunavut');
-Insert into Provinces values (N'Ontario');
-Insert into Provinces values (N'Prince Edward Island');
-Insert into Provinces values (N'Quebec');
-Insert into Provinces values (N'Saskatchewan');
-Insert into Provinces values (N'Yukon');
+Insert into [dbo].[Provinces] values (N'Alberta');
+Insert into [dbo].[Provinces] values (N'British Columbia');
+Insert into [dbo].[Provinces] values (N'Manitoba');
+Insert into [dbo].[Provinces] values (N'New Brunswick');
+Insert into [dbo].[Provinces] values (N'Newfoundland and Labrador');
+Insert into [dbo].[Provinces] values (N'Northwest Territories');
+Insert into [dbo].[Provinces] values (N'Nova Scotia');
+Insert into [dbo].[Provinces] values (N'Nunavut');
+Insert into [dbo].[Provinces] values (N'Ontario');
+Insert into [dbo].[Provinces] values (N'Prince Edward Island');
+Insert into [dbo].[Provinces] values (N'Quebec');
+Insert into [dbo].[Provinces] values (N'Saskatchewan');
+Insert into [dbo].[Provinces] values (N'Yukon');
 
 Set IDENTITY_INSERT [dbo].[Skills] ON
 Insert into Skills (DisciplineId, Id, [Name]) values (1, 10, N'Glock');

@@ -7,7 +7,10 @@ export const executeLoadMasterlistsData = action => {
 
 export const executeCreateDiscipline = (action, state) => {
     let newDisciplines = state.disciplines
-    newDisciplines[action.disciplines.name] = []
+    newDisciplines[action.disciplines.name] = {
+        disciplineID: action.disciplines.id,
+        skills: []
+    }
     let newState = {
         ...state,
         disciplines: newDisciplines
@@ -44,7 +47,7 @@ export const executeCreateProvince = (action, state) => {
 export const executeCreateCity = (action, state) => {
     let newLocation = state.locations
     let newCity = state.locations[action.location.province]
-    newCity[action.location.city] = 0
+    newCity[action.location.city] = action.location.id
     for(var province in newLocation){
         if(province === action.location.province){
             newLocation[action.location.province] = newCity
@@ -112,9 +115,16 @@ export const executeDeleteProvince = (action, state) => {
 export const executeDeleteCity = (action, state) => {
     const newLocations = Object.keys(state.locations).reduce((object, key) => {
         Object.keys(state.locations[key]).forEach(item => {
-            
             if(state.locations[key][item] !== action.id){
-                object[key] = {[item]: state.locations[key][item]}
+                let newObj = object[key] ? object[key] : {};
+                newObj[item] = state.locations[key][item];
+                object[key] = newObj;
+            } else {
+                if(object[key]){
+                    // do nothing
+                } else {
+                    object[key] = {}
+                }
             }
         })
         return object

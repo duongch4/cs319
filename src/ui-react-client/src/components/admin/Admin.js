@@ -72,7 +72,6 @@ class Admin extends Component {
                         },
                         location: {
                             ...this.state.location,
-                            province: Object.keys(masterlist.locations)[0],
                             id: Object.values(masterlist.locations).length > 0 ? Object.values(Object.values(masterlist.locations)[0])[0] : 0
                         },
                         selectedprovince: Object.keys(masterlist.locations)[0]
@@ -81,16 +80,18 @@ class Admin extends Component {
             }
         }
     }
-
     componentDidUpdate(prevProps){
-        if(this.props.masterlist.disciplines[this.state.discipline.name] === undefined){
+        let found = false;
+        Object.values(this.props.masterlist.disciplines).filter(elem => {
+            if(elem.disciplineID === this.state.skill.disciplineID){
+                found = true
+            }
+            return true;
+        })
+        if(!found){
             let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
             this.setState({
                 ...this.state,
-                discipline: {
-                    name: disciplineName,
-                    id: this.props.masterlist.disciplines[disciplineName].disciplineID
-                },
                 skill: {
                     ...this.state.skill,
                     disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
@@ -101,13 +102,13 @@ class Admin extends Component {
         else if(prevProps.masterlist !== this.props.masterlist){
             this.setState({
                 ...this.state,
-                masterlist: this.props.masterlist,
-                selectedprovince: Object.keys(this.props.masterlist.locations)[0]
+                masterlist: this.props.masterlist
             })
         }
         
         
     }
+
 
     handleChange = (e) => {
         this.setState({
@@ -133,13 +134,58 @@ class Admin extends Component {
         e.preventDefault();
         switch(e.target.name) {
             case "discipline":
-                return this.props.createDiscpline(this.state.discipline);
+                const discipline = this.state.discipline;
+                this.props.createDiscpline(discipline);
+                this.setState({
+                    ...this.state,
+                    discipline: {
+                        name: "",
+                        id: 0
+                    }
+                }, () => console.log(this.state))
+                
+                return;
             case "skill":
-                return this.props.createSkill(this.state.skill);
+                const skill = this.state.skill;
+                this.props.createSkill(skill);
+                this.setState({
+                    ...this.state,
+                    skill:{
+                        ...this.state.skill,
+                        name: ""
+                    }
+                })
+                return ;
             case "province":
-                return this.props.createProvince(this.state.location);
+                const location = this.state.location;
+                this.props.createProvince(location);
+                this.setState({
+                    ...this.state,
+                    location:{
+                        ...this.state.location,
+                        province: ""
+                    }
+                })
+                return;
             case "city":
-                return this.props.createCity(this.state.location);
+                this.setState({
+                    ...this.state,
+                    location: {
+                        ...this.state.location,
+                        province: this.state.selectedprovince
+                    }
+                }, () =>  {
+                    this.props.createCity(this.state.location)
+                    this.setState({
+                        ...this.state,
+                        location:{
+                            ...this.state.location,
+                            city: "",
+                            province: "",
+                        }
+                    })})
+                
+                return;
             default:
                 console.log("ERR")
         }
@@ -165,11 +211,6 @@ class Admin extends Component {
             case "discipline":
                 return this.setState({
                     ...this.state,
-                    discipline: {
-                        ...this.state.discipline,
-                        id: id,
-                        name: elem
-                    },
                     skill: {
                         ...this.state.skill,
                         disciplineID: id
@@ -183,7 +224,6 @@ class Admin extends Component {
                     ...this.state,
                     location: {
                         ...this.state.location,
-                        province: elem,
                     }, 
                     selectedprovince: elem
                 });
@@ -255,15 +295,15 @@ class Admin extends Component {
                     <h2>Disciplines</h2>
                     {disciplineList}
                     <form name="discipline" onSubmit={this.onSubmit}>
-                    <input type="text" onChange={this.handleChange} name="discipline"/>
+                    <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
                     </form>
-                    <button name="discipline" id="discipline" onClick={this.onSubmit}>Add Discipline</button>
+                    <button name="discipline" id="discipline" onClick={this.onSubmit} >Add Discipline</button>
                 </div>
                 <div>
                     <h2>{selectedDiscipline} Skills</h2>
                     {skillList}
                     <form name="skill" onSubmit={this.onSubmit}>
-                        <input type="text" onChange={this.handleChange} name="skill"/>
+                        <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
                     </form>
                     <button id="skill" name="skill" onClick={this.onSubmit}>Add Skill</button>
                 </div>
@@ -271,15 +311,15 @@ class Admin extends Component {
                     <h2>Province</h2>
                     {provinceList}
                     <form name="province" onSubmit={this.onSubmit}>
-                        <input type="text" onChange={this.handleLocationChange} name="province"/>
+                        <input type="text" onChange={this.handleLocationChange} value={this.state.location.province} name="province"/>
                     </form>
-                    <button id="province" name="province" onClick={this.onSubmit}>Add Province</button>
+                    <button id="province" name="province" onClick={this.onSubmit} >Add Province</button>
                 </div>
                 <div>
                     <h2>{selectedProvince} Cities</h2>
                     {cityList}
                     <form name="city" onSubmit={this.onSubmit}>
-                        <input type="text" onChange={this.handleLocationChange} name="city"/>
+                        <input type="text" onChange={this.handleLocationChange} value={this.state.location.city} name="city"/>
                     </form>
                     <button id="city" name="city" onClick={this.onSubmit}>Add City</button>
                 </div>
