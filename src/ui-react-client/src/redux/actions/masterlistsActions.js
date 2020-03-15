@@ -41,6 +41,36 @@ export const createCityData = location => {
     }
 }
 
+export const deleteDisciplineData = id => {
+    return {
+        type: types.DELETE_DISCIPLINE,
+        id: id
+    }
+}
+
+export const deleteSkillData = (disciplineID, skillName) => {
+    return {
+        type: types.DELETE_SKILL,
+        disciplineID: disciplineID,
+        skillName: skillName
+    }
+}
+
+export const deleteProvinceData = (provinceName) => {
+    return {
+        type: types.DELETE_PROVINCE,
+        provinceName: provinceName,
+    }
+}
+
+export const deleteCityData = (cityName, id) => {
+    return {
+        type: types.DELETE_CITY,
+        name: cityName,
+        id: id
+    }
+}
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -95,6 +125,50 @@ export const createCity = (location) => {
             dispatch(createCityData(location))
         } else {
             // TODO
+        }
+    } 
+}
+
+export const deleteDiscipline = (id) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteDisciplineData(id))
+        } else {
+            // TODO
+            dispatch(deleteDisciplineData(id))
+        }
+    } 
+}
+
+export const deleteSkill = (disciplineID, skillName) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteSkillData(disciplineID, skillName))
+        } else {
+            // TODO
+            dispatch(deleteSkillData(disciplineID, skillName))
+        }
+    } 
+}
+
+export const deleteProvince = (provinceName) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteProvinceData(provinceName))
+        } else {
+            // TODO
+            dispatch(deleteProvinceData(provinceName))
+        }
+    } 
+}
+
+export const deleteCity = (cityName, id) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteCityData(cityName, id))
+        } else {
+            // TODO - backend only needs id, but keep cityName to make the reducer easier to deal with
+            dispatch(deleteCityData(cityName, id))
         }
     } 
 }
