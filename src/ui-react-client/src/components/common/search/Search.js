@@ -9,7 +9,7 @@ class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
+      resultUsers: [],
       masterlist: {},
     };
     this.handleResultChange = this.handleResultChange.bind(this);
@@ -28,11 +28,13 @@ class Search extends Component {
   handleResultChange(data) {
     this.setState({
       ...this.state,
-      data,
+      resultUsers: data,
     });
+    this.state.resultUsers = data;
   }
 
   render() {
+    console.log(this.state);
     if(Object.keys(this.state.masterlist).length === 0 ){
       return <div/>
     } else {
@@ -40,8 +42,8 @@ class Search extends Component {
       <div className="activity-container">
         <FilterTab onDataFetched={this.handleResultChange} 
                   masterlist={this.state.masterlist}/>
-        {(this.state.data.length != 0) &&
-        <SearchResults data={initialState.users} />}
+        {(this.state.resultUsers.length != 0) &&
+        <SearchResults data={this.state.resultUsers} />}
       </div>
     )
   }

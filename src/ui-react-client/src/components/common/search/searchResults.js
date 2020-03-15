@@ -10,7 +10,6 @@ class SearchResults extends Component {
 
     render(){
         var users = this.props.data;
-        console.log(users);
         const userCards =[];
         
         users.forEach(user => {

@@ -35,12 +35,15 @@ class YearsSearch extends Component {
     });
 
     return (
-    <div className="form-section">
+        <div>
+<div className="form-section">
         <div className="form-row">
         <Select id="years" key={year_key} className="input-box" onChange={this.handleChange} options={year_format} isMulti
                         placeholder='Years' />
         </div>
     </div>
+        </div>
+    
         );
     }
 }

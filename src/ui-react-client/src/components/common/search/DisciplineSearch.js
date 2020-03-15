@@ -20,8 +20,6 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
-
-          var skills_arr = [...this.state.disciplines.skills, e.target.value];
           this.setState({
             disciplines: {
                   ...this.state.disciplines,

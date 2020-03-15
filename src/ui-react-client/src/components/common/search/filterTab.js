@@ -13,6 +13,7 @@ import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
 
+
 class FilterTab extends Component {
     constructor(props) {
         super(props);
@@ -29,6 +30,7 @@ class FilterTab extends Component {
                     startDate: null,
                     endDate: null,
                 },
+                searchWord: null,
                 orderKey: "utilization",
                 order: "desc",
                 page: 1,
@@ -74,18 +76,15 @@ class FilterTab extends Component {
         this.setState({
           searchFilter: {
             ...this.state.searchFilter,
-          filter: {
-            ...this.state.searchFilter.filter,
             searchWord: e.target.value
-          }
         }
         });
       }
+      this.state.searchFilter.searchWord = e.target.value;
     };
 
     onSubmit = () => {
-        //not connected yet... fake data being passed out
-       this.props.onDataFetched(this.state.searchFilter);
+       var results = this.props.performUserSearch(this.state.searchFilter);
     };
 
     saveFilter = () => {
@@ -104,7 +103,6 @@ class FilterTab extends Component {
         this.state.searchFilter.filter.locations = this.state.locations_temp;
         this.state.searchFilter.filter.disciplines = this.state.disciplines_temp;
         this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
-        console.log(this.state);
     }
 
     updateLocations = (newLocation) => {
@@ -170,17 +168,20 @@ class FilterTab extends Component {
                     {this.state.stickerHTML}
                 </div>
                 <div className="form-section opening">
+                <h3 className="darkGreenHeader">Locations</h3>
                    <div className="form-row">
                    <AddLocation locations={this.props.masterlist.locations}
                                 updateLocations={this.updateLocations}/>
                    </div>
                    {this.state.locations_view}
+                   <h3 className="darkGreenHeader">Disciplines</h3>
                     <div className="form-row">
                     <AddDisciplines disciplines={this.props.masterlist.disciplines}
                                         yearsOfExp={this.props.masterlist.yearsOfExp}
                                         updateDisciplines={this.updateDisciplines}/>
                     </div>
                     {this.state.disciplines_view}
+                    <h3 className="darkGreenHeader">Years of Experience</h3>
                     <div className="form-row">
                     <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}
                                 updateYears={this.updateYears}/>
