@@ -7,6 +7,7 @@ DROP TABLE Skills;
 DROP TABLE Projects;
 DROP TABLE Users;
 DROP TABLE Locations;
+DROP TABLE Provinces;
 DROP TABLE Disciplines;
 
 CREATE TABLE [dbo].[Disciplines]
