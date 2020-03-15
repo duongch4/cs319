@@ -143,7 +143,7 @@ class Admin extends Component {
                         name: "",
                         id: 0
                     }
-                }, () => console.log("STAT", this.state))
+                })
                 
                 return;
             case "skill":
@@ -201,11 +201,11 @@ class Admin extends Component {
             case "discipline":
                 return this.setState({
                     ...this.state,
-                    discipline: {
-                        ...this.state.discipline,
-                        id: id,
-                        name: elem
-                    },
+                    // discipline: {
+                    //     ...this.state.discipline,
+                    //     id: id,
+                    //     name: elem
+                    // },
                     skill: {
                         ...this.state.skill,
                         disciplineID: id
@@ -219,7 +219,6 @@ class Admin extends Component {
                     ...this.state,
                     location: {
                         ...this.state.location,
-                        province: elem,
                     }, 
                     selectedprovince: elem
                 });
@@ -292,9 +291,9 @@ class Admin extends Component {
                     <h2>Disciplines</h2>
                     {disciplineList}
                     <form name="discipline" onSubmit={this.onSubmit}>
-                    <input type="text" onChange={this.handleChange} name="discipline"/>
+                    <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
                     </form>
-                    <button name="discipline" id="discipline" onClick={this.onSubmit} value={this.state.discipline.name}>Add Discipline</button>
+                    <button name="discipline" id="discipline" onClick={this.onSubmit} >Add Discipline</button>
                 </div>
                 <div>
                     <h2>{selectedDiscipline} Skills</h2>
