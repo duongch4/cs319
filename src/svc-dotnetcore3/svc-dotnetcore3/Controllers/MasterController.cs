@@ -114,7 +114,10 @@ namespace Web.API.Controllers
             char[] sep = { ',' };
             return disciplineResources.ToDictionary(
                 disciplineResource => disciplineResource.Name,
-                disciplineResource => new MasterDiscipline() { DisciplineID = disciplineResource.Id, Skills = disciplineResource.Skills.Split(sep) }
+                disciplineResource => new MasterDiscipline() {
+                    DisciplineID = disciplineResource.Id,
+                    Skills = (disciplineResource.Skills != null && disciplineResource.Skills != "") ? disciplineResource.Skills.Split(sep) : Enumerable.Empty<string>()
+                }
             );
         }
 
