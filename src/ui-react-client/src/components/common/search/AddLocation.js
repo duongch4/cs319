@@ -28,10 +28,7 @@ class AddLocation extends Component {
             status: {...this.state.status, [keyId]:{province: null, city: null} },
             count: this.state.count + 1,
             view: [...this.state.view, newLoc],
-        })
-        this.state.status = {...this.state.status, [keyId]:{province: null, city: null}};
-        this.state.count = this.state.count + 1;
-        this.state.view = [...this.state.view, newLoc];
+        });
       }
       
       addLocations = (state) => {
@@ -39,9 +36,7 @@ class AddLocation extends Component {
             var location = state.locations;
              this.setState({
                 status: Object.assign({}, this.state.status, {[key]: location}),
-            });
-            this.state.status = Object.assign({}, this.state.status, {[key]: location});
-            this.props.updateLocations(Object.values(this.state.status));
+            }, () => this.props.updateLocations(Object.values(this.state.status)));            
         }
 
         deleteLocation = (keyId) => {
@@ -57,8 +52,6 @@ class AddLocation extends Component {
                         status: status_mock,
                         view: mockState,
                     });
-                    this.state.view = mockState;
-                    this.state.status = status_mock;
                 }
             });
             }

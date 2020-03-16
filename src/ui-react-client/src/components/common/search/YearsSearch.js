@@ -18,9 +18,7 @@ class YearsSearch extends Component {
           this.setState({
               ...this.state,
             yearsOfExp: years_arr,
-         })
-        this.state.yearsOfExp = years_arr;
-        this.props.updateYears(this.state.yearsOfExp);
+         }, () => this.props.updateYears(this.state.yearsOfExp));
         };
 
   render(){

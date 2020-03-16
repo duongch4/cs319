@@ -80,7 +80,6 @@ class FilterTab extends Component {
         }
         });
       }
-      this.state.searchFilter.searchWord = e.target.value;
     };
 
     onSubmit = () => {
@@ -101,9 +100,6 @@ class FilterTab extends Component {
                     },
                 },
         });
-        this.state.searchFilter.filter.locations = this.state.locations_temp;
-        this.state.searchFilter.filter.disciplines = this.state.disciplines_temp;
-        this.state.searchFilter.filter.yearsOfExps = this.state.years_temp;
     }
 
     updateLocations = (newLocation) => {
@@ -119,7 +115,6 @@ class FilterTab extends Component {
                 });
             }
         })
-        this.state.locations_temp = loc_arr;
     }
 
     updateDisciplines = (newDiscipline) => {
@@ -131,7 +126,6 @@ class FilterTab extends Component {
             ...this.state,
             disciplines_temp: discipline_obj,
         });
-        this.state.disciplines_temp = discipline_obj;
     }
 
     updateYears = (years) => {
@@ -139,10 +133,10 @@ class FilterTab extends Component {
             ...this.state,
             years_temp: years.slice(),
         });
-        this.state.years_temp = years.slice();
     }
 
   render(){
+      console.log(this.state);
     const {showing} = this.state;
 
     return (

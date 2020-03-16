@@ -36,8 +36,7 @@ class AddDisciplines extends Component {
                 yearsOfExp: null,
                 }},
             count: this.state.count + 1,
-            view: [...this.state.view, newDisc],
-        })
+            view: [...this.state.view, newDisc]})
       }
       
       addDisciplines = (state) => {
@@ -45,8 +44,7 @@ class AddDisciplines extends Component {
             var disciplines = state.disciplines;
              this.setState({
                 status: Object.assign({}, this.state.status, {[key]: disciplines}),
-            });
-            this.props.updateDisciplines(Object.values(this.state.status));
+            }, () => this.props.updateDisciplines(Object.values(this.state.status)));
         }
 
         deleteDiscipline = (keyId) => {

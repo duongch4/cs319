@@ -18,9 +18,7 @@ class FilterStickers extends Component {
             showSticker: false,
             filterStickers: [],
             render: true,
-        });
-        this.state.showSticker = false;
-        this.state.render = true;
+        },() => this.render());
     }
 
     getLocations = (locations) => {

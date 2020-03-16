@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
 import initialState from '../../../redux/reducers/_initialState';
+import {CLIENT_DEV_ENV} from '../../../config/config';
 
 class Search extends Component {
   constructor(props) {
@@ -16,6 +17,13 @@ class Search extends Component {
   }
 
   componentDidMount() {
+    if (CLIENT_DEV_ENV) {
+        this.props.loadMasterlists()
+        this.setState({
+            ...this.state,
+            masterlist: this.props.masterlist,
+        })
+    } else {
         this.props.loadMasterlists()
         .then(() => {
             this.setState({
@@ -24,6 +32,7 @@ class Search extends Component {
             })
         })
     }
+}
 
   handleResultChange(data) {
     this.setState({
@@ -36,7 +45,7 @@ class Search extends Component {
   render() {
     console.log(this.state);
     if(Object.keys(this.state.masterlist).length === 0 ){
-      return <div/>
+      return <div>loading</div>
     } else {
     return (
       <div className="activity-container">

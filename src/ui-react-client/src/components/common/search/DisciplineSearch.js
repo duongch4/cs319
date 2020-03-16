@@ -26,19 +26,8 @@ class DisciplineSearch extends Component {
                   name: e.target.value,
                   skills: [],
               }
-          },this.updateDisciplines(e.target.value, []));
-    
-    this.props.addDisciplines(this.state);
+          }, () =>  this.props.addDisciplines(this.state));
     };
-    
-
-    updateSkill = (val) => {
-        this.state.disciplines.skills = [val];
-    }
-    updateDisciplines = (name, skills) => {
-        this.state.disciplines.name = name;
-        this.state.disciplines.skills = skills;
-    }
 
     handleChangeSkills = (e) => {
         if (e){
@@ -48,10 +37,8 @@ class DisciplineSearch extends Component {
                 ...this.state.disciplines,
                 skills: skills_array
               }
-           })
+           }, () => this.props.addDisciplines(this.state))
           }
-          this.state.disciplines.skills = skills_array;
-        this.props.addDisciplines(this.state);
        };
 
   render(){

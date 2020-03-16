@@ -27,7 +27,7 @@ class LocationsSearch extends Component {
               ...this.state.locations,
               province: e.target.value,
             },
-        }, this.props.addLocations(this.state));
+        }, () => this.props.addLocations(this.state));
     }
  
 
@@ -39,7 +39,7 @@ class LocationsSearch extends Component {
               ...this.state.locations,
               cities: cities_arr
             }
-         },this.props.addLocations(this.state));
+         }, () => this.props.addLocations(this.state));
         }
      };
 
