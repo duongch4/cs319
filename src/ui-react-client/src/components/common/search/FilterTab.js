@@ -42,18 +42,11 @@ class FilterTab extends Component {
             yearsOfExps: [],
         },
         masterlist: this.props.masterlist,
-        skills:[],
-        users: this.props.users,
         pending: true,
         showing: false,
-        locations_view: [],
-        disciplines_view: [],
         disciplines_temp: null,
         years_temp: [],
-        years_view: [],
         locations_temp: [],
-        location_count: 1,
-        discipline_count: 1,
         sticker_view: [],
         }
     }
@@ -94,6 +87,36 @@ class FilterTab extends Component {
        var results = this.props.performUserSearch(this.state.searchFilter);
     };
 
+    getFilters =() => {
+        var locations_good = [];
+        var disciplines_good = {};
+        var years_good = [];
+
+        this.state.stickers.locations.forEach((location) => {
+            locations_good = [...locations_good, {province: location.province, city: location.city}];
+        });
+
+        Object.entries(this.state.stickers.disciplines).forEach((discipline) => {
+            disciplines_good = Object.assign({}, disciplines_good, {[discipline[1].name]: discipline[1].skills})
+        });
+
+        this.state.stickers.yearsOfExps.forEach((year) => {
+            years_good = [...years_good, year];
+        });
+
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.state.searchFilter,
+                filter: {
+                    locations: locations_good,
+                    disciplines: disciplines_good,
+                    yearsOfExps: years_good,
+                }
+            }
+        }, () => this.onSubmit())
+    }
+
     saveFilter = () => {
         this.setState({
             ...this.state,
@@ -115,7 +138,7 @@ class FilterTab extends Component {
         if (locations.length !== 0) {
             locations.forEach((location) => {
                 newSticker = (
-                <FilterStickers label={location.city + ", " + location.province}
+                <FilterStickers key={location.locationID} label={location.city + ", " + location.province}
                                                 keyId={location.locationID}
                                                 type={"location"}
                                                 deleteFilter = {this.deleteFilter}/>);
@@ -127,7 +150,7 @@ class FilterTab extends Component {
         if (disciplines != null) {
             Object.entries(disciplines).forEach((discipline) => {
                 newSticker = (
-                <FilterStickers label={discipline[1].name + ": " + discipline[1].skills}
+                <FilterStickers key={discipline[0]} label={discipline[1].name + ": " + discipline[1].skills}
                                                 type={"discipline"}
                                                 keyId={discipline[0]}
                                                 deleteFilter = {this.deleteFilter}/>);
@@ -139,7 +162,7 @@ class FilterTab extends Component {
         if (years.length != 0) {
             years.forEach((year) => {
                 newSticker = (
-                    <FilterStickers label={year}
+                    <FilterStickers key={year} label={year}
                                     type={"year"}
                                     keyId={year}
                                     deleteFilter = {this.deleteFilter}/>);
@@ -161,52 +184,63 @@ class FilterTab extends Component {
             var location_mock = this.state.stickers.locations.slice();
             this.state.stickers.locations.forEach((location, index) => {
             if (location.locationID == keyId) {
-                view_mock.splice(index, 1);
-                delete location_mock[index];
+                location_mock.splice(index,1);
+                this.state.sticker_view.forEach((curr, index1) => {
+                    if (curr.key == keyId) {
+                        view_mock.splice(index1, 1);
+                    }
+                });
                 this.setState({
                     ...this.state,
                     stickers: {
+                        ...this.state.stickers,
                         locations: location_mock,
                     },
                     sticker_view: view_mock,
-                    });
+                    }, () => this.render());
                 }
             });
         } else if (type == "discipline") {
             var discipline_mock = this.state.stickers.disciplines;
             Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
-                console.log(discipline);
             if (discipline[0] == keyId) {
-                view_mock.splice(index, 1);
-                delete discipline_mock[index];
+                discipline_mock.splice(index,1);
+                this.state.sticker_view.forEach((curr, index1) => {
+                    if (curr.key == keyId) {
+                        view_mock.splice(index1, 1);
+                    }
+                });
                 this.setState({
                     ...this.state,
                     stickers: {
+                        ...this.state.stickers,
                         disciplines: discipline_mock,
                     },
                     sticker_view: view_mock,
-                    });
+                    }, () => this.render());
                 }
             });
         } else {
             var years_mock = this.state.stickers.yearsOfExps.slice();
-            console.log(years_mock);
             this.state.stickers.yearsOfExps.forEach((year, index) => {
-                console.log(year);
                 if (year == keyId) {
-                    view_mock.splice(index, 1);
-                    delete years_mock[year];
+                    years_mock.splice(index,1);
+                    this.state.sticker_view.forEach((curr, index1) => {
+                        if (curr.key == keyId) {
+                            view_mock.splice(index1, 1);
+                        }
+                    });
                     this.setState({
                         ...this.state,
                         stickers: {
+                            ...this.state.stickers,
                             yearsOfExps: years_mock,
                         },
                         sticker_view: view_mock,
-                        });
+                        }, () => this.render());
                     }
                 });
         }
-        console.log(this.state);
     }
 
     updateLocations = (newLocation) => {
@@ -225,10 +259,8 @@ class FilterTab extends Component {
     }
 
     updateDisciplines = (newDiscipline) => {
-        console.log(newDiscipline);
         var discipline_obj = {};
         newDiscipline.forEach((discipline) => {
-            console.log(discipline);
             discipline_obj[discipline[0]] = discipline[1];
         });
         this.setState({
@@ -252,7 +284,7 @@ class FilterTab extends Component {
             <form onSubmit={this.handleSubmit}>
                 <div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
-                    <SearchIcon style={{backgroundColor: "#87c34b", color: "white", borderRadius: "3px"}} size={"large"} onClick={()=> this.onSubmit()} />
+                    <SearchIcon style={{backgroundColor: "#87c34b", color: "white", borderRadius: "3px"}} size={"large"} onClick={()=> this.getFilters()} />
                 </div>
                 <div id="filter-closed" style={ {backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px",display:  (showing ? 'none' : 'block')}}>
                     <div style={{padding: "10px"}} >
@@ -276,20 +308,17 @@ class FilterTab extends Component {
                         <AddLocation locations={this.props.masterlist.locations}
                                         updateLocations={this.updateLocations}/>
                         </div>
-                        {this.state.locations_view}
                         <h3 className="darkGreenHeader">Disciplines</h3>
                         <div className="form-row">
                             <AddDisciplines disciplines={this.props.masterlist.disciplines}
                                                 yearsOfExp={this.props.masterlist.yearsOfExp}
                                                 updateDisciplines={this.updateDisciplines}/>
                         </div>
-                        {this.state.disciplines_view}
                         <h3 className="darkGreenHeader">Years of Experience</h3>
                         <div className="form-row">
                             <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}
                                         updateYears={this.updateYears}/>
                         </div>
-                        {this.state.disciplines_view}
                         <div style={{padding: "20px"}}>
                         <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                         </div>

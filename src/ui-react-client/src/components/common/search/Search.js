@@ -43,7 +43,6 @@ class Search extends Component {
   }
 
   render() {
-    console.log(this.state);
     if(Object.keys(this.state.masterlist).length === 0 ){
       return <div>loading</div>
     } else {

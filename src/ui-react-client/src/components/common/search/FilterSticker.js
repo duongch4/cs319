@@ -12,6 +12,7 @@ class FilterStickers extends Component {
       }
 
     closeTab = () => {
+        console.log(this.props.type);
         this.setState({
             showSticker: false,
             filterStickers: [],
@@ -19,7 +20,6 @@ class FilterStickers extends Component {
     }
 
     render(){ 
-        console.log(this.props);
         const {showing} = this.state.showSticker;
             return (
                 <div className="filter-sticker" style={{display: (showing ? 'none' : 'block')}}>
