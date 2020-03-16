@@ -6,10 +6,10 @@ import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}api/users/search`;
 
-export const getUsers = userSummary => {
+export const getUsers = users => {
     return {
       type: types.PERFORM_USER_SEARCH,
-      userSummary: userSummary
+      users: users
     };
   };
 
