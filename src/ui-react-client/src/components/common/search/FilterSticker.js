@@ -12,7 +12,6 @@ class FilterStickers extends Component {
       }
 
     closeTab = () => {
-        console.log(this.props.type);
         this.setState({
             showSticker: false,
             filterStickers: [],

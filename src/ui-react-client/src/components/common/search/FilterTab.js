@@ -202,9 +202,10 @@ class FilterTab extends Component {
             });
         } else if (type == "discipline") {
             var discipline_mock = this.state.stickers.disciplines;
+            console.log(discipline_mock);
             Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
             if (discipline[0] == keyId) {
-                discipline_mock.splice(index,1);
+                delete discipline_mock[keyId];
                 this.state.sticker_view.forEach((curr, index1) => {
                     if (curr.key == keyId) {
                         view_mock.splice(index1, 1);
