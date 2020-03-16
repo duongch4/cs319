@@ -16,7 +16,6 @@ class LocationsSearch extends Component {
             province: null, 
             cities: [],
           },
-      cities: [],
     };
 
     handleChange = (e) => {
