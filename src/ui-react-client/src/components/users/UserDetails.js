@@ -53,30 +53,35 @@ class UserDetails extends Component {
             }
 
             const currentProjects = [];
-            if(userDetails.currentProjects){
+            if(userDetails.currentProjects && userDetails.currentProjects.length > 0){
                 userDetails.currentProjects.forEach((project, index) => {
                     let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
                     currentProjects.push(
-                        <Link to={'/projects/' + project.projectNumber}>
-                            <ProjectCard number={index} project={project} canEditProject={false}
-                                         onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
-                        </Link>)
+                        <ProjectCard number={index} project={project} canEditProject={false}
+                                     onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
+                        )
                 })
+            } else {
+                currentProjects.push(<p className="empty-statements" key={currentProjects.length}>There are currently no projects assigned to this resource.</p>)
             }
             let unavailability = [];
-            if(userDetails.availability) {
+            if(userDetails.availability && userDetails.availability.length > 0) {
                 userDetails.availability.forEach(currentAvailability => {
                     unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
                 })
+            } else {
+                unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
             }
             return (<div className="activity-container">
                 <div className="title-bar">
                     <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
-                    <Button variant="contained"
-                            style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                            disableElevation>
-                        Edit
-                    </Button>
+                    <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
+                        <Button variant="contained"
+                                style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                disableElevation>
+                            Edit
+                        </Button>
+                    </Link>
                 </div>
                 <div className="section-container">
                     <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>

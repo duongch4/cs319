@@ -83,7 +83,7 @@ class ProjectDetails extends Component {
                 <div className="activity-container">
                     <div className="title-bar">
                         <h1 className="blueHeader">{projectDetails.projectSummary.title}</h1>
-                        <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber}>
+                        <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber} className="action-link">
                             <Button variant="contained"
                                     style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
                                     disableElevation>
@@ -93,9 +93,9 @@ class ProjectDetails extends Component {
                     </div>
                     <div className="section-container">
                         <p>
-                            <b>Location:</b> {projectDetails.projectSummary.location.city}, {projectDetails.projectSummary.location.province}
+                            <b>Location: </b> {projectDetails.projectSummary.location.city}, {projectDetails.projectSummary.location.province}
                         </p>
-                        <p><b>Duration:</b> {projectStartDate} - {projectEndDate}</p>
+                        <p><b>Duration: </b> {projectStartDate} - {projectEndDate}</p>
                     </div>
                     <div className="section-container">
                         <h2 className="greenHeader">The Team</h2>

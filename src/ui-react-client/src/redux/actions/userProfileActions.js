@@ -51,7 +51,7 @@ export const updateSpecificUser = (user, history) => {
           .then(response => {
             dispatch(updateUserProfileData(user));
             dispatch(updateUserSummary(user.userSummary));
-            history.push('/users');
+            history.push('/users/' + user.userSummary.userID);
           })
           .catch(error => {
             throw error;

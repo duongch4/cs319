@@ -20,7 +20,7 @@ class AddProject extends Component {
                 },
                 projectStartDate: "",
                 projectEndDate: "",
-                projectNumber: "2020-" + Math.floor(Math.random() * 10000) + "-00"
+                projectNumber: ""
             },
             projectManager: {
                 userID: 2,
@@ -65,6 +65,16 @@ class AddProject extends Component {
         })
     };
 
+    removeOpening = (opening) => {
+        const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
+        this.setState({
+            projectProfile: {
+                ...this.state.projectProfile,
+                openings
+            }
+        })
+    }
+
     addProjDetails = (project) => {
         this.setState({
             projectProfile: {
@@ -74,7 +84,8 @@ class AddProject extends Component {
                     title: project.title,
                     projectStartDate: project.projectStartDate,
                     projectEndDate: project.projectEndDate,
-                    location: project.location
+                    location: project.location,
+                    projectNumber: project.projectNumber
                 }
             }
         })
@@ -97,6 +108,7 @@ class AddProject extends Component {
             this.state.projectProfile.openings.forEach((opening, index) => {
                 openings.push(<Openings key={"openings" + index} opening={opening}
                                         commitment={opening.commitmentMonthlyHours}
+                                        isRemovable={true} removeOpening={(opening) => this.removeOpening(opening)}
                                         index={index}/>)
             });
             return (

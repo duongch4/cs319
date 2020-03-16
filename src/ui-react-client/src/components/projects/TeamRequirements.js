@@ -3,6 +3,7 @@ import './ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {Button} from "@material-ui/core";
 
 
 
@@ -80,7 +81,7 @@ class TeamRequirements extends Component {
     var isUserPage = this.props.isUserPage;
 
     var discipline_render = [];
-    var all_disciplines_keys = Array.from(Object.keys(disciplines));
+    var all_disciplines_keys = Object.keys(disciplines);
     all_disciplines_keys.forEach((discipline, i) => {
         discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
     });
@@ -117,35 +118,37 @@ class TeamRequirements extends Component {
       <div className="form-section">
           { header }
           <form onSubmit={this.handleSubmit}>
-              <div className="form-row">
-                  <input className="add" type="submit" value="+"/>
-                  <div className="form-section opening">
+              <div className="form-section opening">
+                  <div className="form-row">
+                      <select className="input-box" defaultValue={'DEFAULT'}
+                              id="discipline" onChange={this.handleChange}>
+                          <option value={'DEFAULT'} disabled>Discipline</option>
+                          {discipline_render}
+                      </select>
+                      <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
+                        placeholder='Skills' />
+                  </div>
+                  <label className="form-row" htmlFor= "yearsOfExp">
+                      <p className="form-label">Years of Experience</p>
+                      <select className="input-box" defaultValue={'DEFAULT'}
+                              id="yearsOfExp" onChange={this.handleChange}>
+                          <option value="DEFAULT" disabled>Select a range</option>
+                          {range_render}
+                      </select>
+                  </label>
+                  {!isUserPage && (
                       <div className="form-row">
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="discipline" onChange={this.handleChange}>
-                              <option value={'DEFAULT'} disabled>Discipline</option>
-                              {discipline_render}
-                          </select>
-                          <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
-                            placeholder='Skills' />
+                          <label htmlFor= "commitmentMonthlyHours">
+                              <p className="form-label">Expected Hourly Commitment Per Month</p>
+                          </label>
+                          <input className="input-box" type="text"
+                                 id="commitmentMonthlyHours" onChange={this.handleChange}/>
                       </div>
-                      <label className="form-row" htmlFor= "yearsOfExp">
-                          <p className="form-label">Years of Experience</p>
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="yearsOfExp" onChange={this.handleChange}>
-                              <option value="DEFAULT" disabled>Select a range</option>
-                              {range_render}
-                          </select>
-                      </label>
-                      {!isUserPage && (
-                          <div className="form-row">
-                              <label htmlFor= "commitmentMonthlyHours">
-                                  <p className="form-label">Expected Hourly Commitment Per Month</p>
-                              </label>
-                              <input className="input-box" type="text"
-                                     id="commitmentMonthlyHours" onChange={this.handleChange}/>
-                          </div>
-                      )}
+                  )}
+                  <div className="form-row">
+                      <Button type="submit" variant="contained"
+                              style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
+                              disableElevation>Add to list</Button>
                   </div>
               </div>
           </form>

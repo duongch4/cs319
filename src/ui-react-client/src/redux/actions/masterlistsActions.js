@@ -41,6 +41,36 @@ export const createCityData = location => {
     }
 }
 
+export const deleteDisciplineData = id => {
+    return {
+        type: types.DELETE_DISCIPLINE,
+        id: id
+    }
+}
+
+export const deleteSkillData = (disciplineID, skillName) => {
+    return {
+        type: types.DELETE_SKILL,
+        disciplineID: disciplineID,
+        skillName: skillName
+    }
+}
+
+export const deleteProvinceData = (provinceName) => {
+    return {
+        type: types.DELETE_PROVINCE,
+        provinceName: provinceName,
+    }
+}
+
+export const deleteCityData = (cityName, id) => {
+    return {
+        type: types.DELETE_CITY,
+        name: cityName,
+        id: id
+    }
+}
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -64,7 +94,15 @@ export const createDiscpline = (discipline) => {
         if (CLIENT_DEV_ENV) {
             dispatch(createDiscplineData(discipline))
         } else {
-            // TODO
+            return axios
+                .post(`${baseURL}admin/disciplines`, discipline, { headers })
+                .then(response => {
+                    discipline.id = response.data.payload;
+                    dispatch(createDiscplineData(discipline))
+                })
+                .catch(error => {
+                    throw error;
+                })
         }
     }
 }
@@ -74,7 +112,15 @@ export const createSkill = (skill) => {
         if (CLIENT_DEV_ENV) {
             dispatch(createSkillData(skill))
         } else {
-            // TODO
+            return axios
+                .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
+                .then(response => {
+                    dispatch(createSkillData(skill))
+                })
+                .catch(error => {
+
+                    throw error;
+                })
         }
     } 
 }
@@ -85,6 +131,15 @@ export const createProvince = (location) => {
             dispatch(createProvinceData(location))
         } else {
             // TODO
+            return axios
+                .post(`${baseURL}admin/provinces`, location, { headers })
+                .then(response => {
+                    dispatch(createProvinceData(location))
+                })
+                .catch(error => {
+
+                    throw error;
+                })
         }
     } 
 }
@@ -94,7 +149,85 @@ export const createCity = (location) => {
         if (CLIENT_DEV_ENV) {
             dispatch(createCityData(location))
         } else {
-            // TODO
+            return axios
+            .post(`${baseURL}admin/locations`, location, { headers })
+            .then(response => {
+                location.id = response.data.payload;
+                dispatch(createCityData(location))
+            })
+            .catch(error => {
+
+                throw error;
+            })
+        }
+    } 
+}
+
+export const deleteDiscipline = (id) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteDisciplineData(id))
+        } else {
+            return axios
+                .delete(`${baseURL}admin/disciplines/${id}`)
+                .then(response => {                    
+                    dispatch(deleteDisciplineData(id))
+                })
+                .catch(error => {
+                    throw error;
+                })
+        }
+    } 
+}
+
+export const deleteSkill = (disciplineID, skillName) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteSkillData(disciplineID, skillName))
+        } else {
+            return axios
+            .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`)
+            .then(response => {            
+                dispatch(deleteSkillData(disciplineID, skillName));
+            })
+            .catch(error => {
+                throw error;
+            })
+        }
+    } 
+}
+
+export const deleteProvince = (provinceName) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteProvinceData(provinceName))
+        } else {
+            return axios
+                .delete(`${baseURL}admin/provinces/${provinceName}`)
+                .then(response => {
+                    dispatch(deleteProvinceData(response.data.payload))
+                })
+                .catch(error => {
+                    throw error;
+                })
+        }
+    } 
+}
+
+export const deleteCity = (cityName, id) => {
+    return dispatch => {
+        if (CLIENT_DEV_ENV) {
+            dispatch(deleteCityData(cityName, id))
+        } else {
+            // TODO - backend only needs id, but keep cityName to make the reducer easier to deal with
+            return axios
+            .delete(`${baseURL}admin/locations/${id}`)
+            .then(response => {
+                dispatch(deleteCityData(cityName, id))
+            })
+            .catch(error => {
+                throw error
+            })
         }
     } 
 }

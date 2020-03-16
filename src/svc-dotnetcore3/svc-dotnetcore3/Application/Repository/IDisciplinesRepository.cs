@@ -15,9 +15,11 @@ namespace Web.API.Application.Repository
 
         // POST
         Task<Discipline> CreateADiscipline(Discipline discipline);
+        Task<int> CreateADiscipline(DisciplineResource discipline);
 
         // PUT
         Task<Discipline> UpdateADiscipline(Discipline discipline);
+        Task<int> UpdateADiscipline(DisciplineResource discipline);
 
         // DELETE
         Task<Discipline> DeleteADiscipline(int disciplineId);
@@ -25,5 +27,6 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId);
         Task<ResourceDiscipline> DeleteResourceDiscipline(ResourceDiscipline discipline);
         Task<ResourceDiscipline> InsertResourceDiscipline(ResourceDiscipline discipline);
+
     }
 }

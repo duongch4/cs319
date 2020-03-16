@@ -50,14 +50,14 @@ namespace Web.API
 
     public class Startup
     {
-        private readonly IWebHostEnvironment environment;
+        private readonly IWebHostEnvironment _environment;
+        public IConfiguration _configuration { get; }
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
-            environment = env;
+            _configuration = configuration;
+            _environment = env;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -124,14 +124,14 @@ namespace Web.API
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
-                    builder => builder.WithOrigins(Configuration["AllowedOrigins"])
+                    builder => builder.WithOrigins(_configuration["AllowedOrigins"])
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
                 );
             });
 
-            var connectionString = Configuration["ConnectionString"];
+            var connectionString = _configuration["ConnectionString"];
 
             services.AddAuthentication(sharedOptions =>
             {
@@ -139,7 +139,7 @@ namespace Web.API
             })
             .AddJwtBearer(options =>
             {
-                var authSettings = Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
+                var authSettings = _configuration.GetSection("AzureAd").Get<AzureAdOptions>();
 
                 options.Audience = authSettings.ClientId;
                 options.Authority = authSettings.Authority;
@@ -158,7 +158,7 @@ namespace Web.API
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //Allows auth to be bypassed for LocalDev
-            if (environment.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
             }
@@ -167,7 +167,7 @@ namespace Web.API
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ui-react-client/build";
-                if (!environment.IsProduction())
+                if (!_environment.IsProduction())
                 {
                     configuration.RootPath = "../../ui-react-client/build";
                 }

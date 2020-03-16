@@ -51,7 +51,7 @@ class EditUser extends Component {
 
     addDisciplines = (opening) => {
         let discipline = {
-            disciplineID: 0,
+            disciplineID: this.state.masterlist.disciplines[opening.discipline].disciplineID,
             discipline: opening.discipline,
             yearsOfExp: opening.yearsOfExp,
             skills: opening.skills
@@ -64,6 +64,17 @@ class EditUser extends Component {
             }
         })
     };
+
+    removeDiscipline = (opening) => {
+        let disciplineIDToRemove = this.state.masterlist.disciplines[opening.discipline].disciplineID;
+        const disciplines = this.state.userProfile.disciplines.filter(discipline => discipline.disciplineID !== disciplineIDToRemove);
+        this.setState({
+            userProfile: {
+                ...this.state.userProfile,
+                disciplines: disciplines
+            }
+        })
+    }
 
     addUserDetails = (userProfile) => {
         this.setState({
@@ -95,6 +106,8 @@ class EditUser extends Component {
                 this.state.userProfile.disciplines.forEach((discipline, index) => {
                     disciplines.push(<Openings opening={discipline}
                                                index={index}
+                                               isRemovable={true}
+                                               removeOpening={(opening) => this.removeDiscipline(opening)}
                                                key={disciplines.length} />)
                 });
             }

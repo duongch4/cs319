@@ -1,9 +1,26 @@
-﻿Insert into Disciplines (Id, [Name]) values (1, N'Weapons');
+﻿Set IDENTITY_INSERT [dbo].[Disciplines] ON
+Insert into Disciplines (Id, [Name]) values (1, N'Weapons');
 Insert into Disciplines (Id, [Name]) values (2, N'Martial Arts');
 Insert into Disciplines (Id, [Name]) values (3, N'Language');
 Insert into Disciplines (Id, [Name]) values (4, N'Cryptography');
 Insert into Disciplines (Id, [Name]) values (5, N'Intel');
+Set IDENTITY_INSERT [dbo].[Disciplines] OFF
 
+Insert into [dbo].[Provinces] values (N'Alberta');
+Insert into [dbo].[Provinces] values (N'British Columbia');
+Insert into [dbo].[Provinces] values (N'Manitoba');
+Insert into [dbo].[Provinces] values (N'New Brunswick');
+Insert into [dbo].[Provinces] values (N'Newfoundland and Labrador');
+Insert into [dbo].[Provinces] values (N'Northwest Territories');
+Insert into [dbo].[Provinces] values (N'Nova Scotia');
+Insert into [dbo].[Provinces] values (N'Nunavut');
+Insert into [dbo].[Provinces] values (N'Ontario');
+Insert into [dbo].[Provinces] values (N'Prince Edward Island');
+Insert into [dbo].[Provinces] values (N'Quebec');
+Insert into [dbo].[Provinces] values (N'Saskatchewan');
+Insert into [dbo].[Provinces] values (N'Yukon');
+
+Set IDENTITY_INSERT [dbo].[Skills] ON
 Insert into Skills (DisciplineId, Id, [Name]) values (1, 10, N'Glock');
 Insert into Skills (DisciplineId, Id, [Name]) values (1, 11, N'Sniper Rifle');
 Insert into Skills (DisciplineId, Id, [Name]) values (2, 20, N'Krav Maga');
@@ -13,6 +30,7 @@ Insert into Skills (DisciplineId, Id, [Name]) values (3, 31, N'Mandarin');
 Insert into Skills (DisciplineId, Id, [Name]) values (4, 40, N'Ciphers');
 Insert into Skills (DisciplineId, Id, [Name]) values (5, 50, N'False Identity Creation');
 Insert into Skills (DisciplineId, Id, [Name]) values (5, 51, N'Deception');
+Set IDENTITY_INSERT [dbo].[Skills] OFF
 
 Set IDENTITY_INSERT [dbo].[Locations] ON
 INSERT [dbo].[Locations] ([Id], [Province], [City]) VALUES (5, N'Alberta', N'Edmonton')
