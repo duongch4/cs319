@@ -2,15 +2,11 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeSearch = (state, action) => {
-    return {
-        userSummary: [
-            action.userSummary
-        ]
-    };
+    return action.userSummary;
 };
 
 export const searchReducer = (
-    state = initialState.users,
+    state = initialState.userSummary,
     action
 ) => {
     switch (action.type) {
