@@ -10,8 +10,8 @@ class AddDisciplines extends Component {
             status: {"disciplineSearch":{
                 name: null,
                 skills: [],
-                yearsOfExp: null,
-                }},
+                keyName: "disciplineSearch",
+            }},
             count: 1,
             view: [],
         }
@@ -32,7 +32,7 @@ class AddDisciplines extends Component {
             status: {...this.state.status, [keyId]:{
                 name: null,
                 skills: [],
-                yearsOfExp: null,
+                keyName: keyId,
                 }},
             count: this.state.count + 1,
             view: [...this.state.view, newDisc]})
@@ -43,7 +43,7 @@ class AddDisciplines extends Component {
             var disciplines = state.disciplines;
              this.setState({
                 status: Object.assign({}, this.state.status, {[key]: disciplines}),
-            }, () => this.props.updateDisciplines(Object.values(this.state.status)));
+            }, () => this.props.updateDisciplines(Object.entries(this.state.status)));
         }
 
         deleteDiscipline = (keyId) => {

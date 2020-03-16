@@ -5,23 +5,21 @@ import CloseIcon from '@material-ui/icons/Close';
 class FilterStickers extends Component {
     constructor(props){
         super(props);
+        this.state = {
+            showSticker: true,
+            filterLabel: this.props.label,
+        }
       }
-
-    state = {
-        id: this.props.keyId,
-        showSticker: true,
-        filterLabel: this.props.label,
-    }
 
     closeTab = () => {
         this.setState({
             showSticker: false,
             filterStickers: [],
-            render: true,
-        },() => this.props.deleteFilter());
+        },() => this.props.deleteFilter(this.props.type, this.props.keyId));
     }
 
     render(){ 
+        console.log(this.props);
         const {showing} = this.state.showSticker;
             return (
                 <div className="filter-sticker" style={{display: (showing ? 'none' : 'block')}}>

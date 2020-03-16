@@ -111,12 +111,14 @@ class FilterTab extends Component {
         var years = this.state.stickers.yearsOfExps;
         var newSticker = null;
         var stickers = this.state.sticker_view.slice();
+        
         if (locations.length !== 0) {
             locations.forEach((location) => {
                 newSticker = (
                 <FilterStickers label={location.city + ", " + location.province}
                                                 keyId={location.locationID}
-                                                deleteFilter = {this.deleteFilter()}/>);
+                                                type={"location"}
+                                                deleteFilter = {this.deleteFilter}/>);
                 
                 stickers = [...stickers, newSticker];
                 });
@@ -125,35 +127,86 @@ class FilterTab extends Component {
         if (disciplines != null) {
             Object.entries(disciplines).forEach((discipline) => {
                 newSticker = (
-                <FilterStickers label={discipline[0] + ": " + discipline[1]}
+                <FilterStickers label={discipline[1].name + ": " + discipline[1].skills}
+                                                type={"discipline"}
                                                 keyId={discipline[0]}
-                                                deleteFilter = {this.deleteFilter()}/>);
+                                                deleteFilter = {this.deleteFilter}/>);
                 
                 stickers = [...stickers, newSticker];
                 });
         }
 
         if (years.length != 0) {
-            var count = 0;
             years.forEach((year) => {
                 newSticker = (
                     <FilterStickers label={year}
-                                    keyId={year + "_" + count}
-                                    deleteFilter = {this.deleteFilter()}/>);
-                    count++;
+                                    type={"year"}
+                                    keyId={year}
+                                    deleteFilter = {this.deleteFilter}/>);
                     stickers = [...stickers, newSticker];
             })
         };
 
-            this.setState({
-                ...this.state,
-                sticker_view: stickers,
-            }, () => this.render());
+        this.setState({
+            ...this.state,
+            sticker_view: stickers,
+        }, () => this.render());
 
+    }
+
+    deleteFilter = (type, keyId) => {
+        var view_mock = this.state.sticker_view.slice();
+
+        if (type == "location") {
+            var location_mock = this.state.stickers.locations.slice();
+            this.state.stickers.locations.forEach((location, index) => {
+            if (location.locationID == keyId) {
+                view_mock.splice(index, 1);
+                delete location_mock[index];
+                this.setState({
+                    ...this.state,
+                    stickers: {
+                        locations: location_mock,
+                    },
+                    sticker_view: view_mock,
+                    });
+                }
+            });
+        } else if (type == "discipline") {
+            var discipline_mock = this.state.stickers.disciplines;
+            Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
+                console.log(discipline);
+            if (discipline[0] == keyId) {
+                view_mock.splice(index, 1);
+                delete discipline_mock[index];
+                this.setState({
+                    ...this.state,
+                    stickers: {
+                        disciplines: discipline_mock,
+                    },
+                    sticker_view: view_mock,
+                    });
+                }
+            });
+        } else {
+            var years_mock = this.state.stickers.yearsOfExps.slice();
+            console.log(years_mock);
+            this.state.stickers.yearsOfExps.forEach((year, index) => {
+                console.log(year);
+                if (year == keyId) {
+                    view_mock.splice(index, 1);
+                    delete years_mock[year];
+                    this.setState({
+                        ...this.state,
+                        stickers: {
+                            yearsOfExps: years_mock,
+                        },
+                        sticker_view: view_mock,
+                        });
+                    }
+                });
         }
-
-    deleteFilter = () => {
-
+        console.log(this.state);
     }
 
     updateLocations = (newLocation) => {
@@ -172,9 +225,11 @@ class FilterTab extends Component {
     }
 
     updateDisciplines = (newDiscipline) => {
+        console.log(newDiscipline);
         var discipline_obj = {};
         newDiscipline.forEach((discipline) => {
-            discipline_obj[discipline.name] = discipline.skills;
+            console.log(discipline);
+            discipline_obj[discipline[0]] = discipline[1];
         });
         this.setState({
             ...this.state,
