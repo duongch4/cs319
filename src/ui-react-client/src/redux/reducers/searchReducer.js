@@ -1,12 +1,12 @@
 import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
-const executeSearch = (state, action) => {
+const executeSearch = (action) => {
     return action.userSummary;
 };
 
 export const searchReducer = (
-    state = initialState.userSummary,
+    state = initialState.users,
     action
 ) => {
     switch (action.type) {
