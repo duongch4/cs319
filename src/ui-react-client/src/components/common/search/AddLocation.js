@@ -10,7 +10,6 @@ class AddLocation extends Component {
             status: {"locationSearch": {province: null, city: null}},
             count: 1,
             view: [],
-            curr: [],
         }
       }
 
@@ -60,11 +59,11 @@ class AddLocation extends Component {
           return(
               <div>
                 <div className="form-row" key={"locationSearch"} >
-                <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
+                    <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
                     <LocationsSearch provinces={this.props.locations}
-                                 addLocations={this.addLocations}
-                                 keyName={"locationSearch"}/>
-                                 </div>
+                                    addLocations={this.addLocations}
+                                    keyName={"locationSearch"}/>
+                </div>
                 {this.state.view}
               </div>
             );

@@ -14,7 +14,6 @@ class AddDisciplines extends Component {
                 }},
             count: 1,
             view: [],
-            curr: [],
         }
       }
 
@@ -67,14 +66,14 @@ class AddDisciplines extends Component {
       render(){
           return(
             <div>
-            <div className="form-row" key="disciplineSearch">
-            <input className="add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
-            <DisciplineSearch disciplines={this.props.disciplines}
-                                masterYearsOfExperience={this.props.yearsOfExp}
-                                addDisciplines={this.addDisciplines}
-                                keyName={"disciplineSearch"}/>
-            </div>
-            {this.state.view}
+                <div className="form-row" key="disciplineSearch">
+                    <input className="add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
+                    <DisciplineSearch disciplines={this.props.disciplines}
+                                        masterYearsOfExperience={this.props.yearsOfExp}
+                                        addDisciplines={this.addDisciplines}
+                                        keyName={"disciplineSearch"}/>
+                </div>
+                {this.state.view}
             </div>
             );
       }

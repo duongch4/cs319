@@ -57,11 +57,11 @@ class LocationsSearch extends Component {
       var cities_format = [];
       var cities_key = [];
       Object.entries(cities).forEach((city, i) => {
-        var single_city = {};
-        single_city['label'] = city[0];
-        single_city['value'] = {city: city[0], id: city[1]};
-        cities_format.push(single_city);
-        cities_key.push('cities_' + i);
+      var single_city = {};
+      single_city['label'] = city[0];
+      single_city['value'] = {city: city[0], id: city[1]};
+      cities_format.push(single_city);
+      cities_key.push('cities_' + i);
       });
     }
 
@@ -74,7 +74,7 @@ class LocationsSearch extends Component {
             </select>
             <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti
                             placeholder='Cities' />
-              </div>
+          </div>
         </div>
      );
     }

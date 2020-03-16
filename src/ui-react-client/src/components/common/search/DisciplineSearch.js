@@ -56,28 +56,27 @@ class DisciplineSearch extends Component {
       var skill_format = [];
       var skill_keys = [];
       skills.forEach((skill, i) => {
-        var single_skill = {};
-        single_skill['label'] = skill;
-        single_skill['value'] = skill;
-        skill_format.push(single_skill);
-        skill_keys.push('skills_' + i);
-
+      var single_skill = {};
+      single_skill['label'] = skill;
+      single_skill['value'] = skill;
+      skill_format.push(single_skill);
+      skill_keys.push('skills_' + i);
       })
     }
 
-        return (
+      return (
         <div className="form-section">
-                <div className="form-section opening">
-                <div className="form-row">
-                          <select className="input-box" defaultValue={'DEFAULT'}
-                                  id="discipline" onChange={this.handleChange}>
-                              <option value={'DEFAULT'} disabled>Discipline</option>
-                              {discipline_render}
-                          </select>
-                          <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
-                            placeholder='Skills' />
-                      </div>
-        </div>
+          <div className="form-section opening">
+            <div className="form-row">
+              <select className="input-box" defaultValue={'DEFAULT'}
+                      id="discipline" onChange={this.handleChange}>
+                  <option value={'DEFAULT'} disabled>Discipline</option>
+                  {discipline_render}
+              </select>
+              <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
+                placeholder='Skills' />
+            </div>
+          </div>
         </div>
         );
     }
