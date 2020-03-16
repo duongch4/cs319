@@ -55,6 +55,7 @@ artifacts/
 # **/Properties/launchSettings.json
 appsettings.Development.json
 appsettings.Staging.json
+appsettings.IntegrationTests.json
 Database.DEV.publish.xml
 
 # StyleCop

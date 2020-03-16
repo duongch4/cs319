@@ -1,5 +1,6 @@
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
+using Web.API.Resources;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -39,6 +40,24 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<Discipline>(sql);
         }
+
+        public async Task<IEnumerable<DisciplineResource>> GetAllDisciplinesWithSkills()
+        {
+            var sql = @"
+                SELECT
+                    d.Id, d.Name, STRING_AGG (s.Name, ',') as Skills
+                FROM
+                    Disciplines d, Skills s
+                WHERE
+                    d.Id = s.DisciplineId
+                GROUP BY
+                    d.Id, d.Name
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QueryAsync<DisciplineResource>(sql);
+        }
         public async Task<IEnumerable<Discipline>> GetDisciplinesByName(string disciplineName)
         {
             var sql = @"
@@ -67,6 +86,22 @@ namespace Web.API.Infrastructure.Data
             discipline.Id = await connection.QuerySingleAsync<int>(sql, new { Name = discipline.Name });
             return discipline;
         }
+
+        public async Task<int> CreateADiscipline(DisciplineResource discipline)
+        {
+            var sql = @"
+                insert into Disciplines
+                    (Name)
+                values
+                    (@Name);
+                select cast(scope_identity() as int);
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            discipline.Id = await connection.QuerySingleAsync<int>(sql, new { Name = discipline.Name });
+            return discipline.Id;
+        }
         // PUT
         public async Task<Discipline> UpdateADiscipline(Discipline discipline)
         {
@@ -87,6 +122,27 @@ namespace Web.API.Infrastructure.Data
                 Name = discipline.Name
             });
             return (result == 1) ? discipline : null;
+        }
+
+        public async Task<int> UpdateADiscipline(DisciplineResource discipline)
+        {
+            var sql = @"
+                update
+                    Disciplines
+                set 
+                    Name = @Name
+                where 
+                    Id = @Id
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            int result = await connection.ExecuteAsync(sql, new
+            {
+                Id = discipline.Id,
+                Name = discipline.Name
+            });
+            return (result == 1) ? discipline.Id : -1;
         }
         // DELETE
         public async Task<Discipline> DeleteADiscipline(int disciplineId)

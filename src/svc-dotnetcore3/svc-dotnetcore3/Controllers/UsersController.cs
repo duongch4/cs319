@@ -51,6 +51,7 @@ namespace Web.API.Controllers
         ///     GET /api/users?orderKey={orderKey}&#38;order={order}&#38;page={pageNumber}
         ///
         /// </remarks>
+        /// <param name="searchWord" />
         /// <param name="orderKey" />
         /// <param name="order" />
         /// <param name="page" />
@@ -67,20 +68,22 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllUsers([FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
+        public async Task<IActionResult> GetAllUsers([FromQuery] string searchWord, [FromQuery] string orderKey, [FromQuery] string order, [FromQuery] int page)
         {
             orderKey = (orderKey == null) ? "utilization" : orderKey;
             order = (order == null) ? "desc" : order;
             page = (page == 0) ? 1 : page;
             try
             {
-                var users = await usersRepository.GetAllUserResources(orderKey, order, page);
+                var users = await usersRepository.GetAllUserResources(searchWord, orderKey, order, page);
                 if (users == null || !users.Any())
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
+                    var error = new NotFoundException("No users data found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new {
+                    searchWord = searchWord,
                     page = page,
                     size = resource.Count(),
                     order = order,
@@ -95,12 +98,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -133,7 +136,8 @@ namespace Web.API.Controllers
                 var user = await usersRepository.GetAUserResource(userId);
                 if (user == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException($"No users with userId '{userId}' found"));
+                    var error = new NotFoundException($"No users with userId '{userId}' found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var userSummary = mapper.Map<UserResource, UserSummary>(user);
 
@@ -172,12 +176,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -269,14 +273,14 @@ namespace Web.API.Controllers
         {
             if (userProfile == null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new BadRequestException("The given user is null / Request Body cannot be read"));
+                var error = new BadRequestException("The given user is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
             try
             {
                 UserSummary summary = userProfile.UserSummary;
                 Location location = await locationsRepository.GetALocation(userProfile.UserSummary.Location.City);
-                // User updateUser = createUserFromSummary(summary, location);
                 var changedUser = await usersRepository.UpdateAUser(summary, location);
                 var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, userId);
                 var avails = await processOutOfOfficeChanges(userProfile.Availability, userId);
@@ -290,12 +294,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
@@ -498,7 +502,8 @@ namespace Web.API.Controllers
         ///                 ],
         ///                 "Martial Arts": [
         ///                     "Kali"
-        ///                 ]
+        ///                 ],
+        ///                 "Weapons": []
         ///             },
         ///             "yearsOfExps": [
         ///                 "1-3",
@@ -508,6 +513,7 @@ namespace Web.API.Controllers
         ///             "startDate": "2021-10-31T00:00:00",
         ///             "endDate": "2022-02-12T00:00:00"
         ///         },
+        ///         "searchWord": "e",
         ///         "orderKey": "utilization",
         ///         "order": "asc",
         ///         "page": 1
@@ -546,8 +552,8 @@ namespace Web.API.Controllers
                 var users = await usersRepository.GetAllUserResourcesOnFilter(req);
                 if (users == null || !users.Any())
                 {
-                    // users = new UserResource[] { };
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("No users data found"));
+                    var error = new NotFoundException("No users data found");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new {
@@ -563,36 +569,14 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
     }
-
-    // [Authorize]
-    // public class OldUsersController : ControllerBase
-    // {
-    //     private readonly IUsersRepository usersRepository;
-    //     private readonly IMapper mapper;
-
-    //     public OldUsersController(IUsersRepository usersRepository, IMapper mapper)
-    //     {
-    //         this.usersRepository = usersRepository;
-    //         this.mapper = mapper;
-    //     }
-
-    //     [HttpGet]
-    //     [Route("/users")]
-    //     public async Task<ActionResult<IEnumerable<User>>> GetAllUsersOld()
-    //     {
-    //         var response = await usersRepository.GetAllUsers();
-    //         var viewModel = mapper.Map<IEnumerable<User>>(response);
-    //         return Ok(viewModel);
-    //     }
-    // }
 }

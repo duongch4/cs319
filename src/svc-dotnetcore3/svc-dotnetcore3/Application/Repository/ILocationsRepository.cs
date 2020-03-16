@@ -9,6 +9,7 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<Location>> GetAllLocations();
+        Task<IEnumerable<MasterLocation>> GetAllLocationsGroupByProvince();
         // Task<Location> GetALocationWithCity(string city);
         Task<Location> GetALocation(int locationId);
         Task<Location> GetALocation(string city);
@@ -17,14 +18,18 @@ namespace Web.API.Application.Repository
 
         Task<Location> GetUserLocation(User user);
         //POST 
-        // Task<Location> CreateALocation(Location location);
+        Task<int> CreateALocation(LocationResource location);
 
         // //PUT
         // Task<Location> UpdateALocation(Location location);
 
         //DELETE
-        // Task<Location> DeleteALocation(Location locationCode);
+        Task<Location> DeleteALocation(int locationId);
 
-        Task<Location> GetLocationIdByCityProvince(LocationResource location);
+        // Task<Location> GetLocationIdByCityProvince(LocationResource location);
+
+        Task<string> GetAProvince(string province);
+        Task<string> CreateAProvince(string province);
+        Task<string> DeleteAProvince(string province);
     }
 }
