@@ -7,6 +7,8 @@ using Web.API.Application.Repository;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using Web.API.Application.Communication;
 using Web.API.Resources;
+using Web.API.Authorization;
+
 using System;
 using System.Data.SqlClient;
 using System.Linq;
@@ -14,7 +16,8 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    // [Authorize]
+    [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -47,6 +50,7 @@ namespace Web.API.Controllers
         /// <response code="200">Returns all available locations</response>
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized Request</response>
+        /// <response code="403">Forbidden Request</response>
         /// <response code="404">If no locations are found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
