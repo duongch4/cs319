@@ -169,7 +169,7 @@ export const deleteDiscipline = (id) => {
             dispatch(deleteDisciplineData(id))
         } else {
             return axios
-                .delete(`${baseURL}admin/disciplines/${id}`)
+                .delete(`${baseURL}admin/disciplines/${id}`, { headers })
                 .then(response => {                    
                     dispatch(deleteDisciplineData(id))
                 })
@@ -186,7 +186,7 @@ export const deleteSkill = (disciplineID, skillName) => {
             dispatch(deleteSkillData(disciplineID, skillName))
         } else {
             return axios
-            .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`)
+            .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`, { headers })
             .then(response => {            
                 dispatch(deleteSkillData(disciplineID, skillName));
             })
@@ -203,7 +203,7 @@ export const deleteProvince = (provinceName) => {
             dispatch(deleteProvinceData(provinceName))
         } else {
             return axios
-                .delete(`${baseURL}admin/provinces/${provinceName}`)
+                .delete(`${baseURL}admin/provinces/${provinceName}`, { headers })
                 .then(response => {
                     dispatch(deleteProvinceData(response.data.payload))
                 })
@@ -221,7 +221,7 @@ export const deleteCity = (cityName, id) => {
         } else {
             // TODO - backend only needs id, but keep cityName to make the reducer easier to deal with
             return axios
-            .delete(`${baseURL}admin/locations/${id}`)
+            .delete(`${baseURL}admin/locations/${id}`, { headers })
             .then(response => {
                 dispatch(deleteCityData(cityName, id))
             })
