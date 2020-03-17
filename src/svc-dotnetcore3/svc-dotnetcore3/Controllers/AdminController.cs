@@ -411,7 +411,7 @@ namespace Web.API.Controllers {
         ///     POST /api/admin/provinces
         ///
         /// </remarks>
-        /// <param name="province"></param>
+        /// <param name="location"></param>
         /// <returns>The name of the newly created province</returns>
         /// <response code="200">Returns the province name</response>
         /// <response code="400">Bad Request</response>

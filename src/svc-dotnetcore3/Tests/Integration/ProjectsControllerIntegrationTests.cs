@@ -24,7 +24,7 @@ namespace Tests.Integration
     {
         private readonly HttpClient _client;
         private readonly WebApplicationFactory<Startup> _factory;
-        private Dictionary<string, string> _settings;
+        // private Dictionary<string, string> _settings;
         public ProjectsControllerIntegrationTests(WebApplicationFactory<Startup> factory)
         {
             // _settings = new Dictionary<string, string>();
