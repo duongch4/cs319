@@ -7,6 +7,8 @@ import Openings from "../projects/Openings";
 import EditUserDetails from "./EditUserDetails";
 import { Button } from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import AvailabilityForm from './AvailabilityForm';
+import AvailabilityCard from './AvailabilityCard';
 
 class EditUser extends Component {
     state = {
@@ -95,6 +97,22 @@ class EditUser extends Component {
         })
     };
 
+    addAvailability = (date) => {
+        let newDate = {
+            fromDate: date.startDate,
+            toDate: date.endDate,
+            reason: date.reason
+        }
+        let availability = this.state.userProfile.availability ? [...this.state.userProfile.availability, newDate] : [newDate]
+        this.setState({
+            ...this.state,
+            userProfile:{
+                ...this.state.userProfile,
+                availability, 
+            }
+        })
+    }
+
     render() {
         if (this.state.pending) {
             return (<div className="activity-container">
@@ -102,7 +120,7 @@ class EditUser extends Component {
             </div>);
         } else {
             let disciplines = [];
-            if (this.props.userProfile) {
+            if (this.state.userProfile) {
                 this.state.userProfile.disciplines.forEach((discipline, index) => {
                     disciplines.push(<Openings opening={discipline}
                                                index={index}
@@ -111,6 +129,16 @@ class EditUser extends Component {
                                                key={disciplines.length} />)
                 });
             }
+
+            let unavailability = [];
+            if(this.state.userProfile.availability && this.state.userProfile.availability.length > 0) {
+                this.state.userProfile.availability.forEach(currentAvailability => {
+                    unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
+                })
+            } else {
+                unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
+            }
+            
             return (
                 <div className="activity-container">
                     <h1 className="greenHeader">Edit user</h1>
@@ -124,9 +152,14 @@ class EditUser extends Component {
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addDisciplines(opening)}
                                           isUserPage={true}/>
-                        <hr />
-                        {disciplines}
+                        {disciplines} 
+                        <hr />                       
                     </div>
+                    <h2 className="darkGreenHeader">Unavailability</h2>
+                    <div className="section-container">
+                        <AvailabilityForm addAvailability={this.addAvailability}/>
+                    </div>
+                        {unavailability}
                     <Button variant="contained"
                             style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                             disableElevation
