@@ -23,6 +23,7 @@ class AddProject extends Component {
                 projectNumber: ""
             },
             projectManager: {
+                // TODO: WHY DO WE HAVE HARDCODED VALUES HERE???
                 userID: 2,
                 firstName: "Charles",
                 lastName: "Bartowski"

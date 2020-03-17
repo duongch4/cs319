@@ -8,8 +8,6 @@ const AvailabilityCard = ({availability}) => {
     let toDate = formatDate(availability.toDate);
   return (
     <div className="card-summary">
-        {/* XXX TODO: once we figure out how the date will come in, 
-        we can change this date format*/}
         <div className="card-summary-title availability">
             <h4>{fromDate}</h4>
             <h4>to</h4>
