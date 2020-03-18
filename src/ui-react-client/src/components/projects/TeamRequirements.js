@@ -14,7 +14,7 @@ class TeamRequirements extends Component {
           discipline: null,
           skills: [],
           yearsOfExp: null,
-          commitmentMonthlyHours: 0
+          commitmentMonthlyHours: null
       }
     };
 
@@ -63,16 +63,42 @@ class TeamRequirements extends Component {
         e.target.elements.commitmentMonthlyHours.value = null;
       }
       e.preventDefault();
-      this.props.addOpening(this.state.opening);
-      this.setState({
-          opening: {
-              positionID: 0,
-              discipline: null,
-              skills: [],
-              yearsOfExp: null,
-              commitmentMonthlyHours: null
-          }
-      })
+      var isUserPage = this.props.isUserPage;
+      const opening = this.state.opening
+        if(opening.discipline === null) {
+            this.setState({
+                ...this.state,
+                error: "No Discipline Selected - Unable to add Opening"
+            })
+        } else if (opening.skills.length === 0){
+            this.setState({
+                ...this.state,
+                error: "No Skill Selected - Unable to add Opening"
+            })
+        } else if (opening.yearsOfExp === null){
+            this.setState({
+                ...this.state,
+                error: "No Years of Experience Selected - Unable to add Opening"
+            })
+        } else if (opening.commitmentMonthlyHours === null && !isUserPage){
+            this.setState({
+                ...this.state,
+                error: "No commitment Selected - Unable to add Opening"
+            })
+        } else {
+            this.props.addOpening(this.state.opening);
+            this.setState({
+                ...this.state,
+                opening: {
+                    positionID: 0,
+                    discipline: null,
+                    skills: [],
+                    yearsOfExp: null,
+                    commitmentMonthlyHours: null
+                },
+                error: ""
+            })
+        }
     };
 
   render(){
@@ -141,7 +167,7 @@ class TeamRequirements extends Component {
                           <label htmlFor= "commitmentMonthlyHours">
                               <p className="form-label">Expected Hourly Commitment Per Month</p>
                           </label>
-                          <input className="input-box" type="text"
+                          <input className="input-box" type="number"
                                  id="commitmentMonthlyHours" onChange={this.handleChange}/>
                       </div>
                   )}
@@ -152,6 +178,7 @@ class TeamRequirements extends Component {
                   </div>
               </div>
           </form>
+          <p className="errorMessage">{this.state.error}</p>
       </div>
     );
 }

@@ -14,7 +14,8 @@ class EditUser extends Component {
     state = {
         userProfile: {},
         pending: true,
-        masterlist: {}
+        masterlist: {},
+        error: ""
     };
 
     componentDidMount() {
@@ -48,29 +49,52 @@ class EditUser extends Component {
     }
 
     onSubmit = () => {
-        this.props.updateSpecificUser(this.state.userProfile, this.props.history)
+        const user = this.state.userProfile.userSummary;
+        if(user.firstName === "" || user.lastName === ""){
+            this.setState({
+                ...this.state,
+                error: "Unable to Save - User's Name is invalid"
+            })
+        } else {
+            this.props.updateSpecificUser(this.state.userProfile, this.props.history)
+            this.setState({
+                ...this.state,
+                error: ""
+            })
+        }
+       
     };
 
     addDisciplines = (opening) => {
-        let discipline = {
-            disciplineID: this.state.masterlist.disciplines[opening.discipline].disciplineID,
-            discipline: opening.discipline,
-            yearsOfExp: opening.yearsOfExp,
-            skills: opening.skills
-        };
-        const disciplines = [...this.state.userProfile.disciplines, discipline];
-        this.setState({
-            userProfile: {
-                ...this.state.userProfile,
-                disciplines: disciplines
-            }
-        })
+        if(this.state.userProfile.disciplines && this.state.userProfile.disciplines.length === 5){
+            this.setState({
+                ...this.state,
+                error: "Error: Cannot add more than 5 Disciplines"
+            })
+        } else {
+            let discipline = {
+                disciplineID: this.state.masterlist.disciplines[opening.discipline].disciplineID,
+                discipline: opening.discipline,
+                yearsOfExp: opening.yearsOfExp,
+                skills: opening.skills
+            };
+            const disciplines = [...this.state.userProfile.disciplines, discipline];
+            this.setState({
+                ...this.state,
+                userProfile: {
+                    ...this.state.userProfile,
+                    disciplines: disciplines
+                },
+                error: ""
+            })
+        }
     };
 
     removeDiscipline = (opening) => {
         let disciplineIDToRemove = this.state.masterlist.disciplines[opening.discipline].disciplineID;
         const disciplines = this.state.userProfile.disciplines.filter(discipline => discipline.disciplineID !== disciplineIDToRemove);
         this.setState({
+            ...this.state,
             userProfile: {
                 ...this.state.userProfile,
                 disciplines: disciplines
@@ -80,6 +104,7 @@ class EditUser extends Component {
 
     addUserDetails = (userProfile) => {
         this.setState({
+            ...this.state,
             userProfile: {
                 ...this.state.userProfile,
                 userSummary: {
@@ -152,6 +177,7 @@ class EditUser extends Component {
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addDisciplines(opening)}
                                           isUserPage={true}/>
+                        <p className="errorMessage">{this.state.error}</p>  
                         {disciplines} 
                         <hr />                       
                     </div>

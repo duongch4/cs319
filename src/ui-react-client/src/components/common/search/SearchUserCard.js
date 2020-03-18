@@ -6,7 +6,6 @@ class SearchUserCard extends Component {
 
     render(){
         const {user} = this.props;
-        console.log(user);
         return(
             <div className="card-summary">
                 <div className="card-summary-title">

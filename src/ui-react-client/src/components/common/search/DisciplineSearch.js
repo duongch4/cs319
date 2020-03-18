@@ -5,10 +5,6 @@ import Select from 'react-select';
 
 
 class DisciplineSearch extends Component {
-    constructor(props){
-        super(props);
-      }
-
     state = {
       key: this.props.keyName,
       disciplines: 

@@ -5,10 +5,6 @@ import Select from 'react-select';
 
 
 class YearsSearch extends Component {
-    constructor(props){
-        super(props);
-      }
-
     state = {
         yearsOfExp: [],
     };

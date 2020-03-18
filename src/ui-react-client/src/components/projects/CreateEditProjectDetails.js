@@ -14,7 +14,7 @@ class CreateEditProjectDetails extends Component {
                 province: 'DEFAULT'},
             projectStartDate: new Date(),
             projectEndDate: new Date(),
-            projectNumber: null
+            projectNumber: ""
         },
         city_options: [],
         province_options: [],

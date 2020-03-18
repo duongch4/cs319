@@ -3,7 +3,6 @@ import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
-import initialState from '../../../redux/reducers/_initialState';
 import {CLIENT_DEV_ENV} from '../../../config/config';
 
 class Search extends Component {
@@ -39,7 +38,6 @@ class Search extends Component {
       ...this.state,
       resultUsers: data,
     });
-    this.state.resultUsers = data;
   }
 
   render() {
@@ -50,7 +48,7 @@ class Search extends Component {
       <div className="activity-container">
         <FilterTab onDataFetched={this.handleResultChange} 
                   masterlist={this.state.masterlist}/>
-        {(this.state.resultUsers.length != 0) &&
+        {(this.state.resultUsers.length !== 0) &&
         <SearchResults data={this.state.resultUsers} />}
       </div>
     )

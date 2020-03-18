@@ -84,7 +84,7 @@ class FilterTab extends Component {
 
     onSubmit = () => {
         // TODO: figure out why the formatting isn't correct
-       var results = this.props.performUserSearch(this.state.searchFilter);
+       this.props.performUserSearch(this.state.searchFilter);
     };
 
     getFilters =() => {
@@ -147,7 +147,7 @@ class FilterTab extends Component {
                 });
         };
        
-        if (disciplines != null) {
+        if (disciplines !== null) {
             Object.entries(disciplines).forEach((discipline) => {
                 newSticker = (
                 <FilterStickers key={discipline[0]} label={discipline[1].name + ": " + discipline[1].skills}
@@ -159,7 +159,7 @@ class FilterTab extends Component {
                 });
         }
 
-        if (years.length != 0) {
+        if (years.length !== 0) {
             years.forEach((year) => {
                 newSticker = (
                     <FilterStickers key={year} label={year}
@@ -180,13 +180,13 @@ class FilterTab extends Component {
     deleteFilter = (type, keyId) => {
         var view_mock = this.state.sticker_view.slice();
 
-        if (type == "location") {
+        if (type === "location") {
             var location_mock = this.state.stickers.locations.slice();
             this.state.stickers.locations.forEach((location, index) => {
-            if (location.locationID == keyId) {
+            if (location.locationID === keyId) {
                 location_mock.splice(index,1);
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key == keyId) {
+                    if (curr.key === keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
@@ -200,14 +200,14 @@ class FilterTab extends Component {
                     }, () => this.render());
                 }
             });
-        } else if (type == "discipline") {
+        } else if (type === "discipline") {
             var discipline_mock = this.state.stickers.disciplines;
             console.log(discipline_mock);
             Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
-            if (discipline[0] == keyId) {
+            if (discipline[0] === keyId) {
                 delete discipline_mock[keyId];
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key == keyId) {
+                    if (curr.key === keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
@@ -224,10 +224,10 @@ class FilterTab extends Component {
         } else {
             var years_mock = this.state.stickers.yearsOfExps.slice();
             this.state.stickers.yearsOfExps.forEach((year, index) => {
-                if (year == keyId) {
+                if (year === keyId) {
                     years_mock.splice(index,1);
                     this.state.sticker_view.forEach((curr, index1) => {
-                        if (curr.key == keyId) {
+                        if (curr.key === keyId) {
                             view_mock.splice(index1, 1);
                         }
                     });
