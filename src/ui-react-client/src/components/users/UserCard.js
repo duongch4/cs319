@@ -4,9 +4,24 @@ import EditIcon from "@material-ui/icons/Edit";
 import {Link} from "react-router-dom";
 
 class UserCard extends Component {
-
+    state ={
+        // these are the top of the range
+        low: 50,
+        medium: 85,
+        high: 100,
+    }
     render(){
         const {user, canEdit} = this.props;
+        let styleName = "";
+        if(user.utilization <= this.state.low){
+            styleName = "lowUtil"
+        } else if(user.utilization <= this.state.medium){
+            styleName = "mediumUtil"
+        } else if(user.utilization <= this.state.high){
+            styleName = "highUtil"
+        } else {
+            styleName = "overUtil"
+        }
         return(
             <div className="card-summary">
                 <div className="card-summary-title">
@@ -21,7 +36,7 @@ class UserCard extends Component {
                     )}
                 </div>
                 <div className="card-summary-title utilization">
-                    <p>{user.utilization}%</p>
+                    <p className={styleName}>{user.utilization}%</p>
                 </div>
             </div>
         )
