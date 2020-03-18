@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.API.Application.Repository;
-using Web.API.Infrastructure.Config;
 using Web.API.Infrastructure.Data;
 using AuthenticationOptions = Web.API.Authentication.AuthenticationOptions;
+using AzureAdOptions = Web.API.Authentication.AzureAdOptions;
 using Web.API.Authorization;
 using Web.API.OpenApi;
 using Serilog;
@@ -101,8 +101,8 @@ namespace Web.API
             {
                 Authority = $@"{azureAdOptions.Authority}/v2.0",
                 AuthorizationUrl = $@"{azureAdOptions.Authority}/oauth2/v2.0/authorize",
-                ClientId = $@"{azureAdOptions.ClientId}",
-                ApplicationIdUri = $@"api://{azureAdOptions.ClientId}"
+                ClientId = azureAdOptions.ClientId,
+                ApplicationIdUri =azureAdOptions.ApplicationIdUri
             };
         }
 
@@ -270,9 +270,9 @@ namespace Web.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<AuthenticationOptions> options)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<AuthenticationOptions> authenticationOptions)
         {
-            UseSwagger(app, options);
+            UseSwagger(app, authenticationOptions);
 
             if (env.IsDevelopment())
             {
@@ -296,7 +296,7 @@ namespace Web.API
             UseSpa(app, env);
         }
 
-        private void UseSwagger(IApplicationBuilder app, IOptions<AuthenticationOptions> options)
+        private void UseSwagger(IApplicationBuilder app, IOptions<AuthenticationOptions> authenticationOptions)
         {
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -308,7 +308,7 @@ namespace Web.API
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
                 // c.RoutePrefix = string.Empty;
 
-                c.OAuthClientId(options.Value.ClientId);
+                c.OAuthClientId(authenticationOptions.Value.ClientId);
             });
         }
 
