@@ -5,10 +5,6 @@ import Select from 'react-select';
 
 
 class LocationsSearch extends Component {
-    constructor(props){
-        super(props);
-      }
-
     state = {
       key: this.props.keyName,
       locations: 
@@ -46,7 +42,7 @@ class LocationsSearch extends Component {
     var provinces = this.props.provinces; 
     var provinces_render = [];
     var all_provinces_key = Object.keys(provinces);
-    provinces_render.push(<option value="DEFAULT" disabled>Province</option>);
+    provinces_render.push(<option key={provinces_render.length} value="DEFAULT" disabled>Province</option>);
     all_provinces_key.forEach((province, i) => {
       provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)
     });

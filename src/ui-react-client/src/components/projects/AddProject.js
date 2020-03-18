@@ -32,7 +32,8 @@ class AddProject extends Component {
             openings: [],
         },
         masterlist: this.props.masterlist,
-        pending: true
+        pending: true,
+        error: []
     };
 
     componentDidMount() {
@@ -62,7 +63,7 @@ class AddProject extends Component {
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
-            }
+            },
         })
     };
 
@@ -76,25 +77,71 @@ class AddProject extends Component {
         })
     }
 
+    compare_dates = (date1,date2) => {
+        if (date1<=date2) return true;
+        else return false;
+     }
+
     addProjDetails = (project) => {
-        this.setState({
-            projectProfile: {
-                ...this.state.projectProfile,
-                projectSummary: {
-                    ...this.state.projectProfile.projectSummary,
-                    title: project.title,
-                    projectStartDate: project.projectStartDate,
-                    projectEndDate: project.projectEndDate,
-                    location: project.location,
-                    projectNumber: project.projectNumber
-                }
-            }
-        })
+        let error = []
+        if(project.title === "" || project.title === null){
+            error = [<p className="errorMessage" key={error.length}>Error ADD: Cannot add a project with no title</p>]
+        }
+        if(project.projectNumber === "") {
+            error = [...error, <p className="errorMessage" key={error.length}>Error ADD: Cannot add a project with no Project Number</p>]
+        }
+        if (!this.compare_dates(project.projectStartDate, project.projectEndDate)){
+            error = [...error, <p className="errorMessage" key={error.length}>Error ADD: End date cannot be before Start Date</p>]
+        }
+        if (project.location.province === "DEFAULT" || project.location.city === "DEFAULT") {
+            error = [...error, <p className="errorMessage" key={error.length}>Error ADD: Location is not valid</p>]
+        } 
+        if(error.length > 0) {
+            this.setState({
+                ...this.state,
+                projectProfile: {
+                    ...this.state.projectProfile,
+                    projectSummary: {
+                        ...this.state.projectProfile.projectSummary,
+                        title: project.title,
+                        projectNumber: project.projectNumber,
+                        projectStartDate: project.projectStartDate,
+                        projectEndDate: project.projectEndDate,
+                        location: project.location
+                    }
+                },
+                error: error
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                projectProfile: {
+                    ...this.state.projectProfile,
+                    projectSummary: {
+                        ...this.state.projectProfile.projectSummary,
+                        title: project.title,
+                        projectNumber: project.projectNumber,
+                        projectStartDate: project.projectStartDate,
+                        projectEndDate: project.projectEndDate,
+                        location: project.location
+                    }
+                },
+                error: []
+            })
+        }
     };
 
     onSubmit = () => {
-        let newProject = this.state.projectProfile;
-        this.props.createProject(newProject, this.props.history);
+        if(this.state.error.length !== 0) {
+            alert("Cannot Add Project - Please fix the errors in the form before submitting")
+        } else {
+            let newProject = this.state.projectProfile;
+            this.props.createProject(newProject, this.props.history);
+            this.setState({
+                ...this.state,
+                error: []
+            })
+        }
     };
 
     render() {
@@ -104,7 +151,7 @@ class AddProject extends Component {
                     <h1>Loading form...</h1>
                 </div>
             )
-        } else {
+        }else {
             const openings = [];
             this.state.projectProfile.openings.forEach((opening, index) => {
                 openings.push(<Openings key={"openings" + index} opening={opening}
@@ -120,8 +167,11 @@ class AddProject extends Component {
                     <div className="section-container">
                         <TeamRequirements disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                          addOpening={(opening) => this.addOpening(opening)}/>
+                                          addOpening={(opening) => this.addOpening(opening)}
+                                          isUserPage={false}/>
+                        {this.state.error}
                         <hr/>
+                       
                         {openings}
                     </div>
                     <div className="section-container">

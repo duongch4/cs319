@@ -9,3 +9,7 @@ a {
 p {
     color: #333333;
 }
+
+.errorMessage {
+    color: red;
+}
