@@ -6,6 +6,7 @@ import axios from 'axios';
 const baseURL = `${SVC_ROOT}api/users/search`;
 
 export const getUsers = users => {
+    console.log("sending")
     return {
       type: types.PERFORM_USER_SEARCH,
       users: users
@@ -15,6 +16,7 @@ export const getUsers = users => {
 export const performUserSearch = (filterParams) => {
 return dispatch => {
     if (CLIENT_DEV_ENV) {
+        console.log("ACTION")
         dispatch(getUsers(filterParams));
     } else {
     return axios
