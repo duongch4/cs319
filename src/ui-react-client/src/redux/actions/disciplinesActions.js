@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import { SVC_ROOT } from '../../config/config';
-import { headers } from '../../config/adalConfig';
+// import { headers } from '../../config/adalConfig';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
 

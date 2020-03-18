@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
-import { headers } from '../../config/adalConfig';
+import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
 
@@ -41,19 +41,18 @@ export const createCityData = location => {
     }
 }
 
-export const loadMasterlists = () => {
+export const loadMasterlists = async () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(loadMasterlistsData(_initialState.masterlist));
         } else {
-            return axios
-                .get(`${baseURL}masterlists/`, { headers })
-                .then (response => {
-                    dispatch(loadMasterlistsData(response.data.payload));
-                })
-                .catch(error => {
-                    throw error;
-                });
+            return getHeaders().then(headers => {
+                return axios.get(`${baseURL}masterlists/`, { headers });
+            }).then (response => {
+                dispatch(loadMasterlistsData(response.data.payload));
+            }).catch(error => {
+                throw error;
+            });
         }
     }
 };
