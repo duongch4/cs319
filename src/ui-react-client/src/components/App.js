@@ -12,7 +12,9 @@ import AddProject from './projects/AddProject.js';
 import UserDetails from './users/UserDetails.js';
 import EditProject from './projects/EditProject';
 import EditUser from './users/EditUser.js';
-import Admin from './admin/Admin.js'
+import Admin from './admin/Admin.js';
+
+import { CurrentUser } from "./users/CurrentUser.js";
 
 const App = () => {
   return (
@@ -30,6 +32,7 @@ const App = () => {
         <Route path="/editproject/:project_number" component={EditProject} />
         <Route path="/edituser/:user_id" component={EditUser} />
         <Route path="/admin" component={Admin} />
+        <Route path="/current_user" component={CurrentUser} />
         <Route component={PageNotFound} />
       </Switch>
     </div>
