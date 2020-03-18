@@ -65,3 +65,12 @@ nav div {
 button:hover {
     background-color: #333;
 }
+
+.navlink a:active {
+    color: #ebd4d4;
+}
+
+.navlink a {
+    color: #ffffff;
+    font-size: 20px;
+}
