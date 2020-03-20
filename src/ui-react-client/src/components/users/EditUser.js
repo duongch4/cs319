@@ -138,6 +138,28 @@ class EditUser extends Component {
         })
     }
 
+    removeAvailability = (availability) => {
+        let result = [];
+        let first = true;
+        this.state.userProfile.availability.forEach(avail => {
+            if(availability.fromDate === avail.fromDate 
+                && availability.toDate === avail.toDate 
+                && availability.reason === avail.reason && first)
+            {
+                first = false;
+            } else {
+                result.push(avail)
+            }
+        })
+        this.setState({
+            ...this.state,
+            userProfile: {
+                ...this.state.userProfile,
+                availability: result
+            }
+        })
+    }
+
     render() {
         if (this.state.pending) {
             return (<div className="activity-container">
@@ -158,7 +180,7 @@ class EditUser extends Component {
             let unavailability = [];
             if(this.state.userProfile.availability && this.state.userProfile.availability.length > 0) {
                 this.state.userProfile.availability.forEach(currentAvailability => {
-                    unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
+                    unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}  removeAvailability={this.removeAvailability}/>)
                 })
             } else {
                 unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
