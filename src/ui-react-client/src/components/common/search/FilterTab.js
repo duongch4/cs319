@@ -13,6 +13,7 @@ import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
 import FilterStickers from './FilterSticker';
+import _initialState from '../../../redux/reducers/_initialState';
 
 
 class FilterTab extends Component {
@@ -20,21 +21,21 @@ class FilterTab extends Component {
         super(props);
         this.state = {
             searchFilter: {
-                filter: {
-                utilization: {
-                    min: 0,
-                    max: 100
+                "filter": {
+                "utilization": {
+                    "min": 0,
+                    "max": 100
                 },
-                locations: [],
-                disciplines: null,
-                yearsOfExps: [],
-                startDate: null,
-                endDate: null,
+                "locations": [],
+                "disciplines": null,
+                "yearsOfExps": [],
+                "startDate": null,
+                "endDate": null,
             },
-            searchWord: null,
-            orderKey: "utilization",
-            order: "desc",
-            page: 1,
+            "searchWord": null,
+            "orderKey": "utilization",
+            "order": "desc",
+            "page": 1,
             },
         stickers: {
             locations: [],
@@ -83,8 +84,7 @@ class FilterTab extends Component {
     };
 
     onSubmit = () => {
-        // TODO: figure out why the formatting isn't correct
-       this.props.performUserSearch(this.state.searchFilter);
+       this.props.onDataFetched(this.state.searchFilter);
     };
 
     getFilters =() => {
