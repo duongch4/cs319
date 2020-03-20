@@ -95,10 +95,13 @@ class FilterTab extends Component {
         this.state.stickers.locations.forEach((location) => {
             locations_good = [...locations_good, {province: location.province, city: location.city}];
         });
+        
         if(this.state.stickers.disciplines){
             Object.entries(this.state.stickers.disciplines).forEach((discipline) => {
                 disciplines_good = Object.assign({}, disciplines_good, {[discipline[1].name]: discipline[1].skills})
             });
+        } else {
+            disciplines_good = null;
         }
         
         this.state.stickers.yearsOfExps.forEach((year) => {
@@ -250,7 +253,11 @@ class FilterTab extends Component {
         newLocation.forEach((location) => {
             if(location.cities.length !== 0){
                 location.cities.forEach((city) => {
-                    loc_arr.push({locationID: city.id, province: location.province, city: city.city});
+                    if (city.city == null) {
+                        loc_arr.push({locationID: city.id, province: location.province, city: null});
+                    } else {
+                        loc_arr.push({locationID: city.id, province: location.province, city: city.city});
+                    }
                     this.setState({
                         ...this.state,
                         locations_temp: loc_arr,
