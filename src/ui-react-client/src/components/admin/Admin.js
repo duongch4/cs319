@@ -142,7 +142,7 @@ class Admin extends Component {
                         name: "",
                         id: 0
                     }
-                }, () => console.log(this.state))
+                })
                 
                 return;
             case "skill":
