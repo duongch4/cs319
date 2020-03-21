@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
-import {CLIENT_DEV_ENV, SVC_ROOT} from '../../config/config';
-import { headers } from '../../config/adalConfig';
+import { CLIENT_DEV_ENV, SVC_ROOT } from '../../config/config';
+import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
 import {updateUserSummary} from "./usersActions";
@@ -29,14 +29,13 @@ export const loadSpecificUser = (userID) => {
       });
       dispatch(loadUserProfileData(user[0]));
     } else {
-      return axios
-          .get(`${baseURL + userID}`, { headers })
-          .then(response => {
-            dispatch(loadUserProfileData(response.data.payload));
-          })
-          .catch(error => {
-            throw error;
-          });
+      return getHeaders().then(headers => {
+        return axios.get(`${baseURL + userID}`, { headers });
+      }).then(response => {
+        dispatch(loadUserProfileData(response.data.payload));
+      }).catch(error => {
+        throw error;
+      });
     }
   };
 };
@@ -46,16 +45,15 @@ export const updateSpecificUser = (user, history) => {
     if (CLIENT_DEV_ENV) {
       dispatch(updateUserProfileData(user));
     } else {
-      return axios
-          .put(baseURL + user.userSummary.userID, user, { headers })
-          .then(response => {
-            dispatch(updateUserProfileData(user));
-            dispatch(updateUserSummary(user.userSummary));
-            history.push('/users/' + user.userSummary.userID);
-          })
-          .catch(error => {
-            throw error;
-          });
+      return getHeaders().then(headers => {
+        return axios.put(baseURL + user.userSummary.userID, user, { headers });
+      }).then(_ => {
+        dispatch(updateUserProfileData(user));
+        dispatch(updateUserSummary(user.userSummary));
+        history.push('/users/' + user.userSummary.userID);
+      }).catch(error => {
+        throw error;
+      });
     }
   }
 };

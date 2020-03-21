@@ -4,6 +4,7 @@ Insert into Disciplines (Id, [Name]) values (2, N'Martial Arts');
 Insert into Disciplines (Id, [Name]) values (3, N'Language');
 Insert into Disciplines (Id, [Name]) values (4, N'Cryptography');
 Insert into Disciplines (Id, [Name]) values (5, N'Intel');
+Insert into Disciplines (Id, [Name]) values (6, N'A Discipline With No Skills');
 Set IDENTITY_INSERT [dbo].[Disciplines] OFF
 
 Insert into [dbo].[Provinces] values (N'Alberta');

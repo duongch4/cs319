@@ -46,10 +46,9 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 SELECT
                     d.Id, d.Name, STRING_AGG (s.Name, ',') as Skills
-                FROM
-                    Disciplines d, Skills s
-                WHERE
-                    d.Id = s.DisciplineId
+                FROM Disciplines d
+                LEFT JOIN Skills s
+                    ON d.Id = s.DisciplineId
                 GROUP BY
                     d.Id, d.Name
             ;";
