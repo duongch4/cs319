@@ -15,6 +15,10 @@ class SearchResults extends Component {
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
             this.props.performUserSearch(this.props.data)
+            this.setState({
+                ...this.state,
+                userSummaries: this.props.users,
+            });
         } else {
             this.props.performUserSearch(this.props.data)
             .then(() => {

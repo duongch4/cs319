@@ -73,7 +73,6 @@ class LocationsSearch extends Component {
       var all_city = {};
       all_city['label'] = "All cities";
       all_city['value'] = new Array();
-      var j = 0;
       
       Object.entries(cities).forEach((city, i) => {
         var single_city = {};
@@ -82,7 +81,6 @@ class LocationsSearch extends Component {
         all_city['value'].push({city: city[0], id: city[1]});
         cities_format.push(single_city);
         cities_key.push('cities_' + i);
-        j = i;
       });
       
       cities_format.push(all_city);
