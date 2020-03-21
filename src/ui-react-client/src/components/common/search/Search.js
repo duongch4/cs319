@@ -34,7 +34,6 @@ class Search extends Component {
 }
 
   handleResultChange(filter) {
-    console.log(filter);
     this.setState({
       ...this.state,
      filters: filter,

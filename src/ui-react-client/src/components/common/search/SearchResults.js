@@ -16,7 +16,6 @@ class SearchResults extends Component {
         if (CLIENT_DEV_ENV) {
             this.props.performUserSearch(this.props.data)
         } else {
-            console.log('hit');
             this.props.performUserSearch(this.props.data)
             .then(() => {
                 this.setState({

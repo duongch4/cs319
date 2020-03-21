@@ -19,7 +19,7 @@ import _initialState from '../../../redux/reducers/_initialState';
 class FilterTab extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.initialState = {
             searchFilter: {
                 "filter": {
                 "utilization": {
@@ -50,6 +50,7 @@ class FilterTab extends Component {
         locations_temp: [],
         sticker_view: [],
         }
+        this.state = this.initialState;
     }
     
     componentDidMount() {
@@ -84,7 +85,8 @@ class FilterTab extends Component {
     };
 
     onSubmit = () => {
-       this.props.onDataFetched(this.state.searchFilter);
+        var current_state = JSON.parse(JSON.stringify(this.state.searchFilter));
+        this.setState(this.initialState, ()=>this.props.onDataFetched(current_state));
     };
 
     getFilters =() => {
@@ -177,8 +179,7 @@ class FilterTab extends Component {
         this.setState({
             ...this.state,
             sticker_view: stickers,
-        }, () => this.render());
-
+        });
     }
 
     deleteFilter = (type, keyId) => {
@@ -187,10 +188,10 @@ class FilterTab extends Component {
         if (type === "location") {
             var location_mock = this.state.stickers.locations.slice();
             this.state.stickers.locations.forEach((location, index) => {
-            if (location.locationID === keyId) {
+            if (location.locationID == keyId) {
                 location_mock.splice(index,1);
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key === keyId) {
+                    if (curr.key == keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
@@ -201,20 +202,23 @@ class FilterTab extends Component {
                         locations: location_mock,
                     },
                     sticker_view: view_mock,
-                    }, () => this.render());
+                    });
                 }
             });
         } else if (type === "discipline") {
             var discipline_mock = this.state.stickers.disciplines;
             console.log(discipline_mock);
             Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
-            if (discipline[0] === keyId) {
+            if (discipline[0] == keyId) {
                 delete discipline_mock[keyId];
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key === keyId) {
+                    if (curr.key == keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
+                if (Object.keys(discipline_mock).length == 0){
+                    discipline_mock = null;
+                }
                 this.setState({
                     ...this.state,
                     stickers: {
@@ -222,16 +226,16 @@ class FilterTab extends Component {
                         disciplines: discipline_mock,
                     },
                     sticker_view: view_mock,
-                    }, () => this.render());
+                    });
                 }
             });
         } else {
             var years_mock = this.state.stickers.yearsOfExps.slice();
             this.state.stickers.yearsOfExps.forEach((year, index) => {
-                if (year === keyId) {
+                if (year == keyId) {
                     years_mock.splice(index,1);
                     this.state.sticker_view.forEach((curr, index1) => {
-                        if (curr.key === keyId) {
+                        if (curr.key == keyId) {
                             view_mock.splice(index1, 1);
                         }
                     });
@@ -242,7 +246,7 @@ class FilterTab extends Component {
                             yearsOfExps: years_mock,
                         },
                         sticker_view: view_mock,
-                        }, () => this.render());
+                        });
                     }
                 });
         }
@@ -253,16 +257,12 @@ class FilterTab extends Component {
         newLocation.forEach((location) => {
             if(location.cities.length !== 0){
                 location.cities.forEach((city) => {
-                    if (city.city == null) {
-                        loc_arr.push({locationID: city.id, province: location.province, city: null});
-                    } else {
                         loc_arr.push({locationID: city.id, province: location.province, city: city.city});
-                    }
+                });
                     this.setState({
                         ...this.state,
                         locations_temp: loc_arr,
                     });
-                });
             }
         })
     }
