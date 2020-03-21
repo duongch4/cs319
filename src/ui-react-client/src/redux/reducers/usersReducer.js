@@ -17,6 +17,14 @@ const executeUpdateUserSummaryData = (state, action) => {
 
 const executeSearch = (action, state) => {
   return action.users;
+  /* TODO: Need to have cases for:
+    matching location - city and/or province
+    matching Name - first and/or last
+    matchings Discipline(s)
+    matchings Skills(s)
+    matching Years of Experience
+    Any combintation of the above
+*/ 
 };
 
 export const usersReducer = (

@@ -13,7 +13,6 @@ import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
 import FilterStickers from './FilterSticker';
-import _initialState from '../../../redux/reducers/_initialState';
 
 
 class FilterTab extends Component {
