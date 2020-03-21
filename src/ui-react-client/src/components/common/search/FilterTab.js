@@ -187,7 +187,7 @@ class FilterTab extends Component {
         if (type === "location") {
             var location_mock = this.state.stickers.locations.slice();
             this.state.stickers.locations.forEach((location, index) => {
-            if (location.locationID == keyId) {
+            if (location.locationID === keyId) {
                 location_mock.splice(index,1);
                 this.state.sticker_view.forEach((curr, index1) => {
                     if (curr.key == keyId) {
@@ -208,14 +208,14 @@ class FilterTab extends Component {
             var discipline_mock = this.state.stickers.disciplines;
             console.log(discipline_mock);
             Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
-            if (discipline[0] == keyId) {
+            if (discipline[0] === keyId) {
                 delete discipline_mock[keyId];
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key == keyId) {
+                    if (curr.key === keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
-                if (Object.keys(discipline_mock).length == 0){
+                if (Object.keys(discipline_mock).length === 0){
                     discipline_mock = null;
                 }
                 this.setState({
@@ -231,10 +231,10 @@ class FilterTab extends Component {
         } else {
             var years_mock = this.state.stickers.yearsOfExps.slice();
             this.state.stickers.yearsOfExps.forEach((year, index) => {
-                if (year == keyId) {
+                if (year === keyId) {
                     years_mock.splice(index,1);
                     this.state.sticker_view.forEach((curr, index1) => {
-                        if (curr.key == keyId) {
+                        if (curr.key === keyId) {
                             view_mock.splice(index1, 1);
                         }
                     });
