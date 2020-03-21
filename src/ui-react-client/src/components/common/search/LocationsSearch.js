@@ -20,7 +20,7 @@ class LocationsSearch extends Component {
           locations:
             {
               ...this.state.locations,
-              province: e.target.value,
+              province: e.value,
             },
         }, () => this.props.addLocations(this.state));
     }
@@ -58,12 +58,13 @@ class LocationsSearch extends Component {
   render(){
     var provinces = this.props.provinces; 
     var provinces_render = [];
-    var all_provinces_key = Object.keys(provinces);
-    provinces_render.push(<option key={provinces_render.length} value="DEFAULT" disabled>Province</option>);
-    all_provinces_key.forEach((province, i) => {
-      provinces_render.push(<option key={"province_" + i} value={province}>{province}</option>)
+    var province_key = [];
+    Object.keys(provinces).forEach((province, i) => {
+      province_key.push("province_" + i);
+      var province_obj = {label: province, value: province};
+      provinces_render.push(province_obj);
     });
-
+    
     var cities = [];
     if (this.state.locations.province){
       cities =this.props.provinces[this.state.locations.province];
@@ -91,10 +92,7 @@ class LocationsSearch extends Component {
      return(
         <div className="form-section">
           <div className="form-row">
-            <select className="input-box" defaultValue={'DEFAULT'}
-                    id="province" onChange={this.handleChange}>
-              {provinces_render}
-            </select>
+            <Select placeholder='Provinces' id="province" className="input-box" onChange={this.handleChange} options={provinces_render}/>
             <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti
                             placeholder='Cities' />
           </div>

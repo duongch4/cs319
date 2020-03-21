@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
+import Select from 'react-select';
 
 class Search extends Component {
   constructor(props) {
@@ -11,6 +12,10 @@ class Search extends Component {
     this.state = {
       filters: null,
       masterlist: {},
+      sort_by: [{label: "No filter", value:"no-filter"}, {label: "Utilization: High to Low", value: "util-high"}, 
+                {label: "Utilization: Low to High", value: "util-low"},{label: "Locations", value: "locations"}, 
+                {label: "Disciplines", value: "disciplines"}, {label: "Years of Exerpience", value: "yearsOfExp"}],
+      sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -41,6 +46,7 @@ class Search extends Component {
   }
 
   render() {
+
     if(Object.keys(this.state.masterlist).length === 0 ){
       return <div>loading</div>
     } else {
@@ -49,7 +55,17 @@ class Search extends Component {
         <FilterTab onDataFetched={this.handleResultChange} 
                   masterlist={this.state.masterlist}/>
         {(this.state.filters != null) &&
-        <SearchResults data={this.state.filters} />}
+        <div>
+        <div className="form-row">
+        <h3 className="darkGreenHeader">Results</h3>
+        <div style={{position: "absolute", right: "50px"}}>
+        <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by}
+          placeholder='Sort by:'/>
+          </div>
+        </div>
+        <SearchResults data={this.state.filters} />
+        </div>
+        }
       </div>
     )
   }
