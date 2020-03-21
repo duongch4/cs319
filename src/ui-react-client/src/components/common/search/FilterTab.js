@@ -190,7 +190,7 @@ class FilterTab extends Component {
             if (location.locationID === keyId) {
                 location_mock.splice(index,1);
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key == keyId) {
+                    if ((parseInt(curr.key)) === keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
