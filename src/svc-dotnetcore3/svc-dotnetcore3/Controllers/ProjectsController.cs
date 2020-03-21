@@ -308,13 +308,19 @@ namespace Web.API.Controllers
         ///                 "discipline": "Weapons",
         ///                 "skills": ["Glock", "Sniper Rifle"],
         ///                 "yearsOfExp": "1-3",
-        ///                 "commitmentMonthlyHours": 160
+        ///                 "commitmentMonthlyHours":  {
+        ///                    "2021-01-01": 30,
+        ///                    "2021-02-01": 50
+        ///                 }
         ///             },
         ///             {
         ///                 "discipline": "Intel",
         ///                 "skills": ["Deception", "False Identity Creation"],
         ///                 "yearsOfExp": "3-5",
-        ///                 "commitmentMonthlyHours": 180
+        ///                 "commitmentMonthlyHours": {
+        ///                     "2021-01-01": 30,
+        ///                     "2021-02-01": 50
+        ///                 }
         ///             }
         ///         ]
         ///     }
@@ -590,6 +596,59 @@ namespace Web.API.Controllers
                 position = await positionsRepository.UpdateAPosition(position);
                 var posIdAndResourceId = new { reqBody.PositionID, reqBody.UserID };
                 var response = new UpdatedResponse<object>(posIdAndResourceId, "Successfully updated");
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
+            }
+        }
+
+    /// <summary>Testing GetAPosition</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET api/projects/"EJ7945NDVCZPWX9"/position/2001
+        ///
+        /// </remarks>
+        /// <param name= "projectNum">The project number as string</param>
+        /// <param name= "positionId">The project's id</param>
+        /// <returns>The old deleted project</returns>
+        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("projects/{projectNum}/position/{positionId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAPosition([FromRoute] string projectNum, int positionId)
+        {
+            try
+            {   
+                Position position = await positionsRepository.GetAPosition(positionId);
+                
+                if (position == null)
+                {
+                    var error = new NotFoundException("The given positionId cannot be found in the database");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                }
+                Log.Information("{@a}", position);
+
+                var response = new UpdatedResponse<Position>(position, "Successfully retrieved");
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
