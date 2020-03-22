@@ -63,7 +63,7 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AssignAResource([FromRoute] int openingId, int userId)
+        public async Task<IActionResult> AssignAResource([FromRoute] int openingId, string userId)
         {
             try
             {
@@ -119,7 +119,6 @@ namespace Web.API.Controllers
         ///
         /// </remarks>
         /// <param name= "openingId">The id of the opening the resource will be assigned to</param>
-        /// <param name = "userId"> The id of the resource being assigned to the opening </param>
         /// <returns>The old deleted project</returns>
         /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
         /// <response code="400">Bad Request</response>

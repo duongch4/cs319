@@ -117,7 +117,7 @@ namespace Web.API.Controllers
                 disciplineResource =>
                 {
                     IEnumerable<string> skills;
-                    if (disciplineResource.Skills == null || disciplineResource.Skills == "")
+                    if (String.IsNullOrEmpty(disciplineResource.Skills))
                     {
                         skills = Enumerable.Empty<string>();
                     }

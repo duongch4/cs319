@@ -129,7 +129,7 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAUser(int userId)
+        public async Task<IActionResult> GetAUser(string userId)
         {
             try
             {
@@ -142,10 +142,10 @@ namespace Web.API.Controllers
                 var userSummary = mapper.Map<UserResource, UserSummary>(user);
 
                 var projects = await projectsRepository.GetAllProjectResourcesOfUser(userId);
-                var positions = await positionsRepository.GetPositionsOfUser(userId);
+                var positionsResource = await positionsRepository.GetPositionsOfUser(userId);
+                var positions = mapper.Map<IEnumerable<PositionResource>, IEnumerable<PositionSummary>>(positionsResource);
                 var disciplines = await disciplinesRepository.GetUserDisciplines(userId);
                 var skills = await skillsRepository.GetUserSkills(userId);
-                // var utilization = Math.Ceiling(positions.Aggregate(0, (result, x) => result + x.ProjectedMonthlyHours) / 176.0m * 100.0m);
                 var outOfOffice = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userId);
                 IEnumerable<ResourceDisciplineResource> disciplineResources = Enumerable.Empty<ResourceDisciplineResource>();
                 foreach (var discipline in disciplines)
@@ -264,12 +264,12 @@ namespace Web.API.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("users/{userId}")]
-        [ProducesResponseType(typeof(OkResponse<int>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OkResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, int userId)
+        public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, string userId)
         {
             if (userProfile == null)
             {
@@ -282,10 +282,15 @@ namespace Web.API.Controllers
                 UserSummary summary = userProfile.UserSummary;
                 Location location = await locationsRepository.GetALocation(userProfile.UserSummary.Location.City);
                 var changedUser = await usersRepository.UpdateAUser(summary, location);
+                if (changedUser == "-1")
+                {
+                    var error = new InternalServerException($"Cannot Update User with id: {userId}");
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                }
                 var disciplines = await processDisciplineSkillChanges(userProfile.Disciplines, userId);
                 var avails = await processOutOfOfficeChanges(userProfile.Availability, userId);
                 var tmp = new { changedUser, disciplines, avails };
-                var response = new OkResponse<int>(userId, "Successfully updated");
+                var response = new OkResponse<string>(userId, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -314,7 +319,7 @@ namespace Web.API.Controllers
             return user;
         }
 
-        private IEnumerable<ResourceDiscipline> createResourceDisciplinesFromProfile(IEnumerable<ResourceDisciplineResource> disciplines, int userId)
+        private IEnumerable<ResourceDiscipline> createResourceDisciplinesFromProfile(IEnumerable<ResourceDisciplineResource> disciplines, string userId)
         {
             var result = Enumerable.Empty<ResourceDiscipline>();
             foreach (var discipline in disciplines)
@@ -329,7 +334,7 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<Object> processDisciplineSkillChanges(IEnumerable<ResourceDisciplineResource> disciplines, int userId)
+        private async Task<Object> processDisciplineSkillChanges(IEnumerable<ResourceDisciplineResource> disciplines, string userId)
         {
             var profileDisciplines = createResourceDisciplinesFromProfile(disciplines, userId);
             var profileSkills = createResourceSkillsFromProfile(disciplines, userId);
@@ -351,7 +356,7 @@ namespace Web.API.Controllers
             return null;
         }
 
-        private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<ResourceDisciplineResource> disciplines, int userId)
+        private IEnumerable<ResourceSkill> createResourceSkillsFromProfile(IEnumerable<ResourceDisciplineResource> disciplines, string userId)
         {
             var result = Enumerable.Empty<ResourceSkill>();
             foreach (var disc in disciplines)
@@ -416,7 +421,7 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private IEnumerable<OutOfOffice> createOutOfOfficeFromProfile(IEnumerable<OutOfOfficeResource> availabilities, int userId)
+        private IEnumerable<OutOfOffice> createOutOfOfficeFromProfile(IEnumerable<OutOfOfficeResource> availabilities, string userId)
         {
             var result = Enumerable.Empty<OutOfOffice>();
             foreach (var availability in availabilities)
@@ -432,7 +437,7 @@ namespace Web.API.Controllers
             return result;
         }
 
-        private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, int userId)
+        private async Task<IEnumerable<OutOfOffice>> processOutOfOfficeChanges(IEnumerable<OutOfOfficeResource> profile, string userId)
         {
             var profileAvailability = createOutOfOfficeFromProfile(profile, userId);
             var availabilityDB = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userId);
