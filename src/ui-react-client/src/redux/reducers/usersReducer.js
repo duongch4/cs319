@@ -16,8 +16,8 @@ const executeUpdateUserSummaryData = (state, action) => {
 };
 
 const executeSearch = (action, state) => {
-  state.forEach(element => {
-/* TODO: Need to have cases for:
+  return action.users;
+  /* TODO: Need to have cases for:
     matching location - city and/or province
     matching Name - first and/or last
     matchings Discipline(s)
@@ -25,8 +25,6 @@ const executeSearch = (action, state) => {
     matching Years of Experience
     Any combintation of the above
 */ 
-  });
-  return state;
 };
 
 export const usersReducer = (

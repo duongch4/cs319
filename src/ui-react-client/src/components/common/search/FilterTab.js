@@ -18,23 +18,23 @@ import FilterStickers from './FilterSticker';
 class FilterTab extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.initialState = {
             searchFilter: {
-                filter: {
-                utilization: {
-                    min: 0,
-                    max: 100
+                "filter": {
+                "utilization": {
+                    "min": 0,
+                    "max": 100
                 },
-                locations: [],
-                disciplines: null,
-                yearsOfExps: [],
-                startDate: null,
-                endDate: null,
+                "locations": [],
+                "disciplines": null,
+                "yearsOfExps": [],
+                "startDate": null,
+                "endDate": null,
             },
-            searchWord: null,
-            orderKey: "utilization",
-            order: "desc",
-            page: 1,
+            "searchWord": null,
+            "orderKey": "utilization",
+            "order": "desc",
+            "page": 1,
             },
         stickers: {
             locations: [],
@@ -49,6 +49,7 @@ class FilterTab extends Component {
         locations_temp: [],
         sticker_view: [],
         }
+        this.state = this.initialState;
     }
     
     componentDidMount() {
@@ -83,8 +84,8 @@ class FilterTab extends Component {
     };
 
     onSubmit = () => {
-        // TODO: figure out why the formatting isn't correct
-       this.props.performUserSearch(this.state.searchFilter);
+        var current_state = JSON.parse(JSON.stringify(this.state.searchFilter));
+        this.setState(this.initialState, ()=>this.props.onDataFetched(current_state));
     };
 
     getFilters =() => {
@@ -95,10 +96,13 @@ class FilterTab extends Component {
         this.state.stickers.locations.forEach((location) => {
             locations_good = [...locations_good, {province: location.province, city: location.city}];
         });
+        
         if(this.state.stickers.disciplines){
             Object.entries(this.state.stickers.disciplines).forEach((discipline) => {
                 disciplines_good = Object.assign({}, disciplines_good, {[discipline[1].name]: discipline[1].skills})
             });
+        } else {
+            disciplines_good = null;
         }
         
         this.state.stickers.yearsOfExps.forEach((year) => {
@@ -174,8 +178,7 @@ class FilterTab extends Component {
         this.setState({
             ...this.state,
             sticker_view: stickers,
-        }, () => this.render());
-
+        });
     }
 
     deleteFilter = (type, keyId) => {
@@ -187,7 +190,7 @@ class FilterTab extends Component {
             if (location.locationID === keyId) {
                 location_mock.splice(index,1);
                 this.state.sticker_view.forEach((curr, index1) => {
-                    if (curr.key === keyId) {
+                    if ((parseInt(curr.key)) === keyId) {
                         view_mock.splice(index1, 1);
                     }
                 });
@@ -198,7 +201,7 @@ class FilterTab extends Component {
                         locations: location_mock,
                     },
                     sticker_view: view_mock,
-                    }, () => this.render());
+                    });
                 }
             });
         } else if (type === "discipline") {
@@ -211,6 +214,9 @@ class FilterTab extends Component {
                         view_mock.splice(index1, 1);
                     }
                 });
+                if (Object.keys(discipline_mock).length === 0){
+                    discipline_mock = null;
+                }
                 this.setState({
                     ...this.state,
                     stickers: {
@@ -218,7 +224,7 @@ class FilterTab extends Component {
                         disciplines: discipline_mock,
                     },
                     sticker_view: view_mock,
-                    }, () => this.render());
+                    });
                 }
             });
         } else {
@@ -238,7 +244,7 @@ class FilterTab extends Component {
                             yearsOfExps: years_mock,
                         },
                         sticker_view: view_mock,
-                        }, () => this.render());
+                        });
                     }
                 });
         }
@@ -249,12 +255,12 @@ class FilterTab extends Component {
         newLocation.forEach((location) => {
             if(location.cities.length !== 0){
                 location.cities.forEach((city) => {
-                    loc_arr.push({locationID: city.id, province: location.province, city: city.city});
+                        loc_arr.push({locationID: city.id, province: location.province, city: city.city});
+                });
                     this.setState({
                         ...this.state,
                         locations_temp: loc_arr,
                     });
-                });
             }
         })
     }
