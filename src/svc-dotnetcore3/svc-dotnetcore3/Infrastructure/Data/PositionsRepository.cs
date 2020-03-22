@@ -54,7 +54,7 @@ namespace Web.API.Infrastructure.Data
                                              IsConfirmed = sqlRes.IsConfirmed};
             return position;
         }
-        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(int userId)
+        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(string userId)
         {
             var sql = @"
                 select

@@ -18,7 +18,7 @@ namespace Web.API.Infrastructure.Data
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
-        public async Task<IEnumerable<rawUtilization>> GetUtilizationOfUser(int userId)
+        public async Task<IEnumerable<rawUtilization>> GetUtilizationOfUser(string userId)
         {
             var sql = @"select isConfirmed, ceiling(sum(ProjectedMonthlyHours)/176.0 * 100) as Utilization
                         from positions as pos, projects as p

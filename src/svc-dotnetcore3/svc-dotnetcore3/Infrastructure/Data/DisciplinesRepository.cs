@@ -158,7 +158,7 @@ namespace Web.API.Infrastructure.Data
             return discipline;
         }
 
-        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId)
+        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(string userId)
         {
             var sql = @"
                 select rd.ResourceId, d.Name, rd.YearsOfExperience, rd.DisciplineId

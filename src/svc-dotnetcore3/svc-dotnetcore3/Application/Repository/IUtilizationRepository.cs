@@ -8,6 +8,6 @@ namespace Web.API.Application.Repository
     public interface IUtilizationRepository
     {
         //GET
-        Task<IEnumerable<rawUtilization>> GetUtilizationOfUser(int userId);
+        Task<IEnumerable<rawUtilization>> GetUtilizationOfUser(string userId);
     }
 }
