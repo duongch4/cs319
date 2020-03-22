@@ -2,9 +2,7 @@ import React,{ Component } from 'react';
 import './ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button} from "@material-ui/core";
-
 
 
 class TeamRequirements extends Component {

@@ -9,38 +9,41 @@ import AddIcon from '@material-ui/icons/Add';
 import { Link } from 'react-router-dom'
 import {CLIENT_DEV_ENV} from '../../config/config';
 
-const _ProjectsPage = ({
-  projects,
-  loadProjects,
-}) => {
+const _ProjectsPage = (props) => {
   useEffect(() => {
-    if (projects.length === 0) {
+    if (props.projects.length === 0) {
       if (CLIENT_DEV_ENV) {
-        loadProjects()
+        props.loadProjects()
       } else {
-        loadProjects()
+        props.loadProjects()
         .catch(error => {
           alert('Loading projects failed' + error);
         });
       }
       
     }
-  }, [projects, loadProjects]);
+  }, [props.projects, props.loadProjects]);
   return (
-    
     <div className="activity-container">
         <div className="title-bar">
           <h1 className="greenHeader">Manage Projects</h1>
           <div className="fab-container">
+            <Link to={{
+              pathname: "/add_project",
+              state: {
+                profile: props.profile
+              }
+            }}>
             <Fab
                 style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
                 size={"small"}
-                color="primary" aria-label="add" component={Link} to="/add_project">
+                color="primary" aria-label="add">
              <AddIcon />
             </Fab>
+            </Link>
           </div>
         </div>
-        <ProjectList projects={projects}/>
+        <ProjectList projects={props.projects}/>
     </div>
   );
 };

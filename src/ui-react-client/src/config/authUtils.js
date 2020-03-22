@@ -56,9 +56,14 @@ export const GRAPH_REQUESTS = {
             GRAPH_SCOPES.USER_READ
         ]
     },
-    API: {
+    API_ADMIN: {
         scopes: [
             GRAPH_SCOPES.API_ADMIN,
+            GRAPH_SCOPES.API_REGULAR
+        ]
+    },
+    API_REGULAR: {
+        scopes: [
             GRAPH_SCOPES.API_REGULAR
         ]
     },
@@ -113,7 +118,7 @@ export const acquireToken = async (tokenReqScopes, redirect) => {
 
 export const getHeaders = async () => {
     try {
-        const tokenRequest = GRAPH_REQUESTS.API;
+        const tokenRequest = GRAPH_REQUESTS.API_ADMIN;
         const tokenResponse = await acquireToken(tokenRequest, isIE());
         // console.log("MY TOKEN RESPONSE", tokenResponse); // TODO: Lots of Info here!!!
         return { Authorization: `Bearer ${tokenResponse.accessToken}` };
