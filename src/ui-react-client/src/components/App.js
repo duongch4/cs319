@@ -43,18 +43,6 @@ const App = (appProps) => {
   );
 };
 
-export const getHeaders = async () => {
-  try {
-    const tokenRequest = GRAPH_REQUESTS.API_ADMIN;
-    const tokenResponse = await acquireToken(tokenRequest, isIE());
-    // console.log("MY TOKEN RESPONSE", tokenResponse); // TODO: Lots of Info here!!!
-    return { Authorization: `Bearer ${tokenResponse.accessToken}` };
-  }
-  catch(error) {
-    throw error;
-  }
-}
-
 App.propTypes = {
   account: PropTypes.object,
   emailMessages: PropTypes.object,
