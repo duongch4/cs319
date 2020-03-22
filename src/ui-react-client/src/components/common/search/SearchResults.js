@@ -8,8 +8,10 @@ class SearchResults extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userSummaries: []
+            userSummaries: [],
+            sort: this.props.sortBy,
         };
+        this.sortUsers();
     }
     
     componentDidMount() {
@@ -30,23 +32,27 @@ class SearchResults extends Component {
         }
     }
 
-    render(){
-            if((this.state.userSummaries).length === 0 ){
-                return <div></div>
-            }  else{
-                var users = this.state.userSummaries;
-                const userCards =[];
+    sortUsers = () => {
         
-                users.forEach(user => {
-                userCards.push(
-                <div className="card" key={userCards.length}>
-                    <SearchUserCard user={user} key={userCards.length} canEdit={false}/>
-                </div>)      
-            });
-                return (
-                    <div>{userCards}</div>
-                )}
     }
+
+    render(){
+        if((this.state.userSummaries).length === 0 ){
+            return <div></div>
+        }  else{
+            var users = this.state.userSummaries;
+            const userCards =[];
+
+            users.forEach(user => {
+            userCards.push(
+            <div className="card" key={userCards.length}>
+                <SearchUserCard user={user} key={userCards.length} canEdit={false}/>
+            </div>)      
+        });
+            return (
+                <div>{userCards}</div>
+            )}
+        }
 }
 
 const mapStateToProps = state => {

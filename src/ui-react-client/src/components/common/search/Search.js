@@ -16,6 +16,7 @@ class Search extends Component {
                 {label: "Utilization: Low to High", value: "util-low"},{label: "Locations", value: "locations"}, 
                 {label: "Disciplines", value: "disciplines"}, {label: "Years of Exerpience", value: "yearsOfExp"}],
       sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
+      sort: null,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -45,8 +46,12 @@ class Search extends Component {
     });
   }
 
-  render() {
+  onFilterChange = (e) => {
 
+  }
+
+
+  render() {
     if(Object.keys(this.state.masterlist).length === 0 ){
       return <div>loading</div>
     } else {
@@ -59,11 +64,12 @@ class Search extends Component {
         <div className="form-row">
         <h3 className="darkGreenHeader">Results</h3>
         <div style={{position: "absolute", right: "50px"}}>
-        <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by}
+        <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
           placeholder='Sort by:'/>
           </div>
         </div>
-        <SearchResults data={this.state.filters} />
+        <SearchResults data={this.state.filters}
+                        sortBy={this.state.sort} />
         </div>
         }
       </div>
