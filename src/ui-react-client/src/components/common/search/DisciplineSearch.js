@@ -19,7 +19,7 @@ class DisciplineSearch extends Component {
           this.setState({
             disciplines: {
                   ...this.state.disciplines,
-                  name: e.target.value,
+                  name: e.value,
                   skills: [],
               }
           }, () =>  this.props.addDisciplines(this.state));
@@ -41,9 +41,11 @@ class DisciplineSearch extends Component {
     var disciplines = this.props.disciplines;
 
     var discipline_render = [];
-    var all_disciplines_keys = Object.keys(disciplines);
-    all_disciplines_keys.forEach((discipline, i) => {
-        discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
+    var discipline_key = [];
+    Object.keys(disciplines).forEach((discipline, i) => {
+      discipline_key.push("discipline_" + i);
+      var discipline_obj = {label: discipline, value: discipline};
+      discipline_render.push(discipline_obj);
     });
 
     var skills = [];
@@ -64,12 +66,10 @@ class DisciplineSearch extends Component {
         <div className="form-section">
           <div className="form-section opening">
             <div className="form-row">
-              <select className="input-box" defaultValue={'DEFAULT'}
-                      id="discipline" onChange={this.handleChange}>
-                  <option value={'DEFAULT'} disabled>Discipline</option>
-                  {discipline_render}
-              </select>
-              <Select id="skills" key={skill_keys} className="input-box" onChange={this.handleChangeSkills} options={skill_format} isMulti
+            <Select placeholder='Disciplines' id="disciplines" className="input-box" 
+            onChange={this.handleChange} options={discipline_render}/>
+              <Select id="skills" key={skill_keys} className="input-box" 
+              onChange={this.handleChangeSkills} options={skill_format} isMulti
                 placeholder='Skills' />
             </div>
           </div>
