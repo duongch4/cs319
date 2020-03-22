@@ -206,7 +206,6 @@ class FilterTab extends Component {
             });
         } else if (type === "discipline") {
             var discipline_mock = this.state.stickers.disciplines;
-            console.log(discipline_mock);
             Object.entries(this.state.stickers.disciplines).forEach((discipline, index) => {
             if (discipline[0] === keyId) {
                 delete discipline_mock[keyId];
