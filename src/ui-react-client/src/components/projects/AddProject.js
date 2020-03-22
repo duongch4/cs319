@@ -23,10 +23,10 @@ class AddProject extends Component {
                 projectNumber: ""
             },
             projectManager: {
-                // TODO: WHY DO WE HAVE HARDCODED VALUES HERE???
-                userID: 2,
-                firstName: "Charles",
-                lastName: "Bartowski"
+                // these fields are from Azure ADs profile object which keeps track of the current user
+                userID: this.props.location.state.profile.id,
+                firstName: this.props.location.state.profile.givenName,
+                lastName: this.props.location.state.profile.surname
             },
             usersSummary: [],
             openings: [],
