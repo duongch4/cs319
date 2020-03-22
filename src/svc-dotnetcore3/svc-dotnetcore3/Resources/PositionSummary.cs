@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Web.API.Resources
 {
-    public class PositionResource
+    public class PositionSummary
     {
         /// <summary>Position Id</summary>
         /// <example>1</example>
@@ -22,6 +22,6 @@ namespace Web.API.Resources
         
         /// <summary>Committment hours</summary>
         /// <example>300</example>
-        public string ProjectedMonthlyHours { get; set; }
+        public JsonElement ProjectedMonthlyHours { get; set; }
     }
 }

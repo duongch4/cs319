@@ -11,8 +11,8 @@ namespace Web.API.Application.Communication
         public int OpeningId { get; set; }
         
         /// <summary>User Id</summary>
-        /// <example>1</example>
-        public int UserID { get; set; }
+        /// <example>"1"</example>
+        public string UserID { get; set; }
 
         /// <summary>ConfirmedUtilization in percentage</summary>
         /// <example>90</example>

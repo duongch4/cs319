@@ -3,7 +3,7 @@ namespace Web.API.Application.Models
     public class ResourceDiscipline
     {
         public int DisciplineId { get; set; }
-        public int ResourceId { get; set; }
+        public string ResourceId { get; set; }
         public string Name { get; set; }
         public string YearsOfExperience { get; set; }
 
