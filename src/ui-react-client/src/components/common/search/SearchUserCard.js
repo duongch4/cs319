@@ -6,14 +6,13 @@ class SearchUserCard extends Component {
 
     render(){
         const {user} = this.props;
-        var year_string = "";
+        var disc_string = "";
         
-        // converts years of experience to string
-        user.yearsOfExp.forEach((year, index) => {
+        user.resourceDiscipline.forEach((disc, index) => {
             if (index == 0) {
-                year_string = year
+                disc_string = disc.discipline + " (" + disc.yearsOfExp + ")";
             } else {
-                year_string = year_string + ", " + year;
+                disc_string = disc_string + ", " + disc.discipline + " (" + disc.yearsOfExp + ")";
             }
         });
         
@@ -24,8 +23,7 @@ class SearchUserCard extends Component {
                         <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
-                    <p><b>Disciplines:</b> {user.discipline}</p>
-                    <p><b>Years of Experience:</b> {year_string}</p>
+                    <p><b>Disciplines:</b> {disc_string}</p>
                 </div>
                 <div className="card-summary-title utilization">
                     <p>{user.utilization}%</p>

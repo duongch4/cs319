@@ -40,20 +40,18 @@ class SearchResults extends Component {
         var users = [];
         this.state.userSummaries.map(function(i) {
             if (!users.some(e => e.userID === i.userID)) {
-                var obj = {userID: null, firstName: "", lastName: "", location: {}, discipline: "", utilization: null, yearsOfExp: []};
+                var obj = {userID: null, firstName: "", lastName: "", location: {}, resourceDiscipline: [{discipline: "", yearsOfExp: ""}], utilization: null};
                 obj.userID = i.userID;
-                obj.discipline = i.resourceDiscipline.discipline;
                 obj.firstName = i.firstName;
                 obj.lastName = i.lastName;
                 obj.location = i.location;
+                obj.resourceDiscipline[0].discipline = i.resourceDiscipline.discipline;
+                obj.resourceDiscipline[0].yearsOfExp = i.resourceDiscipline.yearsOfExp;
                 obj.utilization = i.utilization;
-                obj.yearsOfExp = [i.resourceDiscipline.yearsOfExp];
                 users.push(obj);
             } else {
                 let obj1 = users.find(o => o.userID === i.userID);
-                obj1.discipline = obj1.discipline.concat(", " + i.resourceDiscipline.discipline);
-                obj1.yearsOfExp.push(i.resourceDiscipline.yearsOfExp);
-                obj1.yearsOfExp.sort();
+                obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
             }
         });
         return users;
@@ -70,14 +68,14 @@ class SearchResults extends Component {
             users.sort(function(a){return a.location});
             users.reverse();
         } else if (this.props.sortBy === "disciplines-AZ") {
-            users.sort(function(a){return a.discipline});
+            users.sort(function(a){return a.resourceDiscipline.discipline});
         } else if (this.props.sortBy === "disciplines-ZA") {
-            users.sort(function(a){return a.discipline});
+            users.sort(function(a){return a.resourceDiscipline.discipline});
             users.reverse();
         } else if (this.props.sortBy === "yearsOfExp-high") {
-            users.sort(function(a){return a.yearsOfExp});
+            users.sort(function(a){return a.resourceDiscipline.yearsOfExp});
         } else if (this.props.sortBy === "yearsOfExp-low") {
-            users.sort(function(a){return a.yearsOfExp});
+            users.sort(function(a){return a.resourceDiscipline.yearsOfExp});
             users.reverse();
         }
     };
