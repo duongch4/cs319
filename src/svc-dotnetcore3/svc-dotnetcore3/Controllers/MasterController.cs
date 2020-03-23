@@ -136,22 +136,25 @@ namespace Web.API.Controllers
 
         private Dictionary<string, Dictionary<string, int>> MapLocations(IEnumerable<MasterLocation> locationResources)
         {
-            char[] sep = { ',' };
-            char[] innerSep = { '-' };
+            var sepsMap = new
+            {
+                sep = ',',
+                innerSep = '#'
+            };
             return locationResources.ToDictionary<MasterLocation, string, Dictionary<string, int>>(
                 locationResource => locationResource.Province,
                 locationResource =>
                 {
                     Dictionary<string, int> pairs;
-                    if (locationResource.CitiesIds == "-")
+                    if (locationResource.CitiesIds.Equals(sepsMap.innerSep.ToString()))
                     {
                         pairs = new Dictionary<string, int>();
                     }
                     else
                     {
-                        pairs = locationResource.CitiesIds.Split(sep).ToDictionary(
-                            pair => pair.Split(innerSep)[0],
-                            pair => Int32.Parse(pair.Split(innerSep)[1])
+                        pairs = locationResource.CitiesIds.Split(sepsMap.sep).ToDictionary(
+                            pair => pair.Split(sepsMap.innerSep)[0],
+                            pair => Int32.Parse(pair.Split(sepsMap.innerSep)[1])
                         );
                     }
                     return pairs;
