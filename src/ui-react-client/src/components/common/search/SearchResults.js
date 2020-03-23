@@ -9,7 +9,6 @@ class SearchResults extends Component {
         super(props);
         this.state = {
             userSummaries: [],
-            sort: this.props.sortBy,
             noResults: false,
         };
     }
@@ -37,27 +36,58 @@ class SearchResults extends Component {
         }
     }
 
-    sortUsers = () => {
+    combineUsers = () => {
         var users = [];
         this.state.userSummaries.map(function(i) {
             if (!users.some(e => e.userID === i.userID)) {
-                var obj = {userID: null, firstName: "", lastName: "", location: {}, discipline: "", utilization: null};
+                var obj = {userID: null, firstName: "", lastName: "", location: {}, discipline: "", utilization: null, yearsOfExp: []};
                 obj.userID = i.userID;
                 obj.discipline = i.resourceDiscipline.discipline;
                 obj.firstName = i.firstName;
                 obj.lastName = i.lastName;
                 obj.location = i.location;
                 obj.utilization = i.utilization;
+                obj.yearsOfExp = [i.resourceDiscipline.yearsOfExp];
                 users.push(obj);
             } else {
                 let obj1 = users.find(o => o.userID === i.userID);
                 obj1.discipline = obj1.discipline.concat(", " + i.resourceDiscipline.discipline);
+                obj1.yearsOfExp.push(i.resourceDiscipline.yearsOfExp);
+                obj1.yearsOfExp.sort();
             }
         });
         return users;
     }
 
+    sortUsers = (users) => {
+        if (this.props.sortBy === "util-low") {
+            users.sort(function(a, b){return a.utilization-b.utilization});
+        } else if (this.props.sortBy === "util-high") {
+            users.sort(function(a, b){return b.utilization-a.utilization});
+        } else if (this.props.sortBy === "locations-AZ") {
+            users.sort(function(a){return a.location});
+        } else if (this.props.sortBy === "locations-ZA") {
+            users.sort(function(a){return a.location});
+            users.reverse();
+        } else if (this.props.sortBy === "disciplines-AZ") {
+            users.sort(function(a){return a.discipline});
+        } else if (this.props.sortBy === "disciplines-ZA") {
+            users.sort(function(a){return a.discipline});
+            users.reverse();
+        } else if (this.props.sortBy === "yearsOfExp-high") {
+            users.sort(function(a){return a.yearsOfExp});
+        } else if (this.props.sortBy === "yearsOfExp-low") {
+            users.sort(function(a){return a.yearsOfExp});
+            users.reverse();
+        }
+    };
+
     render(){
+        var users = this.combineUsers();
+
+        if (this.props.sortBy != null) {
+            this.sortUsers(users);
+        }
 
         if (this.state.noResults){
             return <div className="darkGreenHeader">There are no users with the selected filters</div>
@@ -65,7 +95,6 @@ class SearchResults extends Component {
             return <div></div>
         }
         else{
-            var users = this.sortUsers();
             const userCards =[];
             users.forEach(user => {
             userCards.push(

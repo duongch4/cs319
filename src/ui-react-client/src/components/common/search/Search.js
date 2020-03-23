@@ -12,9 +12,11 @@ class Search extends Component {
     this.state = {
       filters: null,
       masterlist: {},
-      sort_by: [{label: "No filter", value:"no-filter"}, {label: "Utilization: High to Low", value: "util-high"}, 
-                {label: "Utilization: Low to High", value: "util-low"},{label: "Locations", value: "locations"}, 
-                {label: "Disciplines", value: "disciplines"}, {label: "Years of Exerpience", value: "yearsOfExp"}],
+      sort_by: [{label: "No filter", value: null}, {label: "Utilization: High to Low", value: "util-high"}, 
+                {label: "Utilization: Low to High", value: "util-low"},{label: "Locations: A-Z", value: "locations-AZ"},
+                {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
+                {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
+                {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
       sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
       sort: null,
     };
@@ -47,7 +49,10 @@ class Search extends Component {
   }
 
   onFilterChange = (e) => {
-
+    this.setState({
+      ...this.state,
+      sort: e.value,
+    });
   }
 
 
