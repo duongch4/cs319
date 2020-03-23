@@ -71,6 +71,20 @@ export const deleteCityData = (cityName, id) => {
     }
 }
 
+export const errorCreating = (error) => {
+    return {
+        type: types.ERROR_CREATING,
+        error: error
+    }
+}
+
+export const errorDeleting = (error) => {
+    return {
+        type: types.ERROR_DELETING,
+        error: error
+    }
+}
+
 export const loadMasterlists = () => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -89,7 +103,6 @@ export const loadMasterlists = () => {
 };
 
 export const createDiscpline = (discipline) => {
-    // TODO: disciplineID is currently the discipline name - once IDs are brought in we will change it to ID
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createDiscplineData(discipline))
@@ -101,7 +114,8 @@ export const createDiscpline = (discipline) => {
                     dispatch(createDiscplineData(discipline))
                 })
                 .catch(error => {
-                    throw error;
+                    dispatch(errorCreating(error));
+                    // throw error;
                 })
         }
     }
@@ -118,8 +132,8 @@ export const createSkill = (skill) => {
                     dispatch(createSkillData(skill))
                 })
                 .catch(error => {
-
-                    throw error;
+                    dispatch(errorCreating(error));
+                    // throw error;
                 })
         }
     } 
@@ -130,15 +144,14 @@ export const createProvince = (location) => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProvinceData(location))
         } else {
-            // TODO
             return axios
                 .post(`${baseURL}admin/provinces`, location, { headers })
                 .then(response => {
                     dispatch(createProvinceData(location))
                 })
                 .catch(error => {
-
-                    throw error;
+                    dispatch(errorCreating(error));
+                    // throw error;
                 })
         }
     } 
@@ -156,8 +169,8 @@ export const createCity = (location) => {
                 dispatch(createCityData(location))
             })
             .catch(error => {
-
-                throw error;
+                dispatch(errorCreating(error));
+                // throw error;
             })
         }
     } 
@@ -174,7 +187,8 @@ export const deleteDiscipline = (id) => {
                     dispatch(deleteDisciplineData(id))
                 })
                 .catch(error => {
-                    throw error;
+                    // throw error;
+                    dispatch(errorDeleting(error));
                 })
         }
     } 
@@ -191,7 +205,8 @@ export const deleteSkill = (disciplineID, skillName) => {
                 dispatch(deleteSkillData(disciplineID, skillName));
             })
             .catch(error => {
-                throw error;
+                // throw error;
+                dispatch(errorDeleting(error));
             })
         }
     } 
@@ -208,7 +223,8 @@ export const deleteProvince = (provinceName) => {
                     dispatch(deleteProvinceData(response.data.payload))
                 })
                 .catch(error => {
-                    throw error;
+                    // throw error;
+                    dispatch(errorDeleting(error));
                 })
         }
     } 
@@ -226,7 +242,8 @@ export const deleteCity = (cityName, id) => {
                 dispatch(deleteCityData(cityName, id))
             })
             .catch(error => {
-                throw error
+                // throw error
+                dispatch(errorDeleting(error));
             })
         }
     } 

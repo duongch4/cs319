@@ -54,7 +54,6 @@ class Admin extends Component {
                         },
                         location: {
                             ...this.state.location,
-                            province: Object.keys(masterlist.locations)[0],
                             id: Object.values(masterlist.locations).length > 0 ? Object.values(Object.values(masterlist.locations)[0])[0] : 0
                         },
                         selectedprovince: Object.keys(masterlist.locations)[0]
@@ -80,6 +79,7 @@ class Admin extends Component {
             }
         }
     }
+
     componentDidUpdate(prevProps){
         let found = false;
         Object.values(this.props.masterlist.disciplines).filter(elem => {
@@ -142,7 +142,7 @@ class Admin extends Component {
                         name: "",
                         id: 0
                     }
-                }, () => console.log(this.state))
+                })
                 
                 return;
             case "skill":
@@ -265,6 +265,11 @@ class Admin extends Component {
     }
 
     render() {
+        const { error } = this.props;
+
+        if(error !== null && error !== undefined) {
+            alert(`Failed: ${error}`)
+        }
         const disciplinesObj = this.state.masterlist.disciplines
         
         var disciplineName = null
@@ -335,6 +340,7 @@ Admin.propTypes = {
 const mapStateToProps = state => {
     return {
         masterlist: state.masterlist,
+        error: state.masterlist.error,
     };
 };
 

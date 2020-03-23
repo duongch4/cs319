@@ -21,6 +21,11 @@ const Header = () => {
         </NavLink>
         </div>
         <div>
+        <NavLink to="/search" style={style} activeStyle={activeStyle} exact>
+          Search
+        </NavLink>
+        </div>
+        <div>
         <NavLink to="/users" style={style} activeStyle={activeStyle} exact>
           Users
         </NavLink>

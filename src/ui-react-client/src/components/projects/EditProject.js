@@ -13,7 +13,8 @@ class EditProject extends Component {
     state = {
         projectProfile: {},
         masterlist: {},
-        pending: true
+        pending: true,
+        error: []
     };
 
     componentDidMount() {
@@ -42,8 +43,21 @@ class EditProject extends Component {
        
     }
 
+    compare_dates = (date1,date2) => {
+        if (date1<=date2) return true;
+        else return false;
+     }
+
     onSubmit = () => {
-        this.props.updateProject(this.state.projectProfile, this.props.history);
+        if(this.state.error.length !== 0) {
+            alert("Cannot Add Project - Please fix the errors in the form before submitting")
+        } else {
+            this.props.updateProject(this.state.projectProfile, this.props.history);
+            this.setState({
+                ...this.state,
+                error: []
+            })
+        }
     };
 
     onDelete = () => {
@@ -53,6 +67,7 @@ class EditProject extends Component {
     addOpening = (opening) => {
         const openings = [...this.state.projectProfile.openings, opening];
         this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
@@ -71,19 +86,49 @@ class EditProject extends Component {
     }
 
     addProjDetails = (project) => {
-        this.setState({
-            projectProfile: {
-                ...this.state.projectProfile,
-                projectSummary: {
-                    ...this.state.projectProfile.projectSummary,
-                    title: project.title,
-                    projectNumber: project.projectNumber,
-                    projectStartDate: project.projectStartDate,
-                    projectEndDate: project.projectEndDate,
-                    location: project.location
-                }
-            }
-        })
+        let error = []
+        if(project.title === "" || project.title === null){
+            error = [<p className="errorMessage" key={error.length}>Error: Cannot add a project with no title</p>]
+        }
+        if(project.projectNumber === "") {
+            error = [...error, <p className="errorMessage" key={error.length}>Error: Cannot add a project with no Project Number</p>]
+        }
+        if (project.projectStartDate !== "" && project.projectEndDate !== "" && !this.compare_dates(project.projectStartDate, project.projectEndDate)){            error = [...error, <p className="errorMessage" key={error.length}>Error: End date cannot be before Start Date</p>]
+            error = [...error, <p className="errorMessage" key={this.state.error.length}>Error: End date cannot be before Start Date</p>]
+        }
+        if(error.length > 0) {
+            this.setState({
+                ...this.state,
+                projectProfile: {
+                    ...this.state.projectProfile,
+                    projectSummary: {
+                        ...this.state.projectProfile.projectSummary,
+                        title: project.title,
+                        projectNumber: project.projectNumber,
+                        projectStartDate: project.projectStartDate,
+                        projectEndDate: project.projectEndDate,
+                        location: project.location
+                    }
+                },
+                error: error
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                projectProfile: {
+                    ...this.state.projectProfile,
+                    projectSummary: {
+                        ...this.state.projectProfile.projectSummary,
+                        title: project.title,
+                        projectNumber: project.projectNumber,
+                        projectStartDate: project.projectStartDate,
+                        projectEndDate: project.projectEndDate,
+                        location: project.location
+                    }
+                },
+                error: []
+            })
+        }
     };
 
     render() {
@@ -129,7 +174,9 @@ class EditProject extends Component {
                     <div className="section-container">
                         <TeamRequirements disciplines={this.state.masterlist.disciplines}
                                           masterYearsOfExperience={this.state.masterlist.yearsOfExp}
-                                          addOpening={(opening) => this.addOpening(opening)}/>
+                                          addOpening={(opening) => this.addOpening(opening)}
+                                          isUserPage={false}/>
+                        <div className="errorMessage">{this.state.error}</div> 
                         <hr/>
                         {openings}
                     </div>

@@ -13,6 +13,8 @@ import UserDetails from './users/UserDetails.js';
 import EditProject from './projects/EditProject';
 import EditUser from './users/EditUser.js';
 import Admin from './admin/Admin.js'
+import Search from './common/search/Search.js';
+
 
 const App = () => {
   return (
@@ -23,6 +25,7 @@ const App = () => {
         <Route exact path="/" component={HomePage} />
         <Route exact path="/users" component={UsersPage} />
         <Route exact path="/projects" component={ProjectsPage} />
+        <Route exact path="/search" component={Search} />
         <Route path="/locations" component={LocationsPage} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
         <Route path="/users/:user_id" component={UserDetails} />
