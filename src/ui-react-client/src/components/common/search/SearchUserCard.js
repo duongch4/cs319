@@ -13,7 +13,7 @@ class SearchUserCard extends Component {
                         <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
-                    <p><b>Disciplines:</b> {user.resourceDiscipline.discipline}</p>
+                    <p><b>Disciplines:</b> {user.discipline}</p>
                 </div>
                 <div className="card-summary-title utilization">
                     <p>{user.utilization}%</p>

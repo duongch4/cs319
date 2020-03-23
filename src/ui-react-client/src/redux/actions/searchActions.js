@@ -24,7 +24,7 @@ return dispatch => {
             dispatch(getUsers(response.data.payload));
         })
         .catch(error => {
-            alert('getting users from search parameters failed');
+            throw(error);
         });
     }
 };
