@@ -175,7 +175,7 @@ namespace Web.API.Infrastructure.Data
             return skill;
         }
 
-        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(int userId)
+        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(string userId)
         {
             var sql = @"
             select 

@@ -114,7 +114,23 @@ namespace Web.API.Controllers
             char[] sep = { ',' };
             return disciplineResources.ToDictionary(
                 disciplineResource => disciplineResource.Name,
-                disciplineResource => new MasterDiscipline() { DisciplineID = disciplineResource.Id, Skills = disciplineResource.Skills.Split(sep) }
+                disciplineResource =>
+                {
+                    IEnumerable<string> skills;
+                    if (String.IsNullOrEmpty(disciplineResource.Skills))
+                    {
+                        skills = Enumerable.Empty<string>();
+                    }
+                    else
+                    {
+                        skills = disciplineResource.Skills.Split(sep);
+                    }
+                    return new MasterDiscipline()
+                    {
+                        DisciplineID = disciplineResource.Id,
+                        Skills = skills
+                    };
+                }
             );
         }
 
@@ -126,10 +142,18 @@ namespace Web.API.Controllers
                 locationResource => locationResource.Province,
                 locationResource =>
                 {
-                    var pairs = locationResource.CitiesIds.Split(sep).ToDictionary(
-                        pair => pair.Split(innerSep)[0],
-                        pair => Int32.Parse(pair.Split(innerSep)[1])
-                    );
+                    Dictionary<string, int> pairs;
+                    if (locationResource.CitiesIds == "-")
+                    {
+                        pairs = new Dictionary<string, int>();
+                    }
+                    else
+                    {
+                        pairs = locationResource.CitiesIds.Split(sep).ToDictionary(
+                            pair => pair.Split(innerSep)[0],
+                            pair => Int32.Parse(pair.Split(innerSep)[1])
+                        );
+                    }
                     return pairs;
                 }
             );
