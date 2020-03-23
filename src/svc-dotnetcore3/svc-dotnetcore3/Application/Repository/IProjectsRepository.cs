@@ -12,7 +12,7 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<ProjectResource>> GetAllProjects();
         Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page);
         Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page);
-        Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(int userId);
+        Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(string userId);
         Task<IEnumerable<Project>> GetMostRecentProjects();
         Task<Project> GetAProject(string projectNumber);
         Task<ProjectResource> GetAProjectResource(string projectNumber);
