@@ -50,6 +50,14 @@ namespace Tests.Unit
                 times
             );
         }
+
+        private void Verify_SkillsRepo_CreateASkill(System.Func<Times> times)
+        {
+            _mockSkillsRepo.Verify(
+                repo => repo.CreateASkill(It.IsAny<DisciplineSkillResource>()),
+                times
+            );
+        }
         
         private void Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(System.Exception exception)
         {
@@ -61,12 +69,28 @@ namespace Tests.Unit
         private void Setup_DisciplinesRepo_CreateADiscipline_Default(DisciplineResource returnVal)
         {
             _mockDisciplinesRepo.Setup(
-                repo => repo.CreateADiscipline(It.IsAny<DisciplineResource>())
+                repo => repo.CreateADiscipline(returnVal)
             ).ReturnsAsync(0);
         }
 
-        private async Task CreateADiscipline_TryBlock_ReturnId(DisciplineResource discipline) 
+        private void Setup_SkillsRepo_CreateASkill_Default(DisciplineSkillResource returnVal)
         {
+            _mockSkillsRepo.Setup(
+                repo => repo.CreateASkill(returnVal)
+            ).ReturnsAsync(0);
+        }
+
+        private void Setup_SkillsRepo_CreateASkill_ThrowsException(System.Exception exception)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.CreateASkill(It.IsAny<DisciplineSkillResource>())
+            ).Throws(exception);
+        }
+
+        [Fact]
+        public async void CreateADiscipline_TryBlock_ReturnValidId()
+        {
+            var discipline = new DisciplineResource();
             Setup_DisciplinesRepo_CreateADiscipline_Default(discipline);
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Verify_DisciplinesRepo_CreateADiscipline(Times.Once);
@@ -77,24 +101,17 @@ namespace Tests.Unit
         }
 
         [Fact]
-        public async void CreateADiscipline_TryBlock_ReturnValidId()
-        {
-            var discipline = new DisciplineResource();
-            await CreateADiscipline_TryBlock_ReturnId(discipline);
-        }
-
-        [Fact]
         public async void CreateADiscipline_CatchBlock_ReturnSqlException()
         {
             string errMessage = "Internal Server Error";
             var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
             Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(sqlException);
 
-            var result = (await _controller.CreateADiscipline(It.IsAny<DisciplineResource>())) as ObjectResult;
+            var discipline = new DisciplineResource();
+            var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
             var response = result.Value as InternalServerException;
             Assert.Equal(errMessage, response.status);
-
         }
 
         [Fact]
@@ -104,7 +121,8 @@ namespace Tests.Unit
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(badRequestException);
 
-            var result = (await _controller.CreateADiscipline(It.IsAny<DisciplineResource>())) as ObjectResult;
+            var discipline = new DisciplineResource();
+            var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
             var response = result.Value as BadRequestException;
@@ -119,6 +137,107 @@ namespace Tests.Unit
             Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(badRequestException);
 
             var result = (await _controller.CreateADiscipline(null)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        private async void CreateASkill_TryBlock_ReturnValidId()
+        {
+            var skill = new DisciplineSkillResource{
+                DisciplineId= 1,
+                SkillId= 0,
+                Name = ""};
+            Setup_SkillsRepo_CreateASkill_Default(skill);
+            var result = (await _controller.CreateASkill(skill, 1)) as ObjectResult;
+            Verify_SkillsRepo_CreateASkill(Times.Once);
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            Assert.IsType<CreatedResponse<int>>(result.Value);
+            var response = result.Value as CreatedResponse<int>;
+            Assert.IsType<int>(response.payload);
+        }
+
+        [Fact]
+        private async void CreateASkill_DisciplineInvalid_BadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
+            var skill = new DisciplineSkillResource{
+                DisciplineId= 0,
+                SkillId= 0,
+                Name = ""};
+
+            var result = (await _controller.CreateASkill(skill, 0)) as ObjectResult; 
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);           
+        }
+
+        [Fact]
+        private async void CreateASkill_DisciplineMisMatch_BadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
+            var skill = new DisciplineSkillResource{
+                DisciplineId= 2,
+                SkillId= 0,
+                Name = ""};
+
+            var result = (await _controller.CreateASkill(skill, 9)) as ObjectResult; 
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);           
+        }
+
+        [Fact]
+        private async void CreateASkill_SkillNull_BadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
+
+            var result = (await _controller.CreateASkill(null, 1)) as ObjectResult; 
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        public async void CreateASkill_CatchBlock_ReturnSqlException()
+        {
+            string errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_SkillsRepo_CreateASkill_ThrowsException(sqlException);
+            var skill = new DisciplineSkillResource{
+                DisciplineId= 2,
+                SkillId= 0,
+                Name = ""};
+            
+            var result = (await _controller.CreateASkill(skill, 2)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateASkill_CatchBlock_ReturnBadException()
+        {
+            var errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
+            var skill = new DisciplineSkillResource{
+                DisciplineId= 2,
+                SkillId= 0,
+                Name = ""};
+            
+            var result = (await _controller.CreateASkill(skill, 2)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
             var response = result.Value as BadRequestException;
