@@ -5,8 +5,8 @@ namespace Web.API.Resources
     public class UserSummary
     {
         /// <summary>User Id</summary>
-        /// <example>1</example>
-        public int UserID { get; set; }
+        /// <example>"1"</example>
+        public string UserID { get; set; }
 
         /// <summary>User First Name</summary>
         /// <example>Jason</example>

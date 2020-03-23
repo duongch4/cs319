@@ -15,7 +15,7 @@ namespace Web.API.Resources
         public IEnumerable<ResourceDisciplineResource> Disciplines { get; set; }
         // public IEnumerable<RDisciplineResource> Disciplines { get; set; }
 
-        public IEnumerable<PositionResource> Positions { get; set; }
+        public IEnumerable<PositionSummary> Positions { get; set; }
 
     }
 }
