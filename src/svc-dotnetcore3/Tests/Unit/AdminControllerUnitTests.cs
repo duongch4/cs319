@@ -35,14 +35,8 @@ namespace Tests.Unit
                 _mockSkillsRepo.Object, _mockMapper.Object
             );
         }
-
-        [Fact]
-        public async Task CreateADiscipline_TryBlock_ReturnObjectResult() 
-        {
-            var result = await _controller.CreateADiscipline(It.IsAny<DisciplineResource>());
-            Assert.IsType<ObjectResult>(result);
-        }
-
+        
+        // Helper functions for repo set up and verification
         private void Verify_DisciplinesRepo_CreateADiscipline(System.Func<Times> times)
         {
             _mockDisciplinesRepo.Verify(
@@ -59,6 +53,22 @@ namespace Tests.Unit
             );
         }
         
+        private void Verify_LocationsRepo_CreateALocation(System.Func<Times> times)
+        {
+            _mockLocationsRepo.Verify(
+                repo => repo.CreateALocation(It.IsAny<LocationResource>()),
+                times
+            );
+        }
+
+        private void Verify_LocationsRepo_CreateAProvince(System.Func<Times> times)
+        {
+            _mockLocationsRepo.Verify(
+                repo => repo.CreateAProvince(It.IsAny<string>()),
+                times
+            );
+        }
+
         private void Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(System.Exception exception)
         {
             _mockDisciplinesRepo.Setup(
@@ -85,6 +95,42 @@ namespace Tests.Unit
             _mockSkillsRepo.Setup(
                 repo => repo.CreateASkill(It.IsAny<DisciplineSkillResource>())
             ).Throws(exception);
+        }
+
+        private void Setup_LocationsRepo_CreateALocation_Default(LocationResource returnVal)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.CreateALocation(returnVal)
+            ).ReturnsAsync(0);
+        }
+
+        private void Setup_LocationsRepo_CreateALocation_ThrowsException(System.Exception exception)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.CreateALocation(It.IsAny<LocationResource>())
+            ).Throws(exception);
+        }
+
+        private void Setup_LocationsRepo_CreateAProvince_Default(string returnVal)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.CreateAProvince(returnVal)
+            ).ReturnsAsync(returnVal);
+        }
+
+        private void Setup_LocationsRepo_CreateAProvince_ThrowsException(System.Exception exception)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.CreateAProvince(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        // Tests for Discipline Creation
+        [Fact]
+        public async Task CreateADiscipline_TryBlock_ReturnObjectResult() 
+        {
+            var result = await _controller.CreateADiscipline(It.IsAny<DisciplineResource>());
+            Assert.IsType<ObjectResult>(result);
         }
 
         [Fact]
@@ -143,6 +189,7 @@ namespace Tests.Unit
             Assert.Equal(errMessage, response.status);
         }
 
+        // Tests for Skill creation
         [Fact]
         private async void CreateASkill_TryBlock_ReturnValidId()
         {
@@ -238,6 +285,64 @@ namespace Tests.Unit
                 Name = ""};
             
             var result = (await _controller.CreateASkill(skill, 2)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateALocation_NullCheck_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_CreateALocation_ThrowsException(badRequestException);
+
+            var result = (await _controller.CreateALocation(null)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateALocation_TryBlock_ReturnValidId()
+        {
+            var location = new LocationResource();
+            Setup_LocationsRepo_CreateALocation_Default(location);
+            
+            var result = (await _controller.CreateALocation(location)) as ObjectResult;
+            Verify_LocationsRepo_CreateALocation(Times.Once);
+            Verify_LocationsRepo_CreateAProvince(Times.Never);
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            Assert.IsType<CreatedResponse<int>>(result.Value);
+            var response = result.Value as CreatedResponse<int>;
+            Assert.IsType<int>(response.payload); 
+        }
+    
+        [Fact]
+        public async void CreateALocation_CatchBlock_ReturnsSqlException()
+        {
+            string errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_LocationsRepo_CreateALocation_ThrowsException(sqlException);
+
+            var location = new LocationResource();
+            var result = (await _controller.CreateALocation(location)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateALocation_CatchBlock_ReturnsBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_CreateALocation_ThrowsException(badRequestException);
+
+            var location = new LocationResource();
+            var result = (await _controller.CreateALocation(location)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
             var response = result.Value as BadRequestException;

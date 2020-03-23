@@ -434,7 +434,7 @@ namespace Web.API.Controllers {
             {
                 var createdProvinceName = await locationsRepository.CreateAProvince(location.Province);
                 var response = new CreatedResponse<string>(createdProvinceName, $"Successfully created province '{createdProvinceName}'");
-                Log.Information("@{a}", response);
+                // Log.Information("@{a}", response);
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
