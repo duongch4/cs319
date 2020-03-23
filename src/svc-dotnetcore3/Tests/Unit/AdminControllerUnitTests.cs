@@ -348,5 +348,76 @@ namespace Tests.Unit
             var response = result.Value as BadRequestException;
             Assert.Equal(errMessage, response.status);
         }
+    
+        [Fact]
+        public async void CreateAProvince_NullCheck_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_CreateALocation_ThrowsException(badRequestException);
+
+            var result = (await _controller.CreateAProvince(null)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateAProvince_TryBlock_ReturnValidId()
+        {
+            var location = new LocationResource{
+                LocationID = 0,
+                Province = "test",
+                City = ""
+            };
+            Setup_LocationsRepo_CreateAProvince_Default(location.Province);
+            
+            var result = (await _controller.CreateAProvince(location)) as ObjectResult;
+            Verify_LocationsRepo_CreateALocation(Times.Never);
+            Verify_LocationsRepo_CreateAProvince(Times.Once);
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            Assert.IsType<CreatedResponse<string>>(result.Value);
+            var response = result.Value as CreatedResponse<string>;
+            Assert.IsType<string>(response.payload); 
+        }
+    
+        [Fact]
+        public async void CreateAProvince_CatchBlock_ReturnsSqlException()
+        {
+            string errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_LocationsRepo_CreateAProvince_ThrowsException(sqlException);
+
+            var location = new LocationResource{
+                LocationID = 0,
+                Province = "test",
+                City = ""
+            };
+            var result = (await _controller.CreateAProvince(location)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateAProvince_CatchBlock_ReturnsBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_CreateAProvince_ThrowsException(badRequestException);
+
+            var location = new LocationResource{
+                LocationID = 0,
+                Province = "test",
+                City = ""
+            };
+            var result = (await _controller.CreateAProvince(location)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+    
     }
 }
