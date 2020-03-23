@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Resources;
@@ -39,9 +41,20 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryFirstOrDefaultAsync<Position>(sql, new { PositionId = positionId });
+
+            var sqlRes = await connection.QueryFirstOrDefaultAsync<PositionRaw>(sql, new { PositionId = positionId });
+            var monthlyHoursObj = JsonSerializer.Deserialize<JsonElement>(sqlRes.ProjectedMonthlyHours);
+            
+            Position position = new Position{Id = sqlRes.Id, 
+                                             DisciplineId = sqlRes.DisciplineId, 
+                                             ProjectId = sqlRes.ProjectId, 
+                                             ProjectedMonthlyHours = monthlyHoursObj,
+                                             ResourceId = sqlRes.ResourceId, 
+                                             PositionName = sqlRes.PositionName, 
+                                             IsConfirmed = sqlRes.IsConfirmed};
+            return position;
         }
-        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(int userId)
+        public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(string userId)
         {
             var sql = @"
                 select

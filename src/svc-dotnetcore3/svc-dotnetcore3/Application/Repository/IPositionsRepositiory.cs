@@ -10,7 +10,7 @@ namespace Web.API.Application.Repository
         // GET
         Task<IEnumerable<Position>> GetAllPositions();
         Task<Position> GetAPosition(int positionId);
-        Task<IEnumerable<PositionResource>> GetPositionsOfUser(int userId);
+        Task<IEnumerable<PositionResource>> GetPositionsOfUser(string userId);
         Task<IEnumerable<Position>> GetAllUnassignedPositionsOfProject(Project project);
         Task<IEnumerable<OpeningPositionsResource>> GetAllUnassignedPositionsResourceOfProject(int projectId);
 

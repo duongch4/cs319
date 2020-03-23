@@ -14,8 +14,8 @@ namespace Web.API.Resources
         public string Number { get; set; }
 
         /// <summary>Project Manager Id</summary>
-        /// <example>1</example>
-        public int ManagerId { get; set; }
+        /// <example>"1"</example>
+        public string ManagerId { get; set; }
 
         /// <summary>Project Manager First Name</summary>
         /// <example>Jason</example>
