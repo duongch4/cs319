@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Resources;
@@ -43,15 +42,9 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
 
             var sqlRes = await connection.QueryFirstOrDefaultAsync<PositionRaw>(sql, new { PositionId = positionId });
-            var monthlyHoursObj = JsonSerializer.Deserialize<JsonElement>(sqlRes.ProjectedMonthlyHours);
+            var monthlyHoursObj = JsonConvert.DeserializeObject(sqlRes.ProjectedMonthlyHours);
             
-            Position position = new Position{Id = sqlRes.Id, 
-                                             DisciplineId = sqlRes.DisciplineId, 
-                                             ProjectId = sqlRes.ProjectId, 
-                                             ProjectedMonthlyHours = monthlyHoursObj,
-                                             ResourceId = sqlRes.ResourceId, 
-                                             PositionName = sqlRes.PositionName, 
-                                             IsConfirmed = sqlRes.IsConfirmed};
+            Position position = await ConvertToPosition(sqlRes);
             return position;
         }
         public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(string userId)
@@ -67,6 +60,28 @@ namespace Web.API.Infrastructure.Data
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             return await connection.QueryAsync<PositionResource>(sql, new { UserId = userId });
+        }
+
+        public async Task<IEnumerable<Position>> GetAllPositionsOfUser(string userId)
+        {
+             var sql = @"
+                select 
+                    Id, DisciplineId, ProjectId, ProjectedMonthlyHours,
+                    ResourceId, PositionName, IsConfirmed 
+                from Positions
+                where ResourceId = @UserId
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var sqlRes = await connection.QueryAsync<PositionRaw>(sql, new { UserId = userId });
+
+            List<Position> positions = new List<Position>{}; 
+            foreach (PositionRaw raw in sqlRes) {
+                Position position = await ConvertToPosition(raw);
+                positions.Add(position);
+            }
+            return positions;
         }
         public async Task<IEnumerable<Position>> GetAllUnassignedPositionsOfProject(Project project)
         {
@@ -140,9 +155,40 @@ namespace Web.API.Infrastructure.Data
 
             return position;
         }
+
+        private async Task<PositionRaw> ConvertToRawPosition(Position position) {
+            string monthlyHours = JsonConvert.SerializeObject(position.ProjectedMonthlyHours);
+
+            PositionRaw rawPosition = new PositionRaw{
+                                                        Id = position.Id,
+                                                        DisciplineId = position.DisciplineId,
+                                                        ProjectId = position.ProjectId,
+                                                        ProjectedMonthlyHours = monthlyHours,
+                                                        ResourceId = position.ResourceId,
+                                                        PositionName = position.PositionName,
+                                                        IsConfirmed = position.IsConfirmed
+                                                    };
+            return await Task.FromResult(rawPosition);
+        }
+
+        private async Task<Position> ConvertToPosition(PositionRaw rawPosition) {
+             var monthlyHoursObj = JsonConvert.DeserializeObject<Dictionary<string, int>>(rawPosition.ProjectedMonthlyHours);
+
+            Position position = new Position{Id = rawPosition.Id, 
+                                             DisciplineId = rawPosition.DisciplineId, 
+                                             ProjectId = rawPosition.ProjectId, 
+                                             ProjectedMonthlyHours = monthlyHoursObj,
+                                             ResourceId = rawPosition.ResourceId, 
+                                             PositionName = rawPosition.PositionName, 
+                                             IsConfirmed = rawPosition.IsConfirmed};
+            return await Task.FromResult(position);
+        }
+
         //PUT
         public async Task<Position> UpdateAPosition(Position position)
         {
+            var rawPosition = await ConvertToRawPosition(position);
+
             var sql = @"
                 update
                     Positions
@@ -161,13 +207,13 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             int result = await connection.ExecuteAsync(sql, new
             {
-                Id = position.Id,
-                DisciplineId = position.DisciplineId,
-                ProjectId = position.ProjectId,
-                ProjectedMonthlyHours = position.ProjectedMonthlyHours,
-                ResourceId = position.ResourceId,
-                PositionName = position.PositionName,
-                IsConfirmed = position.IsConfirmed
+                Id = rawPosition.Id,
+                DisciplineId = rawPosition.DisciplineId,
+                ProjectId = rawPosition.ProjectId,
+                ProjectedMonthlyHours = rawPosition.ProjectedMonthlyHours,
+                ResourceId = rawPosition.ResourceId,
+                PositionName = rawPosition.PositionName,
+                IsConfirmed = rawPosition.IsConfirmed
             });
             return (result == 1) ? position : null;
         }
