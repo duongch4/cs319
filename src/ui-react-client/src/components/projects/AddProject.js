@@ -18,8 +18,8 @@ class AddProject extends Component {
                     city: "",
                     province: ""
                 },
-                projectStartDate: "",
-                projectEndDate: "",
+                projectStartDate: new Date(),
+                projectEndDate: new Date(),
                 projectNumber: ""
             },
             projectManager: {
@@ -60,6 +60,7 @@ class AddProject extends Component {
     addOpening = (opening) => {
         const openings = [...this.state.projectProfile.openings, opening];
         this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
@@ -70,6 +71,7 @@ class AddProject extends Component {
     removeOpening = (opening) => {
         const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
         this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
@@ -85,16 +87,16 @@ class AddProject extends Component {
     addProjDetails = (project) => {
         let error = []
         if(project.title === "" || project.title === null){
-            error = [<p className="errorMessage" key={error.length}>Error ADD: Cannot add a project with no title</p>]
+            error = [<p className="errorMessage" key={error.length}>Error: Cannot add a project with no title</p>]
         }
         if(project.projectNumber === "") {
-            error = [...error, <p className="errorMessage" key={error.length}>Error ADD: Cannot add a project with no Project Number</p>]
+            error = [...error, <p className="errorMessage" key={error.length}>Error: Cannot add a project with no Project Number</p>]
         }
         if (!this.compare_dates(project.projectStartDate, project.projectEndDate)){
-            error = [...error, <p className="errorMessage" key={error.length}>Error ADD: End date cannot be before Start Date</p>]
+            error = [...error, <p className="errorMessage" key={error.length}>Error: End date cannot be before Start Date</p>]
         }
         if (project.location.province === "DEFAULT" || project.location.city === "DEFAULT") {
-            error = [...error, <p className="errorMessage" key={error.length}>Error ADD: Location is not valid</p>]
+            error = [...error, <p className="errorMessage" key={error.length}>Error: Location is not valid</p>]
         } 
         if(error.length > 0) {
             this.setState({
@@ -168,7 +170,9 @@ class AddProject extends Component {
                         <TeamRequirements disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addOpening(opening)}
-                                          isUserPage={false}/>
+                                          isUserPage={false}
+                                          startDate={this.state.projectProfile.projectSummary.projectStartDate}
+                                          endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
                         {this.state.error}
                         <hr/>
                        

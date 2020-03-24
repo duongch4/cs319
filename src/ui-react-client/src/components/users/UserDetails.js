@@ -57,7 +57,7 @@ class UserDetails extends Component {
                 userDetails.currentProjects.forEach((project, index) => {
                     let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
                     currentProjects.push(
-                        <ProjectCard number={index} project={project} canEditProject={false}
+                        <ProjectCard number={index + 1} project={project} canEditProject={false}
                                      onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
                         )
                 })

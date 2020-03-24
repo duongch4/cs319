@@ -163,7 +163,7 @@ class CreateEditProjectDetails extends Component {
                 <label htmlFor="project_duration" className="form-row">
                     <p className="form-label">Project Duration</p>
                     <DatePicker className="input-box" id="startDate" selected={projSummary.projectStartDate}
-                                onChange={this.handleChangeStartDate}/>
+                                onChange={date => this.handleChangeStartDate(date)}/>
                     <DatePicker className="input-box" id="endDate" selected={projSummary.projectEndDate}
                                 onChange={this.handleChangeEndDate}/>
                 </label>
