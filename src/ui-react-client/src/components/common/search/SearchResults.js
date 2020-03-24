@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import SearchUserCard from "./SearchUserCard";
 import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
-import Loader from 'react-loader-spinner';
 
 class SearchResults extends Component {
     constructor(props) {
@@ -20,7 +19,7 @@ class SearchResults extends Component {
             this.setState({
                 ...this.state,
                 userSummaries: this.props.users,
-            }, () => this.props.stopLoading(0));
+            }, () => this.props.stopLoading());
         } else {
             this.props.performUserSearch(this.props.data)
             .then(() => {
@@ -38,28 +37,9 @@ class SearchResults extends Component {
     }
 
     // to make multiple calls without having to refresh
-    componentDidUpdate(previousProps, previousState) {
-        if (!(previousState.userSummaries === this.state.userSummaries)) {
-            if (CLIENT_DEV_ENV) {
-                this.props.performUserSearch(this.props.data)
-                this.setState({
-                    ...this.state,
-                    userSummaries: this.props.users,
-                }, () => this.props.stopLoading());
-            } else {
-                this.props.performUserSearch(this.props.data)
-                .then(() => {
-                    this.setState({
-                        ...this.state,
-                        userSummaries: this.props.users,
-                    }, () => this.props.stopLoading())
-                }).catch(err => {
-                    this.setState({
-                        ...this.state,
-                        noResults: true,
-                    }, () => this.props.stopLoading());
-                });
-            } 
+    componentDidUpdate(previousProps) {
+        if (!(previousProps.data === this.props.data)) {
+           this.componentDidMount();
         }
     }
 

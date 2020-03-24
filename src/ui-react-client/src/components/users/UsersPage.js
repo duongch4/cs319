@@ -13,12 +13,10 @@ const UsersPage = ({
     if(CLIENT_DEV_ENV && users.length === 0) {
       loadUsers()
     } else {
-      if (users.length === 0) {
         loadUsers()
             .catch(error => {
               alert('Loading users failed' + error);
             });
-      }
     }}, [users, loadUsers]);
   return (
     <div className="activity-container">
