@@ -199,6 +199,33 @@ namespace Tests.Unit
             ).Throws(exception);
         }
 
+        private void Setup_LocationsRepo_DeleteALocation_Default(int returnVal)
+        {
+            var returnLocation = new Location{
+                Id = returnVal,
+                Province = "",
+                City = ""
+            };
+
+            _mockLocationsRepo.Setup(
+                repo => repo.DeleteALocation(returnVal)
+            ).ReturnsAsync(returnLocation);
+        }
+
+        private void Setup_LocationsRepo_DeleteALocation_NullLocation(int returnVal)
+        {
+            Location returnLocation = null;
+            _mockLocationsRepo.Setup(
+                repo => repo.DeleteALocation(returnVal)
+            ).ReturnsAsync(returnLocation);
+        }
+
+        private void Setup_LocationsRepo_DeleteALocation_ThrowsException(System.Exception exception){
+            _mockLocationsRepo.Setup(
+                repo => repo.DeleteALocation(It.IsAny<int>())
+            ).Throws(exception);
+        }
+
         private void Setup_LocationsRepo_CreateAProvince_Default(string returnVal)
         {
             _mockLocationsRepo.Setup(
@@ -210,6 +237,28 @@ namespace Tests.Unit
         {
             _mockLocationsRepo.Setup(
                 repo => repo.CreateAProvince(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_LocationsRepo_DeleteAProvince_Default(string returnVal)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.DeleteAProvince(returnVal)
+            ).ReturnsAsync(returnVal);
+        }
+
+        private void Setup_LocationsRepo_DeleteAProvince_NullProvince(string returnVal)
+        {
+            string returnProvince = null;
+            _mockLocationsRepo.Setup(
+                repo => repo.DeleteAProvince(returnVal)
+            ).ReturnsAsync(returnProvince);
+        }
+
+        private void Setup_LocationsRepo_DeleteAProvince_ThrowsException(System.Exception exception)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.DeleteAProvince(It.IsAny<string>())
             ).Throws(exception);
         }
 
@@ -582,6 +631,76 @@ namespace Tests.Unit
             Assert.Equal(errMessage, response.status);
         }
 
+        /********** Tests for location deletion **********/
+        [Fact]
+        public async void DeleteALocation_NullCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+
+            var result = (await _controller.DeleteALocation(0)) as ObjectResult;
+            Verify_LocationsRepo_DeleteALocation(Times.Never);
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void DeleteALocation_TryBlock_ReturnNotFoundException()
+        {
+            var errMessage = "Not Found";
+            Setup_LocationsRepo_DeleteALocation_NullLocation(1);
+
+            var result = (await _controller.DeleteALocation(1)) as ObjectResult;
+            Verify_LocationsRepo_DeleteALocation(Times.Once);
+            Verify_LocationsRepo_DeleteAProvince(Times.Never);
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+            Assert.IsType<NotFoundException>(result.Value);
+            var response = result.Value as NotFoundException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void DeleteALocation_TryBlock_ReturnValidDelete()
+        {
+            Setup_LocationsRepo_DeleteALocation_Default(1);
+
+            var result = (await _controller.DeleteALocation(1)) as ObjectResult;
+            Verify_LocationsRepo_DeleteALocation(Times.Once);
+            Verify_LocationsRepo_DeleteAProvince(Times.Never);
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<DeletedResponse<int>>(result.Value);
+            var response = result.Value as DeletedResponse<int>;
+            Assert.IsType<int>(response.payload);
+        }
+
+        [Fact]
+        public async void DeleteALocation_CatchBlock_ReturnSqlException()
+        {
+            string errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_LocationsRepo_DeleteALocation_ThrowsException(sqlException);
+
+            var result = (await _controller.DeleteALocation(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void DeleteALocation_CatchBlock_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_DeleteALocation_ThrowsException(badRequestException);
+
+            var result = (await _controller.DeleteALocation(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
         /********** Tests for province creation **********/
         [Fact]
         public async void CreateAProvince_NullCheck_ReturnBadRequestException()
@@ -653,5 +772,73 @@ namespace Tests.Unit
             Assert.Equal(errMessage, response.status);
         }
     
+        /********** Tests for province deletion**********/
+        [Fact]
+        public async void DeleteAProvince_NullCheck_ReturnBadRequestException(){
+            var errMessage = "Bad Request";
+
+            var result = (await _controller.DeleteAProvince(null)) as ObjectResult;
+            Verify_LocationsRepo_DeleteAProvince(Times.Never);
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void DeleteAProvince_TryBlock_ReturnNotFoundException()
+        {
+            var errMessage = "Not Found";
+            Setup_LocationsRepo_DeleteAProvince_NullProvince("test");
+
+            var result = (await _controller.DeleteAProvince("test")) as ObjectResult;
+            Verify_LocationsRepo_DeleteALocation(Times.Never);
+            Verify_LocationsRepo_DeleteAProvince(Times.Once);
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+            Assert.IsType<NotFoundException>(result.Value);
+            var response = result.Value as NotFoundException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void DeleteAProvince_TryBlock_ReturnValidDelete()
+        {
+            Setup_LocationsRepo_DeleteAProvince_Default("test");
+
+            var result = (await _controller.DeleteAProvince("test")) as ObjectResult;
+            Verify_LocationsRepo_DeleteALocation(Times.Never);
+            Verify_LocationsRepo_DeleteAProvince(Times.Once);
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<DeletedResponse<string>>(result.Value);
+            var response = result.Value as DeletedResponse<string>;
+            Assert.IsType<string>(response.payload);
+        }
+
+        [Fact]
+        public async void DeleteAProvince_CatchBlock_ReturnSqlException()
+        {
+            string errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_LocationsRepo_DeleteAProvince_ThrowsException(sqlException);
+
+            var result = (await _controller.DeleteAProvince("test")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void DeleteAProvince_CatchBlock_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_DeleteAProvince_ThrowsException(badRequestException);
+
+            var result = (await _controller.DeleteAProvince("test")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
     }
 }
