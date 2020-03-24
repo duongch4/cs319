@@ -78,6 +78,7 @@ class EditProject extends Component {
     removeOpening = (opening) => {
         const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
         this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
@@ -86,6 +87,7 @@ class EditProject extends Component {
     }
 
     addProjDetails = (project) => {
+        let date = project.projectStartDate.toGMTString();
         let error = []
         if(project.title === "" || project.title === null){
             error = [<p className="errorMessage" key={error.length}>Error: Cannot add a project with no title</p>]
@@ -105,7 +107,7 @@ class EditProject extends Component {
                         ...this.state.projectProfile.projectSummary,
                         title: project.title,
                         projectNumber: project.projectNumber,
-                        projectStartDate: project.projectStartDate,
+                        projectStartDate: date,
                         projectEndDate: project.projectEndDate,
                         location: project.location
                     }
@@ -121,7 +123,7 @@ class EditProject extends Component {
                         ...this.state.projectProfile.projectSummary,
                         title: project.title,
                         projectNumber: project.projectNumber,
-                        projectStartDate: project.projectStartDate,
+                        projectStartDate: date,
                         projectEndDate: project.projectEndDate,
                         location: project.location
                     }
@@ -175,7 +177,9 @@ class EditProject extends Component {
                         <TeamRequirements disciplines={this.state.masterlist.disciplines}
                                           masterYearsOfExperience={this.state.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addOpening(opening)}
-                                          isUserPage={false}/>
+                                          isUserPage={false}
+                                          startDate={this.state.projectProfile.projectSummary.projectStartDate}
+                                          endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
                         <div className="errorMessage">{this.state.error}</div> 
                         <hr/>
                         {openings}

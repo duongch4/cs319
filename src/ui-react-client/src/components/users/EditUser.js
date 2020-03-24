@@ -198,7 +198,9 @@ class EditUser extends Component {
                         <TeamRequirements disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addDisciplines(opening)}
-                                          isUserPage={true}/>
+                                          isUserPage={true}
+                                          startDate={null}
+                                          endDate={null}/>
                         <p className="errorMessage">{this.state.error}</p>  
                         {disciplines} 
                         <hr />                       

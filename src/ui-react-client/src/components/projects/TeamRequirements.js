@@ -14,20 +14,53 @@ class TeamRequirements extends Component {
           discipline: null,
           skills: [],
           yearsOfExp: null,
-          commitmentMonthlyHours: null
-      }
+          commitmentMonthlyHours: null,
+      },
+        months: []
     };
 
+    componentDidMount() {
+        const months = this.createMonthsList(new Date(this.props.startDate), new Date(this.props.endDate));
+        this.setState({
+            months
+        })
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.startDate !== this.props.startDate || prevProps.endDate !== this.props.endDate){
+            const months = this.createMonthsList(this.props.startDate, this.props.endDate);
+            this.setState({
+                months
+            })
+        }
+    }
+    createMonthsList = (start, end) => {
+        if(start && end){
+            start = new Date(start)
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+                ];
+            const months = [];
+            let startIndex = start.getMonth();
+            let startYear = start.getYear()
+            const endIndex = end.getMonth();
+            const endYear = end.getYear()
+            while((startIndex <= endIndex || startYear < endYear) && !(startYear > endYear)){
+                const year = 1900 + startYear
+                months.push(monthNames[startIndex] + " " + year)
+                startIndex++;
+                if(startIndex > 11){
+                    startIndex = 0;
+                    startYear++;
+                }
+            }
+            return months;
+        }
+        return [];        
+    }
+
     handleChange = (e) => {
-      if (e.target.id === "commitmentMonthlyHours") {
-          this.setState({
-              opening: {
-                  ...this.state.opening,
-                  commitmentMonthlyHours: parseInt(e.target.value)
-              }
-          });
-      }
-       else if (e.target.id === "yearsOfExp") {
+      if (e.target.id === "yearsOfExp") {
           this.setState({
               opening: {
                 ...this.state.opening,
@@ -83,7 +116,7 @@ class TeamRequirements extends Component {
         } else if (opening.commitmentMonthlyHours === null && !isUserPage){
             this.setState({
                 ...this.state,
-                error: "No commitment Selected - Unable to add Opening"
+                error: "No monthly time commitments added - Please enter and estimate of how many hours are required each month"
             })
         } else {
             this.props.addOpening(this.state.opening);
@@ -101,10 +134,43 @@ class TeamRequirements extends Component {
         }
     };
 
+    changeCommitment = (date, e) => {
+        let commitment = this.state.opening.commitmentMonthlyHours !== null ? this.state.opening.commitmentMonthlyHours : {};
+        commitment[date] = e.target.value;
+        this.setState({
+            ...this.state,
+            opening: {
+                ...this.state.opening,
+                  commitmentMonthlyHours: commitment
+            }
+        });
+    }
+
+    createMonthsDiv = (months) => {
+        let val = 0;
+        const monthArr = []
+        months.forEach(month => {
+            if(this.state.opening.commitmentMonthlyHours !== null) {
+                val = this.state.opening.commitmentMonthlyHours[month];
+            }
+            monthArr.push(
+            <div className="entry" key={monthArr.length} >
+                <p className="label">{month}</p>
+                <input type="number" name="name" placeholder="hours" value={val} onChange={(e) => this.changeCommitment(month, e)}/>
+            </div>
+            )
+        })
+        return monthArr;
+    }
+
   render(){
-    var disciplines = this.props.disciplines;
-    var yearsOfExperience = this.props.masterYearsOfExperience;
+    const {disciplines} = this.props;
     var isUserPage = this.props.isUserPage;
+    let monthDiv = null;
+    if(!isUserPage){
+        monthDiv = this.createMonthsDiv(this.state.months);
+    }
+    var yearsOfExperience = this.props.masterYearsOfExperience;
 
     var discipline_render = [];
     var all_disciplines_keys = Object.keys(disciplines);
@@ -163,13 +229,7 @@ class TeamRequirements extends Component {
                       </select>
                   </label>
                   {!isUserPage && (
-                      <div className="form-row">
-                          <label htmlFor= "commitmentMonthlyHours">
-                              <p className="form-label">Expected Hourly Commitment Per Month</p>
-                          </label>
-                          <input className="input-box" type="number"
-                                 id="commitmentMonthlyHours" onChange={this.handleChange}/>
-                      </div>
+                    <div className="flex">{monthDiv}</div>
                   )}
                   <div className="form-row">
                       <Button type="submit" variant="contained"
