@@ -5,6 +5,7 @@ import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
+import Loader from 'react-loader-spinner';
 
 class Search extends Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class Search extends Component {
       sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
       sort: null,
       search: false,
+      loading: true,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -43,11 +45,11 @@ class Search extends Component {
 }
 
   handleResultChange(filter) {
-    console.log("passed back");
     this.setState({
       ...this.state,
      filters: filter,
      search: true,
+     loading: true,
     });
   }
 
@@ -55,6 +57,13 @@ class Search extends Component {
     this.setState({
       ...this.state,
       sort: e.value,
+    });
+  }
+
+  stopLoading = () => {
+    this.setState({
+      ...this.state,
+      loading: false,
     });
   }
 
@@ -70,13 +79,17 @@ class Search extends Component {
         <div>
         <div className="form-row">
         <h3 className="darkGreenHeader">Results</h3>
+        { (this.state.loading) &&
+        <Loader type="Grid" color="#2C6232" height={40} width={40}/>
+        }
         <div style={{position: "absolute", right: "50px"}}>
         <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
           placeholder='Sort by:'/>
           </div>
         </div>
         <SearchResults data={this.state.filters}
-                        sortBy={this.state.sort} />
+                        sortBy={this.state.sort}
+                        stopLoading={this.stopLoading} />
         </div>
         }
       </div>

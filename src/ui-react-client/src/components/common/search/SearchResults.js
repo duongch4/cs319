@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import SearchUserCard from "./SearchUserCard";
 import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
+import Loader from 'react-loader-spinner';
 
 class SearchResults extends Component {
     constructor(props) {
@@ -19,44 +20,44 @@ class SearchResults extends Component {
             this.setState({
                 ...this.state,
                 userSummaries: this.props.users,
-            });
+            }, () => this.props.stopLoading(0));
         } else {
             this.props.performUserSearch(this.props.data)
             .then(() => {
                 this.setState({
                     ...this.state,
                     userSummaries: this.props.users,
-                })
+                }, () => this.render(), this.props.stopLoading())
             }).catch(err => {
                 this.setState({
                     ...this.state,
                     noResults: true,
-                });
+                }, () => this.render(), this.props.stopLoading());
             });
         }
     }
 
     // to make multiple calls without having to refresh
-    componentWillReceiveProps(nextProps) {
-        if (this.props !== nextProps) {
+    componentDidUpdate(previousProps, previousState) {
+        if (!(previousState.userSummaries === this.state.userSummaries)) {
             if (CLIENT_DEV_ENV) {
-                nextProps.performUserSearch(nextProps.data)
+                this.props.performUserSearch(this.props.data)
                 this.setState({
                     ...this.state,
-                    userSummaries: nextProps.users,
-                });
+                    userSummaries: this.props.users,
+                }, () => this.props.stopLoading());
             } else {
-                nextProps.performUserSearch(nextProps.data)
+                this.props.performUserSearch(this.props.data)
                 .then(() => {
                     this.setState({
                         ...this.state,
-                        userSummaries: nextProps.users,
-                    })
+                        userSummaries: this.props.users,
+                    }, () => this.props.stopLoading())
                 }).catch(err => {
                     this.setState({
                         ...this.state,
                         noResults: true,
-                    });
+                    }, () => this.props.stopLoading());
                 });
             } 
         }
@@ -115,7 +116,7 @@ class SearchResults extends Component {
 
         if (this.state.noResults){
             return <div className="darkGreenHeader">There are no users with the selected filters</div>
-        } else if ((this.state.userSummaries).length === 0 ) {
+        } else if ((this.state.userSummaries).length === 0) {
             return <div></div>
         }
         else{
