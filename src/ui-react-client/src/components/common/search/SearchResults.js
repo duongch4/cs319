@@ -36,6 +36,32 @@ class SearchResults extends Component {
         }
     }
 
+    // to make multiple calls without having to refresh
+    componentWillReceiveProps(nextProps) {
+        if (this.props !== nextProps) {
+            if (CLIENT_DEV_ENV) {
+                nextProps.performUserSearch(nextProps.data)
+                this.setState({
+                    ...this.state,
+                    userSummaries: nextProps.users,
+                });
+            } else {
+                nextProps.performUserSearch(nextProps.data)
+                .then(() => {
+                    this.setState({
+                        ...this.state,
+                        userSummaries: nextProps.users,
+                    })
+                }).catch(err => {
+                    this.setState({
+                        ...this.state,
+                        noResults: true,
+                    });
+                });
+            } 
+        }
+    }
+
     combineUsers = () => {
         var users = [];
         this.state.userSummaries.map(function(i) {

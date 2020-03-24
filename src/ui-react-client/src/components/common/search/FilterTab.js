@@ -83,9 +83,12 @@ class FilterTab extends Component {
       }
     };
 
-    onSubmit = () => {
+    performSearch = () => {
         var current_state = JSON.parse(JSON.stringify(this.state.searchFilter));
-        this.setState(this.initialState, ()=>this.props.onDataFetched(current_state));
+        this.setState({
+            ...this.state,
+            showing: false,
+         }, ()=>this.props.onDataFetched(current_state));
     };
 
     getFilters =() => {
@@ -119,7 +122,7 @@ class FilterTab extends Component {
                     yearsOfExps: years_good,
                 }
             }
-        }, () => this.onSubmit())
+        }, () => this.performSearch())
     }
 
     saveFilter = () => {

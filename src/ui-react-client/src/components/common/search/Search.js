@@ -19,6 +19,7 @@ class Search extends Component {
                 {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
       sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
       sort: null,
+      search: false,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -42,9 +43,11 @@ class Search extends Component {
 }
 
   handleResultChange(filter) {
+    console.log("passed back");
     this.setState({
       ...this.state,
      filters: filter,
+     search: true,
     });
   }
 
@@ -55,7 +58,6 @@ class Search extends Component {
     });
   }
 
-
   render() {
     if(Object.keys(this.state.masterlist).length === 0 ){
       return <div>loading</div>
@@ -64,7 +66,7 @@ class Search extends Component {
       <div className="activity-container">
         <FilterTab onDataFetched={this.handleResultChange} 
                   masterlist={this.state.masterlist}/>
-        {(this.state.filters != null) &&
+        {(this.state.filters != null) && (this.state.search) &&
         <div>
         <div className="form-row">
         <h3 className="darkGreenHeader">Results</h3>
