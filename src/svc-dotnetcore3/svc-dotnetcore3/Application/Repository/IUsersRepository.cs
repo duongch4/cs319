@@ -31,6 +31,7 @@ namespace Web.API.Application.Repository
 
         //PUT
         Task<string> UpdateAUser(UserSummary user, Location location);
+        Task<User> UpdateUtilizationOfUser(int utilization, string userId);
         Task<IEnumerable<UserResource>> GetAllUsersGeneral();
     }
 }

@@ -18,20 +18,79 @@ namespace Web.API.Infrastructure.Data
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
-        public async Task<IEnumerable<rawUtilization>> GetUtilizationOfUser(string userId)
-        {
-            var sql = @"select isConfirmed, ceiling(sum(ProjectedMonthlyHours)/176.0 * 100) as Utilization
-                        from positions as pos, projects as p
-                        where pos.ProjectId = p.Id
-                        and (p.ProjectStartDate between CURRENT_TIMESTAMP and DATEADD(year, 2, CURRENT_TIMESTAMP) 
-                                or ProjectEndDate between CURRENT_TIMESTAMP and DATEADD(year, 2, CURRENT_TIMESTAMP))
-                                and (ResourceId = @UserId)
-                        group by IsConfirmed;";
 
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-            var resultOfQuery = await connection.QueryAsync<rawUtilization>(sql, new {UserId = userId});
-            return resultOfQuery;
+        private async Task<int> CalculateWorkingHoursForSinglePosition(Position position){
+            var totalHours = 0;
+                foreach (KeyValuePair<string, int> dateHourEntry in position.ProjectedMonthlyHours){
+                    DateTime date = DateTime.Parse(dateHourEntry.Key);
+                    bool isForThisMonth = DateTime.Today.Month == date.Month && DateTime.Today.Year == date.Year;
+                    if (isForThisMonth){
+                        return totalHours += dateHourEntry.Value;
+                    }
+                };
+
+            return await Task.FromResult(totalHours);
+        }
+
+        private async Task<int> CalculateWorkingHoursForMonth(IEnumerable<Position> positionsOfUser) {
+            var total = 0;
+            foreach (Position position in positionsOfUser) {
+                 total += await CalculateWorkingHoursForSinglePosition(position);
+            }
+            return total;
+        }
+
+        private async Task<double> CalculateHoursOutOfOfficeForMonth(OutOfOffice outOfOffice) 
+        {
+            double hoursOutOfOffice = 0;
+            int workHoursPerDay = 8;
+
+            if (outOfOffice.FromDate.Month == DateTime.Today.Month) {
+                DateTime firstDayOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+
+                if ((outOfOffice.FromDate < firstDayOfMonth && lastDayOfMonth < outOfOffice.ToDate)
+                    || (outOfOffice.FromDate == firstDayOfMonth && lastDayOfMonth == outOfOffice.ToDate)) 
+                {
+                    TimeSpan timeSpan = lastDayOfMonth.Subtract(firstDayOfMonth);
+                    hoursOutOfOffice += timeSpan.TotalDays * workHoursPerDay;
+
+                }
+                else if (outOfOffice.FromDate <= firstDayOfMonth && outOfOffice.ToDate < lastDayOfMonth) 
+                {
+                    TimeSpan timeSpan = outOfOffice.ToDate.Subtract(firstDayOfMonth);
+                    hoursOutOfOffice += timeSpan.TotalDays * workHoursPerDay;
+
+                }
+                else if (firstDayOfMonth < outOfOffice.FromDate && lastDayOfMonth <= outOfOffice.ToDate) 
+                {
+                    TimeSpan timeSpan = lastDayOfMonth.Subtract(outOfOffice.FromDate);
+                    hoursOutOfOffice += timeSpan.TotalDays * workHoursPerDay;
+
+                }
+            }
+
+            return await Task.FromResult(hoursOutOfOffice);
+        }
+        
+        private async Task<decimal> CalculateAvailableHoursForMonth(IEnumerable<OutOfOffice> outOfOffices) {
+            double availableHoursThisMonth = 176;
+            foreach (OutOfOffice outOfOffice in outOfOffices) {
+                availableHoursThisMonth -= await CalculateHoursOutOfOfficeForMonth(outOfOffice);
+            }
+            availableHoursThisMonth = availableHoursThisMonth == 0 ? 1 : availableHoursThisMonth;
+            return System.Convert.ToDecimal(availableHoursThisMonth);
+        }
+
+        public async Task<int> CalculateUtilizationOfUser(IEnumerable<Position> positionsOfUser, 
+                                                          IEnumerable<OutOfOffice> outOfOffice)
+        {
+            var totalHoursThisMonth = await CalculateWorkingHoursForMonth(positionsOfUser);
+            var availableHoursThisMonth = await CalculateAvailableHoursForMonth(outOfOffice);
+
+            decimal utilization = Math.Round(totalHoursThisMonth / availableHoursThisMonth, 2) * 100;
+            var utilAsInt = Decimal.ToInt32(utilization);
+            return utilAsInt;
         }
 
     }
