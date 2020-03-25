@@ -102,7 +102,7 @@ class CreateEditProjectDetails extends Component {
             ...this.state,
             projectSummary: {
                 ...this.state.projectSummary,
-                projectStartDate: date
+                projectStartDate: new Date(date.toDateString())
             }
         }, () => this.props.addProjDetails(this.state.projectSummary))
     };
@@ -112,7 +112,7 @@ class CreateEditProjectDetails extends Component {
             ...this.state,
             projectSummary: {
                 ...this.state.projectSummary,
-                projectEndDate: date
+                projectEndDate: new Date(date.toDateString())
             }
         }, () => this.props.addProjDetails(this.state.projectSummary))
     };
@@ -163,9 +163,9 @@ class CreateEditProjectDetails extends Component {
                 <label htmlFor="project_duration" className="form-row">
                     <p className="form-label">Project Duration</p>
                     <DatePicker className="input-box" id="startDate" selected={projSummary.projectStartDate}
-                                onChange={date => this.handleChangeStartDate(date)}/>
+                                onChange={date => this.handleChangeStartDate(date)} dateFormat="yyyy-MM-dd" />
                     <DatePicker className="input-box" id="endDate" selected={projSummary.projectEndDate}
-                                onChange={this.handleChangeEndDate}/>
+                                onChange={this.handleChangeEndDate} dateFormat="yyyy-MM-dd"/>
                 </label>
             </div>
         </div>)
