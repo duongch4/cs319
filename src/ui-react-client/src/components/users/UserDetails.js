@@ -9,6 +9,7 @@ import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import Loading from '../common/Loading';
 
 class UserDetails extends Component {
     state = {
@@ -41,7 +42,7 @@ class UserDetails extends Component {
         if (Object.keys(userDetails).length === 0) {
             return (
                 <div className="activity-container">
-                    <h1>Loading User Data...</h1>
+                    <Loading />
                 </div>
             )
         } else {

@@ -7,6 +7,7 @@ import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import Loading from '../common/Loading';
 
 class AddProject extends Component {
     state = {
@@ -150,7 +151,7 @@ class AddProject extends Component {
         if (this.state.pending) {
             return (
                 <div className="activity-container">
-                    <h1>Loading form...</h1>
+                    <Loading />
                 </div>
             )
         }else {

@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom';
 import {loadSingleProject} from "../../redux/actions/projectProfileActions";
 import {formatDate} from "../../util/dateFormatter";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import Loading from '../common/Loading';
 
 class ProjectDetails extends Component {
     state = {
@@ -108,7 +109,8 @@ class ProjectDetails extends Component {
                 </div>
             )
         } else {
-            return <div>Loading</div>
+            return (
+            <div className="activity-container"><Loading /></div>)
         }
 
     }
