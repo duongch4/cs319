@@ -13,6 +13,9 @@ import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
 import FilterStickers from './FilterSticker';
+import DatePicker from "react-datepicker";
+import InputRange from 'react-input-range';
+import 'react-input-range/lib/css/index.css'
 
 
 class FilterTab extends Component {
@@ -23,13 +26,13 @@ class FilterTab extends Component {
                 "filter": {
                 "utilization": {
                     "min": 0,
-                    "max": 100
+                    "max": 200
                 },
                 "locations": [],
                 "disciplines": null,
                 "yearsOfExps": [],
-                "startDate": null,
-                "endDate": null,
+                "startDate": new Date(),
+                "endDate": new Date(),
             },
             "searchWord": null,
             "orderKey": "utilization",
@@ -83,8 +86,36 @@ class FilterTab extends Component {
       }
     };
 
+    handleChangeStartDate = (date) => {
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.state.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    "startDate": date
+                }
+            }
+        })
+    };
+
+    handleChangeEndDate = (date) => {
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.state.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    "endDate": date
+                }
+            }
+        })
+    };
+
     performSearch = () => {
+        console.log(this.state.searchFilter.filter);
         var current_state = JSON.parse(JSON.stringify(this.state.searchFilter));
+        console.log(JSON.stringify(this.state.searchFilter));
         this.setState({
             ...this.state,
             showing: false,
@@ -111,12 +142,13 @@ class FilterTab extends Component {
         this.state.stickers.yearsOfExps.forEach((year) => {
             years_good = [...years_good, year];
         });
-
+        console.log(this.state.searchFilter.filter);
         this.setState({
             ...this.state,
             searchFilter: {
                 ...this.state.searchFilter,
                 filter: {
+                    ...this.state.searchFilter.filter,
                     locations: locations_good,
                     disciplines: disciplines_good,
                     yearsOfExps: years_good,
@@ -324,11 +356,25 @@ class FilterTab extends Component {
                                                 yearsOfExp={this.props.masterlist.yearsOfExp}
                                                 updateDisciplines={this.updateDisciplines}/>
                         </div>
-                        <h3 className="darkGreenHeader">Years of Experience</h3>
                         <div className="form-row">
+                        <div>
+                            <h3 className="darkGreenHeader">Years of Experience</h3>
                             <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}
                                         updateYears={this.updateYears}/>
                         </div>
+                        <div style={{marginLeft: "20px"}}>
+                                <h3 className="darkGreenHeader">Availability</h3>
+                                <DatePicker className="input-box" id="startDate" selected={this.state.searchFilter.filter.startDate}
+                                            onChange={this.handleChangeStartDate}/>
+                                <DatePicker className="input-box" id="endDate" selected={this.state.searchFilter.filter.endDate}
+                                            onChange={this.handleChangeEndDate}/>
+                        </div>
+                        </div>
+                        <div className="slider">
+                            <h3 className="darkGreenHeader">Utilization</h3>
+                            <InputRange maxValue={300} minValue={0} value={this.state.searchFilter.filter.utilization} onChange={value => this.setState({ ...this.state, searchFilter: {...this.state.searchFilter, filter: {...this.state.searchFilter.filter, utilization: value},},})} />
+                        </div>
+                        
                         <div style={{padding: "20px"}}>
                         <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                         </div>
