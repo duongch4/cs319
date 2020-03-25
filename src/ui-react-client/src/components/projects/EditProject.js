@@ -89,7 +89,6 @@ class EditProject extends Component {
     }
 
     addProjDetails = (project) => {
-        let date = project.projectStartDate.toGMTString();
         let error = []
         if(project.title === "" || project.title === null){
             error = [<p className="errorMessage" key={error.length}>Error: Cannot add a project with no title</p>]
@@ -109,7 +108,7 @@ class EditProject extends Component {
                         ...this.state.projectProfile.projectSummary,
                         title: project.title,
                         projectNumber: project.projectNumber,
-                        projectStartDate: date,
+                        projectStartDate: project.projectStartDate,
                         projectEndDate: project.projectEndDate,
                         location: project.location
                     }
@@ -125,7 +124,7 @@ class EditProject extends Component {
                         ...this.state.projectProfile.projectSummary,
                         title: project.title,
                         projectNumber: project.projectNumber,
-                        projectStartDate: date,
+                        projectStartDate: project.projectStartDate,
                         projectEndDate: project.projectEndDate,
                         location: project.location
                     }
