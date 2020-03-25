@@ -7,6 +7,7 @@ import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {isProfileLoaded, UserContext} from "../common/userContext/UserContext";
 
 class AddProject extends Component {
     state = {
@@ -45,14 +46,19 @@ class AddProject extends Component {
                 pending: false
             })
         } else {
-            this.props.loadMasterlists()
-            .then(() => {
-                this.setState({
-                    ...this.state,
-                    masterlist: this.props.masterlist,
-                    pending: false
-                })
-            })
+            let user = this.context;
+            if (!isProfileLoaded(user.profile)) {
+                user.fetchProfile();
+            } else {
+                this.props.loadMasterlists(user.profile.userRoles)
+                    .then(() => {
+                        this.setState({
+                            ...this.state,
+                            masterlist: this.props.masterlist,
+                            pending: false
+                        })
+                    })
+            }
         }
         
     }
@@ -131,16 +137,21 @@ class AddProject extends Component {
         }
     };
 
-    onSubmit = () => {
+    onSubmit = (userRole) => {
         if(this.state.error.length !== 0) {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
             let newProject = this.state.projectProfile;
-            this.props.createProject(newProject, this.props.history);
-            this.setState({
-                ...this.state,
-                error: []
-            })
+            let user = this.context;
+            if (!isProfileLoaded(user.profile)) {
+                user.fetchProfile();
+            } else {
+                this.props.createProject(newProject, this.props.history, user.profile.userRoles);
+                this.setState({
+                    ...this.state,
+                    error: []
+                })
+            }
         }
     };
 
@@ -185,6 +196,8 @@ class AddProject extends Component {
         }
     }
 }
+
+AddProject.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

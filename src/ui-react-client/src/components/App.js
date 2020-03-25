@@ -18,7 +18,6 @@ import Search from './common/search/Search.js';
 import AuthProvider from "../config/AuthProvider";
 import PropTypes from "prop-types";
 import { PropsRoute } from "../util/CustomRoute";
-import {acquireToken, GRAPH_REQUESTS, isIE} from "../config/authUtils";
 
 const App = (appProps) => {
   return (

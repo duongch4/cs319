@@ -85,12 +85,12 @@ export const errorDeleting = (error) => {
     }
 }
 
-export const loadMasterlists = () => {
+export const loadMasterlists = (userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(loadMasterlistsData(_initialState.masterlist));
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.get(`${baseURL}masterlists/`, { headers });
             }).then (response => {
                 dispatch(loadMasterlistsData(response.data.payload));

@@ -53,12 +53,12 @@ export const loadSingleProject = (projectNumber) => {
     };
 };
 
-export const createProject = (project, history) => {
+export const createProject = (project, history, userRole) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProjectData(project))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRole).then(headers => {
                 return axios.post(baseURL, project, { headers });
             }).then(_ => {
                 dispatch(createProjectData(project));
