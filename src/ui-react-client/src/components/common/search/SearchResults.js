@@ -5,6 +5,7 @@ import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import Loading from '../Loading';
 
 class SearchResults extends Component {
     constructor(props) {
@@ -42,7 +43,7 @@ class SearchResults extends Component {
     // to make multiple calls without having to refresh
     componentDidUpdate(previousProps) {
         // check if next page has any users on it
-        if (!(previousProps.data.page === this.props.data.page)) {
+        if (previousProps.data.page !== this.props.data.page) {
             this.props.performUserSearch(this.props.data)
             .then(() => {
                 this.setState({
@@ -157,7 +158,7 @@ class SearchResults extends Component {
         if (this.state.noResults){
             return <div className="darkGreenHeader">There are no users with the selected filters</div>
         } else if ((this.state.userSummaries).length === 0) {
-            return <div></div>
+            return <Loading/>
         }
         else{
             const userCards =[];
