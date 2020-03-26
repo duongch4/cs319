@@ -1,5 +1,6 @@
 import { UserAgentApplication } from "msal";
 import { UI_ROOT, AUTHORITY, CLIENT_ID, API_ID } from "./config.js";
+import {useContext} from "react";
 
 export const requiresInteraction = errorMessage => {
     if (!errorMessage || !errorMessage.length) {

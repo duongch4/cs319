@@ -34,7 +34,7 @@ export const deleteProjectData = () => {
     };
 };
 
-export const loadSingleProject = (projectNumber) => {
+export const loadSingleProject = (projectNumber, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             let project = _initialState_client.projectProfiles.filter(projectProfile => {
@@ -42,7 +42,7 @@ export const loadSingleProject = (projectNumber) => {
             });
             dispatch(loadSingleProjectData(project[0]));
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.get(`${baseURL + projectNumber}`, { headers });
             }).then(response => {
                 dispatch(loadSingleProjectData(response.data.payload));
@@ -53,12 +53,12 @@ export const loadSingleProject = (projectNumber) => {
     };
 };
 
-export const createProject = (project, history, userRole) => {
+export const createProject = (project, history, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProjectData(project))
         } else {
-            return getHeaders(userRole).then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.post(baseURL, project, { headers });
             }).then(_ => {
                 dispatch(createProjectData(project));
@@ -71,12 +71,12 @@ export const createProject = (project, history, userRole) => {
     };
 };
 
-export const updateProject = (project, history) => {
+export const updateProject = (project, history, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(updateProjectData(project));
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.put(`${baseURL + project.projectSummary.projectNumber}`, project, { headers });
             }).then(_ => {
                 dispatch(updateProjectData(project));
@@ -90,12 +90,12 @@ export const updateProject = (project, history) => {
     };
 };
 
-export const deleteProject = (number, history) => {
+export const deleteProject = (number, history, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteProjectData(number))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.delete(`${baseURL + number}`, { headers });
             }).then(_ => {
                 dispatch(deleteProjectData());

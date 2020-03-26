@@ -7,7 +7,7 @@ import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
 
 class AddProject extends Component {
     state = {
@@ -39,7 +39,7 @@ class AddProject extends Component {
 
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadMasterlists();
+            this.props.loadMasterlists(["adminUser"]);
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
@@ -47,18 +47,20 @@ class AddProject extends Component {
             })
         } else {
             let user = this.context;
+            let userRoles = user.profile.userRoles;
             if (!isProfileLoaded(user.profile)) {
-                user.fetchProfile();
-            } else {
-                this.props.loadMasterlists(user.profile.userRoles)
-                    .then(() => {
-                        this.setState({
-                            ...this.state,
-                            masterlist: this.props.masterlist,
-                            pending: false
-                        })
-                    })
+                let profile = fetchProfileFromLocalStorage();
+                user.updateProfile(profile);
+                userRoles = profile.userRoles;
             }
+            this.props.loadMasterlists(userRoles)
+                .then(() => {
+                    this.setState({
+                        ...this.state,
+                        masterlist: this.props.masterlist,
+                        pending: false
+                    })
+                })
         }
         
     }
@@ -137,21 +139,23 @@ class AddProject extends Component {
         }
     };
 
-    onSubmit = (userRole) => {
+    onSubmit = () => {
         if(this.state.error.length !== 0) {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
             let newProject = this.state.projectProfile;
             let user = this.context;
+            let userRoles = user.profile.userRoles;
             if (!isProfileLoaded(user.profile)) {
-                user.fetchProfile();
-            } else {
-                this.props.createProject(newProject, this.props.history, user.profile.userRoles);
-                this.setState({
-                    ...this.state,
-                    error: []
-                })
+                let profile = fetchProfileFromLocalStorage();
+                user.updateProfile(profile);
+                userRoles = profile.userRoles;
             }
+            this.props.createProject(newProject, this.props.history, userRoles);
+            this.setState({
+                ...this.state,
+                error: []
+            })
         }
     };
 
@@ -162,7 +166,7 @@ class AddProject extends Component {
                     <h1>Loading form...</h1>
                 </div>
             )
-        }else {
+        } else {
             const openings = [];
             this.state.projectProfile.openings.forEach((opening, index) => {
                 openings.push(<Openings key={"openings" + index} opening={opening}

@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import UserCard from "../users/UserCard";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
 
 class EditProject extends Component {
     state = {
@@ -19,8 +20,8 @@ class EditProject extends Component {
 
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadSingleProject(this.props.match.params.project_number);
-            this.props.loadMasterlists();
+            this.props.loadSingleProject(this.props.match.params.project_number, ['adminUser']);
+            this.props.loadMasterlists(['adminUser']);
             this.setState((state, props) => ({
                 ...this.state,
                 masterlist: props.masterlist,
@@ -28,8 +29,15 @@ class EditProject extends Component {
                 pending: false
             }));
         } else {
-            var promise_masterlist = this.props.loadMasterlists();
-            var promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number);
+            let user = this.context;
+            let userRoles = user.profile.userRoles;
+            if (!isProfileLoaded(user.profile)) {
+                let profile = fetchProfileFromLocalStorage();
+                user.updateProfile(profile);
+                userRoles = profile.userRoles;
+            }
+            var promise_masterlist = this.props.loadMasterlists(userRoles);
+            var promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
             Promise.all([promise_masterlist, promise_singleProject])
                .then(() => {
                    this.setState((state, props) =>
@@ -52,7 +60,14 @@ class EditProject extends Component {
         if(this.state.error.length !== 0) {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
-            this.props.updateProject(this.state.projectProfile, this.props.history);
+            let user = this.context;
+            let userRoles = user.profile.userRoles;
+            if (!isProfileLoaded(user.profile)) {
+                let profile = fetchProfileFromLocalStorage();
+                user.updateProfile(profile);
+                userRoles = profile.userRoles;
+            }
+            this.props.updateProject(this.state.projectProfile, this.props.history, userRoles);
             this.setState({
                 ...this.state,
                 error: []
@@ -61,7 +76,14 @@ class EditProject extends Component {
     };
 
     onDelete = () => {
-        this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history);
+        let user = this.context;
+        let userRoles = user.profile.userRoles;
+        if (!isProfileLoaded(user.profile)) {
+            let profile = fetchProfileFromLocalStorage();
+            user.updateProfile(profile);
+            userRoles = profile.userRoles;
+        }
+        this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history, userRoles);
     };
 
     addOpening = (opening) => {
@@ -207,6 +229,8 @@ class EditProject extends Component {
  
     }
 }
+
+EditProject.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

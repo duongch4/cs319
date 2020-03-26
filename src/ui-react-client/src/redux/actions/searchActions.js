@@ -13,12 +13,12 @@ export const getUsers = users => {
     };
   };
 
-export const performUserSearch = (filterParams) => {
+export const performUserSearch = (filterParams, userRoles) => {
 return dispatch => {
     if (CLIENT_DEV_ENV) {
         dispatch(getUsers(_initialState.users));
     } else {
-        return getHeaders().then(headers => {
+        return getHeaders(userRoles).then(headers => {
             return axios
                 .post(`${baseURL}`, filterParams, {headers})
                 .then(response => {

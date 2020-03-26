@@ -21,7 +21,7 @@ export const updateUserProfileData = userProfile => {
   }
 };
 
-export const loadSpecificUser = (userID) => {
+export const loadSpecificUser = (userID, userRoles) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
       let user = _initialState.userProfiles.filter(userProfile => {
@@ -29,7 +29,7 @@ export const loadSpecificUser = (userID) => {
       });
       dispatch(loadUserProfileData(user[0]));
     } else {
-      return getHeaders().then(headers => {
+      return getHeaders(userRoles).then(headers => {
         return axios.get(`${baseURL + userID}`, { headers });
       }).then(response => {
         dispatch(loadUserProfileData(response.data.payload));
@@ -40,12 +40,12 @@ export const loadSpecificUser = (userID) => {
   };
 };
 
-export const updateSpecificUser = (user, history) => {
+export const updateSpecificUser = (user, history, userRoles) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
       dispatch(updateUserProfileData(user));
     } else {
-      return getHeaders().then(headers => {
+      return getHeaders(userRoles).then(headers => {
         return axios.put(baseURL + user.userSummary.userID, user, { headers });
       }).then(_ => {
         dispatch(updateUserProfileData(user));

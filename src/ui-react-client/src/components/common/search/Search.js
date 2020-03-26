@@ -22,7 +22,7 @@ class Search extends Component {
 
   componentDidMount() {
     if (CLIENT_DEV_ENV) {
-        this.props.loadMasterlists()
+        this.props.loadMasterlists(["adminUser"]);
         this.setState({
             ...this.state,
             masterlist: this.props.masterlist,

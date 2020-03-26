@@ -24,18 +24,6 @@ class UserProvider extends React.Component {
                     });
                     let profileString = JSON.stringify(profile);
                     sessionStorage.setItem(USERCONTEXTKEY, profileString);
-                },
-                fetchProfile: () => {
-                    let profileString = sessionStorage.getItem(USERCONTEXTKEY);
-                    if (profileString === null) {
-                        msalApp.logout();
-                    } else {
-                        let profile = JSON.parse(profileString);
-                        this.setState({
-                            ...this.state,
-                            profile: profile
-                        })
-                    }
                 }
             }}>
             {this.props.children}
@@ -45,6 +33,18 @@ class UserProvider extends React.Component {
 
 export const isProfileLoaded = (profile) => {
     return !(Object.keys(profile).length === 0)
+};
+
+export const fetchProfileFromLocalStorage = () => {
+    let profileString = sessionStorage.getItem(USERCONTEXTKEY);
+    let profile;
+    if (profileString === null) {
+        profile = {};
+        msalApp.logout();
+    } else {
+        profile = JSON.parse(profileString);
+    }
+    return profile;
 };
 
 export { UserProvider, Consumer as UserContextConsumer };

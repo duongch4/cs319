@@ -9,6 +9,7 @@ import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
 
 class UserDetails extends Component {
     state = {
@@ -17,13 +18,20 @@ class UserDetails extends Component {
 
     componentDidMount = () => {
       if(CLIENT_DEV_ENV){
-            this.props.loadSpecificUser(this.props.match.params.user_id);
+            this.props.loadSpecificUser(this.props.match.params.user_id, ['adminUser']);
             this.setState( {
                 ...this.state,
                 userProfile: this.props.userProfile
             });
         } else {
-            this.props.loadSpecificUser(this.props.match.params.user_id)
+          let user = this.context;
+          let userRoles = user.profile.userRoles;
+          if (!isProfileLoaded(user.profile)) {
+              let profile = fetchProfileFromLocalStorage();
+              user.updateProfile(profile);
+              userRoles = profile.userRoles;
+          }
+          this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {
@@ -103,6 +111,8 @@ class UserDetails extends Component {
         }
     }
 }
+
+UserDetails.contextType = UserContext;
 
 UserDetails.propTypes = {
     userProfile: PropTypes.object

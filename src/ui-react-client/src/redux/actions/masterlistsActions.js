@@ -101,12 +101,12 @@ export const loadMasterlists = (userRoles) => {
     }
 };
 
-export const createDiscpline = (discipline) => {
+export const createDiscpline = (discipline, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createDiscplineData(discipline))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .post(`${baseURL}admin/disciplines`, discipline, { headers })
                     .then(response => {
@@ -122,12 +122,12 @@ export const createDiscpline = (discipline) => {
     }
 }
 
-export const createSkill = (skill) => {
+export const createSkill = (skill, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createSkillData(skill))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
                     .then(response => {
@@ -142,12 +142,12 @@ export const createSkill = (skill) => {
     } 
 }
 
-export const createProvince = (location) => {
+export const createProvince = (location, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProvinceData(location))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .post(`${baseURL}admin/provinces`, location, { headers })
                     .then(response => {
@@ -162,12 +162,12 @@ export const createProvince = (location) => {
     } 
 }
 
-export const createCity = (location) => {
+export const createCity = (location, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createCityData(location))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .post(`${baseURL}admin/locations`, location, { headers })
                     .then(response => {
@@ -183,12 +183,12 @@ export const createCity = (location) => {
     } 
 }
 
-export const deleteDiscipline = (id) => {
+export const deleteDiscipline = (id, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteDisciplineData(id))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .delete(`${baseURL}admin/disciplines/${id}`, { headers })
                     .then(response => {
@@ -203,12 +203,12 @@ export const deleteDiscipline = (id) => {
     }
 }
 
-export const deleteSkill = (disciplineID, skillName) => {
+export const deleteSkill = (disciplineID, skillName, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteSkillData(disciplineID, skillName))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`, { headers })
                     .then(response => {
@@ -223,12 +223,12 @@ export const deleteSkill = (disciplineID, skillName) => {
     }
 }
 
-export const deleteProvince = (provinceName) => {
+export const deleteProvince = (provinceName, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteProvinceData(provinceName))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .delete(`${baseURL}admin/provinces/${provinceName}`, { headers })
                     .then(response => {
@@ -243,13 +243,13 @@ export const deleteProvince = (provinceName) => {
     }
 }
 
-export const deleteCity = (cityName, id) => {
+export const deleteCity = (cityName, id, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteCityData(cityName, id))
         } else {
             // TODO - backend only needs id, but keep cityName to make the reducer easier to deal with
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios
                     .delete(`${baseURL}admin/locations/${id}`, { headers })
                     .then(response => {

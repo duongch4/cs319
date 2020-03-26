@@ -20,12 +20,12 @@ export const updateUserSummary = userSummary => {
     }
 };
 
-export const loadUsers = () => {
+export const loadUsers = (userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(loadUsersAllData(_initialState.userSummaries));
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.get(baseURL, { headers });
             }).then(response => {
                 dispatch(loadUsersAllData(response.data.payload));

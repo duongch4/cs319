@@ -11,7 +11,6 @@ const ProjectCard = (props) => {
   let details = [];
   if (onUserCard) {
       details.push(<p key={details.length}><strong>Position:</strong> {userRole.disciplineName}</p>);
-      details.push(<p key={details.length}><strong>Monthly Commitment of Hours:</strong> {userRole.projectedMonthlyHours}</p>)
   } else {
       let startDate = formatDate(project.projectStartDate);
       let endDate = formatDate(project.projectEndDate);

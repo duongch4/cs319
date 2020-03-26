@@ -8,11 +8,12 @@ import './SearchStyles.css'
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
-import {performUserSearch} from "../../../redux/actions/searchActions";
 import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
 import FilterStickers from './FilterSticker';
+import {fetchProfileFromLocalStorage, isProfileLoaded} from "../userContext/UserContext";
+import {UserContext} from "../userContext/UserContext";
 
 
 class FilterTab extends Component {
@@ -54,14 +55,21 @@ class FilterTab extends Component {
     
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadMasterlists()
+            this.props.loadMasterlists(["adminUser"])
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
                 pending: false
             })
         } else {
-            this.props.loadMasterlists()
+            let user = this.context;
+            let userRoles = user.profile.userRoles;
+            if (!isProfileLoaded(user.profile)) {
+                let profile = fetchProfileFromLocalStorage();
+                user.updateProfile(profile);
+                userRoles = profile.userRoles;
+            }
+            this.props.loadMasterlists(userRoles)
             .then(() => {
                 this.setState({
                     ...this.state,
@@ -150,7 +158,7 @@ class FilterTab extends Component {
                 
                 stickers = [...stickers, newSticker];
                 });
-        };
+        }
        
         if (disciplines !== null) {
             Object.entries(disciplines).forEach((discipline) => {
@@ -173,7 +181,7 @@ class FilterTab extends Component {
                                     deleteFilter = {this.deleteFilter}/>);
                     stickers = [...stickers, newSticker];
             })
-        };
+        }
 
         this.setState({
             ...this.state,
@@ -335,7 +343,9 @@ class FilterTab extends Component {
         </div>
         );
         }
-};
+}
+
+FilterTab.contextType = UserContext;
 
 const mapStateToProps = state => {
   return {
@@ -345,7 +355,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   loadMasterlists,
-  performUserSearch,
 };
 
 export default connect(

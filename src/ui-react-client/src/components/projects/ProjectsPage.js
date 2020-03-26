@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useContext, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { loadProjects } from '../../redux/actions/projectsActions';
@@ -8,21 +8,27 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { Link } from 'react-router-dom'
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
 
 const _ProjectsPage = (props) => {
+  const user = useContext(UserContext);
+  let userRoles = user.profile.userRoles;
+  if (!isProfileLoaded(user.profile)) {
+    let profile = fetchProfileFromLocalStorage();
+    userRoles = profile.userRoles;
+  }
   useEffect(() => {
     if (props.projects.length === 0) {
       if (CLIENT_DEV_ENV) {
-        props.loadProjects()
+        props.loadProjects(["adminUser"]);
       } else {
-        props.loadProjects()
-        .catch(error => {
-          alert('Loading projects failed' + error);
-        });
+        props.loadProjects(userRoles)
+            .catch(error => {
+              alert('Loading projects failed' + error);
+            });
       }
-      
     }
-  }, [props.projects, props.loadProjects]);
+  }, [props.projects, props.loadProjects, userRoles]);
   return (
     <div className="activity-container">
         <div className="title-bar">

@@ -9,6 +9,7 @@ import { Button } from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import AvailabilityForm from './AvailabilityForm';
 import AvailabilityCard from './AvailabilityCard';
+import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
 
 class EditUser extends Component {
     state = {
@@ -20,8 +21,8 @@ class EditUser extends Component {
 
     componentDidMount() {
         if(CLIENT_DEV_ENV){
-            this.props.loadMasterlists()
-            this.props.loadSpecificUser(this.props.match.params.user_id)
+            this.props.loadMasterlists(['adminUser'])
+            this.props.loadSpecificUser(this.props.match.params.user_id, ['adminUser'])
             this.setState((state, props) => ({
                 ...this.state,
                 masterlist: props.masterlist,
@@ -29,14 +30,21 @@ class EditUser extends Component {
                 pending: false
             }))
         } else {
-            this.props.loadMasterlists()
+            let user = this.context;
+            let userRoles = user.profile.userRoles;
+            if (!isProfileLoaded(user.profile)) {
+                let profile = fetchProfileFromLocalStorage();
+                user.updateProfile(profile);
+                userRoles = profile.userRoles;
+            }
+            this.props.loadMasterlists(userRoles)
             .then(() => {
                 this.setState({
                     ...this.state,
                     masterlist: this.props.masterlist
                 })
             });
-            this.props.loadSpecificUser(this.props.match.params.user_id)
+            this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
             .then(() => {
                 this.setState({
                     ...this.state,
@@ -49,14 +57,21 @@ class EditUser extends Component {
     }
 
     onSubmit = () => {
-        const user = this.state.userProfile.userSummary;
-        if(user.firstName === "" || user.lastName === ""){
+        let user = this.context;
+        let userRoles = user.profile.userRoles;
+        if (!isProfileLoaded(user.profile)) {
+            let profile = fetchProfileFromLocalStorage();
+            user.updateProfile(profile);
+            userRoles = profile.userRoles;
+        }
+        const userSummary = this.state.userProfile.userSummary;
+        if(userSummary.firstName === "" || userSummary.lastName === ""){
             this.setState({
                 ...this.state,
                 error: "Unable to Save - User's Name is invalid"
             })
         } else {
-            this.props.updateSpecificUser(this.state.userProfile, this.props.history)
+            this.props.updateSpecificUser(this.state.userProfile, this.props.history, userRoles)
             this.setState({
                 ...this.state,
                 error: ""
@@ -219,6 +234,8 @@ class EditUser extends Component {
         }
     }
 }
+
+EditUser.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {
