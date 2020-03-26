@@ -22,8 +22,8 @@ namespace Web.API.Authorization
         /// </summary>
         public static IReadOnlyDictionary<string, string[]> ApplicationPermissionsForActions = new Dictionary<string, string[]>
         {
-            [Actions.AdminThings] = new[] { ApplicationPermissions.DoAllAdminThings },
-            [Actions.RegularThings] = new[] { ApplicationPermissions.DoAllRegularThings }
+            [Actions.AdminThings] = new[] { ApplicationPermissions.DoAllAdminThings, ApplicationPermissions.RoleAdmin },
+            [Actions.RegularThings] = new[] { ApplicationPermissions.DoAllRegularThings, ApplicationPermissions.RoleRegular }
         };
     }
 }
