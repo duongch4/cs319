@@ -6,7 +6,6 @@ import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
 import Loading from '../Loading';
-import Loader from 'react-loader-spinner';
 
 class Search extends Component {
   constructor(props) {
@@ -110,7 +109,9 @@ class Search extends Component {
         <div className="form-row">
         <h3 className="darkGreenHeader">Results</h3>
         { (this.state.loading) &&
-        <Loader type="Grid" color="#2C6232" height={40} width={40}/>
+        <div style={{marginLeft: "10px"}}>
+        <Loading/>
+        </div>
         }
         <div style={{position: "absolute", right: "50px"}}>
         <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
