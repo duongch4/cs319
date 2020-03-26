@@ -61,6 +61,7 @@ class SearchResults extends Component {
         }
     }
 
+    // combines users when there is a single user with more than one discipline
     combineUsers = () => {
         var users = [];
         this.state.userSummaries.map(function(i) {
