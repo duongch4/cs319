@@ -6,6 +6,7 @@ import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
 import Loading from '../Loading';
+import Loader from 'react-loader-spinner';
 
 class Search extends Component {
   constructor(props) {
