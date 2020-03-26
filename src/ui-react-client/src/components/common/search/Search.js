@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
-import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { loadMasterlists } from "../../../redux/actions/masterlistsActions";
+import { connect } from 'react-redux';
 import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
-import {CLIENT_DEV_ENV} from '../../../config/config';
+import { CLIENT_DEV_ENV } from '../../../config/config';
 import Select from 'react-select';
 import Loading from '../Loading';
+import { fetchProfileFromLocalStorage, isProfileLoaded, UserContext } from "../userContext/UserContext";
 
 class Search extends Component {
   constructor(props) {
@@ -13,9 +14,9 @@ class Search extends Component {
     this.state = {
       filters: null,
       masterlist: {},
-      sort_by: [{label: "No filter", value:"no-filter"}, {label: "Utilization: High to Low", value: "util-high"}, 
-                {label: "Utilization: Low to High", value: "util-low"},{label: "Locations", value: "locations"}, 
-                {label: "Disciplines", value: "disciplines"}, {label: "Years of Exerpience", value: "yearsOfExp"}],
+      sort_by: [{ label: "No filter", value: "no-filter" }, { label: "Utilization: High to Low", value: "util-high" },
+      { label: "Utilization: Low to High", value: "util-low" }, { label: "Locations", value: "locations" },
+      { label: "Disciplines", value: "disciplines" }, { label: "Years of Exerpience", value: "yearsOfExp" }],
       sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
     };
     this.handleResultChange = this.handleResultChange.bind(this);
@@ -23,63 +24,71 @@ class Search extends Component {
 
   componentDidMount() {
     if (CLIENT_DEV_ENV) {
-        this.props.loadMasterlists(["adminUser"]);
-        this.setState({
+      this.props.loadMasterlists(["adminUser"]);
+      this.setState({
+        ...this.state,
+        masterlist: this.props.masterlist,
+      })
+    } else {
+      let user = this.context;
+      let userRoles = user.profile.userRoles;
+      if (!isProfileLoaded(user.profile)) {
+          let profile = fetchProfileFromLocalStorage();
+          user.updateProfile(profile);
+          userRoles = profile.userRoles;
+      }
+      this.props.loadMasterlists(userRoles)
+        .then(() => {
+          this.setState({
             ...this.state,
             masterlist: this.props.masterlist,
-        })
-    } else {
-        this.props.loadMasterlists()
-        .then(() => {
-            this.setState({
-                ...this.state,
-                masterlist: this.props.masterlist,
-            })
+          })
         })
     }
-}
+  }
 
   handleResultChange(filter) {
     this.setState({
       ...this.state,
-     filters: filter,
+      filters: filter,
     });
   }
 
   render() {
-
-    if(Object.keys(this.state.masterlist).length === 0 ){
+    if (Object.keys(this.state.masterlist).length === 0) {
       return (
         <div className="activity-container">
-            <Loading />
+          <Loading />
         </div>
       )
     } else {
-    return (
-      <div className="activity-container">
-        <FilterTab onDataFetched={this.handleResultChange} 
-                  masterlist={this.state.masterlist}/>
-        {(this.state.filters != null) &&
-        <div>
-        <div className="form-row">
-        <h3 className="darkGreenHeader">Results</h3>
-        <div style={{position: "absolute", right: "50px"}}>
-        <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by}
-          placeholder='Sort by:'/>
-          </div>
+      return (
+        <div className="activity-container">
+          <FilterTab onDataFetched={this.handleResultChange}
+            masterlist={this.state.masterlist} />
+          {(this.state.filters != null) &&
+            <div>
+              <div className="form-row">
+                <h3 className="darkGreenHeader">Results</h3>
+                <div style={{ position: "absolute", right: "50px" }}>
+                  <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by}
+                    placeholder='Sort by:' />
+                </div>
+              </div>
+              <SearchResults data={this.state.filters} />
+            </div>
+          }
         </div>
-        <SearchResults data={this.state.filters} />
-        </div>
-        }
-      </div>
-    )
+      )
+    }
   }
 }
-}
+
+Search.contextType = UserContext;
 
 const mapStateToProps = state => {
   return {
-      masterlist: state.masterlist,
+    masterlist: state.masterlist,
   };
 };
 
