@@ -6,8 +6,6 @@ import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
 import Loader from 'react-loader-spinner';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 class Search extends Component {
   constructor(props) {
@@ -20,7 +18,6 @@ class Search extends Component {
                 {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
                 {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
                 {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
-      sort_by_keys: ["utilization-high", "utilization-low", "location", "disciplines", "yearsOfExp"],
       sort: null,
       search: false,
       loading: true,
@@ -111,7 +108,7 @@ class Search extends Component {
         <Loader type="Grid" color="#2C6232" height={40} width={40}/>
         }
         <div style={{position: "absolute", right: "50px"}}>
-        <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
+        <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
           placeholder='Sort by:'/>
           </div>
         </div>

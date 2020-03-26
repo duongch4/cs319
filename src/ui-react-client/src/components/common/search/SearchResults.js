@@ -29,12 +29,12 @@ class SearchResults extends Component {
                 this.setState({
                     ...this.state,
                     userSummaries: this.props.users,
-                }, () => this.render(), this.props.stopLoading())
+                }, this.props.stopLoading())
             }).catch(err => {
                 this.setState({
                     ...this.state,
                     noResults: true,
-                }, () => this.render(), this.props.stopLoading());
+                }, this.props.stopLoading());
             });
         }
     }
@@ -54,7 +54,7 @@ class SearchResults extends Component {
                     ...this.state,
                     lastPage: true,
                     loading: false,
-                }, () => this.props.stopLoading(), this.props.pageLeft());
+                }, () =>  this.props.pageLeft(), this.props.stopLoading());
             });
         } else if (!(previousProps.data === this.props.data)) {
            this.componentDidMount();
