@@ -6,13 +6,17 @@ namespace Web.API.Application.Communication
 {
     public class RequestProjectAssign
     {
-        /// <summary>Position Id</summary>
+        /// <summary>Opening ID</summary>
         /// <example>1</example>
-        public int PositionID { get; set; }
+        public int OpeningId { get; set; }
         
         /// <summary>User Id</summary>
-        /// <example>1</example>
-        public int UserID { get; set; }
+        /// <example>"1"</example>
+        public string UserID { get; set; }
+
+        /// <summary>ConfirmedUtilization in percentage</summary>
+        /// <example>90</example>
+        public int ConfirmedUtilization { get; set; }
     }
 
     public class Utilization

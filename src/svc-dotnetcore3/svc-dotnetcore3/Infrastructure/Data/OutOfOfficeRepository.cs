@@ -17,7 +17,7 @@ namespace Web.API.Infrastructure.Data
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(int userId)
+        public async Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(string userId)
         {
             var sql = @"
                 select * from OutOfOffice where ResourceId = @Id;";

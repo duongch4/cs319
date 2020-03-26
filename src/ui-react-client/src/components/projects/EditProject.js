@@ -8,6 +8,8 @@ import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import UserCard from "../users/UserCard";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import '../common/common.css'
+import Loading from '../common/Loading';
 
 class EditProject extends Component {
     state = {
@@ -78,6 +80,7 @@ class EditProject extends Component {
     removeOpening = (opening) => {
         const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
         this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
@@ -175,7 +178,9 @@ class EditProject extends Component {
                         <TeamRequirements disciplines={this.state.masterlist.disciplines}
                                           masterYearsOfExperience={this.state.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addOpening(opening)}
-                                          isUserPage={false}/>
+                                          isUserPage={false}
+                                          startDate={this.state.projectProfile.projectSummary.projectStartDate}
+                                          endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
                         <div className="errorMessage">{this.state.error}</div> 
                         <hr/>
                         {openings}
@@ -202,7 +207,11 @@ class EditProject extends Component {
             );
         }
         else {
-            return <div>Loading</div>
+            return (
+            <div className="activity-container">
+                <Loading />
+            </div>
+            )
         }
  
     }

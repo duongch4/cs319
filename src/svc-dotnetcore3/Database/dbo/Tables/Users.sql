@@ -9,5 +9,5 @@
 	[IsManager] [bit] NOT NULL,
 	CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id]),
 	CONSTRAINT [UK_Users_Username] UNIQUE ([Username]),
-	CONSTRAINT [FK_Users_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([Id])
+	CONSTRAINT [FK_Users_Locations] FOREIGN KEY ([LocationId]) REFERENCES [Locations]([Id]) ON DELETE NO ACTION
 )

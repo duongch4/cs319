@@ -3,8 +3,8 @@ namespace Web.API.Resources
     public class UserResource
     {
         /// <summary>User Id</summary>
-        /// <example>5</example>
-        public int Id { get; set; }
+        /// <example>"5"</example>
+        public string Id { get; set; }
 
         /// <summary>User First Name</summary>
         /// <example>Sameen</example>

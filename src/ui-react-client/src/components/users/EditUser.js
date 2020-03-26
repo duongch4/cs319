@@ -9,6 +9,7 @@ import { Button } from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import AvailabilityForm from './AvailabilityForm';
 import AvailabilityCard from './AvailabilityCard';
+import Loading from '../common/Loading';
 
 class EditUser extends Component {
     state = {
@@ -162,9 +163,7 @@ class EditUser extends Component {
 
     render() {
         if (this.state.pending) {
-            return (<div className="activity-container">
-                <h1>Loading user data...</h1>
-            </div>);
+            return (<div className="activity-container"><Loading /></div>)
         } else {
             let disciplines = [];
             if (this.state.userProfile) {
@@ -198,7 +197,9 @@ class EditUser extends Component {
                         <TeamRequirements disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addDisciplines(opening)}
-                                          isUserPage={true}/>
+                                          isUserPage={true}
+                                          startDate={null}
+                                          endDate={null}/>
                         <p className="errorMessage">{this.state.error}</p>  
                         {disciplines} 
                         <hr />                       
