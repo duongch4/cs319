@@ -3,6 +3,8 @@ import {connect} from 'react-redux';
 import SearchUserCard from "./SearchUserCard";
 import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 class SearchResults extends Component {
     constructor(props) {
@@ -10,6 +12,7 @@ class SearchResults extends Component {
         this.state = {
             userSummaries: [],
             noResults: false,
+            lastPage: false,
         };
     }
     
@@ -38,7 +41,22 @@ class SearchResults extends Component {
 
     // to make multiple calls without having to refresh
     componentDidUpdate(previousProps) {
-        if (!(previousProps.data === this.props.data)) {
+        // check if next page has any users on it
+        if (!(previousProps.data.page === this.props.data.page)) {
+            this.props.performUserSearch(this.props.data)
+            .then(() => {
+                this.setState({
+                    ...this.state,
+                    lastPage: false,
+                }, () => this.componentDidMount());
+            }).catch(err => {
+                this.setState({
+                    ...this.state,
+                    lastPage: true,
+                    loading: false,
+                }, () => this.props.stopLoading(), this.props.pageLeft());
+            });
+        } else if (!(previousProps.data === this.props.data)) {
            this.componentDidMount();
         }
     }
@@ -149,7 +167,21 @@ class SearchResults extends Component {
             </div>)      
         });
             return (
-                <div>{userCards}</div>
+                <div>
+                    <div>
+                    {(this.props.data.page == 1) && 
+                    (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
+                    {(this.props.data.page > 1) && 
+                    (<ChevronLeftIcon onClick={() => this.props.pageLeft()}/>)}
+                        Page {this.props.data.page}
+                    {(!this.state.lastPage && (this.state.userSummaries).length == 50) && 
+                    (<ChevronRightIcon onClick={() => this.props.pageRight()}/>)}
+                    {(this.state.lastPage || (this.state.userSummaries).length < 50) && 
+                    (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
+                    </div>
+                    <div>{userCards}</div>
+                </div>
+                
             )}
         }
 }

@@ -32,7 +32,6 @@ class LocationsSearch extends Component {
 
     handleChangeCities = (e) => {
       if (e != null && e.length != 0){
-        console.log(e);
         if (e[0].label == "All cities"){
           var cities_return = [];
           e.map(function (e) { 

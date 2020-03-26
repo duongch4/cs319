@@ -21,8 +21,7 @@ class AddLocation extends Component {
             <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(keyId)}/>
             <LocationsSearch provinces={this.props.locations}
                                             addLocations={this.addLocations}
-                                            keyName={keyId}
-                                            reset={this.props.reset}/>  
+                                            keyName={keyId}/>  
            </div>
            );
            this.setState( {
@@ -65,8 +64,7 @@ class AddLocation extends Component {
                     <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
                     <LocationsSearch provinces={this.props.locations}
                                     addLocations={this.addLocations}
-                                    keyName={"locationSearch"}
-                                    reset={this.props.reset}/>
+                                    keyName={"locationSearch"}/>
                 </div>
                 {this.state.view}
               </div>

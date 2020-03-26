@@ -115,17 +115,11 @@ class Search extends Component {
           placeholder='Sort by:'/>
           </div>
         </div>
-        {(!this.state.loading) &&
-        (<div style={{}}>
-          <ChevronLeftIcon onClick={this.pageLeft}/>
-          Page {this.state.page}
-          <ChevronRightIcon onClick={this.pageRight}/>
-          </div>)
-        }
         <SearchResults data={this.state.filters}
                         sortBy={this.state.sort}
                         stopLoading={this.stopLoading} 
-                        page={this.state.page}/>
+                        pageLeft={this.pageLeft}
+                        pageRight={this.pageRight}/>
         </div>
         }
       </div>
