@@ -32,7 +32,7 @@ class YearsSearch extends Component {
         <div>
 <div className="form-section">
         <div className="form-row">
-        <Select id="years" key={year_key} className="input-box" onChange={this.handleChange} options={year_format} isMulti
+        <Select id="years" key={year_key} className="input-box" onChange={this.handleChange} options={year_format} isMulti isClearable
                         placeholder='Years' />
         </div>
     </div>

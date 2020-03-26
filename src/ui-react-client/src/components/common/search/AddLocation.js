@@ -6,11 +6,12 @@ import LocationsSearch from "./LocationsSearch";
 class AddLocation extends Component {
     constructor(props){
         super(props);
-        this.state = {
+        this.initialState = {
             status: {"locationSearch": {province: null, city: null}},
             count: 1,
             view: [],
-        }
+        };
+        this.state = this.initialState;
       }
 
       newLocations = () => {
@@ -20,7 +21,8 @@ class AddLocation extends Component {
             <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(keyId)}/>
             <LocationsSearch provinces={this.props.locations}
                                             addLocations={this.addLocations}
-                                            keyName={keyId}/>  
+                                            keyName={keyId}
+                                            reset={this.props.reset}/>  
            </div>
            );
            this.setState( {
@@ -55,14 +57,16 @@ class AddLocation extends Component {
             });
             }
 
-      render(){
+        render(){
+
           return(
               <div>
                 <div className="form-row" key={"locationSearch"} >
                     <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
                     <LocationsSearch provinces={this.props.locations}
                                     addLocations={this.addLocations}
-                                    keyName={"locationSearch"}/>
+                                    keyName={"locationSearch"}
+                                    reset={this.props.reset}/>
                 </div>
                 {this.state.view}
               </div>

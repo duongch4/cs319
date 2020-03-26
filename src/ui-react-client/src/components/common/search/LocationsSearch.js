@@ -5,6 +5,7 @@ import Select from 'react-select';
 
 
 class LocationsSearch extends Component {
+
     state = {
       key: this.props.keyName,
       locations: 
@@ -13,21 +14,25 @@ class LocationsSearch extends Component {
             cities: [],
           },
     };
+    
 
     handleChange = (e) => {
-    this.setState({
-        ...this.state,
-          locations:
-            {
-              ...this.state.locations,
-              province: e.value,
-            },
-        }, () => this.props.addLocations(this.state));
+      if (e != null) {
+        this.setState({
+          ...this.state,
+            locations:
+              {
+                ...this.state.locations,
+                province: e.value,
+              },
+          }, () => this.props.addLocations(this.state));
+      }
     }
  
 
     handleChangeCities = (e) => {
-      if (e){
+      if (e != null && e.length != 0){
+        console.log(e);
         if (e[0].label == "All cities"){
           var cities_return = [];
           e.map(function (e) { 
@@ -56,6 +61,7 @@ class LocationsSearch extends Component {
     }
 
   render(){
+
     var provinces = this.props.provinces; 
     var provinces_render = [];
     var province_key = [];
@@ -90,9 +96,9 @@ class LocationsSearch extends Component {
      return(
         <div className="form-section">
           <div className="form-row">
-            <Select placeholder='Provinces' id="province" className="input-box" onChange={this.handleChange} options={provinces_render}/>
-            <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti
-                            placeholder='Cities' />
+            <Select placeholder='Provinces' id="province" className="input-box" onChange={this.handleChange} options={provinces_render} isClearable/>
+            <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
+              hideSelectedOptions={true} placeholder='Cities'/>
           </div>
         </div>
      );

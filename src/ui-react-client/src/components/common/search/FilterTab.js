@@ -19,6 +19,7 @@ import 'react-input-range/lib/css/index.css'
 class FilterTab extends Component {
     constructor(props) {
         super(props);
+        this.reset = false;
         this.initialState = {
             searchFilter: {
                 "filter": {
@@ -173,6 +174,19 @@ class FilterTab extends Component {
         });
     }
 
+    updateUtil = (val) => {
+        this.setState({
+            ...this.state,
+            searchFilter: {
+                ...this.state.searchFilter,
+                filter: {
+                    ...this.state.searchFilter.filter,
+                    "utilization": val,
+                }
+            }
+        });
+    }
+
     render(){
         const {showing} = this.state;
 
@@ -181,7 +195,8 @@ class FilterTab extends Component {
             <form>
                 <div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
-                    <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
+                    <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
+                    <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
                 </div>
                 <div id="filter-closed" style={ {backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px",display:  (showing ? 'none' : 'block')}}>
                     <div style={{padding: "10px"}} >
@@ -224,7 +239,8 @@ class FilterTab extends Component {
                         </div>
                         <div className="slider" style={{marginBottom: "30px"}}>
                             <h3 className="darkGreenHeader">Utilization</h3>
-                            <InputRange maxValue={300} minValue={0} value={this.state.searchFilter.filter.utilization} onChange={value => this.setState({ ...this.state, searchFilter: {...this.state.searchFilter, filter: {...this.state.searchFilter.filter, utilization: value},},})} />
+                            <InputRange maxValue={300} minValue={0} value={this.state.searchFilter.filter.utilization} 
+                            onChange={value => this.updateUtil(value)}/>
                         </div>
                     </div>
                 </div>
