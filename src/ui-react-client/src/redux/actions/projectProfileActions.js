@@ -48,7 +48,10 @@ export const loadSingleProject = (projectNumber) => {
                     dispatch(loadSingleProjectData(response.data.payload))
                 })
                 .catch(error => {
-                    throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 });
         }
     };
@@ -67,7 +70,10 @@ export const createProject = (project, history) => {
                     history.push('/projects/' + project.projectSummary.projectNumber);
                 })
                 .catch(error => {
-                    throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 })
         }
     };
@@ -87,6 +93,12 @@ export const updateProject = (project, history) => {
                     dispatch(updateProjectSummaryData(project.projectSummary));
                     history.push('/projects/' + project.projectSummary.projectNumber);
                 })
+                .catch(error => {
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
+                })
         }
     };
 };
@@ -103,8 +115,11 @@ export const deleteProject = (number, history) => {
                     dispatch(deleteProjectSummaryData(number));
                     history.push('/projects');
                 })
-                .catch(err => {
-                    alert(err);
+                .catch(error => {
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 });
         }
     };
