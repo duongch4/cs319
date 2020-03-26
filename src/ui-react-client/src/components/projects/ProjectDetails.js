@@ -67,17 +67,11 @@ class ProjectDetails extends Component {
             var teamMembersRender = [];
             const userSummaries = this.state.projectProfile.usersSummary;
             const projectManager = this.state.projectProfile.projectManager;
-            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} />);
-            if (userSummaries.length > 0) {
-                userSummaries.forEach(userSummary => {
-                    teamMembersRender.push(
-                        <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>)
-                })
-            } else {
+            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
+            userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
-                    <p className="empty-statements" key={teamMembersRender.length}>There are currently no resources assigned to this project.</p>
-                )
-            }
+                    <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>)
+            });
 
             if (this.state.projectProfile === null) {
                 return (
