@@ -59,31 +59,72 @@ class SearchResults extends Component {
             } else {
                 let obj1 = users.find(o => o.userID === i.userID);
                 obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
+                obj1.resourceDiscipline.discipline.sort(function(a,b){
+                    var textA = a.discipline.toUpperCase();
+                    var textB = b.discipline.toUpperCase();
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                }); 
             }
         });
         return users;
     }
 
     sortUsers = (users) => {
-        if (this.props.sortBy === "util-low") {
+        if (this.props.sortBy === "name-AZ"){
+            users.sort(function(a,b){
+                var textA = a.firstName.toUpperCase();
+                var textB = b.firstName.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            });
+        } else if (this.props.sortBy === "name-ZA") {
+            users.sort(function(a,b){
+                var textA = a.firstName.toUpperCase();
+                var textB = b.firstName.toUpperCase();
+                return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+            });
+        } else if (this.props.sortBy === "util-low") {
             users.sort(function(a, b){return a.utilization-b.utilization});
         } else if (this.props.sortBy === "util-high") {
             users.sort(function(a, b){return b.utilization-a.utilization});
         } else if (this.props.sortBy === "locations-AZ") {
-            users.sort(function(a){return a.location});
+            users.sort(function(a,b){
+                var textA = a.location.city.toUpperCase();
+                var textB = b.location.city.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            });
         } else if (this.props.sortBy === "locations-ZA") {
-            users.sort(function(a){return a.location});
-            users.reverse();
+            users.sort(function(a,b){
+                var textA = a.location.city.toUpperCase();
+                var textB = b.location.city.toUpperCase();
+                return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+            });
         } else if (this.props.sortBy === "disciplines-AZ") {
-            users.sort(function(a){return a.resourceDiscipline.discipline});
+            users.sort(function(a,b){
+                var textA = a.resourceDiscipline[0].discipline.toUpperCase();
+                var textB = b.resourceDiscipline[0].discipline.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            });
         } else if (this.props.sortBy === "disciplines-ZA") {
-            users.sort(function(a){return a.resourceDiscipline.discipline});
-            users.reverse();
+            users.sort(function(a,b){
+                var textA = a.resourceDiscipline[0].discipline.toUpperCase();
+                var textB = b.resourceDiscipline[0].discipline.toUpperCase();
+                return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+            });
         } else if (this.props.sortBy === "yearsOfExp-high") {
-            users.sort(function(a){return a.resourceDiscipline.yearsOfExp});
+            users.sort(function(a,b){
+                // need to fix sorting here - because years of experience is a string, 
+                // it is sorted alphabetically so not always accurate
+                var textA = a.resourceDiscipline[0].yearsOfExp.toUpperCase();
+                var textB = b.resourceDiscipline[0].yearsOfExp.toUpperCase();
+                return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+            });
         } else if (this.props.sortBy === "yearsOfExp-low") {
-            users.sort(function(a){return a.resourceDiscipline.yearsOfExp});
-            users.reverse();
+            users.sort(function(a,b){
+                // here too
+                var textA = a.resourceDiscipline[0].yearsOfExp.toUpperCase();
+                var textB = b.resourceDiscipline[0].yearsOfExp.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            });
         }
     };
 
