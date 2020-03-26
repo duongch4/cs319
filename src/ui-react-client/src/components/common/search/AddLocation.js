@@ -6,12 +6,11 @@ import LocationsSearch from "./LocationsSearch";
 class AddLocation extends Component {
     constructor(props){
         super(props);
-        this.initialState = {
+        this.state = {
             status: {"locationSearch": {province: null, city: null}},
             count: 1,
             view: [],
         };
-        this.state = this.initialState;
       }
 
       newLocations = () => {
@@ -57,7 +56,6 @@ class AddLocation extends Component {
             }
 
         render(){
-
           return(
               <div>
                 <div className="form-row" key={"locationSearch"} >
