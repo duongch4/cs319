@@ -6,10 +6,13 @@ import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
 import Loader from 'react-loader-spinner';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 class Search extends Component {
   constructor(props) {
     super(props);
+    this.page = 1;
     this.state = {
       filters: null,
       masterlist: {},
@@ -22,6 +25,7 @@ class Search extends Component {
       sort: null,
       search: false,
       loading: true,
+      page: 1,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -67,6 +71,32 @@ class Search extends Component {
     });
   }
 
+  pageLeft = () => {
+    if (this.page > 1) {
+      this.page -= 1;
+      this.setState({
+        ...this.state,
+        filters: {
+          ...this.state.filters,
+          page: this.page,
+        },
+        loading: true,
+      });
+    }
+  }
+
+  pageRight = () => {
+    this.page += 1;
+      this.setState({
+        ...this.state,
+        filters: {
+          ...this.state.filters,
+          page: this.page,
+        },
+        loading: true,
+      });
+  }
+
   render() {
     if(Object.keys(this.state.masterlist).length === 0 ){
       return <div>loading</div>
@@ -87,9 +117,17 @@ class Search extends Component {
           placeholder='Sort by:'/>
           </div>
         </div>
+        {(!this.state.loading) &&
+        (<div style={{}}>
+          <ChevronLeftIcon onClick={this.pageLeft}/>
+          Page {this.page}
+          <ChevronRightIcon onClick={this.pageRight}/>
+          </div>)
+        }
         <SearchResults data={this.state.filters}
                         sortBy={this.state.sort}
-                        stopLoading={this.stopLoading} />
+                        stopLoading={this.stopLoading} 
+                        page={this.state.page}/>
         </div>
         }
       </div>
