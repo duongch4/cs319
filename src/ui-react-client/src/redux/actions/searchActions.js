@@ -24,7 +24,10 @@ return dispatch => {
             dispatch(getUsers(response.data.payload));
         })
         .catch(error => {
-            alert('getting users from search parameters failed');
+            let err = error.response.data.message
+            let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+            console.log(err)
+            alert('getting users from search parameters failed: ' + errorParsed);
         });
     }
 };

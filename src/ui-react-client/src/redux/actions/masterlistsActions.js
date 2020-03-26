@@ -114,8 +114,10 @@ export const createDiscpline = (discipline) => {
                     dispatch(createDiscplineData(discipline))
                 })
                 .catch(error => {
-                    dispatch(errorCreating(error));
-                    // throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    dispatch(errorCreating(errorParsed));
                 })
         }
     }
@@ -132,8 +134,10 @@ export const createSkill = (skill) => {
                     dispatch(createSkillData(skill))
                 })
                 .catch(error => {
-                    dispatch(errorCreating(error));
-                    // throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    dispatch(errorCreating(errorParsed));
                 })
         }
     } 
@@ -150,8 +154,10 @@ export const createProvince = (location) => {
                     dispatch(createProvinceData(location))
                 })
                 .catch(error => {
-                    dispatch(errorCreating(error));
-                    // throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    dispatch(errorCreating(errorParsed));
                 })
         }
     } 
@@ -169,8 +175,10 @@ export const createCity = (location) => {
                 dispatch(createCityData(location))
             })
             .catch(error => {
-                dispatch(errorCreating(error));
-                // throw error;
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                dispatch(errorCreating(errorParsed));
             })
         }
     } 
@@ -187,8 +195,10 @@ export const deleteDiscipline = (id) => {
                     dispatch(deleteDisciplineData(id))
                 })
                 .catch(error => {
-                    // throw error;
-                    dispatch(errorDeleting(error));
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    dispatch(errorDeleting(errorParsed));
                 })
         }
     } 
@@ -205,8 +215,10 @@ export const deleteSkill = (disciplineID, skillName) => {
                 dispatch(deleteSkillData(disciplineID, skillName));
             })
             .catch(error => {
-                // throw error;
-                dispatch(errorDeleting(error));
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                dispatch(errorDeleting(errorParsed));
             })
         }
     } 
@@ -223,8 +235,10 @@ export const deleteProvince = (provinceName) => {
                     dispatch(deleteProvinceData(response.data.payload))
                 })
                 .catch(error => {
-                    // throw error;
-                    dispatch(errorDeleting(error));
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    dispatch(errorDeleting(errorParsed));
                 })
         }
     } 
@@ -235,15 +249,16 @@ export const deleteCity = (cityName, id) => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteCityData(cityName, id))
         } else {
-            // TODO - backend only needs id, but keep cityName to make the reducer easier to deal with
             return axios
             .delete(`${baseURL}admin/locations/${id}`, { headers })
             .then(response => {
                 dispatch(deleteCityData(cityName, id))
             })
             .catch(error => {
-                // throw error
-                dispatch(errorDeleting(error));
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                dispatch(errorDeleting(errorParsed));
             })
         }
     } 
