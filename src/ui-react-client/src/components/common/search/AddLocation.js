@@ -31,17 +31,13 @@ class AddLocation extends Component {
       }
       
       addLocations = (state) => {
-          console.log(state);
             var key = state.key;
             var location = state.locations;
-            console.log(Object.values(this.state.status));
-            console.log(key);
             if (key != undefined) {
                 this.setState({
                     status: Object.assign({}, this.state.status, {[key]: location}),
                 }, () => this.props.updateLocations(Object.values(this.state.status)));
             } else {
-                console.log(this.state);
                 this.setState({
                     ...this.state,
                 }, () => this.props.updateLocations(Object.values(this.state.status)));

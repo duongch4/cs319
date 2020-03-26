@@ -16,7 +16,6 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
-      console.log(e);
       if (e != null) {
         this.setState({
           disciplines: {
