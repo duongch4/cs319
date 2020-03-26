@@ -10,7 +10,7 @@ class AddLocation extends Component {
             status: {"locationSearch": {province: null, city: null}},
             count: 1,
             view: [],
-        };
+        }
       }
 
       newLocations = () => {
@@ -55,7 +55,7 @@ class AddLocation extends Component {
             });
             }
 
-        render(){
+    render(){
           return(
               <div>
                 <div className="form-row" key={"locationSearch"} >
