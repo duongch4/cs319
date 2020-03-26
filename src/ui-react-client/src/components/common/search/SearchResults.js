@@ -5,7 +5,6 @@ import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Loading from '../Loading';
 
 class SearchResults extends Component {
     constructor(props) {
@@ -158,7 +157,7 @@ class SearchResults extends Component {
         if (this.state.noResults){
             return <div className="darkGreenHeader">There are no users with the selected filters</div>
         } else if ((this.state.userSummaries).length === 0) {
-            return <Loading/>
+            return <div></div>
         }
         else{
             const userCards =[];

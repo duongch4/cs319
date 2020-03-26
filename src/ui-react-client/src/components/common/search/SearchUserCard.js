@@ -11,6 +11,17 @@ class SearchUserCard extends Component {
     }
     render(){
         const {user} = this.props;
+
+        var disc_string = "";
+        
+        user.resourceDiscipline.forEach((disc, index) => {
+            if (index == 0) {
+                disc_string = disc.discipline + " (" + disc.yearsOfExp + ")";
+            } else {
+                disc_string = disc_string + ", " + disc.discipline + " (" + disc.yearsOfExp + ")";
+            }
+        });
+
         let styleName = ""
         if(user.utilization <= this.state.low){
             styleName = "lowUtil"
