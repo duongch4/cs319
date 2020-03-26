@@ -12,11 +12,10 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 class Search extends Component {
   constructor(props) {
     super(props);
-    this.page = 1;
     this.state = {
       filters: null,
       masterlist: {},
-      sort_by: [{label: "No filter", value: null},  {label: "Name: A-Z", value: "name-AZ"}, {label: "Name: Z-A", value: "name-ZA"},
+      sort_by: [{label: "No filter", value: null},  {label: "Lastname: A-Z", value: "name-AZ"}, {label: "Lastname: Z-A", value: "name-ZA"},
                 {label: "Utilization: High to Low", value: "util-high"}, {label: "Utilization: Low to High", value: "util-low"},{label: "Locations: A-Z", value: "locations-AZ"},
                 {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
                 {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
@@ -54,6 +53,7 @@ class Search extends Component {
      filters: filter,
      search: true,
      loading: true,
+     page: 1,
     });
   }
 
@@ -72,13 +72,12 @@ class Search extends Component {
   }
 
   pageLeft = () => {
-    if (this.page > 1) {
-      this.page -= 1;
+    if (this.state.page > 1) {
       this.setState({
         ...this.state,
         filters: {
           ...this.state.filters,
-          page: this.page,
+          page: this.state.page -= 1,
         },
         loading: true,
       });
@@ -86,12 +85,11 @@ class Search extends Component {
   }
 
   pageRight = () => {
-    this.page += 1;
       this.setState({
         ...this.state,
         filters: {
           ...this.state.filters,
-          page: this.page,
+          page: this.state.page += 1,
         },
         loading: true,
       });
@@ -120,7 +118,7 @@ class Search extends Component {
         {(!this.state.loading) &&
         (<div style={{}}>
           <ChevronLeftIcon onClick={this.pageLeft}/>
-          Page {this.page}
+          Page {this.state.page}
           <ChevronRightIcon onClick={this.pageRight}/>
           </div>)
         }

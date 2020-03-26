@@ -72,14 +72,14 @@ class SearchResults extends Component {
     sortUsers = (users) => {
         if (this.props.sortBy === "name-AZ"){
             users.sort(function(a,b){
-                var textA = a.firstName.toUpperCase();
-                var textB = b.firstName.toUpperCase();
+                var textA = a.lastName.toUpperCase();
+                var textB = b.lastName.toUpperCase();
                 return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
             });
         } else if (this.props.sortBy === "name-ZA") {
             users.sort(function(a,b){
-                var textA = a.firstName.toUpperCase();
-                var textB = b.firstName.toUpperCase();
+                var textA = a.lastName.toUpperCase();
+                var textB = b.lastName.toUpperCase();
                 return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
             });
         } else if (this.props.sortBy === "util-low") {
