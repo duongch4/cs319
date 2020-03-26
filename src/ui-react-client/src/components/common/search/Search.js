@@ -5,6 +5,7 @@ import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
+import Loading from '../Loading';
 
 class Search extends Component {
   constructor(props) {
@@ -48,7 +49,11 @@ class Search extends Component {
   render() {
 
     if(Object.keys(this.state.masterlist).length === 0 ){
-      return <div>loading</div>
+      return (
+        <div className="activity-container">
+            <Loading />
+        </div>
+      )
     } else {
     return (
       <div className="activity-container">

@@ -203,3 +203,9 @@ input.add:hover {
     flex-grow: 1;
     margin-left: 16px;
 }
+
+.centerDiv {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}

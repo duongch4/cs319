@@ -16,9 +16,7 @@ const executeUpdateProjectSummaryArray = (state, action) => {
 };
 
 const executeAddProjectSummary = (state, action) => {
-  let projects = state.map(project => project);
-  projects.push(action.projectSummary);
-  return projects;
+  return [...state, action.projectSummary];
 };
 
 const executeDeleteProjectSummary = (state, action) => {

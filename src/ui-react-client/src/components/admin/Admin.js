@@ -16,6 +16,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete'
 import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import Loading from '../common/Loading';
 
 class Admin extends Component {
     state = {
@@ -334,12 +335,13 @@ class Admin extends Component {
 
         skillList = skillList.length > 0 ? skillList : <div>No Skills Available for Selected Discipline</div>
         cityList = cityList.length > 0 ? cityList : <div>No Cities Available for Selected Province</div> 
+
         return (
             <div className="activity-container">
                 <h1 className="greenHeader">Admin</h1>
                 <div>
                     <h2>Disciplines</h2>
-                    {disciplineList}
+                    {disciplineList.length === 0 ? <Loading /> : disciplineList}
                     <form name="discipline" onSubmit={this.onSubmit}>
                     <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
                     </form>
@@ -347,7 +349,7 @@ class Admin extends Component {
                 </div>
                 <div>
                     <h2>{selectedDiscipline} Skills</h2>
-                    {skillList}
+                    {skills.length === 0 ? <Loading /> : skillList}
                     <form name="skill" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
                     </form>
@@ -355,7 +357,7 @@ class Admin extends Component {
                 </div>
                 <div>
                     <h2>Province</h2>
-                    {provinceList}
+                    {provinceList.length === 0 ? <Loading /> : provinceList}
                     <form name="province" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.province} name="province"/>
                     </form>
@@ -363,7 +365,7 @@ class Admin extends Component {
                 </div>
                 <div>
                     <h2>{selectedProvince} Cities</h2>
-                    {cityList}
+                    {cities.length === 0 ? <Loading /> : cityList}
                     <form name="city" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.city} name="city"/>
                     </form>

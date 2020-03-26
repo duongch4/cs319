@@ -34,7 +34,10 @@ export const loadSpecificUser = (userID, userRoles) => {
       }).then(response => {
         dispatch(loadUserProfileData(response.data.payload));
       }).catch(error => {
-        throw error;
+          let err = error.response.data.message
+          let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+          console.log(err)
+          alert(errorParsed)
       });
     }
   };
@@ -52,7 +55,10 @@ export const updateSpecificUser = (user, history, userRoles) => {
         dispatch(updateUserSummary(user.userSummary));
         history.push('/users/' + user.userSummary.userID);
       }).catch(error => {
-        throw error;
+          let err = error.response.data.message
+          let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+          console.log(err)
+          alert(errorParsed)
       });
     }
   }

@@ -114,8 +114,10 @@ export const createDiscpline = (discipline, userRoles) => {
                         dispatch(createDiscplineData(discipline))
                     })
                     .catch(error => {
-                        dispatch(errorCreating(error));
-                        // throw error;
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
                     })
             })
         }
@@ -134,8 +136,10 @@ export const createSkill = (skill, userRoles) => {
                         dispatch(createSkillData(skill))
                     })
                     .catch(error => {
-                        dispatch(errorCreating(error));
-                        // throw error;
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
                     })
             })
         }
@@ -154,8 +158,10 @@ export const createProvince = (location, userRoles) => {
                         dispatch(createProvinceData(location))
                     })
                     .catch(error => {
-                        dispatch(errorCreating(error));
-                        // throw error;
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
                     })
             })
         }
@@ -175,8 +181,10 @@ export const createCity = (location, userRoles) => {
                         dispatch(createCityData(location))
                     })
                     .catch(error => {
-                        dispatch(errorCreating(error));
-                        // throw error;
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
                     })
             })
         }
@@ -195,12 +203,14 @@ export const deleteDiscipline = (id, userRoles) => {
                         dispatch(deleteDisciplineData(id))
                     })
                     .catch(error => {
-                        // throw error;
-                        dispatch(errorDeleting(error));
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
                     })
             })
         }
-    }
+    } 
 }
 
 export const deleteSkill = (disciplineID, skillName, userRoles) => {
@@ -215,12 +225,14 @@ export const deleteSkill = (disciplineID, skillName, userRoles) => {
                         dispatch(deleteSkillData(disciplineID, skillName));
                     })
                     .catch(error => {
-                        // throw error;
-                        dispatch(errorDeleting(error));
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
                     })
             })
         }
-    }
+    } 
 }
 
 export const deleteProvince = (provinceName, userRoles) => {
@@ -235,12 +247,14 @@ export const deleteProvince = (provinceName, userRoles) => {
                         dispatch(deleteProvinceData(response.data.payload))
                     })
                     .catch(error => {
-                        // throw error;
-                        dispatch(errorDeleting(error));
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
                     })
             })
         }
-    }
+    } 
 }
 
 export const deleteCity = (cityName, id, userRoles) => {
@@ -248,7 +262,6 @@ export const deleteCity = (cityName, id, userRoles) => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteCityData(cityName, id))
         } else {
-            // TODO - backend only needs id, but keep cityName to make the reducer easier to deal with
             return getHeaders(userRoles).then(headers => {
                 return axios
                     .delete(`${baseURL}admin/locations/${id}`, { headers })
@@ -256,10 +269,12 @@ export const deleteCity = (cityName, id, userRoles) => {
                         dispatch(deleteCityData(cityName, id))
                     })
                     .catch(error => {
-                        // throw error
-                        dispatch(errorDeleting(error));
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
                     })
             })
         }
-    }
+    } 
 }

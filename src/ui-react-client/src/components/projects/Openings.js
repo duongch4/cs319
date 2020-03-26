@@ -15,6 +15,13 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
             }
         })
     }
+    let totalCommitment = 0;
+    if(commitment && Object.values(commitment)){
+        Object.values(commitment).forEach(elem => {
+            totalCommitment += Number(elem);
+        })
+    }
+
   return (
     <div className="card-summary">
         <div className="card-summary-title">
@@ -25,7 +32,7 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
             {(skills.length > 0) && (<p><b>Skills:</b> {skills}</p>)}
             <p><b>Experience:</b> {opening.yearsOfExp}</p>
             {(commitment) &&
-            (<p><b>Expected Hourly Commitment per Month:</b> {commitment}</p>)}
+            (<p><b>Total Expected Number of Hours:</b> {totalCommitment}</p>)}
         </div>
         {isAssignable &&
             (<div className="card-summary-title assign">
@@ -51,7 +58,7 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
 Openings.propTypes = {
   opening: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  commitment: PropTypes.number,
+  commitment: PropTypes.object,
   isAssignable: PropTypes.bool
 };
 

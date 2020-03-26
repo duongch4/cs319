@@ -6,7 +6,6 @@ import HomePage from './home/HomePage';
 import UsersPage from './users/UsersPage';
 import ProjectsPage from './projects/ProjectsPage';
 import ProjectDetails from './projects/ProjectDetails';
-import LocationsPage from './locations/LocationsPage';
 import PageNotFound from './PageNotFound';
 import AddProject from './projects/AddProject.js';
 import UserDetails from './users/UserDetails.js';
@@ -29,7 +28,6 @@ const App = (appProps) => {
         <PropsRoute exact path="/users" component={UsersPage} account={appProps.account} />
         <PropsRoute exact path="/projects" component={ProjectsPage} profile={appProps.graphProfile} account={appProps.account}/>
         <Route exact path="/search" component={Search} />
-        <Route path="/locations" component={LocationsPage} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
         <Route path="/users/:user_id" component={UserDetails} />
         <Route path="/add_project" component={AddProject} />

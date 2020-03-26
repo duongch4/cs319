@@ -7,10 +7,10 @@ import _initialState from '../reducers/_initialState_client';
 const baseURL = `${SVC_ROOT}api/users/`;
 
 export const loadUsersAllData = userSummaries => {
-    return {
-        type: types.LOAD_USERS_ALL,
-        users: userSummaries
-    };
+  return {
+      type: types.LOAD_USERS_ALL,
+      users: userSummaries
+  };
 };
 
 export const updateUserSummary = userSummary => {
@@ -30,7 +30,10 @@ export const loadUsers = (userRoles) => {
             }).then(response => {
                 dispatch(loadUsersAllData(response.data.payload));
             }).catch(error => {
-                throw error;
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             });
         }
     };

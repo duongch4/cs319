@@ -47,7 +47,10 @@ export const loadSingleProject = (projectNumber, userRoles) => {
             }).then(response => {
                 dispatch(loadSingleProjectData(response.data.payload));
             }).catch(error => {
-                throw error;
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             });
         }
     };
@@ -65,7 +68,10 @@ export const createProject = (project, history, userRoles) => {
                 dispatch(addProjectSummaryData(project.projectSummary));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                throw error;
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             })
         }
     };
@@ -83,8 +89,10 @@ export const updateProject = (project, history, userRoles) => {
                 dispatch(updateProjectSummaryData(project.projectSummary));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                alert("There's been an error updating the project.");
-                console.log(error);
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             })
         }
     };
@@ -101,8 +109,11 @@ export const deleteProject = (number, history, userRoles) => {
                 dispatch(deleteProjectData());
                 dispatch(deleteProjectSummaryData(number));
                 history.push('/projects');
-            }).catch(err => {
-                alert(err);
+            }).catch(error => {
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             });
         }
     };
