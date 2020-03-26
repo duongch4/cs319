@@ -59,16 +59,12 @@ export const GRAPH_REQUESTS = {
     },
     API_ADMIN: {
         scopes: [
-            GRAPH_SCOPES.OPENID,
-            GRAPH_SCOPES.PROFILE,
             GRAPH_SCOPES.API_ADMIN,
             GRAPH_SCOPES.API_REGULAR
         ]
     },
     API_REGULAR: {
         scopes: [
-            GRAPH_SCOPES.OPENID,
-            GRAPH_SCOPES.PROFILE,
             GRAPH_SCOPES.API_REGULAR
         ]
     },
