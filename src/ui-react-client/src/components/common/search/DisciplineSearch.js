@@ -24,16 +24,31 @@ class DisciplineSearch extends Component {
                 skills: [],
             }
         }, () =>  this.props.addDisciplines(this.state));
-      }    
+      } else {
+        this.setState({
+          disciplines: {
+                ...this.state.disciplines,
+                name: null,
+                skills: [],
+            }
+        }, () =>  this.props.addDisciplines(this.state));
+      }  
     };
 
     handleChangeSkills = (e) => {
-        if (e){
+      if (e != null && e.length != 0){
           var skills_array = e.map(function (e) { return e.label; });
             this.setState({
               disciplines: {
                 ...this.state.disciplines,
                 skills: skills_array
+              }
+           }, () => this.props.addDisciplines(this.state))
+          } else {
+            this.setState({
+              disciplines: {
+                ...this.state.disciplines,
+                skills: []
               }
            }, () => this.props.addDisciplines(this.state))
           }

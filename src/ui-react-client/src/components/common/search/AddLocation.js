@@ -35,7 +35,7 @@ class AddLocation extends Component {
             var location = state.locations;
              this.setState({
                 status: Object.assign({}, this.state.status, {[key]: location}),
-            }, () => this.props.updateLocations(Object.values(this.state.status)));            
+            }, () => this.props.updateLocations(Object.values(this.state.status)));
         }
 
         deleteLocation = (keyId) => {

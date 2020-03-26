@@ -136,6 +136,11 @@ class FilterTab extends Component {
                         ...this.state,
                         locations_temp: loc_arr,
                     });
+            } else {
+                this.setState({
+                    ...this.state,
+                    locations_temp: loc_arr,
+                });
             }
         })
     }

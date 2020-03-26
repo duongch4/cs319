@@ -10,11 +10,18 @@ class YearsSearch extends Component {
     };
 
     handleChange = (e) => {
-        var years_arr = e.map(function (e) { return e.label; });
-          this.setState({
-              ...this.state,
-            yearsOfExp: years_arr,
-         }, () => this.props.updateYears(this.state.yearsOfExp));
+        if (e != null) {
+            var years_arr = e.map(function (e) { return e.label; });
+            this.setState({
+                ...this.state,
+              yearsOfExp: years_arr,
+           }, () => this.props.updateYears(this.state.yearsOfExp));
+          } else {
+            this.setState({
+                ...this.state,
+              yearsOfExp: [],
+           }, () => this.props.updateYears(this.state.yearsOfExp));
+          }
         };
 
   render(){

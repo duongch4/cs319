@@ -26,6 +26,15 @@ class LocationsSearch extends Component {
                 province: e.value,
               },
           }, () => this.props.addLocations(this.state));
+      } else {
+        this.setState({
+          ...this.state,
+            locations:
+              {
+                province: null,
+                cities: [],
+              },
+          }, () => this.props.addLocations(this.state));
       }
     }
  
@@ -56,7 +65,13 @@ class LocationsSearch extends Component {
             }
          }, () => this.props.addLocations(this.state));
         }    
-     };
+     } else {
+      this.setState({
+        locations: {
+          ...this.state.locations,
+          cities: []
+        }}, () => this.props.addLocations(this.state));
+     }
     }
 
   render(){
