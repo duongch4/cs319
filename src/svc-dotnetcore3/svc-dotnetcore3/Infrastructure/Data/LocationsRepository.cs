@@ -44,7 +44,7 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 SELECT
                     p.Name AS Province,
-                    STRING_AGG(CONVERT(nvarchar(max),CONCAT(l.City, '-', l.Id)), ',') as CitiesIds
+                    STRING_AGG(CONVERT(nvarchar(max),CONCAT(l.City, '#', l.Id)), ',') as CitiesIds
                 FROM Provinces p
                 LEFT JOIN Locations l
                     ON l.Province = p.Name
