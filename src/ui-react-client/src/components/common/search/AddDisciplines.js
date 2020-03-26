@@ -41,9 +41,15 @@ class AddDisciplines extends Component {
       addDisciplines = (state) => {
             var key = state.key;
             var disciplines = state.disciplines;
-             this.setState({
-                status: Object.assign({}, this.state.status, {[key]: disciplines}),
-            }, () => this.props.updateDisciplines(Object.entries(this.state.status)));
+            if (key != undefined) {
+                this.setState({
+                    status: Object.assign({}, this.state.status, {[key]: disciplines}),
+                }, () => this.props.updateDisciplines(Object.entries(this.state.status)));
+            } else {
+                this.setState({
+                    ...this.state,
+                }, () => this.props.updateDisciplines(Object.entries(this.state.status)));
+            }
         }
 
         deleteDiscipline = (keyId) => {
@@ -58,7 +64,7 @@ class AddDisciplines extends Component {
                         ...this.state,
                         status: status_mock,
                         view: mockState,
-                    });
+                    }, () => this.addDisciplines(this.state));
                 }
             });
             }

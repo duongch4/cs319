@@ -16,10 +16,10 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
+      console.log(e);
       if (e != null) {
         this.setState({
           disciplines: {
-                ...this.state.disciplines,
                 name: e.value,
                 skills: [],
             }
@@ -27,7 +27,6 @@ class DisciplineSearch extends Component {
       } else {
         this.setState({
           disciplines: {
-                ...this.state.disciplines,
                 name: null,
                 skills: [],
             }

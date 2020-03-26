@@ -122,7 +122,7 @@ class FilterTab extends Component {
                     yearsOfExps: this.state.years_temp,
                 }
                 }
-            }, () => this.performSearch());
+            }, () =>  this.performSearch());
     }
 
     updateLocations = (newLocation) => {
@@ -146,6 +146,7 @@ class FilterTab extends Component {
     }
 
     updateDisciplines = (newDiscipline) => {
+        // if there are no disciplines yet
         if (this.state.disciplines_temp == null) {
             var name = null;
             var skills = [];
@@ -153,24 +154,37 @@ class FilterTab extends Component {
                 name = discipline[1].name;
                 skills = discipline[1].skills;
             });
-            this.setState({
-                ...this.state,
-                disciplines_temp: {[name]: skills},
-            });
+            if (name != null) {
+                this.setState({
+                    ...this.state,
+                    disciplines_temp: {[name]: skills},
+                });
+            } 
         } else {
             var name = null;
             var skills = [];
-            newDiscipline.forEach((discipline) => {
-                name = discipline[1].name;
-                skills = discipline[1].skills;
-            });
-            this.setState({
-                ...this.state,
-                disciplines_temp: {...this.state.disciplines_temp, [name]: skills},
-            });
-        }
-        
+            var new_obj = {}
+                newDiscipline.forEach((discipline) => {
+                    name = discipline[1].name;
+                    skills = discipline[1].skills;
+                    if (name != null) {
+                        new_obj = {...new_obj, [name]: skills}
+                    };
+                    }
+                );
+                if (Object.entries(new_obj).length > 0) {
+                    this.setState({
+                        ...this.state,
+                        disciplines_temp: new_obj,
+                    });  
+                } else {
+                    this.setState({
+                        ...this.state,
+                        disciplines_temp: null,
+                    }); 
+                } 
     }
+}
 
     updateYears = (years) => {
         this.setState({
