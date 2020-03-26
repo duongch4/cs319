@@ -77,7 +77,7 @@ class SearchResults extends Component {
             } else {
                 let obj1 = users.find(o => o.userID === i.userID);
                 obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
-                obj1.resourceDiscipline.discipline.sort(function(a,b){
+                obj1.resourceDiscipline.sort(function(a,b){
                     var textA = a.discipline.toUpperCase();
                     var textB = b.discipline.toUpperCase();
                     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
