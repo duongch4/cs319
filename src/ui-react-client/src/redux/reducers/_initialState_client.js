@@ -136,14 +136,20 @@ export default {
                         "skill1", "skill2"
                     ],
                     yearsOfExp: "1-3",
-                    commitmentMonthlyHours: 160
+                    commitmentMonthlyHours: {
+                        "2020-01-01": 30,
+                        "2020-02-01": 50
+                     }
                 },
                 {
                     positionID: 2,
                     discipline: "Waste Management",
                     skills: [],
                     yearsOfExp: "1-3",
-                    commitmentMonthlyHours: 160
+                    commitmentMonthlyHours: {
+                        "2020-01-01": 30,
+                        "2020-02-01": 50
+                     }
                 }
             ]
         },
@@ -231,7 +237,10 @@ export default {
                     positionName: "Spy",
                     projectTitle: "Martensville Athletic Pavillion",
                     disciplineName: "Intel",
-                    projectedMonthlyHours: 160
+                    projectedMonthlyHours: {
+                        "2020-01-01": 30,
+                        "2020-02-01": 50
+                     }
                 }
             ]
         }, {
@@ -287,7 +296,12 @@ export default {
                     positionName: "Analyst",
                     projectTitle: "Martensville Athletic Pavillion",
                     disciplineName: "Logistical Operations and Mental Health Analysis",
-                    projectedMonthlyHours: 160
+                    projectedMonthlyHours: {
+                        "2020-01-01)": 30,
+                        "2020-02-01": 50,
+                        "2020-03-01": 50
+                     }
+                    
                 }
             ]
         }, {
@@ -376,7 +390,11 @@ export default {
                 positionName: "Spy",
                 projectTitle: "Martensville Athletic Pavillion",
                 disciplineName: "Intel",
-                projectedMonthlyHours: 160
+                projectedMonthlyHours: {
+                    "2020-01-01": 30,
+                    "2020-02-01": 50,
+                    "2020-03-01": 50
+                 }
             }
         ]
     },
@@ -441,14 +459,20 @@ export default {
                     "skill1", "skill2"
                 ],
                 yearsOfExp: "1-3",
-                commitmentMonthlyHours: 160
+                commitmentMonthlyHours: {
+                    "2020-01-01": 30,
+                    "2020-02-01": 50
+                 }
             },
             {
                 positionID: 2,
                 discipline: "Waste Management",
                 skills: [],
                 yearsOfExp: "1-3",
-                commitmentMonthlyHours: 160
+                commitmentMonthlyHours: {
+                    "2020-01-01": 30,
+                    "2020-02-01": 50
+                 }
             }
         ]
     },

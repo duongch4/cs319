@@ -48,7 +48,10 @@ export const loadSingleProject = (projectNumber) => {
                     dispatch(loadSingleProjectData(response.data.payload))
                 })
                 .catch(error => {
-                    throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 });
         }
     };
@@ -64,10 +67,13 @@ export const createProject = (project, history) => {
                 .then(response => {
                     dispatch(createProjectData(project));
                     dispatch(addProjectSummaryData(project.projectSummary));
-                    history.push('/projects');
+                    history.push('/projects/' + project.projectSummary.projectNumber);
                 })
                 .catch(error => {
-                    throw error;
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 })
         }
     };
@@ -85,7 +91,13 @@ export const updateProject = (project, history) => {
                 .then(response => {
                     dispatch(updateProjectData(project));
                     dispatch(updateProjectSummaryData(project.projectSummary));
-                    history.push('/projects');
+                    history.push('/projects/' + project.projectSummary.projectNumber);
+                })
+                .catch(error => {
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 })
         }
     };
@@ -97,14 +109,17 @@ export const deleteProject = (number, history) => {
             dispatch(deleteProjectData(number))
         } else {
             return axios
-                .delete(`${baseURL + number}`)
+                .delete(`${baseURL + number}`, { headers })
                 .then(response => {
                     dispatch(deleteProjectData());
                     dispatch(deleteProjectSummaryData(number));
                     history.push('/projects');
                 })
-                .catch(err => {
-                    alert(err);
+                .catch(error => {
+                    let err = error.response.data.message
+                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)
+                    alert(errorParsed)
                 });
         }
     };

@@ -9,3 +9,21 @@ a {
 p {
     color: #333333;
 }
+
+.errorMessage {
+    color: red;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.label{
+    margin-top: 5px;
+    margin-bottom: 0;
+    margin-left: 3px;
+}
+.entry{
+    margin-right: 15px;
+}

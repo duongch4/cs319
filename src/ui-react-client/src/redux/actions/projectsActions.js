@@ -45,7 +45,10 @@ export const loadProjects = () => {
             dispatch(loadProjectsData(response.data.payload));
           })
           .catch(error => {
-            throw error;
+            let err = error.response.data.message
+            let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+            console.log(err)
+            alert(errorParsed)
           });
     }
   };
