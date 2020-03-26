@@ -9,6 +9,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 class SearchResults extends Component {
     constructor(props) {
         super(props);
+        this.yearsMap = {"10+": 10, "5-10": 5, "3-5": 3, "1-3": 1};
         this.state = {
             userSummaries: [],
             noResults: false,
@@ -88,7 +89,7 @@ class SearchResults extends Component {
         return users;
     }
 
-    sortUsers = (users) => {
+    sortUsers = (users, yearMap) => {
         if (this.props.sortBy === "name-AZ"){
             users.sort(function(a,b){
                 var textA = a.lastName.toUpperCase();
@@ -131,18 +132,15 @@ class SearchResults extends Component {
             });
         } else if (this.props.sortBy === "yearsOfExp-high") {
             users.sort(function(a,b){
-                // need to fix sorting here - because years of experience is a string, 
-                // it is sorted alphabetically so not always accurate
-                var textA = a.resourceDiscipline[0].yearsOfExp.toUpperCase();
-                var textB = b.resourceDiscipline[0].yearsOfExp.toUpperCase();
-                return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+                var numA = yearMap[a.resourceDiscipline[0].yearsOfExp];
+                var numB = yearMap[b.resourceDiscipline[0].yearsOfExp];
+                return numB - numA;
             });
         } else if (this.props.sortBy === "yearsOfExp-low") {
             users.sort(function(a,b){
-                // here too
-                var textA = a.resourceDiscipline[0].yearsOfExp.toUpperCase();
-                var textB = b.resourceDiscipline[0].yearsOfExp.toUpperCase();
-                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                var numA = yearMap[a.resourceDiscipline[0].yearsOfExp];
+                var numB = yearMap[b.resourceDiscipline[0].yearsOfExp];
+                return numA - numB;
             });
         }
     };
@@ -151,7 +149,7 @@ class SearchResults extends Component {
         var users = this.combineUsers();
 
         if (this.props.sortBy != null) {
-            this.sortUsers(users);
+            this.sortUsers(users, this.yearsMap);
         }
 
         if (this.state.noResults){
