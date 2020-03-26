@@ -9,7 +9,7 @@ import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class UserDetails extends Component {
@@ -25,14 +25,8 @@ class UserDetails extends Component {
                 userProfile: this.props.userProfile
             });
         } else {
-          let user = this.context;
-          let userRoles = user.profile.userRoles;
-          if (!isProfileLoaded(user.profile)) {
-              let profile = fetchProfileFromLocalStorage();
-              user.updateProfile(profile);
-              userRoles = profile.userRoles;
-          }
-          this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
+            const userRoles = getUserRoles(this.context);
+            this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {

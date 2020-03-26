@@ -6,7 +6,7 @@ import SearchResults from "./SearchResults";
 import { CLIENT_DEV_ENV } from '../../../config/config';
 import Select from 'react-select';
 import Loading from '../Loading';
-import { fetchProfileFromLocalStorage, isProfileLoaded, UserContext } from "../userContext/UserContext";
+import { UserContext, getUserRoles } from "../userContext/UserContext";
 
 class Search extends Component {
   constructor(props) {
@@ -30,13 +30,7 @@ class Search extends Component {
         masterlist: this.props.masterlist,
       })
     } else {
-      let user = this.context;
-      let userRoles = user.profile.userRoles;
-      if (!isProfileLoaded(user.profile)) {
-          let profile = fetchProfileFromLocalStorage();
-          user.updateProfile(profile);
-          userRoles = profile.userRoles;
-      }
+      const userRoles = getUserRoles(this.context);
       this.props.loadMasterlists(userRoles)
         .then(() => {
           this.setState({

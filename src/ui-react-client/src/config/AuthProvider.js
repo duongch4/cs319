@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import {
     msalApp,
     acquireToken,
@@ -8,7 +8,7 @@ import {
     GRAPH_SCOPES,
     GRAPH_REQUESTS
 } from "./authUtils";
-import {UserContextConsumer, USERCONTEXTKEY, UserProvider} from "../components/common/userContext/UserContext";
+import { UserContextConsumer, USERCONTEXTKEY, UserProvider } from "../components/common/userContext/UserContext";
 
 // If you support IE, our recommendation is that you sign-in using Redirect APIs
 const useRedirectFlow = isIE();
@@ -26,8 +26,8 @@ export default C =>
                 graphProfile: null
             };
         }
-        
-        async onSignIn(redirect, updateUser) {
+
+        async onSignIn(redirect, updateUserProfile) {
             if (redirect) {
                 return msalApp.loginRedirect(GRAPH_REQUESTS.LOGIN);
             }
@@ -69,7 +69,7 @@ export default C =>
                             graphProfile
                         });
 
-                        updateUser({
+                        updateUserProfile({
                             userID: loginResponse.account.accountIdentifier,
                             userRoles: loginResponse.account.idToken.roles,
                             firstName: graphProfile.givenName,
@@ -171,20 +171,20 @@ export default C =>
         render() {
             return (
                 <UserProvider>
-                <UserContextConsumer>
-                    {({profile, updateProfile}) => (
-                        <C
-                            {...this.props}
-                            account={this.state.account}
-                            emailMessages={this.state.emailMessages}
-                            error={this.state.error}
-                            graphProfile={this.state.graphProfile}
-                            onSignIn={() => this.onSignIn(useRedirectFlow, updateProfile)}
-                            onSignOut={() => this.onSignOut()}
-                            onRequestEmailToken={() => this.onRequestEmailToken()}
-                        />
-                    )}
-                </UserContextConsumer>
+                    <UserContextConsumer>
+                        {({ profile, updateProfile }) => (
+                            <C
+                                {...this.props}
+                                account={this.state.account}
+                                emailMessages={this.state.emailMessages}
+                                error={this.state.error}
+                                graphProfile={this.state.graphProfile}
+                                onSignIn={() => this.onSignIn(useRedirectFlow, updateProfile)}
+                                onSignOut={() => this.onSignOut()}
+                                onRequestEmailToken={() => this.onRequestEmailToken()}
+                            />
+                        )}
+                    </UserContextConsumer>
                 </UserProvider>
             );
         }

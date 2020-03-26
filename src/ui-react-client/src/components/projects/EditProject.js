@@ -8,7 +8,7 @@ import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import UserCard from "../users/UserCard";
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import '../common/common.css'
 import Loading from '../common/Loading';
 
@@ -31,13 +31,7 @@ class EditProject extends Component {
                 pending: false
             }));
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             const promise_masterlist = this.props.loadMasterlists(userRoles);
             const promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
             Promise.all([promise_masterlist, promise_singleProject])
@@ -62,13 +56,7 @@ class EditProject extends Component {
         if(this.state.error.length !== 0) {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             this.props.updateProject(this.state.projectProfile, this.props.history, userRoles);
             this.setState({
                 ...this.state,
@@ -78,13 +66,7 @@ class EditProject extends Component {
     };
 
     onDelete = () => {
-        let user = this.context;
-        let userRoles = user.profile.userRoles;
-        if (!isProfileLoaded(user.profile)) {
-            let profile = fetchProfileFromLocalStorage();
-            user.updateProfile(profile);
-            userRoles = profile.userRoles;
-        }
+        const userRoles = getUserRoles(this.context);
         this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history, userRoles);
     };
 

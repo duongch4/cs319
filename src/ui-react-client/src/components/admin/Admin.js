@@ -15,7 +15,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete'
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class Admin extends Component {
@@ -61,13 +61,7 @@ class Admin extends Component {
                         selectedprovince: Object.keys(masterlist.locations)[0]
                     })
             } else {
-                let user = this.context;
-                let userRoles = user.profile.userRoles;
-                if (!isProfileLoaded(user.profile)) {
-                    let profile = fetchProfileFromLocalStorage();
-                    user.updateProfile(profile);
-                    userRoles = profile.userRoles;
-                }
+                const userRoles = getUserRoles(this.context);
                 this.props.loadMasterlists(userRoles)
                 .then(() => {
                     var masterlist = this.props.masterlist
@@ -145,13 +139,7 @@ class Admin extends Component {
         if (CLIENT_DEV_ENV) {
             userRoles = ['adminUser'];
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            userRoles = getUserRoles(this.context);
         }
         switch(e.target.name) {
             case "discipline":
@@ -217,13 +205,7 @@ class Admin extends Component {
         if (CLIENT_DEV_ENV) {
             userRoles = ['adminUser'];
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            userRoles = getUserRoles(this.context);
         }
         switch(e) {
             case "discipline":

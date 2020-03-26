@@ -10,7 +10,12 @@ export const USERCONTEXTKEY = "userContext";
 
 class UserProvider extends React.Component {
     state = {
-        profile: {}
+        profile: {
+            userID: null,
+            userRoles: null,
+            firstName: null,
+            lastName: null
+        }
     };
 
     render() {
@@ -32,7 +37,12 @@ class UserProvider extends React.Component {
 }
 
 export const isProfileLoaded = (profile) => {
-    return !(Object.keys(profile).length === 0)
+    for (let key of Object.keys(profile)) {
+        if (profile[key] === null || typeof(profile[key]) === "undefined") {
+            return false;
+        }
+    }
+    return true;
 };
 
 export const fetchProfileFromLocalStorage = () => {
@@ -46,5 +56,14 @@ export const fetchProfileFromLocalStorage = () => {
     }
     return profile;
 };
+
+export const getUserRoles = (userContext) => {
+    if (!isProfileLoaded(userContext.profile)) {
+        let profile = fetchProfileFromLocalStorage();
+        userContext.updateProfile(profile);
+        return profile.userRoles;
+    }
+    return userContext.profile.userRoles;
+}
 
 export { UserProvider, Consumer as UserContextConsumer };

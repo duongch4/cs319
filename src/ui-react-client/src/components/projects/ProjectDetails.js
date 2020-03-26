@@ -9,7 +9,7 @@ import {loadSingleProject} from "../../redux/actions/projectProfileActions";
 import {formatDate} from "../../util/dateFormatter";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import ProjectManagerCard from "../users/ProjectManagerCard";
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class ProjectDetails extends Component {
@@ -27,13 +27,7 @@ class ProjectDetails extends Component {
                 })
             }
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             this.props.loadSingleProject(this.props.match.params.project_id, userRoles)
                 .then(res => {
                     var projectProfile = this.props.projectProfile;

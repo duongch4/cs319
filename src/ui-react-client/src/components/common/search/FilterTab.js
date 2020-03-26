@@ -12,9 +12,7 @@ import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
 import FilterStickers from './FilterSticker';
-import {fetchProfileFromLocalStorage, isProfileLoaded} from "../userContext/UserContext";
-import {UserContext} from "../userContext/UserContext";
-
+import {UserContext, getUserRoles} from "../userContext/UserContext";
 
 class FilterTab extends Component {
     constructor(props) {
@@ -62,13 +60,7 @@ class FilterTab extends Component {
                 pending: false
             })
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             this.props.loadMasterlists(userRoles)
             .then(() => {
                 this.setState({

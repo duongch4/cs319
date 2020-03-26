@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import SearchUserCard from "./SearchUserCard";
 import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../userContext/UserContext";
+import {UserContext, getUserRoles} from "../userContext/UserContext";
 
 class SearchResults extends Component {
     constructor(props) {
@@ -21,13 +21,7 @@ class SearchResults extends Component {
                 userSummaries: this.props.users,
             });
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             this.props.performUserSearch(this.props.data, userRoles)
             .then(() => {
                 this.setState({

@@ -8,15 +8,10 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { Link } from 'react-router-dom'
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
 const _ProjectsPage = (props) => {
-  const user = useContext(UserContext);
-  let userRoles = user.profile.userRoles;
-  if (!isProfileLoaded(user.profile)) {
-    let profile = fetchProfileFromLocalStorage();
-    userRoles = profile.userRoles;
-  }
+  const userRoles = getUserRoles(useContext(UserContext));
   useEffect(() => {
     if (props.projects.length === 0) {
       if (CLIENT_DEV_ENV) {

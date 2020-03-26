@@ -8,7 +8,7 @@ import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import Loading from '../common/Loading';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
 class AddProject extends Component {
     state = {
@@ -47,13 +47,7 @@ class AddProject extends Component {
                 pending: false
             })
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             this.props.loadMasterlists(userRoles)
                 .then(() => {
                     this.setState({
@@ -147,13 +141,7 @@ class AddProject extends Component {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
             let newProject = this.state.projectProfile;
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             this.props.createProject(newProject, this.props.history, userRoles);
             this.setState({
                 ...this.state,

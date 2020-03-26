@@ -4,15 +4,10 @@ import PropTypes from 'prop-types';
 import UserList from './UserList';
 import { loadUsers } from '../../redux/actions/usersActions';
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
 const UsersPage = (props) => {
-  const user = useContext(UserContext);
-  let userRoles = user.profile.userRoles;
-  if (!isProfileLoaded(user.profile)) {
-    let profile = fetchProfileFromLocalStorage();
-    userRoles = profile.userRoles;
-  }
+  const userRoles = getUserRoles(useContext(UserContext));
   useEffect(() => {
     if (CLIENT_DEV_ENV && props.users.length === 0) {
       props.loadUsers(["adminUser"])

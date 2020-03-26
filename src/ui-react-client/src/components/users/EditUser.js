@@ -9,7 +9,7 @@ import { Button } from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import AvailabilityForm from './AvailabilityForm';
 import AvailabilityCard from './AvailabilityCard';
-import {fetchProfileFromLocalStorage, isProfileLoaded, UserContext} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class EditUser extends Component {
@@ -31,13 +31,7 @@ class EditUser extends Component {
                 pending: false
             }))
         } else {
-            let user = this.context;
-            let userRoles = user.profile.userRoles;
-            if (!isProfileLoaded(user.profile)) {
-                let profile = fetchProfileFromLocalStorage();
-                user.updateProfile(profile);
-                userRoles = profile.userRoles;
-            }
+            const userRoles = getUserRoles(this.context);
             const loadMasterlistsPromise = this.props.loadMasterlists(userRoles);
             const loadSpecificUserPromise = this.props.loadSpecificUser(this.props.match.params.user_id, userRoles);
             Promise.all([loadMasterlistsPromise, loadSpecificUserPromise]).then(() => {
@@ -53,13 +47,7 @@ class EditUser extends Component {
     }
 
     onSubmit = () => {
-        let user = this.context;
-        let userRoles = user.profile.userRoles;
-        if (!isProfileLoaded(user.profile)) {
-            let profile = fetchProfileFromLocalStorage();
-            user.updateProfile(profile);
-            userRoles = profile.userRoles;
-        }
+        const userRoles = getUserRoles(this.context);
         const userSummary = this.state.userProfile.userSummary;
         if(userSummary.firstName === "" || userSummary.lastName === ""){
             this.setState({
