@@ -91,31 +91,31 @@ class Admin extends Component {
 
     componentDidUpdate(prevProps){
         let found = false;
-        Object.values(this.props.masterlist.disciplines).filter(elem => {
-            if(elem.disciplineID === this.state.skill.disciplineID){
-                found = true
+        if (this.props.masterlist.disciplines) {
+            Object.values(this.props.masterlist.disciplines).filter(elem => {
+                if(elem.disciplineID === this.state.skill.disciplineID){
+                    found = true
+                }
+                return true;
+            })
+            if(!found){
+                let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
+                this.setState({
+                    ...this.state,
+                    skill: {
+                        ...this.state.skill,
+                        disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
+                    },
+                    masterlist: this.props.masterlist,
+                })
             }
-            return true;
-        })
-        if(!found){
-            let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
-            this.setState({
-                ...this.state,
-                skill: {
-                    ...this.state.skill,
-                    disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
-                },
-                masterlist: this.props.masterlist,
-            })
+            else if(prevProps.masterlist !== this.props.masterlist){
+                this.setState({
+                    ...this.state,
+                    masterlist: this.props.masterlist
+                })
+            }
         }
-        else if(prevProps.masterlist !== this.props.masterlist){
-            this.setState({
-                ...this.state,
-                masterlist: this.props.masterlist
-            })
-        }
-        
-        
     }
 
 

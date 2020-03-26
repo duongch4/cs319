@@ -38,17 +38,12 @@ class EditUser extends Component {
                 user.updateProfile(profile);
                 userRoles = profile.userRoles;
             }
-            this.props.loadMasterlists(userRoles)
-            .then(() => {
+            const loadMasterlistsPromise = this.props.loadMasterlists(userRoles);
+            const loadSpecificUserPromise = this.props.loadSpecificUser(this.props.match.params.user_id, userRoles);
+            Promise.all([loadMasterlistsPromise, loadSpecificUserPromise]).then(() => {
                 this.setState({
                     ...this.state,
-                    masterlist: this.props.masterlist
-                })
-            });
-            this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
-            .then(() => {
-                this.setState({
-                    ...this.state,
+                    masterlist: this.props.masterlist,
                     userProfile: this.props.userProfile,
                     pending: false
                 })

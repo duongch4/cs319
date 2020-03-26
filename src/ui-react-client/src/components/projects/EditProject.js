@@ -38,8 +38,8 @@ class EditProject extends Component {
                 user.updateProfile(profile);
                 userRoles = profile.userRoles;
             }
-            var promise_masterlist = this.props.loadMasterlists(userRoles);
-            var promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
+            const promise_masterlist = this.props.loadMasterlists(userRoles);
+            const promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
             Promise.all([promise_masterlist, promise_singleProject])
                .then(() => {
                    this.setState((state, props) =>
