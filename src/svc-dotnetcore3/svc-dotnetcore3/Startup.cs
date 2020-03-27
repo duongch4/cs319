@@ -163,7 +163,7 @@ namespace Web.API
                     options.AddPolicy(action, policy => policy.AddRequirements(new ActionAuthorizationRequirement(action)));
                 }
             });
-            services.AddSingleton<IAuthorizationHandler, AnyValidPermissionRequirementHandler>();
+            services.AddTransient<IAuthorizationHandler, AnyValidPermissionRequirementHandler>();
             services.AddSingleton<IAuthorizationHandler, ActionAuthorizationRequirementHandler>();
         }
 
