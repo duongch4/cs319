@@ -75,11 +75,11 @@ export const GRAPH_REQUESTS = {
 
 export const msalApp = new UserAgentApplication({
     auth: {
-        redirectUri: window.location.href,
+        redirectUri: UI_ROOT,
         clientId: CLIENT_ID,
         authority: AUTHORITY,
         validateAuthority: true,
-        postLogoutRedirectUri: window.location.href,
+        postLogoutRedirectUri: UI_ROOT,
         navigateToLoginRequestUrl: true
     },
     cache: {
