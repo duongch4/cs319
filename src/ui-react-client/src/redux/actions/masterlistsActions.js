@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
-import { headers } from '../../config/adalConfig';
+import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
 
@@ -85,180 +85,195 @@ export const errorDeleting = (error) => {
     }
 }
 
-export const loadMasterlists = () => {
+export const loadMasterlists = (userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(loadMasterlistsData(_initialState.masterlist));
         } else {
-            return axios
-                .get(`${baseURL}masterlists/`, { headers })
-                .then (response => {
-                    dispatch(loadMasterlistsData(response.data.payload));
-                })
-                .catch(error => {
-                    throw error;
-                });
+            return getHeaders(userRoles).then(headers => {
+                return axios.get(`${baseURL}masterlists/`, { headers });
+            }).then (response => {
+                dispatch(loadMasterlistsData(response.data.payload));
+            }).catch(error => {
+                throw error;
+            });
         }
     }
 };
 
-export const createDiscpline = (discipline) => {
+export const createDiscpline = (discipline, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createDiscplineData(discipline))
         } else {
-            return axios
-                .post(`${baseURL}admin/disciplines`, discipline, { headers })
-                .then(response => {
-                    discipline.id = response.data.payload;
-                    dispatch(createDiscplineData(discipline))
-                })
-                .catch(error => {
-                    let err = error.response.data.message
-                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)
-                    dispatch(errorCreating(errorParsed));
-                })
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .post(`${baseURL}admin/disciplines`, discipline, { headers })
+                    .then(response => {
+                        discipline.id = response.data.payload;
+                        dispatch(createDiscplineData(discipline))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
+                    })
+            })
         }
     }
 }
 
-export const createSkill = (skill) => {
+export const createSkill = (skill, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createSkillData(skill))
         } else {
-            return axios
-                .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
-                .then(response => {
-                    dispatch(createSkillData(skill))
-                })
-                .catch(error => {
-                    let err = error.response.data.message
-                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)
-                    dispatch(errorCreating(errorParsed));
-                })
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
+                    .then(response => {
+                        dispatch(createSkillData(skill))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
+                    })
+            })
         }
     } 
 }
 
-export const createProvince = (location) => {
+export const createProvince = (location, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProvinceData(location))
         } else {
-            return axios
-                .post(`${baseURL}admin/provinces`, location, { headers })
-                .then(response => {
-                    dispatch(createProvinceData(location))
-                })
-                .catch(error => {
-                    let err = error.response.data.message
-                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)
-                    dispatch(errorCreating(errorParsed));
-                })
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .post(`${baseURL}admin/provinces`, location, { headers })
+                    .then(response => {
+                        dispatch(createProvinceData(location))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
+                    })
+            })
         }
     } 
 }
 
-export const createCity = (location) => {
+export const createCity = (location, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createCityData(location))
         } else {
-            return axios
-            .post(`${baseURL}admin/locations`, location, { headers })
-            .then(response => {
-                location.id = response.data.payload;
-                dispatch(createCityData(location))
-            })
-            .catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                dispatch(errorCreating(errorParsed));
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .post(`${baseURL}admin/locations`, location, { headers })
+                    .then(response => {
+                        location.id = response.data.payload;
+                        dispatch(createCityData(location))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorCreating(errorParsed));
+                    })
             })
         }
     } 
 }
 
-export const deleteDiscipline = (id) => {
+export const deleteDiscipline = (id, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteDisciplineData(id))
         } else {
-            return axios
-                .delete(`${baseURL}admin/disciplines/${id}`, { headers })
-                .then(response => {                    
-                    dispatch(deleteDisciplineData(id))
-                })
-                .catch(error => {
-                    let err = error.response.data.message
-                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)
-                    dispatch(errorDeleting(errorParsed));
-                })
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .delete(`${baseURL}admin/disciplines/${id}`, { headers })
+                    .then(response => {
+                        dispatch(deleteDisciplineData(id))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
+                    })
+            })
         }
     } 
 }
 
-export const deleteSkill = (disciplineID, skillName) => {
+export const deleteSkill = (disciplineID, skillName, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteSkillData(disciplineID, skillName))
         } else {
-            return axios
-            .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`, { headers })
-            .then(response => {            
-                dispatch(deleteSkillData(disciplineID, skillName));
-            })
-            .catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                dispatch(errorDeleting(errorParsed));
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`, { headers })
+                    .then(response => {
+                        dispatch(deleteSkillData(disciplineID, skillName));
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
+                    })
             })
         }
     } 
 }
 
-export const deleteProvince = (provinceName) => {
+export const deleteProvince = (provinceName, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteProvinceData(provinceName))
         } else {
-            return axios
-                .delete(`${baseURL}admin/provinces/${provinceName}`, { headers })
-                .then(response => {
-                    dispatch(deleteProvinceData(response.data.payload))
-                })
-                .catch(error => {
-                    let err = error.response.data.message
-                    let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)
-                    dispatch(errorDeleting(errorParsed));
-                })
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .delete(`${baseURL}admin/provinces/${provinceName}`, { headers })
+                    .then(response => {
+                        dispatch(deleteProvinceData(response.data.payload))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
+                    })
+            })
         }
     } 
 }
 
-export const deleteCity = (cityName, id) => {
+export const deleteCity = (cityName, id, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteCityData(cityName, id))
         } else {
-            return axios
-            .delete(`${baseURL}admin/locations/${id}`, { headers })
-            .then(response => {
-                dispatch(deleteCityData(cityName, id))
-            })
-            .catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                dispatch(errorDeleting(errorParsed));
+            return getHeaders(userRoles).then(headers => {
+                return axios
+                    .delete(`${baseURL}admin/locations/${id}`, { headers })
+                    .then(response => {
+                        dispatch(deleteCityData(cityName, id))
+                    })
+                    .catch(error => {
+                        let err = error.response.data.message
+                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                        dispatch(errorDeleting(errorParsed));
+                    })
             })
         }
     } 

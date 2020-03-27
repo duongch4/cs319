@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React, {Component, useContext} from 'react';
 import {connect} from 'react-redux';
 import SearchUserCard from "./SearchUserCard";
 import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import {UserContext, getUserRoles} from "../userContext/UserContext";
 
 class SearchResults extends Component {
     constructor(props) {
@@ -28,13 +29,14 @@ class SearchResults extends Component {
     
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.performUserSearch(this.props.data)
+            this.props.performUserSearch(this.props.data, ["adminUser"])
             this.setState({
                 ...this.state,
                 userSummaries: this.props.users,
             }, () => this.props.stopLoading());
         } else {
-            this.props.performUserSearch(this.props.data)
+            const userRoles = getUserRoles(this.context);
+            this.props.performUserSearch(this.props.data, userRoles)
             .then(() => {
                 this.setState({
                     ...this.state,
@@ -195,6 +197,8 @@ class SearchResults extends Component {
         }
 }
 
+SearchResults.contextType = UserContext;
+
 const mapStateToProps = state => {
     return {
         users: state.users,
@@ -209,4 +213,3 @@ const mapStateToProps = state => {
     mapStateToProps,
     mapDispatchToProps,
   )(SearchResults);
-  

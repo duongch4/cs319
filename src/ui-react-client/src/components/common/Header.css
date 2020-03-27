@@ -12,6 +12,12 @@
     align-items: center;
 }
 
+.navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .ae-logo {
     font-size: 4em;
     font-weight: bold;
@@ -32,7 +38,7 @@
 }
 
 nav {
-    margin-top: 24px;
+    margin-top: 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -44,24 +50,41 @@ nav a {
     font-size: 0.5em;
 }
 
-nav a:hover {
-    text-decoration: underline;
+nav div {
+    margin: 4px 0px;
+    text-align: center;
 }
 
-nav div {
-    margin: 8px 0px;
+.user-info p {
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
 }
 
 .logout-button {
     background-color: #2c6232;
-    border-radius: 3px;
+    border-radius: 5px;
     padding: 8px 16px;
     color: #fff;
     border: none;
     text-transform: uppercase;
     font-weight: 700;
+    font-size: 12px;
 }
 
 button:hover {
     background-color: #333;
+}
+
+.navlink a:active {
+    color: #ebd4d4;
+}
+
+.navlink a:hover {
+    color: #ffffff;
+}
+
+.navlink a {
+    color: #ffffff;
+    font-size: 16px;
 }

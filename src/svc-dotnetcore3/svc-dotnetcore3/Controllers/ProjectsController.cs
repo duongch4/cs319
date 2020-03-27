@@ -8,6 +8,7 @@ using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Application.Communication;
 using Web.API.Resources;
+using Web.API.Authorization;
 
 using System;
 using System.Data.SqlClient;
@@ -16,7 +17,8 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    [Authorize(Actions.AdminThings)]
+    // [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -595,7 +597,6 @@ namespace Web.API.Controllers
                     var error = new NotFoundException("The given positionId cannot be found in the database");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
-                Log.Information("{@a}", position);
 
                 var response = new UpdatedResponse<Position>(position, "Successfully retrieved");
                 return StatusCode(StatusCodes.Status201Created, response);

@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import Loading from '../common/Loading';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
 class AddProject extends Component {
     state = {
@@ -24,10 +25,10 @@ class AddProject extends Component {
                 projectNumber: ""
             },
             projectManager: {
-                // TODO: WHY DO WE HAVE HARDCODED VALUES HERE???
-                userID: 2,
-                firstName: "Charles",
-                lastName: "Bartowski"
+                // these fields are from Azure ADs profile object which keeps track of the current user
+                userID: this.props.location.state.profile.id,
+                firstName: this.props.location.state.profile.givenName,
+                lastName: this.props.location.state.profile.surname
             },
             usersSummary: [],
             openings: [],
@@ -39,21 +40,22 @@ class AddProject extends Component {
 
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadMasterlists();
+            this.props.loadMasterlists(["adminUser"]);
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
                 pending: false
             })
         } else {
-            this.props.loadMasterlists()
-            .then(() => {
-                this.setState({
-                    ...this.state,
-                    masterlist: this.props.masterlist,
-                    pending: false
+            const userRoles = getUserRoles(this.context);
+            this.props.loadMasterlists(userRoles)
+                .then(() => {
+                    this.setState({
+                        ...this.state,
+                        masterlist: this.props.masterlist,
+                        pending: false
+                    })
                 })
-            })
         }
         
     }
@@ -139,7 +141,8 @@ class AddProject extends Component {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
             let newProject = this.state.projectProfile;
-            this.props.createProject(newProject, this.props.history);
+            const userRoles = getUserRoles(this.context);
+            this.props.createProject(newProject, this.props.history, userRoles);
             this.setState({
                 ...this.state,
                 error: []
@@ -154,7 +157,7 @@ class AddProject extends Component {
                     <Loading />
                 </div>
             )
-        }else {
+        } else {
             const openings = [];
             this.state.projectProfile.openings.forEach((opening, index) => {
                 openings.push(<Openings key={"openings" + index} opening={opening}
@@ -190,6 +193,8 @@ class AddProject extends Component {
         }
     }
 }
+
+AddProject.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

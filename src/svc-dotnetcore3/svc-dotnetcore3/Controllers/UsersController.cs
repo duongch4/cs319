@@ -8,6 +8,7 @@ using Web.API.Application.Repository;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using Web.API.Application.Communication;
 using Web.API.Resources;
+using Web.API.Authorization;
 
 using System;
 using System.Data.SqlClient;
@@ -16,7 +17,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -112,7 +113,7 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     GET /api/users/5
+        ///     GET /api/users/2
         ///
         /// </remarks>
         /// <param name="userId"></param>
@@ -190,68 +191,109 @@ namespace Web.API.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT /api/users/3
-        ///     {
-        ///         "userSummary": {
-        ///           "userID": 3,
-        ///           "firstName": "Nat",
-        ///           "lastName": "Romanov",
-        ///           "location": {
-        ///             "province": "Alberta",
-        ///             "city": "Calgary"
-        ///           },
-        ///           "utilization": 117,
-        ///           "resourceDiscipline": {
-        ///             "discipline": null,
-        ///             "yearsOfExp": null
-        ///           },
-        ///           "isConfirmed": false
+        ///     PUT /api/users/2
+        /// {
+        ///     "userSummary": {
+        ///       "userID": "2",
+        ///       "firstName": "F",
+        ///      "lastName": "ChanChan",
+        ///       "location": {
+        ///         "locationID": 20,
+        ///         "province": "Ontario",
+        ///         "city": "Kitchener"
+        ///       },
+        ///       "utilization": 0,
+        ///       "resourceDiscipline": {
+        ///         "disciplineID": 0,
+        ///         "discipline": null,
+        ///         "yearsOfExp": null,
+        ///         "skills": []
+        ///       },
+        ///       "isConfirmed": false
+        ///     },
+        ///     "currentProjects": [
+        ///       {
+        ///         "title": "Appropriate Venom",
+        ///         "location": {
+        ///           "locationID": 14,
+        ///           "province": "Alberta",
+        ///           "city": "Lethbridge"
         ///         },
-        ///         "currentProjects": [
-        ///           {
-        ///             "projectNumber": "2005-KJS4-46",
-        ///             "title": "Budapest",
-        ///             "locationId": 19,
-        ///             "projectStartDate": "2020-04-19T00:00:00",
-        ///             "projectEndDate": "2020-07-01T00:00:00"
-        ///           }
-        ///         ],
-        ///         "availability": [
-        ///           {
-        ///             "fromDate": "2020-04-07T00:00:00",
-        ///             "toDate": "2020-04-19T00:00:00",
-        ///             "reason": "Maternal Leave"
-        ///           },
-        ///           {
-        ///             "fromDate": "2020-10-31T00:00:00",
-        ///             "toDate": "2020-11-11T00:00:00",
-        ///             "reason": "Maternal Leave"
-        ///           }
-        ///         ],
-        ///         "disciplines": [
-        ///           {
-        ///             "discipline": "Language",
-        ///             "yearsOfExp": "10+",
-        ///             "skills": [
-        ///               "Russian"
-        ///             ]
-        ///           },
-        ///           {
-        ///             "discipline": "Weapons",
-        ///             "yearsOfExp": "10+",
-        ///              "skills": [
-        ///                 "Glock", "Sniper Rifle"
-        ///               ]
-        ///             }
-        ///         ],
-        ///         "positions": [
-        ///           {
-        ///             "projectTitle": "Budapest",
-        ///             "disciplineName": "Intel",
-        ///             "projectedMonthlyHours": 170
-        ///           }
+        ///         "projectStartDate": "2030-12-01T00:00:00",
+        ///         "projectEndDate": "2030-12-05T00:00:00",
+        ///         "projectNumber": "7ETHF1Y12JFS7XJ"
+        ///       },
+        ///       {
+        ///         "title": "Rebel Canal",
+        ///         "location": {
+        ///           "locationID": 5,
+        ///           "province": "British Columbia",
+        ///           "city": "Kamloops"
+        ///         },
+        ///         "projectStartDate": "2024-02-17T00:00:00",
+        ///         "projectEndDate": "2025-08-26T00:00:00",
+        ///         "projectNumber": "LN2C78HG8UECD90"
+        ///       }
+        ///     ],
+        ///     "availability": [
+        ///       {
+        ///         "fromDate": "2020-10-31T00:00:00",
+        ///         "toDate": "2020-11-11T00:00:00",
+        ///         "reason": "Disneyland Vacation"
+        ///       }],
+        ///     "disciplines": [
+        ///       {
+        ///         "disciplineID": 1,
+        ///         "discipline": "Aerospace engineering?",
+        ///         "yearsOfExp": "10+",
+        ///         "skills": [
+        ///           "Aircraft components?"
         ///         ]
-        ///     }
+        ///       }
+        ///     ],
+        ///     "positions": [
+        ///       {
+        ///         "positionID": 1400,
+        ///         "positionName": "\"\"",
+        ///         "projectTitle": "Appropriate Venom",
+        ///         "disciplineName": "Offshore engineering?",
+        ///         "projectedMonthlyHours": {
+        ///           "2021-01-03": 115,
+        ///           "2021-02-23": 126,
+        ///           "2021-03-25": 24,
+        ///           "2021-04-08": 200,
+        ///           "2021-05-24": 96,
+        ///           "2021-06-10": 35,
+        ///           "2021-07-19": 18,
+        ///           "2021-08-25": 81,
+        ///           "2021-09-02": 166,
+        ///           "2021-10-17": 145,
+        ///           "2021-11-24": 198,
+        ///           "2021-12-02": 152
+        ///         }
+        ///       },
+        ///       {
+        ///         "positionID": 1866,
+        ///         "positionName": "\"\"",
+        ///         "projectTitle": "Rebel Canal",
+        ///         "disciplineName": "Smart materials?",
+        ///         "projectedMonthlyHours": {
+        ///           "2022-01-25": 21,
+        ///           "2022-02-24": 7,
+        ///           "2022-03-04": 142,
+        ///           "2022-04-24": 21,
+        ///           "2022-05-02": 30,
+        ///           "2022-06-05": 83,
+        ///           "2022-07-16": 49,
+        ///           "2022-08-21": 91,
+        ///           "2022-09-08": 178,
+        ///           "2022-10-27": 122,
+        ///           "2022-11-05": 34,
+        ///           "2022-12-20": 158
+        ///         }
+        ///       }
+        ///     ]
+        ///   }
         ///
         /// </remarks>
         /// <param name="userProfile"></param>

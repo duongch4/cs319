@@ -14,16 +14,19 @@ import EditUser from './users/EditUser.js';
 import Admin from './admin/Admin.js'
 import Search from './common/search/Search.js';
 
+import AuthProvider from "../config/AuthProvider";
+import PropTypes from "prop-types";
+import { PropsRoute } from "../util/CustomRoute";
 
-const App = () => {
+const App = (appProps) => {
   return (
     <div>
-      <Header />
+      <Header appProps={appProps} />
       <Switch>
         {/*All our Routes goes here!*/}
-        <Route exact path="/" component={HomePage} />
-        <Route exact path="/users" component={UsersPage} />
-        <Route exact path="/projects" component={ProjectsPage} />
+        <PropsRoute exact path="/" component={HomePage} profile={appProps.graphProfile} account={appProps.account} />
+        <PropsRoute exact path="/users" component={UsersPage} account={appProps.account} />
+        <PropsRoute exact path="/projects" component={ProjectsPage} profile={appProps.graphProfile} account={appProps.account}/>
         <Route exact path="/search" component={Search} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
         <Route path="/users/:user_id" component={UserDetails} />
@@ -37,4 +40,14 @@ const App = () => {
   );
 };
 
-export default App;
+App.propTypes = {
+  account: PropTypes.object,
+  emailMessages: PropTypes.object,
+  error: PropTypes.string,
+  graphProfile: PropTypes.object,
+  onSignIn: PropTypes.func.isRequired,
+  onSignOut: PropTypes.func.isRequired,
+  onRequestEmailToken: PropTypes.func.isRequired
+};
+
+export default AuthProvider(App);

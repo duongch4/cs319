@@ -25,74 +25,74 @@ namespace Web.API.Controllers
         private readonly IProjectsRepository projectsRepository;
         private readonly IUsersRepository usersRepository;
         private readonly IPositionsRepository positionsRepository;
-
+        private readonly IOutOfOfficeRepository outOfOfficeRepository;
         private readonly IUtilizationRepository utilizationRepository;
         private readonly IMapper mapper;
 
         public PositionsController(
             IProjectsRepository projectsRepository, IUsersRepository usersRepository,
-            IPositionsRepository positionsRepository, IUtilizationRepository utilizationRepository,
+            IPositionsRepository positionsRepository, 
+            IOutOfOfficeRepository outOfOfficeRepository,
+            IUtilizationRepository utilizationRepository,
             IMapper mapper
         )
         {
             this.projectsRepository = projectsRepository;
             this.usersRepository = usersRepository;
             this.positionsRepository = positionsRepository;
+            this.outOfOfficeRepository = outOfOfficeRepository;
             this.utilizationRepository = utilizationRepository;
             this.mapper = mapper;
         }
 
-        /// <summary>Assigning a Resource to a Project</summary>
+        /// <summary>Assign a Resource to a Position</summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT api/positions/1/assign/3
+        ///     GET /api/positions/25/assign/15
         ///
         /// </remarks>
-        /// <param name= "openingId">The id of the opening the resource will be assigned to</param>
-        /// <param name = "userId"> The id of the resource being assigned to the opening </param>
-        /// <returns>The old deleted project</returns>
-        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+        /// <param name="openingId">Id of position to assign resource to</param>
+        /// <param name="userId">Id of resource to assign to position</param>
+        /// <returns>The Id of the opening that a resource has been assigned to,
+        ///          The Id of the resource that has been assigned, and
+        ///          The (confirmed) utilization of the resource that has been assigned</returns>
+        /// <response code="200">Returns openingId, resourceId, resource's utilization</response>
         /// <response code="400">Bad Request</response>
-        /// <response code="401">Unauthorized Request</response>
+        /// <response code="404">If either the opening or user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
-        [Route("/positions/{openingId}/assign/{userId}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [Route("positions/{openingId}/assign/{userId}")]
+        [ProducesResponseType(typeof(OkResponse<RequestProjectAssign>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignAResource([FromRoute] int openingId, string userId)
         {
             try
             {
                 Position position = await positionsRepository.GetAPosition(openingId);
                 User user = await usersRepository.GetAUser(userId);
+
                 if (position == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given position does not exist."));
+                    var error = new NotFoundException($"Invalid positionId {openingId}.");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 if (user == null) {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given resource was not found"));
+                    var error = new NotFoundException($"Resource with id {userId} not found.");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+
                 }
 
-                position.Id = openingId;
                 position.ResourceId = userId;
-                position = await positionsRepository.UpdateAPosition(position);
+                position.IsConfirmed = false;
+                var updatedPosition = await positionsRepository.UpdateAPosition(position);
 
-                var resourceUtilizations = await utilizationRepository.GetUtilizationOfUser(userId);
-                var responseObject = new RequestProjectAssign();
-                responseObject.OpeningId = openingId;
-                responseObject.UserID = userId;
-                
-                foreach(rawUtilization utilization in resourceUtilizations) {
-                    if (utilization.isConfirmed) {
-                        responseObject.ConfirmedUtilization = utilization.utilization;
-                    }
-                }
-                var response = new UpdatedResponse<RequestProjectAssign>(responseObject, "Successfully updated");
-                return StatusCode(StatusCodes.Status201Created, response);
+                RequestProjectAssign response = new RequestProjectAssign{OpeningId = openingId, 
+                                                                         UserID = userId,
+                                                                         ConfirmedUtilization = user.Utilization};
+                return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
             {
@@ -100,66 +100,67 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
 
-
-        /// <summary>Confirm a Resource for a Position</summary>
+        /// <summary>Confirms a Resource on a Position</summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT api/positions/1/confirm
+        ///     GET /api/positions/25/confirm
         ///
         /// </remarks>
-        /// <param name= "openingId">The id of the opening the resource will be assigned to</param>
-        /// <returns>The old deleted project</returns>
-        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
+        /// <param name="openingId">Id of position that is to be confirmed</param>
+        /// <returns>The Id of the opening that a resource has been assigned to,
+        ///          The Id of the resource that has been confirmed, and
+        ///          The (confirmed) utilization of the resource that has been confirmed</returns>
+        /// <response code="200">Returns openingId, resourceId, resource's utilization</response>
         /// <response code="400">Bad Request</response>
-        /// <response code="401">Unauthorized Request</response>
+        /// <response code="404">If either the opening cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
-        [Route("/positions/{openingId}/confirm")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [Route("positions/{openingId}/confirm")]
+        [ProducesResponseType(typeof(OkResponse<RequestProjectAssign>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConfirmResource([FromRoute] int openingId)
         {
             try
             {
                 Position position = await positionsRepository.GetAPosition(openingId);
-                User user = await usersRepository.GetAUser(position.ResourceId);
+
                 if (position == null)
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The given position does not exist."));
+                    var error = new NotFoundException($"Invalid positionId {openingId}.");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
-                if (user == null) {
-                    return StatusCode(StatusCodes.Status404NotFound, new NotFoundException("The position does not have a resource assigned."));
-                }
-                
-                position.IsConfirmed = true;
-                position = await positionsRepository.UpdateAPosition(position);
 
-                var resourceUtilizations = await utilizationRepository.GetUtilizationOfUser(position.ResourceId);
-                var responseObject = new RequestProjectAssign();
-                responseObject.OpeningId = openingId;
-                responseObject.UserID = position.ResourceId;
-                
-                foreach(rawUtilization utilization in resourceUtilizations) {
-                    if (utilization.isConfirmed) {
-                        responseObject.ConfirmedUtilization = utilization.utilization;
-                    }
+                if (position.ResourceId == null || position.ResourceId == "") {
+                    var error = new BadRequestException($"Position {position.Id} does not have a resource assigned.");
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
-                var response = new UpdatedResponse<RequestProjectAssign>(responseObject, "Successfully updated");
-                return StatusCode(StatusCodes.Status201Created, response);
+
+                position.IsConfirmed = true;
+                var updatedPosition = await positionsRepository.UpdateAPosition(position);
+
+                IEnumerable<Position> positionsOfUser = await positionsRepository.GetAllPositionsOfUser(position.ResourceId);
+                IEnumerable<OutOfOffice> outOfOfficesOfUser = await outOfOfficeRepository.GetAllOutOfOfficeForUser(position.ResourceId);
+
+                var utilization = await utilizationRepository.CalculateUtilizationOfUser(positionsOfUser, outOfOfficesOfUser);
+                await usersRepository.UpdateUtilizationOfUser(utilization, position.ResourceId);
+
+                RequestProjectAssign response = new RequestProjectAssign{OpeningId = openingId, 
+                                                                         UserID = position.ResourceId,
+                                                                         ConfirmedUtilization = utilization};
+                return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
             {
@@ -167,12 +168,12 @@ namespace Web.API.Controllers
                 if (err is SqlException)
                 {
                     var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, error);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
                 }
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, error);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }

@@ -7,7 +7,6 @@ import '../common.css'
 import './SearchStyles.css'
 import Arrow from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
-import {performUserSearch} from "../../../redux/actions/searchActions";
 import AddLocation from './AddLocation';
 import AddDisciplines from './AddDisciplines';
 import YearsSearch from './YearsSearch';
@@ -49,13 +48,14 @@ class FilterTab extends Component {
     
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadMasterlists()
+            this.props.loadMasterlists(["adminUser"])
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
             })
         } else {
-            this.props.loadMasterlists()
+            const userRoles = getUserRoles(this.context);
+            this.props.loadMasterlists(userRoles)
             .then(() => {
                 this.setState({
                     ...this.state,
@@ -267,7 +267,9 @@ class FilterTab extends Component {
         </div>
         );
         }
-};
+}
+
+FilterTab.contextType = UserContext;
 
 const mapStateToProps = state => {
   return {
@@ -277,7 +279,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   loadMasterlists,
-  performUserSearch,
 };
 
 export default connect(
