@@ -6,6 +6,7 @@ import SearchResults from "./SearchResults";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
 import Loading from '../Loading';
+import { UserContext, getUserRoles } from "../userContext/UserContext";
 
 class Search extends Component {
   constructor(props) {
@@ -28,13 +29,14 @@ class Search extends Component {
 
   componentDidMount() {
     if (CLIENT_DEV_ENV) {
-        this.props.loadMasterlists()
-        this.setState({
-            ...this.state,
-            masterlist: this.props.masterlist,
-        })
+      this.props.loadMasterlists(["adminUser"]);
+      this.setState({
+        ...this.state,
+        masterlist: this.props.masterlist,
+      })
     } else {
-        this.props.loadMasterlists()
+      const userRoles = getUserRoles(this.context);
+      this.props.loadMasterlists(userRoles)
         .then(() => {
             this.setState({
                 ...this.state,
@@ -128,9 +130,12 @@ class Search extends Component {
         }
       </div>
     )
+  } 
   }
 }
-}
+  
+Search.contextType = UserContext;
+
 
 const mapStateToProps = state => {
   return {
