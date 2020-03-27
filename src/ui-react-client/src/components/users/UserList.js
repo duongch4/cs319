@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import UserCard from './UserCard';
+import Loading from '../common/Loading';
 
 const UserList = ({ users }) => {
   const userCards =[];
@@ -11,7 +12,9 @@ const UserList = ({ users }) => {
         </div>)
     
   });
-  
+  if(users.length === 0){
+    return(<Loading />)
+  }
   return (
       <div>
       {userCards}

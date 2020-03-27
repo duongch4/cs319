@@ -164,6 +164,10 @@ p {
     margin-left: 16px;
 }
 
+.css-2b097c-container{
+  width: 300px;
+}
+
 input.input-box, select.input-box {
     padding: 6px;
     display: flex;
@@ -198,4 +202,10 @@ input.add:hover {
     display: flex;
     flex-grow: 1;
     margin-left: 16px;
+}
+
+.centerDiv {
+    display: flex;
+    align-content: center;
+    justify-content: center;
 }

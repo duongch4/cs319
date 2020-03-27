@@ -8,7 +8,7 @@ namespace Web.API.Resources
         
         /// <summary>Commitment Monthly Hours</summary>
         /// <example>160</example>
-        public int CommitmentMonthlyHours { get; set; }
+        public string CommitmentMonthlyHours { get; set; }
 
         /// <summary>Discipline Name</summary>
         /// <example>Intel</example>

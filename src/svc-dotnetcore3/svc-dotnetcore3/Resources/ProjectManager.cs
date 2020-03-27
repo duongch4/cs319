@@ -3,8 +3,8 @@ namespace Web.API.Resources
     public class ProjectManager
     {
         /// <summary>PM Id</summary>
-        /// <example>1</example>
-        public int UserID { get; set; }
+        /// <example>"1"</example>
+        public string UserID { get; set; }
 
         /// <summary>PM First Name</summary>
         /// <example>Lulu</example>

@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ProjectStyles.css';
 import {Button} from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 
-const Openings = ({ opening, index, commitment, isAssignable }) => {
+const Openings = ({ opening, index, commitment, isAssignable, isRemovable, removeOpening}) => {
 
     const skills = [];
     if(opening.skills){
@@ -14,6 +15,13 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
             }
         })
     }
+    let totalCommitment = 0;
+    if(commitment && Object.values(commitment)){
+        Object.values(commitment).forEach(elem => {
+            totalCommitment += Number(elem);
+        })
+    }
+
   return (
     <div className="card-summary">
         <div className="card-summary-title">
@@ -24,7 +32,7 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
             {(skills.length > 0) && (<p><b>Skills:</b> {skills}</p>)}
             <p><b>Experience:</b> {opening.yearsOfExp}</p>
             {(commitment) &&
-            (<p><b>Expected Hourly Commitment per Month:</b> {commitment}</p>)}
+            (<p><b>Total Expected Number of Hours:</b> {totalCommitment}</p>)}
         </div>
         {isAssignable &&
             (<div className="card-summary-title assign">
@@ -36,6 +44,12 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
                     </Button>
                 </div>
             </div>)}
+        {isRemovable &&
+            (<div className="card-summary-title assign">
+                <div>
+                    <DeleteIcon style={{color: "#EB5757", cursor: "pointer"}} onClick={()=> removeOpening(opening)}/>
+                </div>
+            </div>)}
     </div>
 
       )
@@ -44,7 +58,7 @@ const Openings = ({ opening, index, commitment, isAssignable }) => {
 Openings.propTypes = {
   opening: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  commitment: PropTypes.number,
+  commitment: PropTypes.object,
   isAssignable: PropTypes.bool
 };
 
