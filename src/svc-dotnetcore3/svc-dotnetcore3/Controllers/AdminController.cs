@@ -8,6 +8,7 @@ using Web.API.Application.Repository;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using Web.API.Application.Communication;
 using Web.API.Resources;
+using Web.API.Authorization;
 
 using System;
 using System.Data.SqlClient;
@@ -15,7 +16,8 @@ using System.Linq;
 using Serilog;
 
 namespace Web.API.Controllers {
-    [Authorize]
+    // [Authorize]
+    [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]

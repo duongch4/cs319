@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
-import { headers } from '../../config/adalConfig';
+import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState_client from '../reducers/_initialState_client';
 
@@ -34,22 +34,21 @@ export const updateProjectSummaryData = projectSummary => {
     }
 };
 
-export const loadProjects = () => {
-  return dispatch => {
+export const loadProjects = (userRoles) => {
+  return async dispatch => {
     if (CLIENT_DEV_ENV) {
       dispatch(loadProjectsData(_initialState_client.projectSummaries));
     } else {
-      return axios
-          .get(baseURL, { headers })
-          .then(response => {
-            dispatch(loadProjectsData(response.data.payload));
-          })
-          .catch(error => {
-            let err = error.response.data.message
-            let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-            console.log(err)
-            alert(errorParsed)
-          });
+      return getHeaders(userRoles).then(headers => {
+        return axios.get(baseURL, { headers });
+      }).then(response => {
+        dispatch(loadProjectsData(response.data.payload));
+      }).catch(error => {
+          let err = error.response.data.message
+          let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+          console.log(err)
+          alert(errorParsed)
+      });
     }
   };
 };

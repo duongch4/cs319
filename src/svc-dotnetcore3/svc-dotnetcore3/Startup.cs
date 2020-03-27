@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,17 +8,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.API.Application.Repository;
-using Web.API.Infrastructure.Config;
 using Web.API.Infrastructure.Data;
+using AuthenticationOptions = Web.API.Authentication.AuthenticationOptions;
+using AzureAdOptions = Web.API.Authentication.AzureAdOptions;
+using Web.API.Authorization;
+using Web.API.OpenApi;
 using Serilog;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 
@@ -65,26 +69,41 @@ namespace Web.API
             services.AddControllers();
 
             var azureAdOptions = _configuration.GetSection("AzureAd").Get<AzureAdOptions>();
+            var authenticationOptions = GetAuthenticationOptions(azureAdOptions);
+
             var connectionString = _configuration["ConnectionString"];
             var allowedOrigins = _configuration["AllowedOrigins"];
 
             AddCors(services, allowedOrigins);
-            AddAuthentication(services, azureAdOptions);
+            AddAuthentication(services, authenticationOptions);
+            AddAuthorization(services);
 
             AddRepositories(services, connectionString);
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // what does this do???
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            //Allows auth to be bypassed for LocalDev
-            if (_environment.IsDevelopment())
-            {
-                services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
-            }
+            // //Allows auth to be bypassed for LocalDev
+            // if (_environment.IsDevelopment())
+            // {
+            //     services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+            // }
 
             AddSpaStaticFiles(services);
 
-            AddSwagger(services);
+            AddSwagger(services, authenticationOptions);
+        }
+
+        private AuthenticationOptions GetAuthenticationOptions(AzureAdOptions azureAdOptions)
+        {
+            return new AuthenticationOptions
+            {
+                Authority = $@"{azureAdOptions.Authority}/v2.0",
+                AuthorizationUrl = $@"{azureAdOptions.Authority}/oauth2/v2.0/authorize",
+                ClientId = azureAdOptions.ClientId,
+                ApplicationIdUri =azureAdOptions.ApplicationIdUri
+            };
         }
 
         private void AddSpaStaticFiles(IServiceCollection services)
@@ -113,17 +132,39 @@ namespace Web.API
             services.AddScoped<IOutOfOfficeRepository>(sp => new OutOfOfficeRepository(connectionString));
         }
 
-        private void AddAuthentication(IServiceCollection services, AzureAdOptions azureAdOptions)
+        private void AddAuthentication(IServiceCollection services, AuthenticationOptions authenticationOptions)
         {
+            services.Configure<AuthenticationOptions>(options => options = authenticationOptions);
+
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
-                options.Audience = azureAdOptions.ClientId;
-                options.Authority = azureAdOptions.Authority;
+                options.Audience = authenticationOptions.ClientId;
+                options.Authority = authenticationOptions.Authority;
             });
+
+            services.AddSingleton<IClaimsTransformation, ScopeClaimSplitTransformation>();
+        }
+
+        private static void AddAuthorization(IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                // Require callers to have at least one valid permission by default
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .AddRequirements(new AnyValidPermissionRequirement())
+                    .Build();
+                // Create a policy for each action that can be done in the API
+                foreach (string action in Actions.All)
+                {
+                    options.AddPolicy(action, policy => policy.AddRequirements(new ActionAuthorizationRequirement(action)));
+                }
+            });
+            services.AddTransient<IAuthorizationHandler, AnyValidPermissionRequirementHandler>();
+            services.AddSingleton<IAuthorizationHandler, ActionAuthorizationRequirementHandler>();
         }
 
         private void AddCors(IServiceCollection services, string allowedOrigins)
@@ -139,7 +180,7 @@ namespace Web.API
             });
         }
 
-        private void AddSwagger(IServiceCollection services)
+        private void AddSwagger(IServiceCollection services, AuthenticationOptions authenticationOptions)
         {
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -158,7 +199,7 @@ namespace Web.API
 
                 AddSwaggerJsonAndUi(c);
 
-                AddSwaggerSecurityDefinition(c);
+                AddSwaggerSecurityDefinition(c, authenticationOptions);
                 AddSwaggerSecurityRequirement(c);
             });
         }
@@ -170,37 +211,25 @@ namespace Web.API
             c.IncludeXmlComments(xmlPath);
         }
 
-        private void AddSwaggerSecurityDefinition(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions c)
+        private void AddSwaggerSecurityDefinition(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions c, AuthenticationOptions authenticationOptions)
         {
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("aad-jwt", new OpenApiSecurityScheme
             {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    Implicit = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri(authenticationOptions.AuthorizationUrl),
+                        Scopes = DelegatedPermissions.All.ToDictionary(p => $"{authenticationOptions.ApplicationIdUri}/{p}")
+                    }
+                }
             });
         }
 
         private void AddSwaggerSecurityRequirement(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions c)
         {
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        },
-                        Scheme = "oauth2",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header
-                    },
-                    new List<string>()
-                }
-            });
+            c.OperationFilter<OAuthSecurityRequirementOperationFilter>();
         }
 
         private OpenApiInfo CreateOpenApiInfo(string version, string title, string description)
@@ -241,9 +270,9 @@ namespace Web.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<AuthenticationOptions> authenticationOptions)
         {
-            UseSwagger(app);
+            UseSwagger(app, authenticationOptions);
 
             if (env.IsDevelopment())
             {
@@ -260,14 +289,14 @@ namespace Web.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireAuthorization();
             });
 
             app.UseSpaStaticFiles();
             UseSpa(app, env);
         }
 
-        private void UseSwagger(IApplicationBuilder app)
+        private void UseSwagger(IApplicationBuilder app, IOptions<AuthenticationOptions> authenticationOptions)
         {
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -278,6 +307,8 @@ namespace Web.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
                 // c.RoutePrefix = string.Empty;
+
+                c.OAuthClientId(authenticationOptions.Value.ClientId);
             });
         }
 
