@@ -9,6 +9,8 @@ import { Button } from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import AvailabilityForm from './AvailabilityForm';
 import AvailabilityCard from './AvailabilityCard';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import Loading from '../common/Loading';
 
 class EditUser extends Component {
     state = {
@@ -20,8 +22,8 @@ class EditUser extends Component {
 
     componentDidMount() {
         if(CLIENT_DEV_ENV){
-            this.props.loadMasterlists()
-            this.props.loadSpecificUser(this.props.match.params.user_id)
+            this.props.loadMasterlists(['adminUser'])
+            this.props.loadSpecificUser(this.props.match.params.user_id, ['adminUser'])
             this.setState((state, props) => ({
                 ...this.state,
                 masterlist: props.masterlist,
@@ -29,17 +31,13 @@ class EditUser extends Component {
                 pending: false
             }))
         } else {
-            this.props.loadMasterlists()
-            .then(() => {
+            const userRoles = getUserRoles(this.context);
+            const loadMasterlistsPromise = this.props.loadMasterlists(userRoles);
+            const loadSpecificUserPromise = this.props.loadSpecificUser(this.props.match.params.user_id, userRoles);
+            Promise.all([loadMasterlistsPromise, loadSpecificUserPromise]).then(() => {
                 this.setState({
                     ...this.state,
-                    masterlist: this.props.masterlist
-                })
-            });
-            this.props.loadSpecificUser(this.props.match.params.user_id)
-            .then(() => {
-                this.setState({
-                    ...this.state,
+                    masterlist: this.props.masterlist,
                     userProfile: this.props.userProfile,
                     pending: false
                 })
@@ -49,14 +47,15 @@ class EditUser extends Component {
     }
 
     onSubmit = () => {
-        const user = this.state.userProfile.userSummary;
-        if(user.firstName === "" || user.lastName === ""){
+        const userRoles = getUserRoles(this.context);
+        const userSummary = this.state.userProfile.userSummary;
+        if(userSummary.firstName === "" || userSummary.lastName === ""){
             this.setState({
                 ...this.state,
                 error: "Unable to Save - User's Name is invalid"
             })
         } else {
-            this.props.updateSpecificUser(this.state.userProfile, this.props.history)
+            this.props.updateSpecificUser(this.state.userProfile, this.props.history, userRoles)
             this.setState({
                 ...this.state,
                 error: ""
@@ -162,9 +161,7 @@ class EditUser extends Component {
 
     render() {
         if (this.state.pending) {
-            return (<div className="activity-container">
-                <h1>Loading user data...</h1>
-            </div>);
+            return (<div className="activity-container"><Loading /></div>)
         } else {
             let disciplines = [];
             if (this.state.userProfile) {
@@ -198,7 +195,9 @@ class EditUser extends Component {
                         <TeamRequirements disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addDisciplines(opening)}
-                                          isUserPage={true}/>
+                                          isUserPage={true}
+                                          startDate={null}
+                                          endDate={null}/>
                         <p className="errorMessage">{this.state.error}</p>  
                         {disciplines} 
                         <hr />                       
@@ -219,6 +218,8 @@ class EditUser extends Component {
         }
     }
 }
+
+EditUser.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

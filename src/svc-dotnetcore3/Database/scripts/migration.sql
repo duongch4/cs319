@@ -30,11 +30,12 @@ CREATE TABLE [dbo].[Locations]
 )
 CREATE TABLE [dbo].[Users]
 (
-	[Id] [int] NOT NULL IDENTITY(1,1),
+	[Id] [nvarchar](100) NOT NULL,
 	[FirstName] [nvarchar](50) NOT NULL,
 	[LastName] [nvarchar](50) NOT NULL,
 	[Username] [nvarchar](50) NOT NULL,
 	[LocationId] [int] NOT NULL,
+	[Utilization] [int] NOT NULL, 
 	[IsAdmin] [bit] NOT NULL,
 	[IsManager] [bit] NOT NULL,
 	CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id]),
@@ -49,7 +50,7 @@ CREATE TABLE [dbo].[Projects]
 	[LocationId] [int] NOT NULL,
 	[CreatedAt] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
 	[UpdatedAt] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-	[ManagerId] [int] NOT NULL,
+	[ManagerId] [nvarchar](100) NOT NULL,
 	[ProjectStartDate] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
 	[ProjectEndDate] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
 	CONSTRAINT [PK_Projects] PRIMARY KEY CLUSTERED ([Id]),
@@ -57,7 +58,7 @@ CREATE TABLE [dbo].[Projects]
 	CONSTRAINT [FK_Projects_User] FOREIGN KEY ([ManagerId]) REFERENCES [Users]([Id]),
 	CONSTRAINT [UK_Projects_Number] UNIQUE ([Number])
 )
-​
+
 CREATE TABLE [dbo].[Skills]
 (
 	[Id] INT NOT NULL IDENTITY(1,1),
@@ -67,24 +68,24 @@ CREATE TABLE [dbo].[Skills]
 	CONSTRAINT [PK_Skills] PRIMARY KEY ([DisciplineId], [Id]),
 	CONSTRAINT [UK_Skills_Disciplines] UNIQUE ([DisciplineId], [Name])
 )
-​
+
   CREATE TABLE [dbo].[ResourceDiscipline]
 (
-	[ResourceId] [int] NOT NULL,
+	[ResourceId] [nvarchar](100) NOT NULL,
 	[DisciplineId] [int] NOT NULL,
 	[YearsOfExperience] NVARCHAR(10),
 	CONSTRAINT [FK_ResourceDiscipline_Disciplines] FOREIGN KEY ([DisciplineId]) REFERENCES [Disciplines]([Id]) ON DELETE NO ACTION,
 	CONSTRAINT [FK_ResourceDiscipline_Users] FOREIGN KEY ([ResourceId]) REFERENCES [Users] ([Id]) ON DELETE NO ACTION,
 	CONSTRAINT [PK_ResourceDiscipline] PRIMARY KEY ([ResourceId], [DisciplineId])
 )
-​
+
 CREATE TABLE [dbo].Positions
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
 	[DisciplineId] INT NOT NULL,
 	[ProjectId] INT NOT NULL,
-	[ProjectedMonthlyHours] INT NOT NULL,
-	[ResourceId] INT NULL,
+	[ProjectedMonthlyHours] NVARCHAR(4000) NOT NULL,
+	[ResourceId] NVARCHAR(100) NULL,
 	[PositionName] nvarchar(100) NULL,
 	[YearsOfExperience] nvarchar(10),
 	[IsConfirmed] [bit] NOT NULL,
@@ -92,10 +93,10 @@ CREATE TABLE [dbo].Positions
 	CONSTRAINT [FK_Positions_Disciplines] FOREIGN KEY (DisciplineId) REFERENCES Disciplines([Id]),
 	CONSTRAINT [FK_Positions_Users] FOREIGN KEY (ResourceId) REFERENCES [Users]([Id])
 )
-​
+
 CREATE TABLE [dbo].[ResourceSkill]
 (
-	[ResourceId] [int] Not Null,
+	[ResourceId] [nvarchar](100) Not Null,
 	[ResourceDisciplineId] [int] Not Null,
 	[SkillDisciplineId] [int] Not Null,
 	[SkillId] [int] Not Null,
@@ -117,13 +118,10 @@ CREATE TABLE [dbo].PositionSkills
 )
 CREATE TABLE [dbo].[OutOfOffice]
 (
-	[ResourceId][int] NOT NULL,
+	[ResourceId][nvarchar](100) NOT NULL,
 	[FromDate] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
 	[ToDate] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
 	[Reason] nvarchar(100)
 		CONSTRAINT [FK_OutOfOffice_ResourceId] FOREIGN KEY ([ResourceId]) REFERENCES [Users]([Id])
 		CONSTRAINT [PK_OutOfOffice] PRIMARY KEY ([ResourceId], [FromDate], [ToDate])
 )
-
-
-

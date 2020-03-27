@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useContext, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { loadProjects } from '../../redux/actions/projectsActions';
@@ -8,45 +8,49 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { Link } from 'react-router-dom'
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
-const _ProjectsPage = ({
-  projects,
-  loadProjects,
-}) => {
+const _ProjectsPage = (props) => {
+  const userRoles = getUserRoles(useContext(UserContext));
   useEffect(() => {
-    if (projects.length === 0) {
+    if (props.projects.length === 0) {
       if (CLIENT_DEV_ENV) {
-        loadProjects()
+        props.loadProjects(["adminUser"]);
       } else {
-        loadProjects()
-        .catch(error => {
-          alert('Loading projects failed' + error);
-        });
+        props.loadProjects(userRoles)
+            .catch(error => {
+              alert('Loading projects failed' + error);
+            });
       }
-      
     }
-  }, [projects, loadProjects]);
+  }, [props.projects, props.loadProjects, userRoles]);
   return (
-    
     <div className="activity-container">
         <div className="title-bar">
           <h1 className="greenHeader">Manage Projects</h1>
           <div className="fab-container">
+            <Link to={{
+              pathname: "/add_project",
+              state: {
+                profile: props.profile
+              }
+            }}>
             <Fab
                 style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
                 size={"small"}
-                color="primary" aria-label="add" component={Link} to="/add_project">
+                color="primary" aria-label="add">
              <AddIcon />
             </Fab>
+            </Link>
           </div>
         </div>
-        <ProjectList projects={projects}/>
+        <ProjectList projects={props.projects}/>
     </div>
   );
 };
 
 _ProjectsPage.propTypes = {
-  projects: PropTypes.array.isRequired,
+  props: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => {

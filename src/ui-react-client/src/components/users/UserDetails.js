@@ -9,6 +9,8 @@ import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import Loading from '../common/Loading';
 
 class UserDetails extends Component {
     state = {
@@ -17,13 +19,14 @@ class UserDetails extends Component {
 
     componentDidMount = () => {
       if(CLIENT_DEV_ENV){
-            this.props.loadSpecificUser(this.props.match.params.user_id);
+            this.props.loadSpecificUser(this.props.match.params.user_id, ['adminUser']);
             this.setState( {
                 ...this.state,
                 userProfile: this.props.userProfile
             });
         } else {
-            this.props.loadSpecificUser(this.props.match.params.user_id)
+            const userRoles = getUserRoles(this.context);
+            this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {
@@ -41,7 +44,7 @@ class UserDetails extends Component {
         if (Object.keys(userDetails).length === 0) {
             return (
                 <div className="activity-container">
-                    <h1>Loading User Data...</h1>
+                    <Loading />
                 </div>
             )
         } else {
@@ -57,7 +60,7 @@ class UserDetails extends Component {
                 userDetails.currentProjects.forEach((project, index) => {
                     let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
                     currentProjects.push(
-                        <ProjectCard number={index} project={project} canEditProject={false}
+                        <ProjectCard number={index + 1} project={project} canEditProject={false}
                                      onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
                         )
                 })
@@ -103,6 +106,8 @@ class UserDetails extends Component {
         }
     }
 }
+
+UserDetails.contextType = UserContext;
 
 UserDetails.propTypes = {
     userProfile: PropTypes.object

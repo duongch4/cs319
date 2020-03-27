@@ -43,11 +43,13 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 SELECT
-                    Province, STRING_AGG(CONVERT(nvarchar(max),CONCAT(City, '-', Id)), ',') as CitiesIds
-                FROM
-                    Locations
+                    p.Name AS Province,
+                    STRING_AGG(CONVERT(nvarchar(max),CONCAT(l.City, '#', l.Id)), ',') as CitiesIds
+                FROM Provinces p
+                LEFT JOIN Locations l
+                    ON l.Province = p.Name
                 GROUP BY
-                    Province
+                    p.Name
             ;";
 
             using var connection = new SqlConnection(connectionString);

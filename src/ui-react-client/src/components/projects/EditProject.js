@@ -8,6 +8,9 @@ import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import UserCard from "../users/UserCard";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import '../common/common.css'
+import Loading from '../common/Loading';
 
 class EditProject extends Component {
     state = {
@@ -19,8 +22,8 @@ class EditProject extends Component {
 
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadSingleProject(this.props.match.params.project_number);
-            this.props.loadMasterlists();
+            this.props.loadSingleProject(this.props.match.params.project_number, ['adminUser']);
+            this.props.loadMasterlists(['adminUser']);
             this.setState((state, props) => ({
                 ...this.state,
                 masterlist: props.masterlist,
@@ -28,8 +31,9 @@ class EditProject extends Component {
                 pending: false
             }));
         } else {
-            var promise_masterlist = this.props.loadMasterlists();
-            var promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number);
+            const userRoles = getUserRoles(this.context);
+            const promise_masterlist = this.props.loadMasterlists(userRoles);
+            const promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
             Promise.all([promise_masterlist, promise_singleProject])
                .then(() => {
                    this.setState((state, props) =>
@@ -52,7 +56,8 @@ class EditProject extends Component {
         if(this.state.error.length !== 0) {
             alert("Cannot Add Project - Please fix the errors in the form before submitting")
         } else {
-            this.props.updateProject(this.state.projectProfile, this.props.history);
+            const userRoles = getUserRoles(this.context);
+            this.props.updateProject(this.state.projectProfile, this.props.history, userRoles);
             this.setState({
                 ...this.state,
                 error: []
@@ -61,7 +66,8 @@ class EditProject extends Component {
     };
 
     onDelete = () => {
-        this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history);
+        const userRoles = getUserRoles(this.context);
+        this.props.deleteProject(this.state.projectProfile.projectSummary.projectNumber, this.props.history, userRoles);
     };
 
     addOpening = (opening) => {
@@ -78,6 +84,7 @@ class EditProject extends Component {
     removeOpening = (opening) => {
         const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
         this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
@@ -175,7 +182,9 @@ class EditProject extends Component {
                         <TeamRequirements disciplines={this.state.masterlist.disciplines}
                                           masterYearsOfExperience={this.state.masterlist.yearsOfExp}
                                           addOpening={(opening) => this.addOpening(opening)}
-                                          isUserPage={false}/>
+                                          isUserPage={false}
+                                          startDate={this.state.projectProfile.projectSummary.projectStartDate}
+                                          endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
                         <div className="errorMessage">{this.state.error}</div> 
                         <hr/>
                         {openings}
@@ -202,11 +211,17 @@ class EditProject extends Component {
             );
         }
         else {
-            return <div>Loading</div>
+            return (
+            <div className="activity-container">
+                <Loading />
+            </div>
+            )
         }
  
     }
 }
+
+EditProject.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

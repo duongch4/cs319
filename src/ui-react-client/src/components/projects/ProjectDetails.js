@@ -8,6 +8,9 @@ import {Link} from 'react-router-dom';
 import {loadSingleProject} from "../../redux/actions/projectProfileActions";
 import {formatDate} from "../../util/dateFormatter";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import ProjectManagerCard from "../users/ProjectManagerCard";
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import Loading from '../common/Loading';
 
 class ProjectDetails extends Component {
     state = {
@@ -16,7 +19,7 @@ class ProjectDetails extends Component {
 
     componentDidMount = () => {
         if (CLIENT_DEV_ENV) {
-            this.props.loadSingleProject(this.props.match.params.project_id);
+            this.props.loadSingleProject(this.props.match.params.project_id, ['adminUser']);
             var projectProfile = this.props.projectProfile;
             if (projectProfile) {
                 this.setState({
@@ -24,7 +27,8 @@ class ProjectDetails extends Component {
                 })
             }
         } else {
-            this.props.loadSingleProject(this.props.match.params.project_id)
+            const userRoles = getUserRoles(this.context);
+            this.props.loadSingleProject(this.props.match.params.project_id, userRoles)
                 .then(res => {
                     var projectProfile = this.props.projectProfile;
                     if (projectProfile) {
@@ -56,17 +60,13 @@ class ProjectDetails extends Component {
             }
 
             var teamMembersRender = [];
-            var userSummaries = this.state.projectProfile.usersSummary;
-            if (userSummaries.length > 0) {
-                userSummaries.forEach(userSummary => {
-                    teamMembersRender.push(
-                        <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>)
-                })
-            } else {
+            const userSummaries = this.state.projectProfile.usersSummary;
+            const projectManager = this.state.projectProfile.projectManager;
+            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
+            userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
-                    <p className="empty-statements" key={teamMembersRender.length}>There are currently no resources assigned to this project.</p>
-                )
-            }
+                    <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>)
+            });
 
             if (this.state.projectProfile === null) {
                 return (
@@ -108,11 +108,14 @@ class ProjectDetails extends Component {
                 </div>
             )
         } else {
-            return <div>Loading</div>
+            return (
+            <div className="activity-container"><Loading /></div>)
         }
 
     }
 }
+
+ProjectDetails.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

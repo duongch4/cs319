@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ProjectCard from './ProjectCard';
+import Loading from '../common/Loading';
 
 const ProjectList = ({ projects }) => {
   var projectList = [];
@@ -12,6 +13,10 @@ const ProjectList = ({ projects }) => {
       </div>
     )
   });
+
+  if(projects.length === 0){
+    return(<Loading />)
+  } 
   return (
       <div>
         {projectList}
