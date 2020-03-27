@@ -13,7 +13,7 @@ import YearsSearch from './YearsSearch';
 import DatePicker from "react-datepicker";
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
-
+import { UserContext, getUserRoles } from "../userContext/UserContext";
 
 class FilterTab extends Component {
     constructor(props) {
