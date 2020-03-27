@@ -2,25 +2,29 @@ import React, { Component } from 'react';
 import './UserStyles.css'
 import EditIcon from "@material-ui/icons/Edit";
 import {Link} from "react-router-dom";
+import {
+    LOW_UTILIZATION, 
+    MEDIUM_UTILIZATION, 
+    HIGH_UTILIZATION,
+    LOW_UTILIZATION_COLOUR,
+    MEDIUM_UTILIZATION_COLOUR,
+    HIGH_UTILIZATION_COLOUR,
+    OVER_UTILIZATION_COLOUR
+} from '../../config/config';
 
 class UserCard extends Component {
-    state ={
-        // these are the top of the range
-        low: 50,
-        medium: 85,
-        high: 100,
-    }
+
     render(){
         const {user, canEdit} = this.props;
-        let styleName = "";
-        if(user.utilization <= this.state.low){
-            styleName = "lowUtil"
-        } else if(user.utilization <= this.state.medium){
-            styleName = "mediumUtil"
-        } else if(user.utilization <= this.state.high){
-            styleName = "highUtil"
+        let colour = ""
+        if(user.utilization <= LOW_UTILIZATION){
+            colour = LOW_UTILIZATION_COLOUR
+        } else if(user.utilization <= MEDIUM_UTILIZATION){
+            colour = MEDIUM_UTILIZATION_COLOUR
+        } else if(user.utilization <= HIGH_UTILIZATION){
+            colour = HIGH_UTILIZATION_COLOUR
         } else {
-            styleName = "overUtil"
+            colour = OVER_UTILIZATION_COLOUR
         }
         return(
             <div className="card-summary">
@@ -36,7 +40,7 @@ class UserCard extends Component {
                     )}
                 </div>
                 <div className="card-summary-title utilization">
-                    <p className={styleName}>{user.utilization}%</p>
+                    <p style={{color: colour}}>{user.utilization}%</p>
                 </div>
             </div>
         )
