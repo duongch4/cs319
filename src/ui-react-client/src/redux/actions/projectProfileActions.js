@@ -34,7 +34,7 @@ export const deleteProjectData = () => {
     };
 };
 
-export const loadSingleProject = (projectNumber) => {
+export const loadSingleProject = (projectNumber, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             let project = _initialState_client.projectProfiles.filter(projectProfile => {
@@ -42,64 +42,78 @@ export const loadSingleProject = (projectNumber) => {
             });
             dispatch(loadSingleProjectData(project[0]));
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.get(`${baseURL + projectNumber}`, { headers });
             }).then(response => {
                 dispatch(loadSingleProjectData(response.data.payload));
             }).catch(error => {
-                throw error;
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             });
         }
     };
 };
 
-export const createProject = (project, history) => {
+export const createProject = (project, history, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(createProjectData(project))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.post(baseURL, project, { headers });
             }).then(_ => {
                 dispatch(createProjectData(project));
                 dispatch(addProjectSummaryData(project.projectSummary));
-                history.push('/projects');
+                history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                throw error;
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             })
         }
     };
 };
 
-export const updateProject = (project, history) => {
+export const updateProject = (project, history, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(updateProjectData(project));
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.put(`${baseURL + project.projectSummary.projectNumber}`, project, { headers });
             }).then(_ => {
                 dispatch(updateProjectData(project));
                 dispatch(updateProjectSummaryData(project.projectSummary));
-                history.push('/projects');
+                history.push('/projects/' + project.projectSummary.projectNumber);
+            }).catch(error => {
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             })
         }
     };
 };
 
-export const deleteProject = (number, history) => {
+export const deleteProject = (number, history, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(deleteProjectData(number))
         } else {
-            return getHeaders().then(headers => {
+            return getHeaders(userRoles).then(headers => {
                 return axios.delete(`${baseURL + number}`, { headers });
             }).then(_ => {
                 dispatch(deleteProjectData());
                 dispatch(deleteProjectSummaryData(number));
                 history.push('/projects');
-            }).catch(err => {
-                alert(err);
+            }).catch(error => {
+                let err = error.response.data.message
+                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)
+                alert(errorParsed)
             });
         }
     };

@@ -9,6 +9,8 @@ import {Button} from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import {loadSpecificUser} from "../../redux/actions/userProfileActions";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import Loading from '../common/Loading';
 
 class UserDetails extends Component {
     state = {
@@ -17,13 +19,14 @@ class UserDetails extends Component {
 
     componentDidMount = () => {
       if(CLIENT_DEV_ENV){
-            this.props.loadSpecificUser(this.props.match.params.user_id);
+            this.props.loadSpecificUser(this.props.match.params.user_id, ['adminUser']);
             this.setState( {
                 ...this.state,
                 userProfile: this.props.userProfile
             });
         } else {
-            this.props.loadSpecificUser(this.props.match.params.user_id)
+            const userRoles = getUserRoles(this.context);
+            this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {
@@ -41,7 +44,7 @@ class UserDetails extends Component {
         if (Object.keys(userDetails).length === 0) {
             return (
                 <div className="activity-container">
-                    <h1>Loading User Data...</h1>
+                    <Loading />
                 </div>
             )
         } else {
@@ -53,30 +56,35 @@ class UserDetails extends Component {
             }
 
             const currentProjects = [];
-            if(userDetails.currentProjects){
+            if(userDetails.currentProjects && userDetails.currentProjects.length > 0){
                 userDetails.currentProjects.forEach((project, index) => {
                     let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
                     currentProjects.push(
-                        <Link to={'/projects/' + project.projectNumber}>
-                            <ProjectCard number={index} project={project} canEditProject={false}
-                                         onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
-                        </Link>)
+                        <ProjectCard number={index + 1} project={project} canEditProject={false}
+                                     onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
+                        )
                 })
+            } else {
+                currentProjects.push(<p className="empty-statements" key={currentProjects.length}>There are currently no projects assigned to this resource.</p>)
             }
             let unavailability = [];
-            if(userDetails.availability) {
+            if(userDetails.availability && userDetails.availability.length > 0) {
                 userDetails.availability.forEach(currentAvailability => {
                     unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
                 })
+            } else {
+                unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
             }
             return (<div className="activity-container">
                 <div className="title-bar">
                     <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
-                    <Button variant="contained"
-                            style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                            disableElevation>
-                        Edit
-                    </Button>
+                    <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
+                        <Button variant="contained"
+                                style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                disableElevation>
+                            Edit
+                        </Button>
+                    </Link>
                 </div>
                 <div className="section-container">
                     <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>
@@ -98,6 +106,8 @@ class UserDetails extends Component {
         }
     }
 }
+
+UserDetails.contextType = UserContext;
 
 UserDetails.propTypes = {
     userProfile: PropTypes.object

@@ -7,6 +7,8 @@ import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import {connect} from 'react-redux';
 import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
+import Loading from '../common/Loading';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
 class AddProject extends Component {
     state = {
@@ -18,39 +20,42 @@ class AddProject extends Component {
                     city: "",
                     province: ""
                 },
-                projectStartDate: "",
-                projectEndDate: "",
-                projectNumber: "2020-" + Math.floor(Math.random() * 10000) + "-00"
+                projectStartDate: new Date(),
+                projectEndDate: new Date(),
+                projectNumber: ""
             },
             projectManager: {
-                userID: 2,
-                firstName: "Charles",
-                lastName: "Bartowski"
+                // these fields are from Azure ADs profile object which keeps track of the current user
+                userID: this.props.location.state.profile.id,
+                firstName: this.props.location.state.profile.givenName,
+                lastName: this.props.location.state.profile.surname
             },
             usersSummary: [],
             openings: [],
         },
         masterlist: this.props.masterlist,
-        pending: true
+        pending: true,
+        error: []
     };
 
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
-            this.props.loadMasterlists();
+            this.props.loadMasterlists(["adminUser"]);
             this.setState({
                 ...this.state,
                 masterlist: this.props.masterlist,
                 pending: false
             })
         } else {
-            this.props.loadMasterlists()
-            .then(() => {
-                this.setState({
-                    ...this.state,
-                    masterlist: this.props.masterlist,
-                    pending: false
+            const userRoles = getUserRoles(this.context);
+            this.props.loadMasterlists(userRoles)
+                .then(() => {
+                    this.setState({
+                        ...this.state,
+                        masterlist: this.props.masterlist,
+                        pending: false
+                    })
                 })
-            })
         }
         
     }
@@ -58,38 +63,98 @@ class AddProject extends Component {
     addOpening = (opening) => {
         const openings = [...this.state.projectProfile.openings, opening];
         this.setState({
+            ...this.state,
+            projectProfile: {
+                ...this.state.projectProfile,
+                openings
+            },
+        })
+    };
+
+    removeOpening = (opening) => {
+        const openings = this.state.projectProfile.openings.filter(obj => obj !== opening);
+        this.setState({
+            ...this.state,
             projectProfile: {
                 ...this.state.projectProfile,
                 openings
             }
         })
-    };
+    }
+
+    compare_dates = (date1,date2) => {
+        if (date1<=date2) return true;
+        else return false;
+     }
 
     addProjDetails = (project) => {
-        this.setState({
-            projectProfile: {
-                ...this.state.projectProfile,
-                projectSummary: {
-                    ...this.state.projectProfile.projectSummary,
-                    title: project.title,
-                    projectStartDate: project.projectStartDate,
-                    projectEndDate: project.projectEndDate,
-                    location: project.location
-                }
-            }
-        })
+        let error = []
+        if(project.title === "" || project.title === null){
+            error = [<p className="errorMessage" key={error.length}>Error: Cannot add a project with no title</p>]
+        }
+        if(project.projectNumber === "") {
+            error = [...error, <p className="errorMessage" key={error.length}>Error: Cannot add a project with no Project Number</p>]
+        }
+        if (!this.compare_dates(project.projectStartDate, project.projectEndDate)){
+            error = [...error, <p className="errorMessage" key={error.length}>Error: End date cannot be before Start Date</p>]
+        }
+        if (project.location.province === "DEFAULT" || project.location.city === "DEFAULT") {
+            error = [...error, <p className="errorMessage" key={error.length}>Error: Location is not valid</p>]
+        } 
+        if(error.length > 0) {
+            this.setState({
+                ...this.state,
+                projectProfile: {
+                    ...this.state.projectProfile,
+                    projectSummary: {
+                        ...this.state.projectProfile.projectSummary,
+                        title: project.title,
+                        projectNumber: project.projectNumber,
+                        projectStartDate: project.projectStartDate,
+                        projectEndDate: project.projectEndDate,
+                        location: project.location
+                    }
+                },
+                error: error
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                projectProfile: {
+                    ...this.state.projectProfile,
+                    projectSummary: {
+                        ...this.state.projectProfile.projectSummary,
+                        title: project.title,
+                        projectNumber: project.projectNumber,
+                        projectStartDate: project.projectStartDate,
+                        projectEndDate: project.projectEndDate,
+                        location: project.location
+                    }
+                },
+                error: []
+            })
+        }
     };
 
     onSubmit = () => {
-        let newProject = this.state.projectProfile;
-        this.props.createProject(newProject, this.props.history);
+        if(this.state.error.length !== 0) {
+            alert("Cannot Add Project - Please fix the errors in the form before submitting")
+        } else {
+            let newProject = this.state.projectProfile;
+            const userRoles = getUserRoles(this.context);
+            this.props.createProject(newProject, this.props.history, userRoles);
+            this.setState({
+                ...this.state,
+                error: []
+            })
+        }
     };
 
     render() {
         if (this.state.pending) {
             return (
                 <div className="activity-container">
-                    <h1>Loading form...</h1>
+                    <Loading />
                 </div>
             )
         } else {
@@ -97,6 +162,7 @@ class AddProject extends Component {
             this.state.projectProfile.openings.forEach((opening, index) => {
                 openings.push(<Openings key={"openings" + index} opening={opening}
                                         commitment={opening.commitmentMonthlyHours}
+                                        isRemovable={true} removeOpening={(opening) => this.removeOpening(opening)}
                                         index={index}/>)
             });
             return (
@@ -107,8 +173,13 @@ class AddProject extends Component {
                     <div className="section-container">
                         <TeamRequirements disciplines={this.props.masterlist.disciplines}
                                           masterYearsOfExperience={this.props.masterlist.yearsOfExp}
-                                          addOpening={(opening) => this.addOpening(opening)}/>
+                                          addOpening={(opening) => this.addOpening(opening)}
+                                          isUserPage={false}
+                                          startDate={this.state.projectProfile.projectSummary.projectStartDate}
+                                          endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
+                        {this.state.error}
                         <hr/>
+                       
                         {openings}
                     </div>
                     <div className="section-container">
@@ -122,6 +193,8 @@ class AddProject extends Component {
         }
     }
 }
+
+AddProject.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {

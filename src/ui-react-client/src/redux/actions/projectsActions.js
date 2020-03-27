@@ -14,37 +14,40 @@ export const loadProjectsData = projectSummaries => {
 };
 
 export const deleteProjectSummaryData = projectNumber => {
-  return {
-    type: types.DELETE_PROJECT_SUMMARY,
-    projectNumber: projectNumber
-  }
+    return {
+        type: types.DELETE_PROJECT_SUMMARY,
+        projectNumber: projectNumber
+    }
 };
 
 export const addProjectSummaryData = projectSummary => {
-  return {
-    type: types.ADD_PROJECT_SUMMARY,
-    projectSummary: projectSummary
-  }
+    return {
+        type: types.ADD_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
 export const updateProjectSummaryData = projectSummary => {
-  return {
-    type: types.UPDATE_PROJECT_SUMMARY,
-    projectSummary: projectSummary
-  }
+    return {
+        type: types.UPDATE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
 };
 
-export const loadProjects = () => {
+export const loadProjects = (userRoles) => {
   return async dispatch => {
     if (CLIENT_DEV_ENV) {
       dispatch(loadProjectsData(_initialState_client.projectSummaries));
     } else {
-      return getHeaders().then(headers => {
+      return getHeaders(userRoles).then(headers => {
         return axios.get(baseURL, { headers });
       }).then(response => {
         dispatch(loadProjectsData(response.data.payload));
       }).catch(error => {
-        throw error;
+          let err = error.response.data.message
+          let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+          console.log(err)
+          alert(errorParsed)
       });
     }
   };

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import './UserStyles.css'
-import EditIcon from "@material-ui/icons/Edit";
+import '../../users/UserStyles.css'
 import {Link} from "react-router-dom";
 
-class UserCard extends Component {
+class SearchUserCard extends Component {
     state ={
         // these are the top of the range
         low: 50,
@@ -11,8 +10,8 @@ class UserCard extends Component {
         high: 100,
     }
     render(){
-        const {user, canEdit} = this.props;
-        let styleName = "";
+        const {user} = this.props;
+        let styleName = ""
         if(user.utilization <= this.state.low){
             styleName = "lowUtil"
         } else if(user.utilization <= this.state.medium){
@@ -29,11 +28,7 @@ class UserCard extends Component {
                         <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
-                    {canEdit && (
-                        <Link to={'/edituser/' + user.userID} className="action-link">
-                            <EditIcon style={{fontSize: 'small'}}/> Edit
-                        </Link>
-                    )}
+                    <p><b>Disciplines:</b> {user.resourceDiscipline.discipline}</p>
                 </div>
                 <div className="card-summary-title utilization">
                     <p className={styleName}>{user.utilization}%</p>
@@ -43,4 +38,4 @@ class UserCard extends Component {
     }
 }
 
-export default UserCard
+export default SearchUserCard

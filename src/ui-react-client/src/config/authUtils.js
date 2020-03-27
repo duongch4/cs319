@@ -1,5 +1,6 @@
 import { UserAgentApplication } from "msal";
 import { UI_ROOT, AUTHORITY, CLIENT_ID, API_ID } from "./config.js";
+import {useContext} from "react";
 
 export const requiresInteraction = errorMessage => {
     if (!errorMessage || !errorMessage.length) {
@@ -56,9 +57,14 @@ export const GRAPH_REQUESTS = {
             GRAPH_SCOPES.USER_READ
         ]
     },
-    API: {
+    API_ADMIN: {
         scopes: [
             GRAPH_SCOPES.API_ADMIN,
+            GRAPH_SCOPES.API_REGULAR
+        ]
+    },
+    API_REGULAR: {
+        scopes: [
             GRAPH_SCOPES.API_REGULAR
         ]
     },
@@ -111,9 +117,9 @@ export const acquireToken = async (tokenReqScopes, redirect) => {
     });
 };
 
-export const getHeaders = async () => {
+export const getHeaders = async (userRoles) => {
     try {
-        const tokenRequest = GRAPH_REQUESTS.API;
+        const tokenRequest = (userRoles.includes("adminUser")) ? GRAPH_REQUESTS.API_ADMIN : GRAPH_REQUESTS.API_REGULAR;
         const tokenResponse = await acquireToken(tokenRequest, isIE());
         // console.log("MY TOKEN RESPONSE", tokenResponse); // TODO: Lots of Info here!!!
         return { Authorization: `Bearer ${tokenResponse.accessToken}` };

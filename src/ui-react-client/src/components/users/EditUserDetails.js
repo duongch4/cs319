@@ -18,7 +18,8 @@ class EditUserDetails extends Component {
     };
 
     componentDidMount() {
-        let provinces = Array.from(Object.keys(this.props.locations));
+        let provinces = Object.keys(this.props.locations);
+        let cities = Object.keys(this.props.locations[this.props.userProfile.location.province]);
         this.setState({
             ...this.state,
             userSummary: {
@@ -28,23 +29,26 @@ class EditUserDetails extends Component {
                 location: this.props.userProfile.location
             },
             province_options: provinces,
+            city_options: cities
         })
     }
 
     handleChange = (e) => {
         if (e.target.id === "city") {
+            let locationID = this.props.locations[this.state.userSummary.location.province][e.target.value];
             this.setState({
                 ...this.state,
                 userSummary: {
                     ...this.state.userSummary,
                     location: {
                         ...this.state.userSummary.location,
-                        locationID: 0,
+                        locationID: locationID,
                         city: e.target.value
                     }
                     }}, () => this.props.addUserDetails(this.state.userSummary));
         } else if (e.target.id === "province") {
-            let newCities = this.props.locations[e.target.value];
+            let newCities = Object.keys(this.props.locations[e.target.value]);
+            let locationID = this.props.locations[this.state.userSummary.location.province][newCities[0]];
             this.setState(
                 {
                     ...this.state,
@@ -53,7 +57,8 @@ class EditUserDetails extends Component {
                         location: {
                             ...this.state.userSummary.location,
                             province: e.target.value,
-                            locationID: 0
+                            city: newCities[0],
+                            locationID: locationID
                         }},
                     city_options: newCities
                 }, () => this.props.addUserDetails(this.state.userSummary));
@@ -79,7 +84,6 @@ class EditUserDetails extends Component {
         this.state.province_options.forEach((province, i) => {
             province_render.push(<option key={"provinces_" + i} value={province}>{province}</option>)
         });
-
         return (
             <div className="form-section">
                 <h2 className="darkGreenHeader">Personal Details</h2>
@@ -94,8 +98,8 @@ class EditUserDetails extends Component {
                         <option value="DEFAULT" disabled>{userProfile.location.province}</option>
                         {province_render}
                     </select>
-                    <select className="input-box" defaultValue={'DEFAULT'} id="city" onChange={this.handleChange}>
-                        <option value="DEFAULT" disabled>{userProfile.location.city}</option>
+                    <select className="input-box" defaultValue={userProfile.location.city} id="city" onChange={this.handleChange}>
+                        <option value="DEFAULT" disabled>City</option>
                         {city_render}
                     </select>
                 </label>
