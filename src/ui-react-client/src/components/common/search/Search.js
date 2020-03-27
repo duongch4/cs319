@@ -122,7 +122,8 @@ class Search extends Component {
                         sortBy={this.state.sort}
                         stopLoading={this.stopLoading} 
                         pageLeft={this.pageLeft}
-                        pageRight={this.pageRight}/>
+                        pageRight={this.pageRight}
+                        master={this.state.masterlist}/>
         </div>
         }
       </div>

@@ -9,12 +9,21 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 class SearchResults extends Component {
     constructor(props) {
         super(props);
-        this.yearsMap = {"10+": 10, "5-10": 5, "3-5": 3, "1-3": 1};
+        this.yearsMap = this.getYears(this.props.master.yearsOfExp);
         this.state = {
             userSummaries: [],
             noResults: false,
             lastPage: false,
         };
+    }
+
+    getYears = (yearsArr) => {
+        var arr = {};
+        yearsArr.forEach((year) => {
+            var digits = year.replace(/(^\d+)(.+$)/i,'$1');
+            arr = {...arr, [year]: parseInt(digits)};
+        });
+        return arr;
     }
     
     componentDidMount() {
@@ -146,6 +155,7 @@ class SearchResults extends Component {
     };
 
     render(){
+        console.log(this.yearsMap);
         var users = this.combineUsers();
 
         if (this.props.sortBy != null) {
