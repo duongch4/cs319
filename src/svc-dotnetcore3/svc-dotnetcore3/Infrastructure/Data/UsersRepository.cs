@@ -40,7 +40,7 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 select
-                    Id, FirstName, LastName, Username, LocationId, IsAdmin, IsManager
+                    *
                 from
                     Users
                 where 
@@ -48,7 +48,8 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId });
+            var sqlRes = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = userId });
+            return sqlRes;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAtLocation(Location location)
@@ -548,6 +549,26 @@ namespace Web.API.Infrastructure.Data
             });
             return result == 1 ? user.UserID : "-1";
         }
+
+        public async Task<User> UpdateUtilizationOfUser(int util, string userId) 
+        {
+            var sql = @"
+                update Users
+                set Utilization = @Util
+                where Id = @Id;
+
+                select 
+                    *
+                from Users
+                where Id = @Id;
+            ;";
+
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QuerySingleAsync<User>(sql, new {Util = util, 
+                                                                     Id = userId});
+        }
+
 
         public async Task<IEnumerable<UserResource>> GetAllUsersGeneral()
         {

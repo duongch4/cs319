@@ -1,29 +1,28 @@
-import React, { useEffect } from 'react';
+import React, {useContext, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import UserList from './UserList';
 import { loadUsers } from '../../redux/actions/usersActions';
 import {CLIENT_DEV_ENV} from '../../config/config';
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 
-const UsersPage = ({
-  users,
-  loadUsers,
-}) => {
+const UsersPage = (props) => {
+  const userRoles = getUserRoles(useContext(UserContext));
   useEffect(() => {
-    if(CLIENT_DEV_ENV && users.length === 0) {
-      loadUsers()
+    if (CLIENT_DEV_ENV && props.users.length === 0) {
+      props.loadUsers(["adminUser"])
     } else {
-      if (users.length === 0) {
-        loadUsers()
+      if (props.users.length === 0) {
+        props.loadUsers(userRoles)
             .catch(error => {
               alert('Loading users failed' + error);
             });
       }
-    }}, [users, loadUsers]);
+    }}, [props.users, props.loadUsers, userRoles]);
   return (
     <div className="activity-container">
         <h1 className="greenHeader">Users</h1>
-        <UserList users={users} />
+        <UserList users={props.users} />
     </div>
   );
 };

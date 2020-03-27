@@ -7,7 +7,6 @@ namespace Web.API.Application.Repository
     //TODO
     public interface IUtilizationRepository
     {
-        //GET
-        Task<IEnumerable<rawUtilization>> GetUtilizationOfUser(string userId);
+        Task<int> CalculateUtilizationOfUser(IEnumerable<Position> positionsOfUser, IEnumerable<OutOfOffice> outOfOffice);
     }
 }

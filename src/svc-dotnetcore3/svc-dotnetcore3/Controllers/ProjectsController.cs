@@ -595,7 +595,6 @@ namespace Web.API.Controllers
                     var error = new NotFoundException("The given positionId cannot be found in the database");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
-                Log.Information("{@a}", position);
 
                 var response = new UpdatedResponse<Position>(position, "Successfully retrieved");
                 return StatusCode(StatusCodes.Status201Created, response);

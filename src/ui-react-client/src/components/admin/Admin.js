@@ -15,6 +15,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete'
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class Admin extends Component {
@@ -44,7 +45,7 @@ class Admin extends Component {
     componentDidMount(){
         if(this.state.masterlist.yearsOfExp.length === 0){
             if(CLIENT_DEV_ENV){
-                this.props.loadMasterlists()
+                this.props.loadMasterlists(['adminUser'])
                 var masterlist = this.props.masterlist
                     this.setState({
                         ...this.state,
@@ -60,7 +61,8 @@ class Admin extends Component {
                         selectedprovince: Object.keys(masterlist.locations)[0]
                     })
             } else {
-                this.props.loadMasterlists()
+                const userRoles = getUserRoles(this.context);
+                this.props.loadMasterlists(userRoles)
                 .then(() => {
                     var masterlist = this.props.masterlist
                     this.setState({
@@ -83,31 +85,31 @@ class Admin extends Component {
 
     componentDidUpdate(prevProps){
         let found = false;
-        Object.values(this.props.masterlist.disciplines).filter(elem => {
-            if(elem.disciplineID === this.state.skill.disciplineID){
-                found = true
+        if (this.props.masterlist.disciplines) {
+            Object.values(this.props.masterlist.disciplines).filter(elem => {
+                if(elem.disciplineID === this.state.skill.disciplineID){
+                    found = true
+                }
+                return true;
+            })
+            if(!found){
+                let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
+                this.setState({
+                    ...this.state,
+                    skill: {
+                        ...this.state.skill,
+                        disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
+                    },
+                    masterlist: this.props.masterlist,
+                })
             }
-            return true;
-        })
-        if(!found){
-            let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
-            this.setState({
-                ...this.state,
-                skill: {
-                    ...this.state.skill,
-                    disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
-                },
-                masterlist: this.props.masterlist,
-            })
+            else if(prevProps.masterlist !== this.props.masterlist){
+                this.setState({
+                    ...this.state,
+                    masterlist: this.props.masterlist
+                })
+            }
         }
-        else if(prevProps.masterlist !== this.props.masterlist){
-            this.setState({
-                ...this.state,
-                masterlist: this.props.masterlist
-            })
-        }
-        
-        
     }
 
 
@@ -133,10 +135,16 @@ class Admin extends Component {
 
     onSubmit = (e) => {
         e.preventDefault();
+        let userRoles;
+        if (CLIENT_DEV_ENV) {
+            userRoles = ['adminUser'];
+        } else {
+            userRoles = getUserRoles(this.context);
+        }
         switch(e.target.name) {
             case "discipline":
                 const discipline = this.state.discipline;
-                this.props.createDiscpline(discipline);
+                this.props.createDiscpline(discipline, userRoles);
                 this.setState({
                     ...this.state,
                     discipline: {
@@ -148,7 +156,7 @@ class Admin extends Component {
                 return;
             case "skill":
                 const skill = this.state.skill;
-                this.props.createSkill(skill);
+                this.props.createSkill(skill, userRoles);
                 this.setState({
                     ...this.state,
                     skill:{
@@ -159,7 +167,7 @@ class Admin extends Component {
                 return ;
             case "province":
                 const location = this.state.location;
-                this.props.createProvince(location);
+                this.props.createProvince(location, userRoles);
                 this.setState({
                     ...this.state,
                     location:{
@@ -176,7 +184,7 @@ class Admin extends Component {
                         province: this.state.selectedprovince
                     }
                 }, () =>  {
-                    this.props.createCity(this.state.location)
+                    this.props.createCity(this.state.location, userRoles)
                     this.setState({
                         ...this.state,
                         location:{
@@ -193,15 +201,30 @@ class Admin extends Component {
     }
 
     removeItem = (e, item) => {
+        let userRoles;
+        if (CLIENT_DEV_ENV) {
+            userRoles = ['adminUser'];
+        } else {
+            userRoles = getUserRoles(this.context);
+        }
         switch(e) {
             case "discipline":
-                return this.props.deleteDiscipline(this.state.masterlist.disciplines[item].disciplineID);
+                return this.props.deleteDiscipline(
+                    this.state.masterlist.disciplines[item].disciplineID,
+                    userRoles
+                );
             case "skill":
-                return this.props.deleteSkill(this.state.skill.disciplineID, item);
+                return this.props.deleteSkill(
+                    this.state.skill.disciplineID, item, userRoles
+                );
             case "province":
-                return this.props.deleteProvince(item);
+                return this.props.deleteProvince(item, userRoles);
             case "city":
-                return this.props.deleteCity(item, this.state.masterlist.locations[this.state.selectedprovince][item]);
+                return this.props.deleteCity(
+                    item,
+                    this.state.masterlist.locations[this.state.selectedprovince][item],
+                    userRoles
+                );
             default:
                 console.log("ERR")
         }
@@ -338,6 +361,8 @@ class Admin extends Component {
 Admin.propTypes = {
     masterlist: PropTypes.object.isRequired
 };
+
+Admin.contextType = UserContext;
 
 const mapStateToProps = state => {
     return {
