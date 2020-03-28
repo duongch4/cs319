@@ -84,12 +84,6 @@ namespace Web.API
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            // // TODO: Allows auth to be bypassed for IntegrationTests for now!!
-            // if (_environment.EnvironmentName.Equals("IntegrationTesting"))
-            // {
-            //     services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
-            // }
-
             AddSpaStaticFiles(services);
 
             AddSwagger(services, authenticationOptions);
