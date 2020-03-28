@@ -20,17 +20,23 @@ export const performUserSearch = (filterParams, userRoles) => {
         } else {
             return getHeaders(userRoles).then(headers => {
                 return axios
-                    .post(`${baseURL}`, filterParams, { headers })
-                    .then(response => {
-                        dispatch(getUsers(response.data.payload));
-                    })
-                    .catch(error => {
+                .post(`${baseURL}`, filterParams, { headers })
+                .then(response => {
+                    dispatch(getUsers(response.data.payload));
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        alert('getting users from search parameters failed: ' + errorParsed);
-                    });
-            });
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed)
+                })
+            })
         }
-    };
+    }
 };
