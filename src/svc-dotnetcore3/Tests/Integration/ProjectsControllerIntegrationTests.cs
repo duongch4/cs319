@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using Tests.Integration.Utils;
 using Xunit;
 
-using StatusCodes = System.Net.HttpStatusCode;
+using System.Net.Http;
+using System.Net;
 using Newtonsoft.Json;
 
 using Serilog;
@@ -25,19 +26,24 @@ namespace Tests.Integration
         }
 
         [Fact]
-        public async Task GetAllProjects()
+        public async Task GetAllProjects_NoAuthentication()
         {
-            // var settings = Settings;
-            var response = await Client.GetAsync("/api/projects");
-            Assert.Equal(StatusCodes.Unauthorized, response.StatusCode);
-            // Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
+            var req = new HttpRequestMessage(HttpMethod.Get, "/api/projects");
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
+        }
 
-            // response.EnsureSuccessStatusCode(); // Status Code: 200-299
-
+        [Fact]
+        public async Task GetAllProjects_AppAuthentication()
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, "/api/projects");
+            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            res.EnsureSuccessStatusCode(); // Status Code: 200-299
+            
             // var responseString = await response.Content.ReadAsStringAsync();
             // var responseJSON = JsonConvert.DeserializeObject<OkResponse<IEnumerable<ProjectSummary>>>(responseString);
-
-            // Assert.Contains("Google", responseString);
         }
     }
 }
