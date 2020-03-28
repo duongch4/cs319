@@ -1,5 +1,6 @@
 import { UserAgentApplication } from "msal";
 import { UI_ROOT, AUTHORITY, CLIENT_ID, API_ID } from "./config.js";
+import axios from "axios";
 
 export const requiresInteraction = errorMessage => {
     if (!errorMessage || !errorMessage.length) {
@@ -14,14 +15,19 @@ export const requiresInteraction = errorMessage => {
 };
 
 export const fetchMsGraph = async (url, accessToken) => {
-    const response = await fetch(url, {
+    const options = {
+        method: "GET",
+        url: url,
         headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate", // prevent IE11 from auto loading profile from cache!!!
-            Authorization: `Bearer ${accessToken}`
+            Authorization: `Bearer ${accessToken}`,
+            "Cache-Control": "no-cache, no-store",
+            Pragma: "no-cache"
         }
-    });
-
-    return response.json();
+    };
+    const response = await axios(options);
+    if (response && response.status === 200 && response.statusText === "OK") {
+        return await response.data;
+    }
 };
 
 export const isIE = () => {
