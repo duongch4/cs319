@@ -376,7 +376,6 @@ namespace Web.API.Infrastructure.Data
                         if (!currentOpeningIds.Contains(opening.PositionID))
                         {
                             var newOpeningId = await this.CreateAnOpeningPosition(connection, opening, projectId);
-
                             if (opening.Skills.Count != 0)
                             {
                                 foreach (var skill in opening.Skills)
@@ -479,7 +478,8 @@ namespace Web.API.Infrastructure.Data
                 DisciplineName = opening.Discipline,
                 ProjectId = projectId,
                 ProjectedMonthlyHours = hours,
-                YearsOfExperience = opening.YearsOfExp
+                YearsOfExperience = opening.YearsOfExp,
+                PositionId = opening.PositionID
             });
             connection.Close();
 
