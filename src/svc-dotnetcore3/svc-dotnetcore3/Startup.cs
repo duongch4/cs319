@@ -84,11 +84,11 @@ namespace Web.API
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            // TODO: Allows auth to be bypassed for IntegrationTests for now!!
-            if (_environment.EnvironmentName.Equals("IntegrationTests"))
-            {
-                services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
-            }
+            // // TODO: Allows auth to be bypassed for IntegrationTests for now!!
+            // if (_environment.EnvironmentName.Equals("IntegrationTesting"))
+            // {
+            //     services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+            // }
 
             AddSpaStaticFiles(services);
 
@@ -102,7 +102,7 @@ namespace Web.API
                 Authority = $@"{azureAdOptions.Authority}/v2.0",
                 AuthorizationUrl = $@"{azureAdOptions.Authority}/oauth2/v2.0/authorize",
                 ClientId = azureAdOptions.ClientId,
-                ApplicationIdUri =azureAdOptions.ApplicationIdUri
+                ApplicationIdUri = azureAdOptions.ApplicationIdUri
             };
         }
 
