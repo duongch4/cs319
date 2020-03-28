@@ -109,11 +109,11 @@ namespace Tests.Unit
             ).Throws(exception);
         }
 
-        private void Setup_DisciplinesRepo_CreateADiscipline_Default(DisciplineResource returnVal)
+        private void Setup_DisciplinesRepo_CreateADiscipline_Default(int returnVal)
         {
             _mockDisciplinesRepo.Setup(
-                repo => repo.CreateADiscipline(returnVal)
-            ).ReturnsAsync(0);
+                repo => repo.CreateADiscipline(It.IsAny<DisciplineResource>())
+            ).ReturnsAsync(returnVal);
         }
 
         private void Setup_DisciplinesRepo_DeleteADiscipline_ThrowsException(System.Exception exception)
@@ -123,31 +123,19 @@ namespace Tests.Unit
             ).Throws(exception);
         }
 
-        private void Setup_DisciplinesRepo_DeleteADiscipline_NullDiscipline(int returnVal)
+        private void Setup_DisciplinesRepo_DeleteADiscipline_Default(Discipline returnVal)
         {
-            Discipline repoDiscipline = null;
             _mockDisciplinesRepo.Setup(
-                repo => repo.DeleteADiscipline(returnVal)
-            ).ReturnsAsync(repoDiscipline);
-        }
-
-        private void Setup_DisciplinesRepo_DeleteADiscipline_Default(int returnVal)
-        {
-            var returnDiscipline = new Discipline{
-                Id = returnVal,
-                Name = ""
-            };
-            _mockDisciplinesRepo.Setup(
-                repo => repo.DeleteADiscipline(returnVal)
-            ).ReturnsAsync(returnDiscipline);
+                repo => repo.DeleteADiscipline(It.IsAny<int>())
+            ).ReturnsAsync(returnVal);
         }
         
         /********** Helper function for skill repo setup **********/
-        private void Setup_SkillsRepo_CreateASkill_Default(DisciplineSkillResource returnVal)
+        private void Setup_SkillsRepo_CreateASkill_Default(int returnVal)
         {
             _mockSkillsRepo.Setup(
-                repo => repo.CreateASkill(returnVal)
-            ).ReturnsAsync(0);
+                repo => repo.CreateASkill(It.IsAny<DisciplineSkillResource>())
+            ).ReturnsAsync(returnVal);
         }
 
         private void Setup_SkillsRepo_CreateASkill_ThrowsException(System.Exception exception)
@@ -164,32 +152,19 @@ namespace Tests.Unit
             ).Throws(exception);
         }
 
-        private void Setup_SkillsRepo_DeleteASkill_Default(string skill, int discipline)
+        private void Setup_SkillsRepo_DeleteASkill_Default(Skill returnVal)
         {
-            var returnSkill = new Skill{
-                Id = 1,
-                DisciplineId = discipline,
-                Name = skill
-            };
             _mockSkillsRepo.Setup(
-                repo => repo.DeleteASkill(skill, discipline)
-            ).ReturnsAsync(returnSkill);
-        }
-
-        private void Setup_SkillsRepo_DeleteASkill_NullSkill(string skill, int discipline)
-        {
-            Skill returnSkill = null;
-            _mockSkillsRepo.Setup(
-                repo => repo.DeleteASkill(skill, discipline)
-            ).ReturnsAsync(returnSkill);
+                repo => repo.DeleteASkill(It.IsAny<string>(), It.IsAny<int>())
+            ).ReturnsAsync(returnVal);
         }
 
         /********** Helper function for location repo setup **********/
-        private void Setup_LocationsRepo_CreateALocation_Default(LocationResource returnVal)
+        private void Setup_LocationsRepo_CreateALocation_Default(int returnVal)
         {
             _mockLocationsRepo.Setup(
-                repo => repo.CreateALocation(returnVal)
-            ).ReturnsAsync(0);
+                repo => repo.CreateALocation(It.IsAny<LocationResource>())
+            ).ReturnsAsync(returnVal);
         }
 
         private void Setup_LocationsRepo_CreateALocation_ThrowsException(System.Exception exception)
@@ -199,25 +174,11 @@ namespace Tests.Unit
             ).Throws(exception);
         }
 
-        private void Setup_LocationsRepo_DeleteALocation_Default(int returnVal)
+        private void Setup_LocationsRepo_DeleteALocation_Default(Location returnVal)
         {
-            var returnLocation = new Location{
-                Id = returnVal,
-                Province = "",
-                City = ""
-            };
-
             _mockLocationsRepo.Setup(
-                repo => repo.DeleteALocation(returnVal)
-            ).ReturnsAsync(returnLocation);
-        }
-
-        private void Setup_LocationsRepo_DeleteALocation_NullLocation(int returnVal)
-        {
-            Location returnLocation = null;
-            _mockLocationsRepo.Setup(
-                repo => repo.DeleteALocation(returnVal)
-            ).ReturnsAsync(returnLocation);
+                repo => repo.DeleteALocation(It.IsAny<int>())
+            ).ReturnsAsync(returnVal);
         }
 
         private void Setup_LocationsRepo_DeleteALocation_ThrowsException(System.Exception exception){
@@ -229,7 +190,7 @@ namespace Tests.Unit
         private void Setup_LocationsRepo_CreateAProvince_Default(string returnVal)
         {
             _mockLocationsRepo.Setup(
-                repo => repo.CreateAProvince(returnVal)
+                repo => repo.CreateAProvince(It.IsAny<string>())
             ).ReturnsAsync(returnVal);
         }
 
@@ -243,16 +204,8 @@ namespace Tests.Unit
         private void Setup_LocationsRepo_DeleteAProvince_Default(string returnVal)
         {
             _mockLocationsRepo.Setup(
-                repo => repo.DeleteAProvince(returnVal)
+                repo => repo.DeleteAProvince(It.IsAny<string>())
             ).ReturnsAsync(returnVal);
-        }
-
-        private void Setup_LocationsRepo_DeleteAProvince_NullProvince(string returnVal)
-        {
-            string returnProvince = null;
-            _mockLocationsRepo.Setup(
-                repo => repo.DeleteAProvince(returnVal)
-            ).ReturnsAsync(returnProvince);
         }
 
         private void Setup_LocationsRepo_DeleteAProvince_ThrowsException(System.Exception exception)
@@ -285,8 +238,9 @@ namespace Tests.Unit
         [Fact]
         public async void CreateADiscipline_TryBlock_ReturnValidId()
         {
+            var returnVal = 1;
             var discipline = new DisciplineResource();
-            Setup_DisciplinesRepo_CreateADiscipline_Default(discipline);
+            Setup_DisciplinesRepo_CreateADiscipline_Default(returnVal);
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Verify_DisciplinesRepo_CreateADiscipline(Times.Once);
             Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
@@ -341,7 +295,8 @@ namespace Tests.Unit
         public async void DeleteADiscipline_TryBlock_ReturnNotFoundException()
         {
             var errMessage = "Not Found";
-            Setup_DisciplinesRepo_DeleteADiscipline_NullDiscipline(It.IsAny<int>());
+            Discipline returnVal = null;
+            Setup_DisciplinesRepo_DeleteADiscipline_Default(returnVal);
 
             var result = (await _controller.DeleteADiscipline(1)) as ObjectResult;
             Verify_DisciplinesRepo_DeleteADiscipline(Times.Once);
@@ -354,7 +309,7 @@ namespace Tests.Unit
         [Fact]
         public async void DeleteADiscipline_TryBlock_ReturnValidDelete()
         {
-            Setup_DisciplinesRepo_DeleteADiscipline_Default(1);
+            Setup_DisciplinesRepo_DeleteADiscipline_Default(new Discipline());
 
             var result = (await _controller.DeleteADiscipline(1)) as ObjectResult;
             Verify_DisciplinesRepo_DeleteADiscipline(Times.Once);
@@ -449,7 +404,8 @@ namespace Tests.Unit
                 DisciplineId= 1,
                 SkillId= 0,
                 Name = ""};
-            Setup_SkillsRepo_CreateASkill_Default(skill);
+            var returnVal = 1;
+            Setup_SkillsRepo_CreateASkill_Default(returnVal);
             var result = (await _controller.CreateASkill(skill, 1)) as ObjectResult;
             Verify_SkillsRepo_CreateASkill(Times.Once);
             Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
@@ -522,7 +478,8 @@ namespace Tests.Unit
         public async void DeleteASkill_TryBlock_ReturnNotFoundException()
         {
             var errMessage = "Not Found";
-            Setup_SkillsRepo_DeleteASkill_NullSkill("test", 1);
+            Skill returnVal = null;
+            Setup_SkillsRepo_DeleteASkill_Default(returnVal);
 
             var result = (await _controller.DeleteASkill(1, "test")) as ObjectResult;
             Verify_SkillsRepo_DeleteASkill(Times.Once);
@@ -535,7 +492,7 @@ namespace Tests.Unit
         [Fact]
         public async void DeleteASkill_TryBlock_ReturnValidDelete()
         {
-            Setup_SkillsRepo_DeleteASkill_Default("test", 1);
+            Setup_SkillsRepo_DeleteASkill_Default(new Skill());
 
             var result = (await _controller.DeleteASkill(1, "test")) as ObjectResult;
             Verify_SkillsRepo_DeleteASkill(Times.Once);
@@ -591,7 +548,8 @@ namespace Tests.Unit
         public async void CreateALocation_TryBlock_ReturnValidId()
         {
             var location = new LocationResource();
-            Setup_LocationsRepo_CreateALocation_Default(location);
+            var returnVal = 1;
+            Setup_LocationsRepo_CreateALocation_Default(returnVal);
             
             var result = (await _controller.CreateALocation(location)) as ObjectResult;
             Verify_LocationsRepo_CreateALocation(Times.Once);
@@ -649,7 +607,8 @@ namespace Tests.Unit
         public async void DeleteALocation_TryBlock_ReturnNotFoundException()
         {
             var errMessage = "Not Found";
-            Setup_LocationsRepo_DeleteALocation_NullLocation(1);
+            Location returnVal = null;
+            Setup_LocationsRepo_DeleteALocation_Default(returnVal);
 
             var result = (await _controller.DeleteALocation(1)) as ObjectResult;
             Verify_LocationsRepo_DeleteALocation(Times.Once);
@@ -663,7 +622,7 @@ namespace Tests.Unit
         [Fact]
         public async void DeleteALocation_TryBlock_ReturnValidDelete()
         {
-            Setup_LocationsRepo_DeleteALocation_Default(1);
+            Setup_LocationsRepo_DeleteALocation_Default(new Location());
 
             var result = (await _controller.DeleteALocation(1)) as ObjectResult;
             Verify_LocationsRepo_DeleteALocation(Times.Once);
@@ -789,7 +748,7 @@ namespace Tests.Unit
         public async void DeleteAProvince_TryBlock_ReturnNotFoundException()
         {
             var errMessage = "Not Found";
-            Setup_LocationsRepo_DeleteAProvince_NullProvince("test");
+            Setup_LocationsRepo_DeleteAProvince_Default(null);
 
             var result = (await _controller.DeleteAProvince("test")) as ObjectResult;
             Verify_LocationsRepo_DeleteALocation(Times.Never);
