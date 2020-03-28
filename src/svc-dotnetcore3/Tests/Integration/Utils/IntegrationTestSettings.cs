@@ -14,6 +14,10 @@
         public string ApplicationIdUri { get; set; }
         
         public UserAuthenticationSettings UserAuthentication { get; set; }
+        public UserAuthenticationSettingsDetails UserAdmin { get; set; }
+        public UserAuthenticationSettingsDetails UserRegular { get; set; }
+        public UserAuthenticationSettingsDetails UserNotInDatabase { get; set; }
+        public UserAuthenticationSettingsDetails UserNoRoles { get; set; }
         public AppAuthenticationSettings AppAuthentication { get; set; }
     }
 }

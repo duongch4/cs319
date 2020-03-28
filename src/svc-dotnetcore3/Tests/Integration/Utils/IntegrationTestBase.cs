@@ -1,8 +1,7 @@
 ﻿using System.Net.Http;
-using Tests.Integration.Utils;
 using Xunit;
 
-namespace Tests.Integration
+namespace Tests.Integration.Utils
 {
     /// <summary>
     /// Base class for all integration tests

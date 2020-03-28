@@ -20,15 +20,5 @@
         /// Secret for the registered test app
         /// </summary>
         public string ClientSecret { get; set; }
-        /// <summary>
-        /// Username of a user registered in AAD.
-        /// Should be from a test tenant, not a production one.
-        /// Cannot have MFA enabled.
-        /// </summary>
-        public string Username { get; set; }
-        /// <summary>
-        /// Password of the user
-        /// </summary>
-        public string Password { get; set; }
     }
 }

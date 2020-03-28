@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Application.Communication;
-using Web.API.Resources;
+using Web.API.Authorization;
 
 using System;
 using System.Data.SqlClient;
@@ -16,7 +16,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]

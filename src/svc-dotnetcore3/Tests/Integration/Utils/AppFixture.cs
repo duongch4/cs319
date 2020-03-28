@@ -25,12 +25,20 @@ namespace Tests.Integration.Utils
                     var azureAdOptions = config.GetSection("AzureAd").Get<AzureAdOptions>();
                     var appAuthentication = config.GetSection("AppAuthenticationSetting").Get<AppAuthenticationSettings>();
                     var userAuthentication = config.GetSection("UserAuthenticationSettings").Get<UserAuthenticationSettings>();
+                    var userAdmin = config.GetSection("UserAdmin").Get<UserAuthenticationSettingsDetails>();
+                    var userRegular = config.GetSection("UserRegular").Get<UserAuthenticationSettingsDetails>();
+                    var userNotInDatabase = config.GetSection("UserNotInDatabase").Get<UserAuthenticationSettingsDetails>();
+                    var userNoRoles = config.GetSection("UserNoRoles").Get<UserAuthenticationSettingsDetails>();
                     Settings = new IntegrationTestSettings
                     {
                         Authority = $@"{azureAdOptions.Authority}/v2.0",
                         ApplicationIdUri = azureAdOptions.ApplicationIdUri,
                         AppAuthentication = appAuthentication,
-                        UserAuthentication = userAuthentication
+                        UserAuthentication = userAuthentication,
+                        UserAdmin = userAdmin,
+                        UserRegular = userRegular,
+                        UserNotInDatabase = userNotInDatabase,
+                        UserNoRoles = userNoRoles
                     };
                 });
             });
