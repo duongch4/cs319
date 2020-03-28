@@ -22,7 +22,6 @@ class Search extends Component {
       sort: null,
       search: false,
       loading: true,
-      page: 1,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -71,12 +70,12 @@ class Search extends Component {
   }
 
   pageLeft = () => {
-    if (this.state.page > 1) {
+    if (this.state.filters.page > 1) {
       this.setState({
         ...this.state,
         filters: {
           ...this.state.filters,
-          page: this.state.page -= 1,
+          page: this.state.filters.page -= 1,
         },
         loading: true,
       });
@@ -88,7 +87,7 @@ class Search extends Component {
         ...this.state,
         filters: {
           ...this.state.filters,
-          page: this.state.page += 1,
+          page: this.state.filters.page += 1,
         },
         loading: true,
       });

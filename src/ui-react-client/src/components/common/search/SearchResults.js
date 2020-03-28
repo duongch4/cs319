@@ -157,7 +157,7 @@ class SearchResults extends Component {
     };
 
     render(){
-        console.log(this.yearsMap);
+
         var users = this.combineUsers();
 
         if (this.props.sortBy != null) {
