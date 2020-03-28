@@ -50,7 +50,7 @@ const _ProjectsPage = (props) => {
 };
 
 _ProjectsPage.propTypes = {
-  props: PropTypes.object.isRequired,
+  props: PropTypes.object,
 };
 
 const mapStateToProps = state => {
