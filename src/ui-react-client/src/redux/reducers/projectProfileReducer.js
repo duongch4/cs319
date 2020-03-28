@@ -17,6 +17,17 @@ const executeDeleteProjectData = () => {
     return {};
 };
 
+
+const executeCreateAssignOpening = (state, action) => {
+  let newOpenings = state.openings.filter(opening => opening.positionID !== action.openingID);
+  let newState = {
+  ...state,
+  openings: newOpenings,
+  usersSummary: [...state.usersSummary, action.user]
+  };
+  return newState;
+};
+
 export const projectProfileReducer = (
     state = initialState.projectProfile,
     action
@@ -30,6 +41,8 @@ export const projectProfileReducer = (
             return executeUpdateProjectData(action);
         case types.DELETE_PROJECT:
             return executeDeleteProjectData();
+        case types.UPDATE_ASSIGN_OPENING:
+          return executeCreateAssignOpening(state, action, initialState);
         default:
             return state;
     }

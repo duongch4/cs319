@@ -12,7 +12,6 @@ class SearchResults extends Component {
             userSummaries: []
         };
     }
-    
     componentDidMount() {
         if (CLIENT_DEV_ENV) {
             this.props.performUserSearch(this.props.data, ["adminUser"])
@@ -38,12 +37,17 @@ class SearchResults extends Component {
             }  else{
                 var users = this.state.userSummaries;
                 const userCards =[];
-        
                 users.forEach(user => {
                 userCards.push(
                 <div className="card" key={userCards.length}>
-                    <SearchUserCard user={user} key={userCards.length} canEdit={false}/>
-                </div>)      
+                  <SearchUserCard user={user}
+                  key={userCards.length}
+                  canEdit={false}
+                  isAssignable={this.props.isAssignable}
+                  projectNumber={this.props.projectNumber}
+                  openingId={this.props.openingId}
+                  createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+                  </div>)
             });
                 return (
                     <div>{userCards}</div>
@@ -58,11 +62,11 @@ const mapStateToProps = state => {
         users: state.users,
     };
   };
-  
+
   const mapDispatchToProps = {
     performUserSearch
   };
-  
+
   export default connect(
     mapStateToProps,
     mapDispatchToProps,
