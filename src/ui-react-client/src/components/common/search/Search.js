@@ -56,6 +56,7 @@ class Search extends Component {
         </div>
       )
     } else {
+      const userRoles = getUserRoles(this.context);
       return (
         <div className="activity-container">
           <FilterTab onDataFetched={this.handleResultChange}
@@ -69,7 +70,11 @@ class Search extends Component {
                     placeholder='Sort by:' />
                 </div>
               </div>
-              <SearchResults data={this.state.filters} />
+              <SearchResults data={this.state.filters}
+                isAssignable={this.props.isAssignable}
+                projectNumber={this.props.projectNumber}
+                openingId={this.props.openingId}
+                createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
             </div>
           }
         </div>
