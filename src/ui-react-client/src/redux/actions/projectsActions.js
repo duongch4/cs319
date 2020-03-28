@@ -44,11 +44,17 @@ export const loadProjects = (userRoles) => {
       }).then(response => {
         dispatch(loadProjectsData(response.data.payload));
       }).catch(error => {
-          let err = error.response.data.message
-          let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-          console.log(err)
-          alert(errorParsed)
-      });
+            let errorParsed = ""
+            console.log(error.response)
+            if(error.response.status === 500){
+                let err = error.response.data.message
+                errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)                 
+            } else {
+                errorParsed = error.response.statusText
+            }
+            alert(errorParsed)
+        })
     }
   };
 };

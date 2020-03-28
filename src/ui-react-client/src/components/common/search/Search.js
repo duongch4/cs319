@@ -101,17 +101,27 @@ class Search extends Component {
         </div>
       )
     } else {
-    return (
-      <div className="activity-container">
-        <FilterTab onDataFetched={this.handleResultChange} 
-                  masterlist={this.state.masterlist}/>
-        {(this.state.filters != null) && (this.state.search) &&
-        <div>
-        <div className="form-row">
-        <h3 className="darkGreenHeader">Results</h3>
-        { (this.state.loading) &&
-        <div style={{marginLeft: "10px"}}>
-        <Loading/>
+      const userRoles = getUserRoles(this.context);
+      return (
+        <div className="activity-container">
+          <FilterTab onDataFetched={this.handleResultChange}
+            masterlist={this.state.masterlist} />
+          {(this.state.filters != null) && (this.state.search)
+            <div>
+              <div className="form-row">
+                <h3 className="darkGreenHeader">Results</h3>
+                <div style={{ position: "absolute", right: "50px" }}>
+                  <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by}
+                    placeholder='Sort by:' />
+                </div>
+              </div>
+              <SearchResults data={this.state.filters}
+                isAssignable={this.props.isAssignable}
+                projectNumber={this.props.projectNumber}
+                openingId={this.props.openingId}
+                createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+            </div>
+          }
         </div>
         }
         <div style={{position: "absolute", right: "50px"}}>
