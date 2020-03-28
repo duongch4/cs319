@@ -48,6 +48,14 @@ namespace Tests.Unit
 
         /********** Helper functions for verification **********/
 
+        /********** Helper functions for mapper setup **********/
+        // private void Setup_Return_Mapper_Map_FromIEnumerableProjectResource_ToIEnumerableProjectSummary(int expectedCount, IEnumerable<ProjectSummary> returnValue)
+        // {
+        //     _mockMapper.Setup(
+        //         mapper => mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(It.Is<IEnumerable<ProjectResource>>(x => x.Count() == expectedCount))
+        //     ).Returns(returnValue);
+        // }
+
         /********** Helper function for User repo setup **********/
         private void Setup_UsersRepo_GetAllUserResourcesOnFilter_ThrowsException(System.Exception exception)
         {
@@ -106,17 +114,94 @@ namespace Tests.Unit
         }
 
         /********** Helper function for Projects repo setup **********/
-            // projectsRepo.GetAllProjectResourcesOfUser
+        private void Setup_ProjectsRepo_GetAllProjectResourcesOfUser_ThrowException(System.Exception exception)
+        {
+            _mockProjectsRepo.Setup(
+                repo => repo.GetAllProjectResourcesOfUser(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_ProjectsRepo_GetAllProjectResourcesOfUser_Default(IEnumerable<ProjectResource> returnVal)
+        {
+            _mockProjectsRepo.Setup(
+                repo => repo.GetAllProjectResourcesOfUser(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
 
         /********** Helper function for Positions repo setup **********/
-            // positionsRepo.GetPositionsOfUser
+        private void Setup_PositionsRepo_GetPositionsOfUser_ThrowsException(System.Exception exception)
+        {
+            _mockPositionsRepo.Setup(
+                repo => repo.GetPositionsOfUser(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_PositionsRepo_GetPositionsOfUser_Default(IEnumerable<PositionResource> returnVal)
+        {
+            _mockPositionsRepo.Setup(
+                repo => repo.GetPositionsOfUser(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
 
         /********** Helper function for Locations repo setup **********/
+        //GetAlocation
+        private void Setup_LocationsRepo_GetALocation_ThrowsException(System.Exception exception)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.GetALocation(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_LocationsRepo_GetALocation_Default(Location returnVal)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.GetALocation(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
 
         /********** Helper function for Disciplines repo setup **********/
-            // disciplinesRepo.GetUserDisciplines
-            // disciplinesRepo.InsertResrouceDiscipline
+        private void Setup_DisciplinesRepo_GetUserDisciplines_ThrowException(System.Exception exception)
+        {
+            _mockDisciplinesRepo.Setup(
+                repo => repo.GetUserDisciplines(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_DisciplinesRepo_GetUserDisciplines_Default(IEnumerable<ResourceDiscipline> returnVal)
+        {
+            _mockDisciplinesRepo.Setup(
+                repo => repo.GetUserDisciplines(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
+
+        private void Setup_DisciplinesRepo_InsertResourceDiscipline_ThrowException(System.Exception exception)
+        {
+            _mockDisciplinesRepo.Setup(
+                repo => repo.InsertResourceDiscipline(It.IsAny<ResourceDiscipline>())
+            ).Throws(exception);
+        }
+
+        private void Setup_DisciplinesRepo_InsertResourceDiscipline_Default(ResourceDiscipline returnVal)
+        {
+            _mockDisciplinesRepo.Setup(
+                repo => repo.InsertResourceDiscipline(It.IsAny<ResourceDiscipline>())
+            ).ReturnsAsync(returnVal);
+        }
             // disciplinesRepo.DeleteResourceDiscipline
+        
+        private void Setup_DisciplinesRepo_DeleteResourceDiscipline_ThrowsException(System.Exception exception)
+        {
+            _mockDisciplinesRepo.Setup(
+                repo => repo.DeleteResourceDiscipline(It.IsAny<ResourceDiscipline>())
+            ).Throws(exception);
+        }
+
+        private void Setup_DisciplinesRepo_DeleteResourceDiscipline_Default(ResourceDiscipline returnVal)
+        {
+            _mockDisciplinesRepo.Setup(
+                repo => repo.DeleteResourceDiscipline(It.IsAny<ResourceDiscipline>())
+            ).ReturnsAsync(returnVal);
+        }
 
         /********** Helper function for Skills repo setup **********/ 
             // skillsRepo.GetUserSkills
