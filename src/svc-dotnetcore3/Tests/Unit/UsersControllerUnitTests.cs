@@ -46,16 +46,42 @@ namespace Tests.Unit
 
         }
 
-        /********** Helper functions for verification **********/
-
         /********** Helper functions for mapper setup **********/
-        // private void Setup_Return_Mapper_Map_FromIEnumerableProjectResource_ToIEnumerableProjectSummary(int expectedCount, IEnumerable<ProjectSummary> returnValue)
-        // {
-        //     _mockMapper.Setup(
-        //         mapper => mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(It.Is<IEnumerable<ProjectResource>>(x => x.Count() == expectedCount))
-        //     ).Returns(returnValue);
-        // }
+        private void Setup_Return_Mapper_Map_FromIEnumerableUserResource_ToIEnumerableUserSummary(int expectedCount, IEnumerable<UserSummary> returnVal)
+        {
+            _mockMapper.Setup(
+                mapper => mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(It.Is<IEnumerable<UserResource>>(x => x.Count() == expectedCount))
+            ).Returns(returnVal);
+        }
 
+        private void Setup_Return_Mapper_Map_FromUserResource_ToUserSummary(UserSummary returnVal)
+        {
+            _mockMapper.Setup(
+                mapper => mapper.Map<UserResource, UserSummary>(It.IsAny<UserResource>())
+            ).Returns(returnVal);
+        }
+
+        private void Setup_Return_Mapper_Map_FromIEnumerablePositionResource_ToIEnumerablePositionSummary(int expectedCount, IEnumerable<PositionSummary> returnVal)
+        {
+            _mockMapper.Setup(
+                mapper => mapper.Map<IEnumerable<PositionResource>, IEnumerable<PositionSummary>>(It.Is<IEnumerable<PositionResource>>(x => x.Count() == expectedCount))
+            ).Returns(returnVal);
+        }
+
+        private void Setup_Return_Mapper_Map_FromIEnumerableOutOfOffice_ToIEnumerableOutOfOfficeResource(int expectedCount, IEnumerable<OutOfOfficeResource> returnVal)
+        {
+            _mockMapper.Setup(
+                mapper => mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(It.Is<IEnumerable<OutOfOffice>>(x => x.Count() == expectedCount))
+            ).Returns(returnVal);
+        }
+        
+        private void Setup_Return_Mapper_Map_FromIEnumerableProjectResource_ToIEnumerableProjectSummary(int expectedCount, IEnumerable<ProjectSummary> returnValue)
+        {
+            _mockMapper.Setup(
+                mapper => mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(It.Is<IEnumerable<ProjectResource>>(x => x.Count() == expectedCount))
+            ).Returns(returnValue);
+        }
+        
         /********** Helper function for User repo setup **********/
         private void Setup_UsersRepo_GetAllUserResourcesOnFilter_ThrowsException(System.Exception exception)
         {
@@ -144,7 +170,6 @@ namespace Tests.Unit
         }
 
         /********** Helper function for Locations repo setup **********/
-        //GetAlocation
         private void Setup_LocationsRepo_GetALocation_ThrowsException(System.Exception exception)
         {
             _mockLocationsRepo.Setup(
@@ -187,7 +212,6 @@ namespace Tests.Unit
                 repo => repo.InsertResourceDiscipline(It.IsAny<ResourceDiscipline>())
             ).ReturnsAsync(returnVal);
         }
-            // disciplinesRepo.DeleteResourceDiscipline
         
         private void Setup_DisciplinesRepo_DeleteResourceDiscipline_ThrowsException(System.Exception exception)
         {
@@ -204,14 +228,90 @@ namespace Tests.Unit
         }
 
         /********** Helper function for Skills repo setup **********/ 
-            // skillsRepo.GetUserSkills
-            // skillsRepo.InsertResourceSkill
-            // skillsRepo.DeleteResourceSkill
+        private void Setup_SkillsRepo_GetUserSkills_ThrowsException(System.Exception exception)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.GetUserSkills(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_SkillsRepo_GetUserSkills_Default(IEnumerable<ResourceSkill> returnVal)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.GetUserSkills(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
+
+        private void Setup_SkillsRepo_InsertResourceSkill_ThrowsException(System.Exception exception)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.InsertResourceSkill(It.IsAny<ResourceSkill>())
+            ).Throws(exception);
+        }
+
+        private void Setup_SkillsRepo_InsertResourceSkill_Default(ResourceSkill returnVal)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.InsertResourceSkill(It.IsAny<ResourceSkill>())
+            ).ReturnsAsync(returnVal);
+        }
+
+        private void Setup_SkillsRepo_DeleteResourceSkill_ThrowsException(System.Exception exception)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.DeleteResourceSkill(It.IsAny<ResourceSkill>())
+            ).Throws(exception);
+        }
+
+        private void Setup_SkillsRepo_DeleteResourceSkill_Default(ResourceSkill returnVal)
+        {
+            _mockSkillsRepo.Setup(
+                repo => repo.DeleteResourceSkill(It.IsAny<ResourceSkill>())
+            ).ReturnsAsync(returnVal);
+        }
         
         /********** Helper function for OutOfOffice repo setup **********/  
-            // outOfOfficeRepo.GetAllOutOfOFficeForUser
-            // outOfOfficeRepo.DeleteOutOfOffice
+        private void Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_ThrowsException(System.Exception exception)
+        {
+            _mockOutOfOfficeRepo.Setup(
+                repo => repo.GetAllOutOfOfficeForUser(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(IEnumerable<OutOfOffice> returnVal)
+        {
+            _mockOutOfOfficeRepo.Setup(
+                repo => repo.GetAllOutOfOfficeForUser(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
+
+        private void Setup_OutOfOfficeRepo_DeleteOutOfOffice_ThrowsException(System.Exception exception)
+        {
+            _mockOutOfOfficeRepo.Setup(
+                repo => repo.DeleteOutOfOffice(It.IsAny<OutOfOffice>())
+            ).Throws(exception);
+        }
+
+        private void Setup_OutOfOfficeRepo_DeleteOutOfOffice_Default(OutOfOffice returnVal)
+        {
+            _mockOutOfOfficeRepo.Setup(
+                repo => repo.DeleteOutOfOffice(It.IsAny<OutOfOffice>())
+            ).ReturnsAsync(returnVal);
+        }
             // outOfOfficeRepo.InsertOutOfOffice
+        private void Setup_OutOfOffice_InsertOutOfOffice_ThrowsException(System.Exception exception)
+        {
+            _mockOutOfOfficeRepo.Setup(
+                repo => repo.InsertOutOfOffice(It.IsAny<OutOfOffice>())
+            ).Throws(exception);
+        }
+
+        private void Setup_OutOfOffice_InsertOutOfOffice_Default(OutOfOffice returnVal)
+        {
+            _mockOutOfOfficeRepo.Setup(
+                repo => repo.InsertOutOfOffice(It.IsAny<OutOfOffice>())
+            ).ReturnsAsync(returnVal);
+        }
 
         /********** Tests for GetAllUsers **********/
         [Fact]
@@ -219,6 +319,77 @@ namespace Tests.Unit
         {
             var result = await _controller.GetAllUsers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>());
             Assert.IsType<ObjectResult>(result);
+        }
+
+        [Fact]
+        public async void GetAllUsers_TryBlock_NullCheck_ReturnsNotFoundException()
+        {
+            IEnumerable<UserResource> expected = null;
+            Setup_UsersRepo_GetAllUserResources_Default(expected);
+            var result = (await _controller.GetAllUsers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())) as ObjectResult;
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+            Assert.IsType<NotFoundException>(result.Value);
+        }
+
+        [Fact]
+        public async void GetAllUsers_TryBlock_ReturnOneUser()
+        {
+            var expectedCount = 1;
+            var returnVal_IEnumerableUserResource = Enumerable.Empty<UserResource>().Append(new UserResource());
+            var returnVal_IEnumerableUserSummary = Enumerable.Empty<UserSummary>().Append(new UserSummary());
+            Setup_UsersRepo_GetAllUserResources_Default(returnVal_IEnumerableUserResource);
+            Setup_Return_Mapper_Map_FromIEnumerableUserResource_ToIEnumerableUserSummary(expectedCount, returnVal_IEnumerableUserSummary);
+
+            var result = (await _controller.GetAllUsers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())) as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<OkResponse<IEnumerable<UserSummary>>>(result.Value);
+            var response = result.Value as OkResponse<IEnumerable<UserSummary>>;
+            Assert.Equal(expectedCount, response.payload.Count());
+        }
+
+        [Fact]
+        public async void GetAllUsers_TryBlock_ReturnSomeUsers()
+        {
+            var expectedCount = 3;
+            var returnVal_IEnumerableUserResource = Enumerable.Empty<UserResource>().Append(new UserResource()).Append(new UserResource()).Append(new UserResource());
+            var returnVal_IEnumerableUserSummary = Enumerable.Empty<UserSummary>().Append(new UserSummary()).Append(new UserSummary()).Append(new UserSummary());
+            Setup_UsersRepo_GetAllUserResources_Default(returnVal_IEnumerableUserResource);
+            Setup_Return_Mapper_Map_FromIEnumerableUserResource_ToIEnumerableUserSummary(expectedCount, returnVal_IEnumerableUserSummary);
+
+            var result = (await _controller.GetAllUsers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())) as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<OkResponse<IEnumerable<UserSummary>>>(result.Value);
+            var response = result.Value as OkResponse<IEnumerable<UserSummary>>;
+            Assert.Equal(expectedCount, response.payload.Count());
+        }
+
+        [Fact]
+        public async void GetAllUsers_CatchBlock_ReturnSqlException()
+        {
+            string errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_UsersRepo_GetAllUserResources_ThrowsException(sqlException);
+
+            var result = (await _controller.GetAllUsers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void GetAllUsers_CatchBlock_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_UsersRepo_GetAllUserResources_ThrowsException(badRequestException);
+
+            var result = (await _controller.GetAllUsers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
         }
 
         /********** Tests for GetAUser **********/
