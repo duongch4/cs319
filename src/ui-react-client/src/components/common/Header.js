@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
-
-import { isIE } from "../../config/authUtils";
 import { RequestButton } from "./RequestButton";
 
 class Header extends React.Component {
@@ -12,7 +10,7 @@ class Header extends React.Component {
                 <p className="ae-logo">AE</p>
                 <p className="ae-subtitle">Associated Engineering</p>
                 {
-                    !this.props.appProps.account ? <RequestButton text="Log In" onClick={this.props.appProps.onSignIn} useRedirect={isIE()} /> : (
+                    !this.props.appProps.account ? <RequestButton text="Log In" onClick={this.props.appProps.onSignIn} /> : (
                         <div className="navigation">
                             {!this.props.appProps.graphProfile ? <div/> : (
                                 <div className="user-info">
@@ -36,7 +34,7 @@ class Header extends React.Component {
                         </div>
                     )
                 }
-                {this.props.appProps.error && (<p className="error">Error: {this.props.appProps.error}</p>)}
+                {this.props.appProps.error && alert(`Error: ${this.props.appProps.error}`)}
             </div>
         );
     }

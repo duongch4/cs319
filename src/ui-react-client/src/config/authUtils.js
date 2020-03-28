@@ -1,6 +1,5 @@
 import { UserAgentApplication } from "msal";
 import { UI_ROOT, AUTHORITY, CLIENT_ID, API_ID } from "./config.js";
-import {useContext} from "react";
 
 export const requiresInteraction = errorMessage => {
     if (!errorMessage || !errorMessage.length) {
@@ -17,6 +16,7 @@ export const requiresInteraction = errorMessage => {
 export const fetchMsGraph = async (url, accessToken) => {
     const response = await fetch(url, {
         headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate", // prevent IE11 from auto loading profile from cache!!!
             Authorization: `Bearer ${accessToken}`
         }
     });
@@ -80,7 +80,7 @@ export const msalApp = new UserAgentApplication({
         authority: AUTHORITY,
         validateAuthority: true,
         postLogoutRedirectUri: UI_ROOT,
-        navigateToLoginRequestUrl: true
+        navigateToLoginRequestUrl: false
     },
     cache: {
         // cacheLocation: "localStorage",
@@ -89,30 +89,29 @@ export const msalApp = new UserAgentApplication({
     },
     system: {
         navigateFrameWait: 0,
-        logger: {
-            error: console.error,
-            errorPii: console.error,
-            info: console.log,
-            infoPii: console.log,
-            verbose: console.log,
-            verbosePii: console.log,
-            warning: console.warn,
-            warningPii: console.warn
-        }
+        // logger: { // Cannot Use these: IE11 complains!!
+        //     error: console.error,
+        //     errorPii: console.error,
+        //     info: console.log,
+        //     infoPii: console.log,
+        //     verbose: console.log,
+        //     verbosePii: console.log,
+        //     warning: console.warn,
+        //     warningPii: console.warn
+        // }
     }
 });
 
-export const acquireToken = async (tokenReqScopes, redirect) => {
+export const acquireToken = async (tokenReqScopes, isRedirectOnInteractionError) => {
     return msalApp.acquireTokenSilent(tokenReqScopes).catch(error => {
         // Call acquireTokenPopup (popup window) in case of acquireTokenSilent failure
         // due to consent or interaction required ONLY
         if (requiresInteraction(error.errorCode)) {
-            console.log(redirect);
-            return redirect
+            return isRedirectOnInteractionError
                 ? msalApp.acquireTokenRedirect(tokenReqScopes)
                 : msalApp.acquireTokenPopup(tokenReqScopes);
         } else {
-            console.error('Non-interactive error:', error.errorCode)
+            console.error('Non-interactive error:', error.errorCode);
         }
     });
 };
@@ -124,7 +123,7 @@ export const getHeaders = async (userRoles) => {
         // console.log("MY TOKEN RESPONSE", tokenResponse); // TODO: Lots of Info here!!!
         return { Authorization: `Bearer ${tokenResponse.accessToken}` };
     }
-    catch(error) {
+    catch (error) {
         throw error;
     }
 }

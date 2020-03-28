@@ -6,7 +6,7 @@ export const RequestButton = (props) => {
             <button
                 type="submit"
                 className="logout-button"
-                onClick={() => (props.useRedirect) ? props.onClick(props.useRedirect) : props.onClick()}
+                onClick={props.onClick}
             >{props.text}</button>
         </nav>
     );
