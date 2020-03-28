@@ -33,6 +33,7 @@ class SearchResults extends Component {
             this.setState({
                 ...this.state,
                 userSummaries: this.props.users,
+                noResults: false,
             }, () => this.props.stopLoading());
         } else {
             const userRoles = getUserRoles(this.context);
@@ -41,6 +42,7 @@ class SearchResults extends Component {
                 this.setState({
                     ...this.state,
                     userSummaries: this.props.users,
+                    noResults: false,
                 }, this.props.stopLoading())
             }).catch(err => {
                 this.setState({
@@ -50,6 +52,7 @@ class SearchResults extends Component {
             });
         }
     }
+
 
     // to make multiple calls without having to refresh
     componentDidUpdate(previousProps) {
@@ -157,7 +160,6 @@ class SearchResults extends Component {
     };
 
     render(){
-
         var users = this.combineUsers();
 
         if (this.props.sortBy != null) {
@@ -168,24 +170,20 @@ class SearchResults extends Component {
             return <div className="darkGreenHeader">There are no users with the selected filters</div>
         } else if ((this.state.userSummaries).length === 0) {
             return <div></div>
-        }
-        else{
+        } else{
             const userCards =[];
-            users.forEach(user => {
-            userCards.push(
-             var users = this.state.userSummaries;
-                const userCards =[];
-                users.forEach(user => {
+            users.forEach((user) => {
                 userCards.push(
                 <div className="card" key={userCards.length}>
-                  <SearchUserCard user={user}
-                  key={userCards.length}
-                  canEdit={false}
-                  isAssignable={this.props.isAssignable}
-                  projectNumber={this.props.projectNumber}
-                  openingId={this.props.openingId}
-                  createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
-                  </div>) 
+                    <SearchUserCard user={user}
+                    key={userCards.length}
+                    canEdit={false}
+                    isAssignable={this.props.isAssignable}
+                    projectNumber={this.props.projectNumber}
+                    openingId={this.props.openingId}
+                    createAssignOpenings={(openingId, userId, utilization, user, userRoles) => 
+                    this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+                    </div>)}); 
             return (
                 <div>
                     <div>
@@ -201,12 +199,9 @@ class SearchResults extends Component {
                     </div>
                     <div>{userCards}</div>
                 </div>
-                
-            )}
+                )}
+            }
         }
-}
-
-
 
 SearchResults.contextType = UserContext;
 

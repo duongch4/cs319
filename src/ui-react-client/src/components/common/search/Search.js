@@ -105,43 +105,35 @@ class Search extends Component {
       return (
         <div className="activity-container">
           <FilterTab onDataFetched={this.handleResultChange}
-            masterlist={this.state.masterlist} />
-          {(this.state.filters != null) && (this.state.search)
-            <div>
+                      masterlist={this.state.masterlist} />
+          {(this.state.filters != null) && (this.state.search) &&
+            (<div>
               <div className="form-row">
                 <h3 className="darkGreenHeader">Results</h3>
+                {(this.state.loading) &&
+                <Loading/>
+                }
                 <div style={{ position: "absolute", right: "50px" }}>
-                  <Select id="sort" key={this.state.sort_by_keys} className="input-box" options={this.state.sort_by}
-                    placeholder='Sort by:' />
+                <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
+                     placeholder='Sort by:'/>
+
                 </div>
               </div>
               <SearchResults data={this.state.filters}
+                sortBy={this.state.sort}
+                stopLoading={this.stopLoading} 
+                pageLeft={this.pageLeft}
+                pageRight={this.pageRight}
+                master={this.props.masterlist}
                 isAssignable={this.props.isAssignable}
                 projectNumber={this.props.projectNumber}
                 openingId={this.props.openingId}
                 createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
-            </div>
-          }
-        </div>
-        }
-        <div style={{position: "absolute", right: "50px"}}>
-        <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
-          placeholder='Sort by:'/>
-          </div>
-        </div>
-        <SearchResults data={this.state.filters}
-                        sortBy={this.state.sort}
-                        stopLoading={this.stopLoading} 
-                        pageLeft={this.pageLeft}
-                        pageRight={this.pageRight}
-                        master={this.state.masterlist}/>
-        </div>
-        }
+      </div>)}
       </div>
-    )
-  } 
+      )}
+    }
   }
-}
   
 Search.contextType = UserContext;
 

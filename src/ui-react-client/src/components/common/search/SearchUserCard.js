@@ -33,14 +33,6 @@ class SearchUserCard extends Component {
             }
         });
 
-        let styleName = ""
-        if(user.utilization <= this.state.low){
-            styleName = "lowUtil"
-        } else if(user.utilization <= this.state.medium){
-            styleName = "mediumUtil"
-        } else if(user.utilization <= this.state.high){
-            styleName = "highUtil"
-        
         let colour = ""
         if(user.utilization <= LOW_UTILIZATION){
             colour = LOW_UTILIZATION_COLOUR
