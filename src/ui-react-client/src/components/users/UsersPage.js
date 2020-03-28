@@ -12,12 +12,10 @@ const UsersPage = (props) => {
     if (CLIENT_DEV_ENV && props.users.length === 0) {
       props.loadUsers(["adminUser"])
     } else {
-      if (props.users.length === 0) {
         props.loadUsers(userRoles)
             .catch(error => {
               alert('Loading users failed' + error);
             });
-      }
     }}, [props.users, props.loadUsers, userRoles]);
   return (
     <div className="activity-container">
