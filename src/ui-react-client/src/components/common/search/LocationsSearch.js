@@ -28,10 +28,10 @@ class LocationsSearch extends Component {
 
     handleChangeCities = (e) => {
       if (e){
-        if (e[0].label == "All cities"){
+        if (e[0].label === "All cities"){
           var cities_return = [];
           e.map(function (e) { 
-            e.value.forEach((val, i) => {
+            return e.value.forEach((val, i) => {
               cities_return[i] = val;
             });
           });
@@ -72,7 +72,7 @@ class LocationsSearch extends Component {
       var cities_key = ["all_cities"];
       var all_city = {};
       all_city['label'] = "All cities";
-      all_city['value'] = new Array();
+      all_city['value'] = [];
       
       Object.entries(cities).forEach((city, i) => {
         var single_city = {};

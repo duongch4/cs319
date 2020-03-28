@@ -84,11 +84,11 @@ namespace Web.API
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            // //Allows auth to be bypassed for LocalDev
-            // if (_environment.IsDevelopment())
-            // {
-            //     services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
-            // }
+            // TODO: Allows auth to be bypassed for IntegrationTests for now!!
+            if (_environment.EnvironmentName.Equals("IntegrationTests"))
+            {
+                services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+            }
 
             AddSpaStaticFiles(services);
 

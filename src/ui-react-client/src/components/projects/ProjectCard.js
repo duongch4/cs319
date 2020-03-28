@@ -16,9 +16,10 @@ const ProjectCard = (props) => {
       if(Object.keys(userRole.projectedMonthlyHours)){
         found = Object.keys(userRole.projectedMonthlyHours).find(elem => {
             if((new Date(elem + "T00:00:00")).getMonth() === date.getMonth()){
-                details.push(<p key={details.length}><strong>Hours Committed this Month:</strong> {userRole.projectedMonthlyHours[elem]}</p>)
-                return true
+                details.push(<p key={details.length}><strong>Hours Committed this Month:</strong> {userRole.projectedMonthlyHours[elem]}</p>);
+                return true;
             }
+            return false;
         })
       }
       if(found === false) {
