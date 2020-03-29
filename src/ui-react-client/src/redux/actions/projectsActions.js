@@ -34,16 +34,19 @@ export const updateProjectSummaryData = projectSummary => {
     }
 };
 
-export const loadProjects = (userRoles) => {
-  return async dispatch => {
+export const loadProjects = (filterParams, userRoles) => {
+  return dispatch => {
     if (CLIENT_DEV_ENV) {
-      dispatch(loadProjectsData(_initialState_client.projectSummaries));
+        dispatch(loadProjectsData(_initialState_client.projectSummaries));
     } else {
-      return getHeaders(userRoles).then(headers => {
-        return axios.get(baseURL, { headers });
-      }).then(response => {
-        dispatch(loadProjectsData(response.data.payload));
-      }).catch(error => {
+        return getHeaders(userRoles).then(headers => {
+          var url = baseURL.concat(filterParams);
+          return axios
+          .get(`${url}`, { headers })
+          .then(response => {
+              dispatch(loadProjectsData(response.data.payload));
+          })
+          .catch(error => {
             let errorParsed = ""
             console.log(error.response)
             if(error.response.status === 500){
@@ -53,8 +56,9 @@ export const loadProjects = (userRoles) => {
             } else {
                 errorParsed = error.response.statusText
             }
-            alert(errorParsed)
+            throw(error)
+          })
         })
     }
-  };
+  }
 };
