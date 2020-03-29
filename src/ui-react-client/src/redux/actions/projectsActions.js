@@ -35,7 +35,7 @@ export const updateProjectSummaryData = projectSummary => {
 };
 
 export const loadProjects = (filterParams, userRoles) => {
-  return dispatch => {
+  return async dispatch => {
     if (CLIENT_DEV_ENV) {
         dispatch(loadProjectsData(_initialState_client.projectSummaries));
     } else {
