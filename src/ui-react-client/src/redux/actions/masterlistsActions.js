@@ -6,6 +6,12 @@ import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}api/`;
 
+export const deleteErrorData = () => {
+    return {
+        type: types.CLEAR_ERROR,
+    }
+}
+
 export const loadMasterlistsData = masterlist => {
     return {
       type: types.LOAD_MASTERLIST,
@@ -123,6 +129,7 @@ export const createDiscpline = (discipline, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -151,6 +158,7 @@ export const createSkill = (skill, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -179,6 +187,7 @@ export const createProvince = (location, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -208,6 +217,7 @@ export const createCity = (location, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -236,6 +246,7 @@ export const deleteDiscipline = (id, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     dispatch(errorDeleting(errorParsed));
                 })
             })
@@ -264,6 +275,7 @@ export const deleteSkill = (disciplineID, skillName, userRoles) => {
                 } else {
                     errorParsed = error.response.statusText
                 }
+                alert(errorParsed);
                 dispatch(errorDeleting(errorParsed));
                     })
             })
@@ -292,6 +304,7 @@ export const deleteProvince = (provinceName, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     dispatch(errorDeleting(errorParsed));
                 })
             })
@@ -320,9 +333,14 @@ export const deleteCity = (cityName, id, userRoles) => {
                 } else {
                     errorParsed = error.response.statusText
                 }
+                alert(errorParsed);
                 dispatch(errorDeleting(errorParsed));
                     })
             })
         }
     } 
+}
+
+export const clearError = () => {
+    return dispatch => dispatch(deleteErrorData());
 }
