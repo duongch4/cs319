@@ -11,13 +11,16 @@ import AvailabilityForm from './AvailabilityForm';
 import AvailabilityCard from './AvailabilityCard';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
+import LoadingOverlay from 'react-loading-overlay'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 class EditUser extends Component {
     state = {
         userProfile: {},
         pending: true,
         masterlist: {},
-        error: ""
+        error: "",
+        sending: false
     };
 
     componentDidMount() {
@@ -28,7 +31,8 @@ class EditUser extends Component {
                 ...this.state,
                 masterlist: props.masterlist,
                 userProfile: props.userProfile,
-                pending: false
+                pending: false,
+                sending: false
             }))
         } else {
             const userRoles = getUserRoles(this.context);
@@ -39,11 +43,11 @@ class EditUser extends Component {
                     ...this.state,
                     masterlist: this.props.masterlist,
                     userProfile: this.props.userProfile,
-                    pending: false
+                    pending: false,
+                    sending: false
                 })
             });
         }
-        
     }
 
     onSubmit = () => {
@@ -52,13 +56,14 @@ class EditUser extends Component {
         if(userSummary.firstName === "" || userSummary.lastName === ""){
             this.setState({
                 ...this.state,
-                error: "Unable to Save - User's Name is invalid"
+                error: "Unable to Save - User's Name is invalid",
             })
         } else {
             this.props.updateSpecificUser(this.state.userProfile, this.props.history, userRoles)
             this.setState({
                 ...this.state,
-                error: ""
+                error: "",
+                sending: true
             })
         }
        
@@ -185,6 +190,7 @@ class EditUser extends Component {
             
             return (
                 <div className="activity-container">
+                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                     <h1 className="greenHeader">Edit user</h1>
                     <div className="section-container">
                         <EditUserDetails userProfile={this.state.userProfile.userSummary}
@@ -213,6 +219,7 @@ class EditUser extends Component {
                             onClick={() => this.onSubmit()}>
                         Save
                     </Button>
+                    </LoadingOverlay>
                 </div>
             );
         }
