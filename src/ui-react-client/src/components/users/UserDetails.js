@@ -19,14 +19,14 @@ class UserDetails extends Component {
 
     componentDidMount = () => {
       if(CLIENT_DEV_ENV){
-            this.props.loadSpecificUser(this.props.match.params.user_id, ['adminUser']);
+            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['adminUser']);
             this.setState( {
                 ...this.state,
                 userProfile: this.props.userProfile
             });
         } else {
             const userRoles = getUserRoles(this.context);
-            this.props.loadSpecificUser(this.props.match.params.user_id, userRoles)
+            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {
