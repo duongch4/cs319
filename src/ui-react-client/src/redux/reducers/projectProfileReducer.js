@@ -28,6 +28,26 @@ const executeCreateAssignOpening = (state, action) => {
   return newState;
 };
 
+const executeConfirmAssignOpening = (state, action) => {
+  const usersSummaryCopy = state.usersSummary.slice();
+  const disciplineName = action.userSummaryDisciplineName;
+
+  usersSummaryCopy.forEach(summary => {
+    if (summary.userID === action.userId
+    && summary.resourceDiscipline.discipline === disciplineName){
+          summary.utilization = action.confirmedUtilization;
+          summary.isConfirmed = true;
+    }
+
+  });
+  let newState = {
+    ...state,
+    usersSummary: usersSummaryCopy
+  };
+  return newState;
+};
+
+
 export const projectProfileReducer = (
     state = initialState.projectProfile,
     action
@@ -43,6 +63,8 @@ export const projectProfileReducer = (
             return executeDeleteProjectData();
         case types.UPDATE_ASSIGN_OPENING:
           return executeCreateAssignOpening(state, action, initialState);
+        case types.CONFIRM_ASSIGN_OPENING:
+          return executeConfirmAssignOpening(state, action);
         default:
             return state;
     }

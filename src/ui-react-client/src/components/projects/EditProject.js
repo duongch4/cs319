@@ -47,7 +47,7 @@ class EditProject extends Component {
                            pending: false
                        }))});
         }
-       
+
     }
 
     compare_dates = (date1,date2) => {
@@ -149,7 +149,10 @@ class EditProject extends Component {
             if (projectProfile.usersSummary.length > 0) {
                 projectProfile.usersSummary.forEach(userSummary => {
                     teamMembersRender.push(
-                        <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>
+                        <UserCard user={userSummary}
+                        canEdit={false}
+                        key={teamMembersRender.length}
+                        showOpeningInfo={true}/>
                     )
                 })
             } else {
@@ -157,7 +160,7 @@ class EditProject extends Component {
                     <p key={teamMembersRender.length} className="empty-statements">There are currently no resources assigned to this project.</p>
                 )
             }
-    
+
             const openings = [];
             if (projectProfile.openings.length > 0) {
                 projectProfile.openings.forEach((opening, index) => {
@@ -190,7 +193,7 @@ class EditProject extends Component {
                                           isUserPage={false}
                                           startDate={this.state.projectProfile.projectSummary.projectStartDate}
                                           endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
-                        <div className="errorMessage">{this.state.error}</div> 
+                        <div className="errorMessage">{this.state.error}</div>
                         <hr/>
                         {openings}
                     </div>
@@ -223,7 +226,7 @@ class EditProject extends Component {
             </div>
             )
         }
- 
+
     }
 }
 
