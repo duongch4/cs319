@@ -15,7 +15,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    [Authorize] // TODO: Purpose for now: Auth Integration Testing on Regular User
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]

@@ -202,56 +202,6 @@ namespace Web.API.Controllers
             }
         }
 
-        /// <summary>Get the most recent projects</summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET /api/projects/most-recent
-        ///
-        /// </remarks>
-        /// <returns>The requested project</returns>
-        /// <response code="200">Returns the most recent projects</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="401">Unauthorized Request</response>
-        /// <response code="404">If no projects are found</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Route("projects/most-recent")]
-        [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectProfile>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetMostRecentProjects()
-        {
-            try
-            {
-                var mostRecentProjects = await projectsRepository.GetMostRecentProjects();
-                if (mostRecentProjects == null || !mostRecentProjects.Any())
-                {
-                    var error = new NotFoundException($"No projects found");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
-                }
-                var resource = mapper.Map<IEnumerable<Project>, IEnumerable<ProjectProfile>>(mostRecentProjects);
-                var response = new OkResponse<IEnumerable<ProjectProfile>>(resource, "Everything is good");
-                return StatusCode(StatusCodes.Status200OK, response);
-            }
-            catch (Exception err)
-            {
-                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-                if (err is SqlException)
-                {
-                    var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
-                }
-                else
-                {
-                    var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-                }
-            }
-        }
-
         /// <summary>Create a project</summary>
         /// <remarks>
         /// Sample request:
@@ -561,58 +511,6 @@ namespace Web.API.Controllers
                 {
                     var error = new BadRequestException(errMessage);
                     return StatusCode(StatusCodes.Status400BadRequest,  new CustomException<BadRequestException>(error).GetException());
-                }
-            }
-        }
-
-    /// <summary>Testing GetAPosition</summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET api/projects/"EJ7945NDVCZPWX9"/position/2001
-        ///
-        /// </remarks>
-        /// <param name= "projectNum">The project number as string</param>
-        /// <param name= "positionId">The project's id</param>
-        /// <returns>The old deleted project</returns>
-        /// <response code="201">Returns a RequestProjectAssign (e.g. {{positionId} {userId}})</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="401">Unauthorized Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Route("projects/{projectNum}/position/{positionId}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAPosition([FromRoute] string projectNum, int positionId)
-        {
-            try
-            {   
-                Position position = await positionsRepository.GetAPosition(positionId);
-                
-                if (position == null)
-                {
-                    var error = new NotFoundException("The given positionId cannot be found in the database");
-                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
-                }
-
-                var response = new UpdatedResponse<Position>(position, "Successfully retrieved");
-                return StatusCode(StatusCodes.Status201Created, response);
-            }
-            catch (Exception err)
-            {
-                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-                if (err is SqlException)
-                {
-                    var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
-                }
-                else
-                {
-                    var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
