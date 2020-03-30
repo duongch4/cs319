@@ -313,6 +313,25 @@ namespace Tests.Unit
             ).ReturnsAsync(returnVal);
         }
 
+        private void Setup_AllRepo_UpdateUser(ResourceDiscipline discipline, IEnumerable<ResourceDiscipline> dbDisciplines,
+            OutOfOffice availability, IEnumerable<OutOfOffice> dbAvailability, ResourceSkill skill, IEnumerable<ResourceSkill> dbSkills) {
+
+            // Disciplines Repo
+            Setup_DisciplinesRepo_GetUserDisciplines_Default(dbDisciplines);
+            Setup_DisciplinesRepo_DeleteResourceDiscipline_Default(discipline);
+            Setup_DisciplinesRepo_InsertResourceDiscipline_Default(discipline);
+
+            // OutOfOffice repo
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(dbAvailability);
+            Setup_OutOfOffice_InsertOutOfOffice_Default(availability);
+            Setup_OutOfOfficeRepo_DeleteOutOfOffice_Default(availability);
+
+            // Skills repo
+            Setup_SkillsRepo_GetUserSkills_Default(dbSkills);
+            Setup_SkillsRepo_DeleteResourceSkill_Default(skill);
+            Setup_SkillsRepo_InsertResourceSkill_Default(skill);
+        }
+
         /********** Tests for GetAllUsers **********/
         [Fact]
         public async void GetAllUsers_TryBlock_ReturnObjectResult()
@@ -408,7 +427,158 @@ namespace Tests.Unit
             Assert.IsType<ObjectResult>(result);
         }
     
-                /********** Tests for GetAUser **********/
+        [Fact]
+        public async void UpdateUser_TryBlock_NullCheck_ReturnBadRequestException(){
+            var errMessage = "Bad Request";
+
+            var result = (await _controller.UpdateUser(null, "test id")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void UpdateUser_TryBlock_InvalidUser_ReturnInternalServerException(){
+            Setup_LocationsRepo_GetALocation_Default(new Location());
+            Setup_UsersRepo_UpdateAUser_Default("-1");
+            var errMessage = "Internal Server Error";
+            var location = new LocationResource {
+                LocationID = 1,
+                City = "city",
+                Province = "province"
+            };
+            var summary = new UserSummary {
+                UserID = "1",
+                Location = location,
+                FirstName = "first",
+                LastName = "last",
+                Utilization = 0,
+                ResourceDiscipline = null,
+                IsConfirmed = false
+            };
+            var user = new UserProfile {
+                UserSummary = summary,
+                CurrentProjects = Enumerable.Empty<ProjectSummary>(),
+                Availability = Enumerable.Empty<OutOfOfficeResource>(),
+                Disciplines = Enumerable.Empty<ResourceDisciplineResource>(),
+                Positions = Enumerable.Empty<PositionSummary>()
+            };
+
+            var result = (await _controller.UpdateUser(user, "1")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void UpdateUser_TryBlock_ReturnValidUserID(){
+            Setup_AllRepo_UpdateUser(new ResourceDiscipline(), Enumerable.Empty<ResourceDiscipline>(),
+                    new OutOfOffice(), Enumerable.Empty<OutOfOffice>(), new ResourceSkill(), Enumerable.Empty<ResourceSkill>());
+            Setup_LocationsRepo_GetALocation_Default(new Location());
+            Setup_UsersRepo_UpdateAUser_Default("1");
+
+            var location = new LocationResource {
+                LocationID = 1,
+                City = "city",
+                Province = "province"
+            };
+            var summary = new UserSummary {
+                UserID = "1",
+                Location = location,
+                FirstName = "first",
+                LastName = "last",
+                Utilization = 0,
+                ResourceDiscipline = null,
+                IsConfirmed = false
+            };
+            var user = new UserProfile {
+                UserSummary = summary,
+                CurrentProjects = Enumerable.Empty<ProjectSummary>(),
+                Availability = Enumerable.Empty<OutOfOfficeResource>(),
+                Disciplines = Enumerable.Empty<ResourceDisciplineResource>(),
+                Positions = Enumerable.Empty<PositionSummary>()
+            };
+            
+            var result = (await _controller.UpdateUser(user, "1")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<OkResponse<string>>(result.Value);
+            var response = result.Value as OkResponse<string>;
+            Assert.IsType<string>(response.payload);
+        }
+
+        [Fact]
+        public async void UpdateUser_CatchBlock_ReturnInternalServerException(){
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_AllRepo_UpdateUser(It.IsAny<ResourceDiscipline>(), Enumerable.Empty<ResourceDiscipline>(),
+                    new OutOfOffice(), Enumerable.Empty<OutOfOffice>(), new ResourceSkill(), Enumerable.Empty<ResourceSkill>());
+            Setup_LocationsRepo_GetALocation_Default(new Location());
+            Setup_UsersRepo_UpdateAUser_ThrowsException(sqlException);
+
+            var location = new LocationResource {
+                LocationID = 1,
+                City = "city",
+                Province = "province"
+            };
+            var summary = new UserSummary {
+                UserID = null,
+                Location = location,
+                FirstName = "first",
+                LastName = "last",
+                Utilization = 0,
+                ResourceDiscipline = null,
+                IsConfirmed = false
+            };
+            var user = new UserProfile {
+                UserSummary = summary,
+                CurrentProjects = Enumerable.Empty<ProjectSummary>(),
+                Availability = Enumerable.Empty<OutOfOfficeResource>(),
+                Disciplines = Enumerable.Empty<ResourceDisciplineResource>(),
+                Positions = Enumerable.Empty<PositionSummary>()
+            };
+            
+            var result = (await _controller.UpdateUser(user, "")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void UpdateUser_CatchBlock_ReturnBadRequestException(){
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_UsersRepo_UpdateAUser_ThrowsException(badRequestException);
+
+            var location = new LocationResource {
+                LocationID = 1,
+                City = "city",
+                Province = "province"
+            };
+            var summary = new UserSummary {
+                UserID = null,
+                Location = location,
+                FirstName = "first",
+                LastName = "last",
+                Utilization = 0,
+                ResourceDiscipline = null,
+                IsConfirmed = false
+            };
+            var user = new UserProfile {
+                UserSummary = summary,
+                CurrentProjects = Enumerable.Empty<ProjectSummary>(),
+                Availability = Enumerable.Empty<OutOfOfficeResource>(),
+                Disciplines = Enumerable.Empty<ResourceDisciplineResource>(),
+                Positions = Enumerable.Empty<PositionSummary>()
+            };
+            
+            var result = (await _controller.UpdateUser(user, "")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+        /********** Tests for SearchUsers **********/
         [Fact]
         public async void SearchUsers_TryBlock_ReturnObjectResult()
         {
