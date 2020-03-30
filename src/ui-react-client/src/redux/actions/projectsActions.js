@@ -56,6 +56,7 @@ export const loadProjects = (filterParams, userRoles) => {
             } else {
                 errorParsed = error.response.statusText
             }
+            alert(errorParsed);
             throw(error)
           })
         })
