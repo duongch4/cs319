@@ -18,6 +18,7 @@
         public UserAuthenticationSettingsDetails UserRegular { get; set; }
         public UserAuthenticationSettingsDetails UserNotInDatabase { get; set; }
         public UserAuthenticationSettingsDetails UserNoRoles { get; set; }
+        public UserAuthenticationSettingsWrongRolesScopesComb WrongRolesScopesComb { get; set; }
         public AppAuthenticationSettings AppAuthentication { get; set; }
     }
 }

@@ -29,6 +29,7 @@ namespace Tests.Integration.Utils
                     var userRegular = config.GetSection("UserRegular").Get<UserAuthenticationSettingsDetails>();
                     var userNotInDatabase = config.GetSection("UserNotInDatabase").Get<UserAuthenticationSettingsDetails>();
                     var userNoRoles = config.GetSection("UserNoRoles").Get<UserAuthenticationSettingsDetails>();
+                    var wrongRolesScopesComb = config.GetSection("WrongRolesScopesComb").Get<UserAuthenticationSettingsWrongRolesScopesComb>();
                     Settings = new IntegrationTestSettings
                     {
                         Authority = $@"{azureAdOptions.Authority}/v2.0",
@@ -38,7 +39,8 @@ namespace Tests.Integration.Utils
                         UserAdmin = userAdmin,
                         UserRegular = userRegular,
                         UserNotInDatabase = userNotInDatabase,
-                        UserNoRoles = userNoRoles
+                        UserNoRoles = userNoRoles,
+                        WrongRolesScopesComb = wrongRolesScopesComb
                     };
                 });
             });

@@ -105,6 +105,64 @@ namespace Tests.Integration
             Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
         }
 
-        // TODO: Testing different combinations of Roles & Scopes
+        [Theory]
+        [InlineData("/api/locations")]
+        [InlineData("/api/masterlists")]
+        [InlineData("/api/projects")]
+        [InlineData("/api/users")]
+        public async Task Request_Auth_UserAdmin_ScopeAdminOnly_Forbidden(string url)
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            var settings = Settings.UserAdmin;
+            settings.Scope = Settings.WrongRolesScopesComb.Admin_ScopeAdminOnly;
+            await AccessTokenProvider.AuthenticateRequestAsUserAsync(req, settings);
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
+
+        [Theory]
+        [InlineData("/api/locations")]
+        [InlineData("/api/masterlists")]
+        [InlineData("/api/projects")]
+        [InlineData("/api/users")]
+        public async Task Request_Auth_UserAdmin_ScopeRegularOnly_Forbidden(string url)
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            var settings = Settings.UserAdmin;
+            settings.Scope = Settings.WrongRolesScopesComb.Admin_ScopeRegularOnly;
+            await AccessTokenProvider.AuthenticateRequestAsUserAsync(req, settings);
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
+
+        [Theory]
+        [InlineData("/api/locations")]
+        [InlineData("/api/masterlists")]
+        [InlineData("/api/projects")]
+        [InlineData("/api/users")]
+        public async Task Request_Auth_UserRegular_ScopeAdminOnly_Forbidden(string url)
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            var settings = Settings.UserRegular;
+            settings.Scope = Settings.WrongRolesScopesComb.Regular_ScopeAdminOnly;
+            await AccessTokenProvider.AuthenticateRequestAsUserAsync(req, settings);
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
+
+        [Theory]
+        [InlineData("/api/locations")]
+        [InlineData("/api/masterlists")]
+        [InlineData("/api/projects")]
+        [InlineData("/api/users")]
+        public async Task Request_Auth_UserRegular_ScopeBoth_Forbidden(string url)
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            var settings = Settings.UserRegular;
+            settings.Scope = Settings.WrongRolesScopesComb.Regular_ScopeBoth;
+            await AccessTokenProvider.AuthenticateRequestAsUserAsync(req, settings);
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+        }
     }
 }
