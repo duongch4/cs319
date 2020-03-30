@@ -16,10 +16,13 @@ namespace Web.API.Infrastructure.Data
     public class ProjectsRepository : IProjectsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
 
         public ProjectsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
 
         public async Task<IEnumerable<ProjectResource>> GetAllProjects()
@@ -190,7 +193,12 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
+            // connection.StatisticsEnabled = true;
             return await connection.QueryFirstOrDefaultAsync<ProjectResource>(sql, new { Number = projectNumber });
+            //  var stats = connection.RetrieveStatistics();
+            // Log.Information("{@a}", sql);
+            // Log.Information("{@a}" ,stats);
+
         }
 
         public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user)

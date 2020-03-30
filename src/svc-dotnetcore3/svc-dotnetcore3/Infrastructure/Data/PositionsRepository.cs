@@ -14,10 +14,14 @@ namespace Web.API.Infrastructure.Data
     public class PositionsRepository : IPositionsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
+
 
         public PositionsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
         public async Task<IEnumerable<Position>> GetAllPositions()
         {
