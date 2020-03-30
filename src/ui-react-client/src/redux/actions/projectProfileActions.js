@@ -52,7 +52,7 @@ export const loadSingleProject = (projectNumber, userRoles) => {
                     if(error.response.status === 500){
                         let err = error.response.data.message
                         errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
+                        console.log(err)
                     } else {
                         errorParsed = error.response.statusText
                     }
@@ -79,7 +79,7 @@ export const createProject = (project, history, userRoles) => {
                     if(error.response.status === 500){
                         let err = error.response.data.message
                         errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
+                        console.log(err)
                     } else {
                         errorParsed = error.response.statusText
                     }
@@ -106,7 +106,7 @@ export const updateProject = (project, history, userRoles) => {
                     if(error.response.status === 500){
                         let err = error.response.data.message
                         errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
+                        console.log(err)
                     } else {
                         errorParsed = error.response.statusText
                     }
@@ -133,7 +133,7 @@ export const deleteProject = (number, history, userRoles) => {
                     if(error.response.status === 500){
                         let err = error.response.data.message
                         errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
+                        console.log(err)
                     } else {
                         errorParsed = error.response.statusText
                     }

@@ -16,6 +16,45 @@ export const createAssignOpening = (openingId, userId, confirmedUtilization, use
     }
 };
 
+export const confirmAssignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName) => {
+    return {
+        type: types.CONFIRM_ASSIGN_OPENING,
+        openingId: openingId,
+        userId: userId,
+        confirmedUtilization: confirmedUtilization,
+        userSummaryDisciplineName: userSummaryDisciplineName
+    }
+};
+
+export const confirmAssignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName) => {
+    return dispatch => {
+      if (CLIENT_DEV_ENV) {
+          dispatch(confirmAssignOpening(openingId, userID, confirmedUtilization, userSummaryDisciplineName))
+      } else {
+        return getHeaders(userRoles).then(headers => {
+            return axios
+            .put(`${baseURL}positions/${openingId}/confirm`, {}, { headers })
+                .then(response => {
+                    dispatch(confirmAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, userSummaryDisciplineName))
+                })
+                .catch(error => {
+                    let errorParsed = "";
+                    console.log(error.response)
+                    if(error.response.status === 500){
+                        let err = error.response.data.message;
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err);
+                    } else {
+                        errorParsed = error.response.statusText;
+                    }
+                    alert(errorParsed);
+                })
+        })
+      }
+    }
+};
+
+
 export const createAssignOpenings = (openingId, userId, confirmedUtilization, user, userRoles) => {
     return dispatch => {
       if (CLIENT_DEV_ENV) {

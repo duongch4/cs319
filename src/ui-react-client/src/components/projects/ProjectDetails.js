@@ -62,10 +62,16 @@ class ProjectDetails extends Component {
             var teamMembersRender = [];
             const userSummaries = this.state.projectProfile.usersSummary;
             const projectManager = this.state.projectProfile.projectManager;
+            const projectDetails = this.state.projectProfile;
             teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
-                    <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>)
+                    <UserCard user={userSummary}
+                    canEdit={false}
+                    key={teamMembersRender.length}
+                    canConfirm={true}
+                    projectDetails={projectDetails}
+                    showOpeningInfo={true}/>)
             });
 
             if (this.state.projectProfile === null) {
@@ -75,7 +81,7 @@ class ProjectDetails extends Component {
                     </div>
                 )
             }
-            const projectDetails = this.state.projectProfile;
+
             var projectStartDate = formatDate(projectDetails.projectSummary.projectStartDate);
             var projectEndDate = formatDate(projectDetails.projectSummary.projectEndDate);
 
