@@ -16,11 +16,14 @@ namespace Web.API.Infrastructure.Data
     public class LocationsRepository : ILocationsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
         private readonly Dictionary<string, IEnumerable<string>> locations;
 
         public LocationsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
             this.locations = new Dictionary<string, IEnumerable<string>>();
             this.SetStaticLocations();
         }

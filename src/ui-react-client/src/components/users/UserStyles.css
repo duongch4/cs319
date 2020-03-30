@@ -3,20 +3,6 @@
     font-weight: 900;
 }
 
-
-.lowUtil{
-    color: #EB5757;
-}
-.mediumUtil{
-    color: #F2994A;
-}
-.highUtil{
-
-    color: #6FCF97;
-}
-.overUtil{
-    color: maroon;
-}
 .errorMessage {
     color: red;
 }

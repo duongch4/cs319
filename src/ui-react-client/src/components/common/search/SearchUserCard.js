@@ -1,26 +1,50 @@
 import React, { Component } from 'react';
 import '../../users/UserStyles.css'
 import {Link} from "react-router-dom";
+import { UserContext, getUserRoles } from "../userContext/UserContext";
+import {Button} from "@material-ui/core";
+import {
+    LOW_UTILIZATION,
+    MEDIUM_UTILIZATION,
+    HIGH_UTILIZATION,
+    LOW_UTILIZATION_COLOUR,
+    MEDIUM_UTILIZATION_COLOUR,
+    HIGH_UTILIZATION_COLOUR,
+    OVER_UTILIZATION_COLOUR
+} from '../../../config/config';
 
 class SearchUserCard extends Component {
-    state ={
-        // these are the top of the range
-        low: 50,
-        medium: 85,
-        high: 100,
-    }
+
+  onSubmit = (openingId, userId, utilization, user, userRoles) => {
+     this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles);
+   };
+
+
     render(){
         const {user} = this.props;
-        let styleName = ""
-        if(user.utilization <= this.state.low){
-            styleName = "lowUtil"
-        } else if(user.utilization <= this.state.medium){
-            styleName = "mediumUtil"
-        } else if(user.utilization <= this.state.high){
-            styleName = "highUtil"
+
+        var disc_string = "";
+        
+        user.resourceDiscipline.forEach((disc, index) => {
+            if (index == 0) {
+                disc_string = disc.discipline + " (" + disc.yearsOfExp + ")";
+            } else {
+                disc_string = disc_string + ", " + disc.discipline + " (" + disc.yearsOfExp + ")";
+            }
+        });
+
+        let colour = ""
+        if(user.utilization <= LOW_UTILIZATION){
+            colour = LOW_UTILIZATION_COLOUR
+        } else if(user.utilization <= MEDIUM_UTILIZATION){
+            colour = MEDIUM_UTILIZATION_COLOUR
+        } else if(user.utilization <= HIGH_UTILIZATION){
+            colour = HIGH_UTILIZATION_COLOUR
         } else {
-            styleName = "overUtil"
+            colour = OVER_UTILIZATION_COLOUR
         }
+
+        const userRoles = getUserRoles(this.context);
         return(
             <div className="card-summary">
                 <div className="card-summary-title">
@@ -28,14 +52,23 @@ class SearchUserCard extends Component {
                         <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
-                    <p><b>Disciplines:</b> {user.resourceDiscipline.discipline}</p>
+                    <p><b>Disciplines:</b> {disc_string}</p>
+                    {this.props.isAssignable &&
+                        (  <Button variant="contained"
+                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                    disableElevation onClick={() => this.onSubmit(this.props.openingId, user.userID, user.utilization, user, userRoles)}
+                                    component={Link} to={"/projects/" + this.props.projectNumber}>
+                                Assign
+                            </Button>)}
                 </div>
                 <div className="card-summary-title utilization">
-                    <p className={styleName}>{user.utilization}%</p>
+                    <p style={{color: colour}}>{user.utilization}%</p>
                 </div>
             </div>
         )
     }
 }
+
+SearchUserCard.contextType = UserContext;
 
 export default SearchUserCard

@@ -11,13 +11,16 @@ import {CLIENT_DEV_ENV} from '../../config/config';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import '../common/common.css'
 import Loading from '../common/Loading';
+import LoadingOverlay from 'react-loading-overlay'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 class EditProject extends Component {
     state = {
         projectProfile: {},
         masterlist: {},
         pending: true,
-        error: []
+        error: [],
+        sending: false
     };
 
     componentDidMount() {
@@ -44,7 +47,7 @@ class EditProject extends Component {
                            pending: false
                        }))});
         }
-       
+
     }
 
     compare_dates = (date1,date2) => {
@@ -60,7 +63,8 @@ class EditProject extends Component {
             this.props.updateProject(this.state.projectProfile, this.props.history, userRoles);
             this.setState({
                 ...this.state,
-                error: []
+                error: [],
+                sending: true
             })
         }
     };
@@ -145,7 +149,10 @@ class EditProject extends Component {
             if (projectProfile.usersSummary.length > 0) {
                 projectProfile.usersSummary.forEach(userSummary => {
                     teamMembersRender.push(
-                        <UserCard user={userSummary} canEdit={false} key={teamMembersRender.length}/>
+                        <UserCard user={userSummary}
+                        canEdit={false}
+                        key={teamMembersRender.length}
+                        showOpeningInfo={true}/>
                     )
                 })
             } else {
@@ -153,7 +160,7 @@ class EditProject extends Component {
                     <p key={teamMembersRender.length} className="empty-statements">There are currently no resources assigned to this project.</p>
                 )
             }
-    
+
             const openings = [];
             if (projectProfile.openings.length > 0) {
                 projectProfile.openings.forEach((opening, index) => {
@@ -172,6 +179,7 @@ class EditProject extends Component {
 
             return (
                 <div className="activity-container">
+                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                     <h1 className="greenHeader">Edit project</h1>
                     <div className="section-container">
                         <CreateEditProjectDetails locations={this.state.masterlist.locations}
@@ -185,7 +193,7 @@ class EditProject extends Component {
                                           isUserPage={false}
                                           startDate={this.state.projectProfile.projectSummary.projectStartDate}
                                           endDate={this.state.projectProfile.projectSummary.projectEndDate}/>
-                        <div className="errorMessage">{this.state.error}</div> 
+                        <div className="errorMessage">{this.state.error}</div>
                         <hr/>
                         {openings}
                     </div>
@@ -207,6 +215,7 @@ class EditProject extends Component {
                             Delete
                         </Button>
                     </div>
+                    </LoadingOverlay>
                 </div>
             );
         }
@@ -217,7 +226,7 @@ class EditProject extends Component {
             </div>
             )
         }
- 
+
     }
 }
 

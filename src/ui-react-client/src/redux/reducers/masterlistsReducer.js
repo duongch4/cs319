@@ -160,6 +160,14 @@ export const executeCreateError = (action, state) => {
     return newState;
 }
 
+export const executeClearError = (state) => {
+    let newState = {
+        ...state,
+        error: null
+    }
+    return newState;
+}
+
 export const masterlistsReducer = (
     state = initialState.masterlist,
     action
@@ -187,6 +195,8 @@ export const masterlistsReducer = (
             return executeDeleteError(action, state);
         case types.ERROR_CREATING:
             return executeCreateError(action, state);
+        case types.CLEAR_ERROR:
+            return executeClearError(state);
         default:
             return state;
     }
