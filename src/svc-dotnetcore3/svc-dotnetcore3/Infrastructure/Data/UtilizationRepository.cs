@@ -35,7 +35,9 @@ namespace Web.API.Infrastructure.Data
         private async Task<int> CalculateWorkingHoursForMonth(IEnumerable<Position> positionsOfUser) {
             var total = 0;
             foreach (Position position in positionsOfUser) {
-                 total += await CalculateWorkingHoursForSinglePosition(position);
+                if (position.IsConfirmed == true) {
+                     total += await CalculateWorkingHoursForSinglePosition(position);
+                }
             }
             return total;
         }
@@ -45,7 +47,8 @@ namespace Web.API.Infrastructure.Data
             double hoursOutOfOffice = 0;
             int workHoursPerDay = 8;
 
-            if (outOfOffice.FromDate.Month == DateTime.Today.Month) {
+            if (outOfOffice.FromDate.Month == DateTime.Today.Month 
+                && outOfOffice.FromDate.Year == DateTime.Today.Year) {
                 DateTime firstDayOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
                 DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
 
@@ -78,7 +81,7 @@ namespace Web.API.Infrastructure.Data
             foreach (OutOfOffice outOfOffice in outOfOffices) {
                 availableHoursThisMonth -= await CalculateHoursOutOfOfficeForMonth(outOfOffice);
             }
-            availableHoursThisMonth = availableHoursThisMonth == 0 ? 1 : availableHoursThisMonth;
+            availableHoursThisMonth = availableHoursThisMonth <= 0 ? 1 : availableHoursThisMonth;
             return System.Convert.ToDecimal(availableHoursThisMonth);
         }
 

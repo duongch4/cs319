@@ -13,10 +13,13 @@ namespace Web.API.Infrastructure.Data
     public class SkillsRepository : ISkillsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
 
         public SkillsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
         //GET
         public async Task<IEnumerable<Skill>> GetAllSkills()

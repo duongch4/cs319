@@ -16,17 +16,21 @@ namespace Web.API.Infrastructure.Data
     public class UsersRepository : IUsersRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
+
 
         public UsersRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
 
         public async Task<IEnumerable<User>> GetAllUsers()
         {
             var sql = @"
                 select
-                    Id, FirstName, LastName, Username, LocationId, IsAdmin, IsManager
+                    Id, FirstName, LastName, Username, LocationId, Utilization, IsAdmin, IsManager
                 from
                     Users
             ;";
@@ -93,17 +97,6 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryAsync<User>(sql, new { SkillId = skill.Id });
         }
-
-        // //TODO: @Chi plz
-        // public async Task<IEnumerable<User>> GetAllUsersWithAvailability(Availability requestedAvailability)
-        // {
-        //     return null;
-        // }
-
-        // public async Task<IEnumerable<User>> GetAllUsersOverNUtilization(int nUtil) 
-        // {
-        //     return null;
-        // }
 
         public async Task<IEnumerable<User>> GetAllUsersOnProject(Project project)
         {

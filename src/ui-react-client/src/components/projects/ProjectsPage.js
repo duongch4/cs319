@@ -144,6 +144,9 @@ render() {
  
 ProjectsPage.contextType = UserContext;
 
+_ProjectsPage.propTypes = {
+  props: PropTypes.object,
+};
 
 const mapStateToProps = state => {
   return {

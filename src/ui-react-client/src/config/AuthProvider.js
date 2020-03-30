@@ -14,7 +14,7 @@ import { UserContextConsumer, USERCONTEXTKEY, UserProvider } from "../components
 const useRedirectFlow = isIE();
 // const useRedirectFlow = true;
 
-export default C =>
+export default C => (
     class AuthProvider extends Component {
         constructor(props) {
             super(props);
@@ -27,61 +27,17 @@ export default C =>
             };
         }
 
-        async onSignIn(redirect, updateUserProfile) {
+        async onSignIn(redirect) {
             if (redirect) {
                 return msalApp.loginRedirect(GRAPH_REQUESTS.LOGIN);
             }
-
-            const loginResponse = await msalApp
-                .loginPopup(GRAPH_REQUESTS.LOGIN)
-                .catch(error => {
-                    this.setState({
-                        error: error.message
-                    });
-                });
-
-            if (loginResponse) {
-                this.setState({
-                    account: loginResponse.account,
-                    error: null
-                });
-
-                const tokenResponse = await acquireToken(
-                    GRAPH_REQUESTS.LOGIN
-                ).catch(error => {
-                    this.setState({
-                        error: error.message
-                    });
-                });
-
-                if (tokenResponse) {
-                    const graphProfile = await fetchMsGraph(
-                        GRAPH_ENDPOINTS.ME,
-                        tokenResponse.accessToken
-                    ).catch(() => {
-                        this.setState({
-                            error: "Unable to fetch Graph profile."
-                        });
-                    });
-
-                    if (graphProfile) {
-                        this.setState({
-                            graphProfile
-                        });
-
-                        updateUserProfile({
-                            userID: loginResponse.account.accountIdentifier,
-                            userRoles: loginResponse.account.idToken.roles,
-                            firstName: graphProfile.givenName,
-                            lastName: graphProfile.surname
-                        });
-                    }
-
-                    if (tokenResponse.scopes.indexOf(GRAPH_SCOPES.MAIL_READ) > 0) {
-                        return this.readMail(tokenResponse.accessToken);
-                    }
-                }
+            else {
+                return await this.handleSignInPopupFlow();
             }
+        }
+
+        async componentDidMount() {
+            await this.handleSignInRedirectFlow();
         }
 
         onSignOut() {
@@ -104,6 +60,12 @@ export default C =>
             }
         }
 
+        tryReadMail(tokenResponse) {
+            if (tokenResponse.scopes.indexOf(GRAPH_SCOPES.MAIL_READ) > 0) {
+                return this.readMail(tokenResponse.accessToken);
+            }
+        }
+
         async readMail(accessToken) {
             const emailMessages = await fetchMsGraph(
                 GRAPH_ENDPOINTS.MAIL,
@@ -122,7 +84,36 @@ export default C =>
             }
         }
 
-        async componentDidMount() {
+        async handleSignInPopupFlow() {
+            const loginResponse = await this.getLoginResponsePopup();
+            if (loginResponse) {
+                await this.setUserInfo(loginResponse.account, false);
+            }
+        }
+
+        async getLoginResponsePopup() {
+            const loginResponse = await msalApp.loginPopup(
+                GRAPH_REQUESTS.LOGIN
+            ).catch(error => {
+                this.setState({
+                    error: error.message
+                });
+            });
+            return loginResponse;
+        }
+
+        async getTokenResponse(isRedirectOnInteractionError = false) {
+            const tokenResponse = await acquireToken(
+                GRAPH_REQUESTS.LOGIN, isRedirectOnInteractionError
+            ).catch(error => {
+                this.setState({
+                    error: error.message
+                });
+            });
+            return tokenResponse;
+        }
+
+        async handleSignInRedirectFlow() {
             msalApp.handleRedirectCallback(error => {
                 if (error) {
                     const errorMessage = error.errorMessage ? error.errorMessage : "Unable to acquire access token.";
@@ -132,39 +123,49 @@ export default C =>
                     });
                 }
             });
-
             const account = msalApp.getAccount();
-
-            this.setState({
-                account
-            });
-
             if (account) {
-                const tokenResponse = await acquireToken(
-                    GRAPH_REQUESTS.LOGIN,
-                    useRedirectFlow
-                );
+                await this.setUserInfo(account, useRedirectFlow);
+            }
+        }
 
-                if (tokenResponse) {
-                    const graphProfile = await fetchMsGraph(
-                        GRAPH_ENDPOINTS.ME,
-                        tokenResponse.accessToken
-                    ).catch(() => {
-                        this.setState({
-                            error: "Unable to fetch Graph profile."
-                        });
-                    });
+        async setUserInfo(account, isRedirectOnInteractionError) {
+            this.setState({
+                account: account,
+                error: null
+            });
+            const tokenResponse = await this.getTokenResponse(isRedirectOnInteractionError);
+            if (tokenResponse) {
+                const graphProfile = await this.getGraphProfile(tokenResponse);
+                this.callUpdateProfileFromContext(graphProfile, account);
+                this.tryReadMail(tokenResponse);
+            }
+        }
 
-                    if (graphProfile) {
-                        this.setState({
-                            graphProfile
-                        });
-                    }
+        async getGraphProfile(tokenResponse) {
+            const graphProfile = await fetchMsGraph(
+                GRAPH_ENDPOINTS.ME,
+                tokenResponse.accessToken
+            ).catch(() => {
+                this.setState({
+                    error: "Unable to fetch Graph profile."
+                });
+            });
+            return graphProfile;
+        }
 
-                    if (tokenResponse.scopes.indexOf(GRAPH_SCOPES.MAIL_READ) > 0) {
-                        return this.readMail(tokenResponse.accessToken);
-                    }
-                }
+        callUpdateProfileFromContext(graphProfile, account) {
+            if (graphProfile) {
+                this.setState({
+                    graphProfile
+                });
+
+                this.updateProfile({
+                    userID: account.accountIdentifier,
+                    userRoles: account.idToken.roles,
+                    firstName: graphProfile.givenName,
+                    lastName: graphProfile.surname
+                });
             }
         }
 
@@ -172,20 +173,24 @@ export default C =>
             return (
                 <UserProvider>
                     <UserContextConsumer>
-                        {({ profile, updateProfile }) => (
-                            <C
-                                {...this.props}
-                                account={this.state.account}
-                                emailMessages={this.state.emailMessages}
-                                error={this.state.error}
-                                graphProfile={this.state.graphProfile}
-                                onSignIn={() => this.onSignIn(useRedirectFlow, updateProfile)}
-                                onSignOut={() => this.onSignOut()}
-                                onRequestEmailToken={() => this.onRequestEmailToken()}
-                            />
-                        )}
+                        {({ profile, updateProfile }) => {
+                            this.updateProfile = updateProfile;
+                            return (
+                                <C
+                                    {...this.props}
+                                    account={this.state.account}
+                                    emailMessages={this.state.emailMessages}
+                                    error={this.state.error}
+                                    graphProfile={this.state.graphProfile}
+                                    onSignIn={() => this.onSignIn(useRedirectFlow)}
+                                    onSignOut={() => this.onSignOut()}
+                                    onRequestEmailToken={() => this.onRequestEmailToken()}
+                                />
+                            )
+                        }}
                     </UserContextConsumer>
                 </UserProvider>
             );
         }
-    };
+    }
+);

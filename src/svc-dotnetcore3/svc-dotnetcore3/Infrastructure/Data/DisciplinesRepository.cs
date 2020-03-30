@@ -16,6 +16,7 @@ namespace Web.API.Infrastructure.Data
         public DisciplinesRespository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+
         }
         public async Task<Discipline> GetADiscipline(int disciplineId)
         {

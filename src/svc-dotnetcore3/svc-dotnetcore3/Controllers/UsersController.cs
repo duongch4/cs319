@@ -30,10 +30,12 @@ namespace Web.API.Controllers
         private readonly IDisciplinesRepository disciplinesRepository;
         private readonly ISkillsRepository skillsRepository;
         private readonly IOutOfOfficeRepository outOfOfficeRepository;
+        private readonly IUtilizationRepository utilizationRepository;
         private readonly IMapper mapper;
 
         public UsersController(IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository,
-            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository, IMapper mapper)
+            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository, IMapper mapper,
+            IUtilizationRepository utilizationRepository)
         {
             this.usersRepository = usersRepository;
             this.projectsRepository = projectsRepository;
@@ -42,6 +44,7 @@ namespace Web.API.Controllers
             this.disciplinesRepository = disciplinesRepository;
             this.skillsRepository = skillsRepository;
             this.outOfOfficeRepository = outOfOfficeRepository;
+            this.utilizationRepository = utilizationRepository;
             this.mapper = mapper;
         }
 
@@ -350,6 +353,53 @@ namespace Web.API.Controllers
                 }
             }
         }
+
+        /// <summary>Update Utilization</summary>
+        /// <remarks>
+        /// </remarks>
+        /// <returns></returns>
+        /// <response code="200"></response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPut]
+        [Route("users/utilization/update")]
+        [ProducesResponseType(typeof(OkResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUtilizationOfAllUsers()
+        {
+            try
+            {
+                IEnumerable<User> allUsers = await usersRepository.GetAllUsers();
+                foreach (User user in allUsers) {
+                    IEnumerable<Position> allPositionsOfUser = await positionsRepository.GetAllPositionsOfUser(user.Id);
+                    IEnumerable<OutOfOffice> allOutOfOfficeOfUser = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user.Id);
+                    int userUtil = await utilizationRepository.CalculateUtilizationOfUser(allPositionsOfUser, allOutOfOfficeOfUser);
+                    await usersRepository.UpdateUtilizationOfUser(userUtil, user.Id);
+                }
+
+                var response = new OkResponse<string>(null, "Successfully updated all Users");
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
+            }
+        }
+
         private User createUserFromSummary(UserSummary summary, Location location)
         {
             var user = new User {
@@ -490,6 +540,13 @@ namespace Web.API.Controllers
                 Log.Logger.Information("avail function " + isSameAvail);
                 var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
                 var inserted = await addAvailToDB(profileAvailability, availabilityDB);
+
+                var newOutOfOffices = await outOfOfficeRepository.GetAllOutOfOfficeForUser(userId);
+                var allPositionsOfUser = await positionsRepository.GetAllPositionsOfUser(userId);
+                int updatedUtilization = await utilizationRepository.CalculateUtilizationOfUser(allPositionsOfUser, newOutOfOffices);
+                await usersRepository.UpdateUtilizationOfUser(updatedUtilization, userId);
+                
+                Log.Information("updated util {@a}", updatedUtilization);
                 result = removed.Concat(inserted);
             }
             return result;
