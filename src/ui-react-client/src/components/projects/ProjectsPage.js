@@ -11,6 +11,7 @@ import {CLIENT_DEV_ENV} from '../../config/config';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import {Button} from "@material-ui/core";
 import Loading from '../common/Loading';
+import PropTypes from 'prop-types';
 
 class ProjectsPage extends Component {
     state = {
@@ -144,7 +145,7 @@ render() {
  
 ProjectsPage.contextType = UserContext;
 
-_ProjectsPage.propTypes = {
+ProjectsPage.propTypes = {
   props: PropTypes.object,
 };
 
