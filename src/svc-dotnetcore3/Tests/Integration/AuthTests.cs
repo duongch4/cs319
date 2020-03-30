@@ -11,8 +11,7 @@ namespace Tests.Integration
     public class AuthTests : IntegrationTestBase
     {
         public AuthTests(AppFixture app) : base(app)
-        {
-        }
+        { }
 
         [Theory]
         [InlineData("/api/locations")]
@@ -104,6 +103,12 @@ namespace Tests.Integration
             var res = await Client.SendAsync(req);
             Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
         }
+    }
+
+    public class AuthTestsUserAdminScopeAdminOnly : IntegrationTestBase
+    {
+        public AuthTestsUserAdminScopeAdminOnly(AppFixture app) : base(app)
+        { }
 
         [Theory]
         [InlineData("/api/locations")]
@@ -119,6 +124,12 @@ namespace Tests.Integration
             var res = await Client.SendAsync(req);
             Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
         }
+    }
+
+    public class AuthTestsUserAdminScopeRegularOnly : IntegrationTestBase
+    {
+        public AuthTestsUserAdminScopeRegularOnly(AppFixture app) : base(app)
+        { }
 
         [Theory]
         [InlineData("/api/locations")]
@@ -134,6 +145,12 @@ namespace Tests.Integration
             var res = await Client.SendAsync(req);
             Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
         }
+    }
+
+    public class AuthTestsUserRegularScopeAdminOnly : IntegrationTestBase
+    {
+        public AuthTestsUserRegularScopeAdminOnly(AppFixture app) : base(app)
+        { }
 
         [Theory]
         [InlineData("/api/locations")]
@@ -149,6 +166,12 @@ namespace Tests.Integration
             var res = await Client.SendAsync(req);
             Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
         }
+    }
+
+    public class AuthTestsUserRegularScopeBoth : IntegrationTestBase
+    {
+        public AuthTestsUserRegularScopeBoth(AppFixture app) : base(app)
+        { }
 
         [Theory]
         [InlineData("/api/locations")]
