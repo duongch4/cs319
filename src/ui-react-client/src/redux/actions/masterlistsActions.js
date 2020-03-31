@@ -6,6 +6,12 @@ import _initialState from '../reducers/_initialState';
 
 const baseURL = `${SVC_ROOT}api/`;
 
+export const deleteErrorData = () => {
+    return {
+        type: types.CLEAR_ERROR,
+    }
+}
+
 export const loadMasterlistsData = masterlist => {
     return {
       type: types.LOAD_MASTERLIST,
@@ -107,18 +113,25 @@ export const createDiscpline = (discipline, userRoles) => {
             dispatch(createDiscplineData(discipline))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .post(`${baseURL}admin/disciplines`, discipline, { headers })
-                    .then(response => {
-                        discipline.id = response.data.payload;
-                        dispatch(createDiscplineData(discipline))
-                    })
-                    .catch(error => {
+            return axios
+                .post(`${baseURL}admin/disciplines`, discipline, { headers })
+                .then(response => {
+                    discipline.id = response.data.payload;
+                    dispatch(createDiscplineData(discipline))
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorCreating(errorParsed));
-                    })
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed);
+                    dispatch(errorCreating(errorParsed));
+                })
             })
         }
     }
@@ -130,17 +143,24 @@ export const createSkill = (skill, userRoles) => {
             dispatch(createSkillData(skill))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
-                    .then(response => {
-                        dispatch(createSkillData(skill))
-                    })
-                    .catch(error => {
+            return axios
+                .post(`${baseURL}admin/disciplines/${skill.disciplineID}/skills`, skill, { headers })
+                .then(response => {
+                    dispatch(createSkillData(skill))
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorCreating(errorParsed));
-                    })
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed);
+                    dispatch(errorCreating(errorParsed));
+                })
             })
         }
     } 
@@ -152,17 +172,24 @@ export const createProvince = (location, userRoles) => {
             dispatch(createProvinceData(location))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .post(`${baseURL}admin/provinces`, location, { headers })
-                    .then(response => {
-                        dispatch(createProvinceData(location))
-                    })
-                    .catch(error => {
+            return axios
+                .post(`${baseURL}admin/provinces`, location, { headers })
+                .then(response => {
+                    dispatch(createProvinceData(location))
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorCreating(errorParsed));
-                    })
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed);
+                    dispatch(errorCreating(errorParsed));
+                })
             })
         }
     } 
@@ -175,17 +202,24 @@ export const createCity = (location, userRoles) => {
         } else {
             return getHeaders(userRoles).then(headers => {
                 return axios
-                    .post(`${baseURL}admin/locations`, location, { headers })
-                    .then(response => {
-                        location.id = response.data.payload;
-                        dispatch(createCityData(location))
-                    })
-                    .catch(error => {
+                .post(`${baseURL}admin/locations`, location, { headers })
+                .then(response => {
+                    location.id = response.data.payload;
+                    dispatch(createCityData(location))
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorCreating(errorParsed));
-                    })
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed);
+                    dispatch(errorCreating(errorParsed));
+                })
             })
         }
     } 
@@ -197,17 +231,24 @@ export const deleteDiscipline = (id, userRoles) => {
             dispatch(deleteDisciplineData(id))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .delete(`${baseURL}admin/disciplines/${id}`, { headers })
-                    .then(response => {
-                        dispatch(deleteDisciplineData(id))
-                    })
-                    .catch(error => {
+            return axios
+                .delete(`${baseURL}admin/disciplines/${id}`, { headers })
+                .then(response => {                    
+                    dispatch(deleteDisciplineData(id))
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorDeleting(errorParsed));
-                    })
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed);
+                    dispatch(errorDeleting(errorParsed));
+                })
             })
         }
     } 
@@ -219,16 +260,23 @@ export const deleteSkill = (disciplineID, skillName, userRoles) => {
             dispatch(deleteSkillData(disciplineID, skillName))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`, { headers })
-                    .then(response => {
-                        dispatch(deleteSkillData(disciplineID, skillName));
-                    })
-                    .catch(error => {
-                        let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorDeleting(errorParsed));
+            return axios
+            .delete(`${baseURL}admin/disciplines/${disciplineID}/skills/${skillName}`, { headers })
+            .then(response => {            
+                dispatch(deleteSkillData(disciplineID, skillName));
+            })
+            .catch(error => {
+                let errorParsed = ""
+                console.log(error.response)
+                if(error.response.status === 500){
+                    let err = error.response.data.message
+                    errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)                 
+                } else {
+                    errorParsed = error.response.statusText
+                }
+                alert(errorParsed);
+                dispatch(errorDeleting(errorParsed));
                     })
             })
         }
@@ -241,17 +289,24 @@ export const deleteProvince = (provinceName, userRoles) => {
             dispatch(deleteProvinceData(provinceName))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .delete(`${baseURL}admin/provinces/${provinceName}`, { headers })
-                    .then(response => {
-                        dispatch(deleteProvinceData(response.data.payload))
-                    })
-                    .catch(error => {
+            return axios
+                .delete(`${baseURL}admin/provinces/${provinceName}`, { headers })
+                .then(response => {
+                    dispatch(deleteProvinceData(response.data.payload))
+                })
+                .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
                         let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorDeleting(errorParsed));
-                    })
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)                 
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed);
+                    dispatch(errorDeleting(errorParsed));
+                })
             })
         }
     } 
@@ -263,18 +318,29 @@ export const deleteCity = (cityName, id, userRoles) => {
             dispatch(deleteCityData(cityName, id))
         } else {
             return getHeaders(userRoles).then(headers => {
-                return axios
-                    .delete(`${baseURL}admin/locations/${id}`, { headers })
-                    .then(response => {
-                        dispatch(deleteCityData(cityName, id))
-                    })
-                    .catch(error => {
-                        let err = error.response.data.message
-                        let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                        dispatch(errorDeleting(errorParsed));
+            return axios
+            .delete(`${baseURL}admin/locations/${id}`, { headers })
+            .then(response => {
+                dispatch(deleteCityData(cityName, id))
+            })
+            .catch(error => {
+                let errorParsed = ""
+                console.log(error.response)
+                if(error.response.status === 500){
+                    let err = error.response.data.message
+                    errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                    console.log(err)                 
+                } else {
+                    errorParsed = error.response.statusText
+                }
+                alert(errorParsed);
+                dispatch(errorDeleting(errorParsed));
                     })
             })
         }
     } 
+}
+
+export const clearError = () => {
+    return dispatch => dispatch(deleteErrorData());
 }

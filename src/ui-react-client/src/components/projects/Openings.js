@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './ProjectStyles.css';
 import {Button} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { Link } from 'react-router-dom'
 
 const Openings = ({ opening, index, commitment, isAssignable, isRemovable, removeOpening}) => {
 
@@ -37,7 +38,7 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
         {isAssignable &&
             (<div className="card-summary-title assign">
                 <div>
-                    <Button variant="contained"
+                    <Button variant="contained" component={Link} to={"/forecasting/" + opening.positionID}
                             style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                             disableElevation>
                         Assign
