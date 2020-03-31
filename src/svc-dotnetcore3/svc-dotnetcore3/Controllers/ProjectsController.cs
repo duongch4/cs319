@@ -17,8 +17,6 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize(Actions.AdminThings)]
-    // [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -64,6 +62,7 @@ namespace Web.API.Controllers
         /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.RegularThings)]
         [HttpGet]
         [Route("projects")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<ProjectSummary>>), StatusCodes.Status200OK)]
@@ -135,6 +134,7 @@ namespace Web.API.Controllers
         /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If the requested project cannot be found</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.RegularThings)]
         [HttpGet]
         [Route("projects/{projectNumber}", Name = "GetAProject")]
         [ProducesResponseType(typeof(OkResponse<ProjectProfile>), StatusCodes.Status200OK)]
@@ -275,6 +275,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpPost]
         [Route("projects")]
         [ProducesResponseType(typeof(CreatedResponse<string>), StatusCodes.Status201Created)]
@@ -396,6 +397,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpPut]
         [Route("projects/{projectNumber}")]
         [ProducesResponseType(typeof(UpdatedResponse<string>), StatusCodes.Status200OK)]
@@ -473,6 +475,7 @@ namespace Web.API.Controllers
         /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If no projects are found</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpDelete]
         [Route("projects/{projectNumber}")]
         [ProducesResponseType(typeof(DeletedResponse<string>), StatusCodes.Status200OK)]
