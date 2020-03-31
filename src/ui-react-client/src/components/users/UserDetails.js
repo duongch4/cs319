@@ -18,7 +18,7 @@ class UserDetails extends Component {
     };
 
     componentDidMount = () => {
-      if(CLIENT_DEV_ENV){
+        if(CLIENT_DEV_ENV){
             this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['adminUser']);
             this.setState( {
                 ...this.state,
@@ -26,16 +26,16 @@ class UserDetails extends Component {
             });
         } else {
             // const userRoles = getUserRoles(this.context);
-            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['regularUser'])
-            .then(() => {
-                var userProfile = this.props.userProfile;
-                if (userProfile) {
-                    this.setState({
-                        ...this.state,
-                        userProfile: userProfile
-                    })
-                }
-            })
+            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['adminUser'])
+                .then(() => {
+                    var userProfile = this.props.userProfile;
+                    if (userProfile) {
+                        this.setState({
+                            ...this.state,
+                            userProfile: userProfile
+                        })
+                    }
+                })
         }
     };
 
@@ -62,7 +62,7 @@ class UserDetails extends Component {
                     currentProjects.push(
                         <ProjectCard number={index + 1} project={project} canEditProject={false}
                                      onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
-                        )
+                    )
                 })
             } else {
                 currentProjects.push(<p className="empty-statements" key={currentProjects.length}>There are currently no projects assigned to this resource.</p>)
@@ -75,34 +75,39 @@ class UserDetails extends Component {
             } else {
                 unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
             }
-            return (<div className="activity-container">
-                <div className="title-bar">
-                    <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
-                    <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
-                        <Button variant="contained"
-                                style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                                disableElevation>
-                            Edit
-                        </Button>
-                    </Link>
-                </div>
-                <div className="section-container">
-                    <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>
-                    <p><b>Location:</b> {userDetails.userSummary.location.city}, {userDetails.userSummary.location.province}</p>
-                </div>
-                <div className="section-container">
-                    <h2 className="greenHeader">Discipline & Skills</h2>
-                    {disciplines}
-                </div>
-                <div className="section-container">
-                    <h2 className="greenHeader">Current Projects</h2>
-                    {currentProjects}
-                </div>
-                <div className="section-container">
-                    <h2 className="greenHeader">Unavailability</h2>
-                    {unavailability}
-                </div>
-            </div>)
+            return (
+                <div className="activity-container">
+                    {
+                        this.props.showGreeting && (
+                            <h1>Welcome, {userDetails.userSummary.firstName}!</h1>
+                    )}
+                    <div className="title-bar">
+                        <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
+                        <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
+                            <Button variant="contained"
+                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                    disableElevation>
+                                Edit
+                            </Button>
+                        </Link>
+                    </div>
+                    <div className="section-container">
+                        <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>
+                        <p><b>Location:</b> {userDetails.userSummary.location.city}, {userDetails.userSummary.location.province}</p>
+                    </div>
+                    <div className="section-container">
+                        <h2 className="greenHeader">Discipline & Skills</h2>
+                        {disciplines}
+                    </div>
+                    <div className="section-container">
+                        <h2 className="greenHeader">Current Projects</h2>
+                        {currentProjects}
+                    </div>
+                    <div className="section-container">
+                        <h2 className="greenHeader">Unavailability</h2>
+                        {unavailability}
+                    </div>
+                </div>)
         }
     }
 }
@@ -122,7 +127,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
     loadSpecificUser,
 };
-  
+
 export default connect(
     mapStateToProps,
     mapDispatchToProps,

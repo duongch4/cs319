@@ -1,0 +1,47 @@
+.side-by-side-container {
+    display: flex;
+    flex-direction: row;
+    border: #999 solid 0.5px;
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    margin-bottom: 24px;
+    justify-content: space-evenly;
+}
+
+.side-container {
+    width: 47%;
+    padding: 8px 16px 16px 16px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.side-container:first-child {
+    border-right: #999 solid 0.5px;
+}
+
+.options-container {
+    height: 300px;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.add-form {
+    margin-top: 16px;
+    display: flex;
+
+}
+
+.add-form input {
+    margin-right: 8px;
+    flex-grow: 1;
+}
+
+.add-form button {
+    flex-grow: 0;
+}
+
+.Mui-selected {
+    background-color: #87C34B;
+}

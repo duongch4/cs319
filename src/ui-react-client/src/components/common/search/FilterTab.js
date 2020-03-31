@@ -214,19 +214,19 @@ class FilterTab extends Component {
             <form>
                 <div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
-                    <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
+                    <Button variant="contained" style={{ backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                     <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
                 </div>
-                <div id="filter-closed" style={ {backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px",display:  (showing ? 'none' : 'block')}}>
+                <div id="filter-closed" style={{backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px", display:  (showing ? 'none' : 'block')}}>
                     <div style={{padding: "10px"}} >
                     <h2  style={{color: "white"}} >Add Filters
                     <Arrow  style={{float:"right"}} size={"large"} onClick={()=> this.setState({ showing: !showing })}>toggle </Arrow>
                     </h2>
                     </div>
                 </div>
-                <div id="filters" style={ {backgroundColor: "#87c34b", paddingLeft: "30px", paddingRight: "30px", display:  (showing ? 'block' : 'none')}}>
+                <div id="filters" style={{backgroundColor: "#87c34b", paddingLeft: "30px", paddingRight: "30px", display:  (showing ? 'block' : 'none')}}>
                     <div style={{padding: "10px"}}> 
-                        <h2  style={{color: "white"}} >Add Filters
+                        <h2  style={{color: "white"}}>Add Filters
                             <ExpandLessRoundedIcon style={{float:"right"}} onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
                         </h2>
                     </div>
