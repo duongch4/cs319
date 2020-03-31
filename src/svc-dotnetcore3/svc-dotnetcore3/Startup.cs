@@ -81,7 +81,6 @@ namespace Web.API
 
             AddRepositories(services, connectionString);
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // Access HttpContext in Auths
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             AddSpaStaticFiles(services);
@@ -157,6 +156,7 @@ namespace Web.API
                     options.AddPolicy(action, policy => policy.AddRequirements(new ActionAuthorizationRequirement(action)));
                 }
             });
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // Access HttpContext in Auths
             services.AddScoped<IPolicyEvaluator, AuthorizationPolicyEvaluator>();
             services.AddScoped<IAuthorizationHandler, AnyValidPermissionRequirementHandler>();
             services.AddSingleton<IAuthorizationHandler, ActionAuthorizationRequirementHandler>();
