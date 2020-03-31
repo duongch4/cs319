@@ -111,6 +111,26 @@ namespace Web.API.Infrastructure.Data
             return GetSorted(projects, orderKey, order);
         }
 
+        public async Task<IEnumerable<string>> GetAllProjectNumbersOfManager(string managerId)
+        {
+            var sql = @"
+                SELECT
+                    p.Number
+                FROM
+                    Projects p
+                WHERE
+                    p.ManagerId = @ManagerId
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var projectNumbers = await connection.QueryAsync<string>(sql, new
+            {
+                ManagerId = managerId
+            });
+            connection.Close();
+            return projectNumbers;
+        }
+
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page)
         {
             var sql = @"

@@ -17,7 +17,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize(Actions.AdminThings)]
+    [Authorize(Actions.RegularThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -33,9 +33,12 @@ namespace Web.API.Controllers
         private readonly IUtilizationRepository utilizationRepository;
         private readonly IMapper mapper;
 
-        public UsersController(IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository,
-            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository, IMapper mapper,
-            IUtilizationRepository utilizationRepository)
+        public UsersController(
+            IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository,
+            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository,
+            ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository,
+            IUtilizationRepository utilizationRepository, IMapper mapper
+        )
         {
             this.usersRepository = usersRepository;
             this.projectsRepository = projectsRepository;
@@ -316,9 +319,19 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, string userId)
         {
+            Log.Information("Entering UpdateAUser");
+
             if (userProfile == null)
             {
                 var error = new BadRequestException("The given user is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if (!String.Equals(userProfile.UserSummary.UserID, userId))
+            {
+                var errMessage = $"The user ID on URL '{userId}'" +
+                    $" does not match with '{userProfile.UserSummary.UserID}' in Request Body's Project Summary";
+                var error = new BadRequestException(errMessage);
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
@@ -362,6 +375,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpPut]
         [Route("users/utilization/update")]
         [ProducesResponseType(typeof(OkResponse<string>), StatusCodes.Status200OK)]
@@ -637,6 +651,7 @@ namespace Web.API.Controllers
         /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpPost]
         [Route("users/search")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<UserSummary>>), StatusCodes.Status200OK)]

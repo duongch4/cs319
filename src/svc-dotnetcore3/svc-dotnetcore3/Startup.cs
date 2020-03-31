@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -80,8 +81,6 @@ namespace Web.API
 
             AddRepositories(services, connectionString);
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // what does this do???
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             AddSpaStaticFiles(services);
@@ -157,8 +156,11 @@ namespace Web.API
                     options.AddPolicy(action, policy => policy.AddRequirements(new ActionAuthorizationRequirement(action)));
                 }
             });
-            services.AddTransient<IAuthorizationHandler, AnyValidPermissionRequirementHandler>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // Access HttpContext in Auths
+            services.AddScoped<IPolicyEvaluator, AuthorizationPolicyEvaluator>();
+            services.AddScoped<IAuthorizationHandler, AnyValidPermissionRequirementHandler>();
             services.AddSingleton<IAuthorizationHandler, ActionAuthorizationRequirementHandler>();
+            services.AddScoped<IAuthenticationService, AuthorizationAuthenticationService>();
         }
 
         private void AddCors(IServiceCollection services, string allowedOrigins)

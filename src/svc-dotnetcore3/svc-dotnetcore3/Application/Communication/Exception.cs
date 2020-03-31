@@ -81,7 +81,12 @@ namespace Web.API.Application.Communication
         { }
     }
 
-    [Serializable]
+    public class ForbiddenException : BaseException
+    {
+        public ForbiddenException(string message, int code = StatusCodes.Status403Forbidden, string status = "Forbidden Access") : base(message, code, status)
+        { }
+    }
+
     public class NotFoundException : BaseException
     {
         public NotFoundException(string message, int code = StatusCodes.Status404NotFound, string status = "Not Found") : base(message, code, status)
