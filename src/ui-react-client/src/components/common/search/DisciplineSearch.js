@@ -16,22 +16,37 @@ class DisciplineSearch extends Component {
     };
 
     handleChange = (e) => {
-          this.setState({
-            disciplines: {
-                  ...this.state.disciplines,
-                  name: e.value,
-                  skills: [],
-              }
-          }, () =>  this.props.addDisciplines(this.state));
+      if (e != null) {
+        this.setState({
+          disciplines: {
+                name: e.value,
+                skills: [],
+            }
+        }, () =>  this.props.addDisciplines(this.state));
+      } else {
+        this.setState({
+          disciplines: {
+                name: null,
+                skills: [],
+            }
+        }, () =>  this.props.addDisciplines(this.state));
+      }  
     };
 
     handleChangeSkills = (e) => {
-        if (e){
+      if (e != null && e.length != 0){
           var skills_array = e.map(function (e) { return e.label; });
             this.setState({
               disciplines: {
                 ...this.state.disciplines,
                 skills: skills_array
+              }
+           }, () => this.props.addDisciplines(this.state))
+          } else {
+            this.setState({
+              disciplines: {
+                ...this.state.disciplines,
+                skills: []
               }
            }, () => this.props.addDisciplines(this.state))
           }
@@ -67,9 +82,9 @@ class DisciplineSearch extends Component {
           <div className="form-section opening">
             <div className="form-row">
             <Select placeholder='Disciplines' id="disciplines" className="input-box" 
-            onChange={this.handleChange} options={discipline_render}/>
+            onChange={this.handleChange} options={discipline_render} isClearable/>
               <Select id="skills" key={skill_keys} className="input-box" 
-              onChange={this.handleChangeSkills} options={skill_format} isMulti
+              onChange={this.handleChangeSkills} options={skill_format} isMulti isClearable
                 placeholder='Skills' />
             </div>
           </div>

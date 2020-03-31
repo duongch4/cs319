@@ -9,6 +9,8 @@ import {Button} from "@material-ui/core";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import Loading from '../common/Loading';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import LoadingOverlay from 'react-loading-overlay'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 class AddProject extends Component {
     state = {
@@ -35,7 +37,8 @@ class AddProject extends Component {
         },
         masterlist: this.props.masterlist,
         pending: true,
-        error: []
+        error: [],
+        sending: false
     };
 
     componentDidMount() {
@@ -145,7 +148,8 @@ class AddProject extends Component {
             this.props.createProject(newProject, this.props.history, userRoles);
             this.setState({
                 ...this.state,
-                error: []
+                error: [],
+                sending: true,
             })
         }
     };
@@ -167,6 +171,7 @@ class AddProject extends Component {
             });
             return (
                 <div className="activity-container">
+                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                     <h1 className="greenHeader">Create new project</h1>
                     <CreateEditProjectDetails locations={this.props.masterlist.locations}
                                               addProjDetails={(project) => this.addProjDetails(project)}/>
@@ -188,6 +193,7 @@ class AddProject extends Component {
                                 disableElevation
                                 onClick={() => this.onSubmit()}>Save</Button>
                     </div>
+                    </LoadingOverlay>
                 </div>
             )
         }

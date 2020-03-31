@@ -1,5 +1,7 @@
 import React from 'react';
 import './HomePage.css';
+import UserDetails from '../users/UserDetails';
+import Loading from '../common/Loading';
 
 const Json = ({ data }) => <pre>{JSON.stringify(data, null, 4)}</pre>;
 
@@ -14,17 +16,15 @@ const HomePage = (props) => {
   else if (!props.profile) {
     return (
       <div className="activity-container">
-        <h3>LOADING YOUR PROFILE</h3>
+        <Loading />
       </div>
     );
   }
   else {
-    // TODO: Change this to user details component after database has fake users
     return (
       <div className="activity-container">
-        <h1>Home</h1>
-        <h3>HERE IS YOUR PROFILE</h3>
-        <Json data={props.profile} />
+        <h1>Welcome, {props.profile.givenName}</h1>
+        <UserDetails id={props.profile.id} />
       </div>
     );
   }

@@ -13,6 +13,7 @@ import EditProject from './projects/EditProject';
 import EditUser from './users/EditUser.js';
 import Admin from './admin/Admin.js'
 import Search from './common/search/Search.js';
+import Forecasting from './common/forecasting/Forecasting.js';
 
 import AuthProvider from "../config/AuthProvider";
 import PropTypes from "prop-types";
@@ -33,6 +34,7 @@ const App = (appProps) => {
         <Route path="/add_project" component={AddProject} />
         <Route path="/editproject/:project_number" component={EditProject} />
         <Route path="/edituser/:user_id" component={EditUser} />
+        <Route path="/forecasting/:positionID" component={Forecasting} />
         <Route path="/admin" component={Admin} />
         <Route component={PageNotFound} />
       </Switch>

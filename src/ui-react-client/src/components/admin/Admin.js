@@ -10,37 +10,46 @@ import {loadMasterlists,
     deleteDiscipline,
     deleteSkill,
     deleteProvince,
-    deleteCity} from '../../redux/actions/masterlistsActions';
+    deleteCity,
+    clearError} from '../../redux/actions/masterlistsActions';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete'
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
+import LoadingOverlay from 'react-loading-overlay'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 class Admin extends Component {
-    state = {
-        discipline: {
-            name: "", 
-            id: 0
-        },
-        skill: {
-            disciplineID: 0, 
-            name: "", 
-            skillID: 0
-        },
-        location: {
-            city: "", 
-            province: "", 
-            id: 0
-        },
-        selectedprovince: "",
-        masterlist: {
-            disciplines: {},
-            locations: {},
-            yearsOfExp: []
-        }
-    };
+    constructor(props){
+        super(props);
+        this.removeItem = this.removeItem.bind(this);
+        this.state = {
+            discipline: {
+                name: "", 
+                id: 0
+            },
+            skill: {
+                disciplineID: 0, 
+                name: "", 
+                skillID: 0
+            },
+            location: {
+                city: "", 
+                province: "", 
+                id: 0
+            },
+            selectedprovince: "",
+            masterlist: {
+                disciplines: {},
+                locations: {},
+                yearsOfExp: []
+            },
+            sending: false
+        };
+    }
+    
 
     componentDidMount(){
         if(this.state.masterlist.yearsOfExp.length === 0){
@@ -85,6 +94,12 @@ class Admin extends Component {
 
     componentDidUpdate(prevProps){
         let found = false;
+        if(this.props.masterlist.error) {
+            this.setState({
+                sending:false
+            })
+            this.props.clearError();
+        }
         if (this.props.masterlist.disciplines) {
             Object.values(this.props.masterlist.disciplines).filter(elem => {
                 if(elem.disciplineID === this.state.skill.disciplineID){
@@ -101,21 +116,21 @@ class Admin extends Component {
                         disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
                     },
                     masterlist: this.props.masterlist,
+                    sending: false
                 })
             }
             else if(prevProps.masterlist !== this.props.masterlist){
                 this.setState({
                     ...this.state,
-                    masterlist: this.props.masterlist
+                    masterlist: this.props.masterlist,
+                    sending: false
                 })
             }
         }
     }
 
-
     handleChange = (e) => {
         this.setState({
-            ...this.state,
             [e.target.name]: {
                 ...this.state[e.target.name],
                 name: e.target.value
@@ -125,7 +140,6 @@ class Admin extends Component {
 
     handleLocationChange = (e) => {
         this.setState({
-            ...this.state,
             location: {
                 ...this.state.location,
                 [e.target.name]: e.target.value
@@ -150,7 +164,8 @@ class Admin extends Component {
                     discipline: {
                         name: "",
                         id: 0
-                    }
+                    },
+                    sending: true
                 })
                 
                 return;
@@ -162,7 +177,8 @@ class Admin extends Component {
                     skill:{
                         ...this.state.skill,
                         name: ""
-                    }
+                    },
+                    sending: true
                 })
                 return ;
             case "province":
@@ -173,26 +189,29 @@ class Admin extends Component {
                     location:{
                         ...this.state.location,
                         province: ""
-                    }
+                    },
+                    sending: true
                 })
                 return;
             case "city":
+            this.setState({
+                ...this.state,
+                location: {
+                    ...this.state.location,
+                    province: this.state.selectedprovince
+                }
+            }, () =>  {
+                this.props.createCity(this.state.location, userRoles)
                 this.setState({
                     ...this.state,
-                    location: {
+                    location:{
                         ...this.state.location,
-                        province: this.state.selectedprovince
+                        city: "",
+                        province: "",
+                        sending: true
                     }
-                }, () =>  {
-                    this.props.createCity(this.state.location, userRoles)
-                    this.setState({
-                        ...this.state,
-                        location:{
-                            ...this.state.location,
-                            city: "",
-                            province: "",
-                        }
-                    })})
+                })})
+
                 
                 return;
             default:
@@ -200,7 +219,7 @@ class Admin extends Component {
         }
     }
 
-    removeItem = (e, item) => {
+    removeItem(e, item) {
         let userRoles;
         if (CLIENT_DEV_ENV) {
             userRoles = ['adminUser'];
@@ -209,17 +228,21 @@ class Admin extends Component {
         }
         switch(e) {
             case "discipline":
+                this.setSending();
                 return this.props.deleteDiscipline(
                     this.state.masterlist.disciplines[item].disciplineID,
                     userRoles
                 );
             case "skill":
+                this.setSending();
                 return this.props.deleteSkill(
                     this.state.skill.disciplineID, item, userRoles
                 );
             case "province":
+                this.setSending();
                 return this.props.deleteProvince(item, userRoles);
             case "city":
+                this.setSending();
                 return this.props.deleteCity(
                     item,
                     this.state.masterlist.locations[this.state.selectedprovince][item],
@@ -230,11 +253,17 @@ class Admin extends Component {
         }
     }
 
+    setSending = () => {
+        this.setState({
+            ...this.state,
+            sending: true
+        })
+    }
+
     changeSelected = (elem, name, id) => {
         switch(name) {
             case "discipline":
                 return this.setState({
-                    ...this.state,
                     skill: {
                         ...this.state.skill,
                         disciplineID: id
@@ -245,7 +274,6 @@ class Admin extends Component {
                 return;
             case "province":
                 return this.setState({
-                    ...this.state,
                     location: {
                         ...this.state.location,
                     }, 
@@ -270,7 +298,7 @@ class Admin extends Component {
                 </List>
             </div>)
         })
-        return list
+        return list;
     }
 
     listGenID = (inputList, name, param) => {
@@ -285,15 +313,10 @@ class Admin extends Component {
                 </List>
             </div>)
         })
-        return list
+        return list;
     }
 
     render() {
-        const { error } = this.props;
-
-        if(error !== null && error !== undefined) {
-            alert(`Failed: ${error}`)
-        }
         const disciplinesObj = this.state.masterlist.disciplines
         
         var disciplineName = null
@@ -320,6 +343,7 @@ class Admin extends Component {
 
         return (
             <div className="activity-container">
+            <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                 <h1 className="greenHeader">Admin</h1>
                 <div>
                     <h2>Disciplines</h2>
@@ -331,7 +355,7 @@ class Admin extends Component {
                 </div>
                 <div>
                     <h2>{selectedDiscipline} Skills</h2>
-                    {skills.length === 0 ? <Loading /> : skillList}
+                    {disciplineList.length === 0 ? <Loading /> : skillList}
                     <form name="skill" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
                     </form>
@@ -347,12 +371,13 @@ class Admin extends Component {
                 </div>
                 <div>
                     <h2>{selectedProvince} Cities</h2>
-                    {cities.length === 0 ? <Loading /> : cityList}
+                    {provinceList.length === 0 ? <Loading /> : cityList}
                     <form name="city" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.city} name="city"/>
                     </form>
                     <button id="city" name="city" onClick={this.onSubmit}>Add City</button>
                 </div>
+                </LoadingOverlay>
             </div>
         )
     }
@@ -380,7 +405,8 @@ const mapDispatchToProps = {
     deleteDiscipline,
     deleteSkill,
     deleteProvince,
-    deleteCity
+    deleteCity,
+    clearError
 };
   
 export default connect(
