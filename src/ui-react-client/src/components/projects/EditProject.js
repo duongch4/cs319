@@ -36,31 +36,34 @@ class EditProject extends Component {
         } else {
             const userRoles = getUserRoles(this.context);
             if (Object.keys(this.props.projectProfile).length > 0 &&
-                this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_number) {
+                this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_number &&
+                Object.keys(this.props.masterlist).length > 0) {
+                this.updateMasterlistAndProjectProfile();
+            } else if (Object.keys(this.props.projectProfile).length > 0 &&
+                this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_number &&
+                Object.keys(this.props.masterlist).length === 0) {
                 this.props.loadMasterlists(userRoles)
                     .then(() => {
-                        this.setState({
-                            ...this.state,
-                            masterlist: this.props.masterlist,
-                            projectProfile: this.props.projectProfile,
-                            pending: false
-                        })
+                        this.updateMasterlistAndProjectProfile();
                     })
             } else {
                 const promise_masterlist = this.props.loadMasterlists(userRoles);
                 const promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
                 Promise.all([promise_masterlist, promise_singleProject])
                     .then(() => {
-                        this.setState((state, props) =>
-                            ({
-                                ...this.state,
-                                masterlist: props.masterlist,
-                                projectProfile: props.projectProfile,
-                                pending: false
-                            }))});
+                        this.updateMasterlistAndProjectProfile();
+                    });
             }
         }
+    }
 
+    updateMasterlistAndProjectProfile() {
+        this.setState({
+            ...this.state,
+            masterlist: this.props.masterlist,
+            projectProfile: this.props.projectProfile,
+            pending: false
+        })
     }
 
     compare_dates = (date1,date2) => {

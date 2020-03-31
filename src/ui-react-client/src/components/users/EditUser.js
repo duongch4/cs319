@@ -37,31 +37,34 @@ class EditUser extends Component {
         } else {
             const userRoles = getUserRoles(this.context);
             if (Object.keys(this.props.userProfile).length > 0 &&
-                this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
+                this.props.userProfile.userSummary.userID === this.props.match.params.user_id &&
+                Object.keys(this.props.masterlist).length > 0) {
+                this.updateMasterlistAndProfile();
+            } else if (Object.keys(this.props.userProfile).length > 0 &&
+                this.props.userProfile.userSummary.userID === this.props.match.params.user_id &&
+                Object.keys(this.props.masterlist).length === 0) {
                 this.props.loadMasterlists(userRoles)
                     .then(() => {
-                        this.setState({
-                            ...this.state,
-                            masterlist: this.props.masterlist,
-                            userProfile: this.props.userProfile,
-                            pending: false,
-                            sending: false
-                        })
+                        this.updateMasterlistAndProfile()
                     })
             } else {
                 const loadMasterlistsPromise = this.props.loadMasterlists(userRoles);
                 const loadSpecificUserPromise = this.props.loadSpecificUser(this.props.match.params.user_id, userRoles);
                 Promise.all([loadMasterlistsPromise, loadSpecificUserPromise]).then(() => {
-                    this.setState({
-                        ...this.state,
-                        masterlist: this.props.masterlist,
-                        userProfile: this.props.userProfile,
-                        pending: false,
-                        sending: false
-                    })
+                    this.updateMasterlistAndProfile()
                 });
             }
         }
+    }
+
+    updateMasterlistAndProfile() {
+        this.setState({
+            ...this.state,
+            masterlist: this.props.masterlist,
+            userProfile: this.props.userProfile,
+            pending: false,
+            sending: false
+        })
     }
 
     onSubmit = () => {
