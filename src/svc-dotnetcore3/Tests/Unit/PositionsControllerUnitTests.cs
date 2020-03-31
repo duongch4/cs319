@@ -409,27 +409,301 @@ namespace Tests.Unit
             Assert.Equal(errMessage, response.status); 
         }
 
-        private async void ConfirmResource_TryBlock_ValidAction_ReturnRequestProjectAssign(){}
+        [Fact]
+        private async void ConfirmResource_TryBlock_ValidAction_ReturnRequestProjectAssign()
+        {
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
 
-        private async void ConfirmResource_CatchBlock_UpdatePositionErr_ReturnSqlException(){}
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<RequestProjectAssign>(result.Value);
+        }
 
-        private async void ConfirmResource_CatchBlock_GetAllPositionErr_ReturnSqlException(){}
+        [Fact]
+        private async void ConfirmResource_CatchBlock_UpdatePositionErr_ReturnSqlException()
+        {
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_ThrowsException(sqlException);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
 
-        private async void ConfirmResource_CatchBlock_GetAllOutOfOfficeErr_ReturnSqlException(){}
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
 
-        private async void ConfirmResource_CatchBlock_UtilizationErr_ReturnsSqlException(){}
+        [Fact]
+        private async void ConfirmResource_CatchBlock_GetAllPositionErr_ReturnSqlException()
+        {
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_ThrowsException(sqlException);
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
 
-        private async void ConfirmResource_CatchBlock_UpdateUtilizationUserErr_ReturnsSqlException(){}
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
 
-        private async void ConfirmResource_CatchBlock_UpdatePositionErr_ReturnsBadRequestException(){}
+        [Fact]
+        private async void ConfirmResource_CatchBlock_GetAllOutOfOfficeErr_ReturnSqlException()
+        {
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_ThrowsException(sqlException);
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
 
-        private async void ConfirmResource_CatchBlock_GetAllPositionErr_ReturnsBadRequestException(){}
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
 
-        private async void ConfirmResource_CatchBlock_GetAllOutOfOfficeErr_ReturnsBadRequestException(){}
+        [Fact]
+        private async void ConfirmResource_CatchBlock_UtilizationErr_ReturnsSqlException()
+        {            
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_ThrowsException(sqlException);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
 
-        private async void ConfirmResource_CatchBlock_UtilizationErr_ReturnsBadRequestException(){}
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);}
 
-        private async void ConfirmResource_CatchBlock_UpdateUtilizationUserErr_ReturnsBadRequestException(){}
+        [Fact]
+        private async void ConfirmResource_CatchBlock_UpdateUtilizationUserErr_ReturnsSqlException()
+        {            
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_ThrowsException(sqlException);
 
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);}
+
+        [Fact]
+        private async void ConfirmResource_CatchBlock_UpdatePositionErr_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_ThrowsException(badRequestException);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_CatchBlock_GetAllPositionErr_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_ThrowsException(badRequestException);
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_CatchBlock_GetAllOutOfOfficeErr_ReturnBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_ThrowsException(badRequestException);
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_CatchBlock_UtilizationErr_ReturnsBadRequestException()
+        {            
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_ThrowsException(badRequestException);
+            Setup_UsersRepo_UpdateUtilizationOfUser_Default(new User());
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_CatchBlock_UpdateUtilizationUserErr_ReturnsBadRequestException()
+        {            
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "1",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+            Setup_PositionsRepo_UpdateAPosition_Default(position);
+            Setup_PositionsRepo_GetAllPositionsOfUser_Default(Enumerable.Empty<Position>().Append(new Position()));
+            Setup_OutOfOfficeRepo_GetAllOutOfOfficeForUser_Default(Enumerable.Empty<OutOfOffice>().Append(new OutOfOffice()));
+            Setup_UtilizationRepo_CalculateUtilizationOfUser_Default(1);
+            Setup_UsersRepo_UpdateUtilizationOfUser_ThrowsException(badRequestException);
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
     }
 }
