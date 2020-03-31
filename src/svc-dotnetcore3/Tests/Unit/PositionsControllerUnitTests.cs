@@ -216,8 +216,29 @@ namespace Tests.Unit
             Assert.Equal(errMessage, response.status);
         }
 
-        // !!! TODO
-        private async void AssignAResource_TryBlock_ValidAction_ReturnRequestProjectAssign(){}
+        [Fact]
+        private async void AssignAResource_TryBlock_ValidAction_ReturnRequestProjectAssign()
+        {
+            var user = new User {
+                Id = "1",
+                FirstName = "",
+                LastName = "",
+                Username = "",
+                LocationId = 1,
+                Utilization = 10,
+                IsAdmin = false,
+                IsManager = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(new Position());
+            Setup_UsersRepo_GetAUser_Default(user);
+            Setup_PositionsRepo_UpdateAPosition_Default(new Position());
+
+            var result = (await _controller.AssignAResource(1, "1")) as ObjectResult;
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsType<RequestProjectAssign>(result.Value);
+            var response = result.Value as RequestProjectAssign;
+            Assert.Equal(10, response.ConfirmedUtilization);
+        }
 
         [Fact]
         private async void AssignAResource_CatchBlock_GetPositionErr_ReturnSqlException()
@@ -317,6 +338,98 @@ namespace Tests.Unit
             var result = await _controller.ConfirmResource(It.IsAny<int>());
             Assert.IsType<ObjectResult>(result);
         }
+
+        [Fact]
+        private async void ConfirmResource_NullOpeningCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+
+            var result = (await _controller.ConfirmResource(0)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_TryBlock_PositionNull_ReturnNotFoundException()
+        {
+            var errMessage = "Not Found";
+            Position position = null;
+            Setup_PositionsRepo_GetAPosition_Default(position);
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+            Assert.IsType<NotFoundException>(result.Value);
+            var response = result.Value as NotFoundException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_TryBlock_PositionResourceIDNull_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = null,
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        private async void ConfirmResource_TryBlock_PositionResourceEmpty_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var position = new Position {
+                Id = 1,
+                DisciplineId = 1,
+                ProjectId = 1,
+                ProjectedMonthlyHours = null,
+                ResourceId = "",
+                PositionName = "",
+                IsConfirmed = false
+            };
+            Setup_PositionsRepo_GetAPosition_Default(position);
+
+            var result = (await _controller.ConfirmResource(1)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status); 
+        }
+
+        private async void ConfirmResource_TryBlock_ValidAction_ReturnRequestProjectAssign(){}
+
+        private async void ConfirmResource_CatchBlock_UpdatePositionErr_ReturnSqlException(){}
+
+        private async void ConfirmResource_CatchBlock_GetAllPositionErr_ReturnSqlException(){}
+
+        private async void ConfirmResource_CatchBlock_GetAllOutOfOfficeErr_ReturnSqlException(){}
+
+        private async void ConfirmResource_CatchBlock_UtilizationErr_ReturnsSqlException(){}
+
+        private async void ConfirmResource_CatchBlock_UpdateUtilizationUserErr_ReturnsSqlException(){}
+
+        private async void ConfirmResource_CatchBlock_UpdatePositionErr_ReturnsBadRequestException(){}
+
+        private async void ConfirmResource_CatchBlock_GetAllPositionErr_ReturnsBadRequestException(){}
+
+        private async void ConfirmResource_CatchBlock_GetAllOutOfOfficeErr_ReturnsBadRequestException(){}
+
+        private async void ConfirmResource_CatchBlock_UtilizationErr_ReturnsBadRequestException(){}
+
+        private async void ConfirmResource_CatchBlock_UpdateUtilizationUserErr_ReturnsBadRequestException(){}
 
     }
 }
