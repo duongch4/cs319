@@ -25,8 +25,23 @@ class UserDetails extends Component {
                 userProfile: this.props.userProfile
             });
         } else {
-            // const userRoles = getUserRoles(this.context);
-            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['regularUser'])
+          // we want to check if there is a role being passed in the props first and prioritize using that role
+          // otherwise, we will try to fetch the role from the User Context Provider
+          let userRoles;
+          if (this.props.roles) {
+              userRoles = this.props.roles
+          } else {
+              userRoles = getUserRoles(this.context);
+          }
+
+          if (Object.keys(this.props.userProfile).length > 0 &&
+              this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
+              this.setState({
+                  ...this.state,
+                  userProfile: this.props.userProfile
+              })
+          } else {
+            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {
@@ -36,6 +51,7 @@ class UserDetails extends Component {
                     })
                 }
             })
+          }
         }
     };
 
