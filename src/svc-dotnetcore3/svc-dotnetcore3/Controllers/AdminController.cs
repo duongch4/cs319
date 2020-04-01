@@ -436,7 +436,7 @@ namespace Web.API.Controllers {
             {
                 var createdProvinceName = await locationsRepository.CreateAProvince(location.Province);
                 var response = new CreatedResponse<string>(createdProvinceName, $"Successfully created province '{createdProvinceName}'");
-                Log.Information("@{a}", response);
+                // Log.Information("@{a}", response);
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
@@ -449,7 +449,7 @@ namespace Web.API.Controllers {
                 }
                 else
                 {
-                    Log.Information("second bad request");
+                    // Log.Information("second bad request");
                     var error = new BadRequestException(errMessage);
                     return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }

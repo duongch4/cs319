@@ -17,7 +17,7 @@ using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize(Actions.AdminThings)]
+    [Authorize(Actions.RegularThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -33,9 +33,12 @@ namespace Web.API.Controllers
         private readonly IUtilizationRepository utilizationRepository;
         private readonly IMapper mapper;
 
-        public UsersController(IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository,
-            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository, ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository, IMapper mapper,
-            IUtilizationRepository utilizationRepository)
+        public UsersController(
+            IUsersRepository usersRepository, IProjectsRepository projectsRepository, IPositionsRepository positionsRepository,
+            ILocationsRepository locationsRepository, IDisciplinesRepository disciplinesRepository,
+            ISkillsRepository skillsRepository, IOutOfOfficeRepository outOfOfficeRepository,
+            IUtilizationRepository utilizationRepository, IMapper mapper
+        )
         {
             this.usersRepository = usersRepository;
             this.projectsRepository = projectsRepository;
@@ -86,7 +89,8 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
-                var extra = new {
+                var extra = new
+                {
                     searchWord = searchWord,
                     page = page,
                     size = resource.Count(),
@@ -155,7 +159,8 @@ namespace Web.API.Controllers
                 foreach (var discipline in disciplines)
                 {
                     var discSkills = skills.Where(x => x.ResourceDisciplineName == discipline.Name);
-                    var disc = new ResourceDisciplineResource{
+                    var disc = new ResourceDisciplineResource
+                    {
                         DisciplineID = discipline.DisciplineId,
                         Discipline = discipline.Name,
                         YearsOfExp = discipline.YearsOfExperience,
@@ -163,7 +168,8 @@ namespace Web.API.Controllers
                     };
                     disciplineResources = disciplineResources.Append(disc);
                 }
-                var userProfile = new UserProfile{
+                var userProfile = new UserProfile
+                {
                     UserSummary = userSummary,
                     Availability = mapper.Map<IEnumerable<OutOfOffice>, IEnumerable<OutOfOfficeResource>>(outOfOffice),
                     CurrentProjects = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects),
@@ -322,6 +328,24 @@ namespace Web.API.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
+            if (
+                userProfile.UserSummary == null || String.IsNullOrEmpty(userProfile.UserSummary.UserID) ||
+                userProfile.UserSummary.Location == null ||
+                userProfile.Availability == null || userProfile.Disciplines == null
+            )
+            {
+                var error = new BadRequestException("The User (Summary(ID) / Location / Availability / Disciplines) cannot be null or empty string!");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if (!String.Equals(userProfile.UserSummary.UserID, userId))
+            {
+                var errMessage = $"The user ID on URL '{userId}'" +
+                    $" does not match with '{userProfile.UserSummary.UserID}' in Request Body's Project Summary";
+                var error = new BadRequestException(errMessage);
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
             try
             {
                 UserSummary summary = userProfile.UserSummary;
@@ -362,6 +386,7 @@ namespace Web.API.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized Request</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpPut]
         [Route("users/utilization/update")]
         [ProducesResponseType(typeof(OkResponse<string>), StatusCodes.Status200OK)]
@@ -374,7 +399,8 @@ namespace Web.API.Controllers
             try
             {
                 IEnumerable<User> allUsers = await usersRepository.GetAllUsers();
-                foreach (User user in allUsers) {
+                foreach (User user in allUsers)
+                {
                     IEnumerable<Position> allPositionsOfUser = await positionsRepository.GetAllPositionsOfUser(user.Id);
                     IEnumerable<OutOfOffice> allOutOfOfficeOfUser = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user.Id);
                     int userUtil = await utilizationRepository.CalculateUtilizationOfUser(allPositionsOfUser, allOutOfOfficeOfUser);
@@ -402,7 +428,8 @@ namespace Web.API.Controllers
 
         private User createUserFromSummary(UserSummary summary, Location location)
         {
-            var user = new User {
+            var user = new User
+            {
                 Id = summary.UserID,
                 FirstName = summary.FirstName,
                 LocationId = location.Id,
@@ -416,7 +443,8 @@ namespace Web.API.Controllers
             var result = Enumerable.Empty<ResourceDiscipline>();
             foreach (var discipline in disciplines)
             {
-                var disc = new ResourceDiscipline{
+                var disc = new ResourceDiscipline
+                {
                     ResourceId = userId,
                     Name = discipline.Discipline,
                     YearsOfExperience = discipline.YearsOfExp
@@ -443,7 +471,7 @@ namespace Web.API.Controllers
                 var removed = await removeDisciplinesFromDB(profileDisciplines, disciplinesDB);
                 var inserted = await addDisciplinesToDB(profileDisciplines, disciplinesDB);
                 var insertedSkill = await addSkillsToDB(profileSkills, skillsDB);
-                return new {removed, removedSkill, insertedSkill, inserted};
+                return new { removed, removedSkill, insertedSkill, inserted };
             }
             return null;
         }
@@ -518,7 +546,8 @@ namespace Web.API.Controllers
             var result = Enumerable.Empty<OutOfOffice>();
             foreach (var availability in availabilities)
             {
-                var avail = new OutOfOffice{
+                var avail = new OutOfOffice
+                {
                     ResourceId = userId,
                     FromDate = availability.FromDate,
                     ToDate = availability.ToDate,
@@ -537,7 +566,6 @@ namespace Web.API.Controllers
             bool isSameAvail = profileAvailability.SequenceEqual(availabilityDB);
             if (!isSameAvail)
             {
-                Log.Logger.Information("avail function " + isSameAvail);
                 var removed = await removeAvailFromDB(profileAvailability, availabilityDB);
                 var inserted = await addAvailToDB(profileAvailability, availabilityDB);
 
@@ -545,8 +573,7 @@ namespace Web.API.Controllers
                 var allPositionsOfUser = await positionsRepository.GetAllPositionsOfUser(userId);
                 int updatedUtilization = await utilizationRepository.CalculateUtilizationOfUser(allPositionsOfUser, newOutOfOffices);
                 await usersRepository.UpdateUtilizationOfUser(updatedUtilization, userId);
-                
-                Log.Information("updated util {@a}", updatedUtilization);
+
                 result = removed.Concat(inserted);
             }
             return result;
@@ -637,6 +664,7 @@ namespace Web.API.Controllers
         /// <response code="401">Unauthorized Request</response>
         /// <response code="404">If the requested user cannot be found</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Actions.AdminThings)]
         [HttpPost]
         [Route("users/search")]
         [ProducesResponseType(typeof(OkResponse<IEnumerable<UserSummary>>), StatusCodes.Status200OK)]
@@ -660,7 +688,8 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
-                var extra = new {
+                var extra = new
+                {
                     requestBody = req,
                     size = usersSummary.Count()
                 };

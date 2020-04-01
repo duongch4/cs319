@@ -68,6 +68,16 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignAResource([FromRoute] int openingId, string userId)
         {
+            if (openingId == 0) {
+                var error = new BadRequestException("The given opening is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if(String.IsNullOrEmpty(userId)) {
+                var error = new BadRequestException("The given user is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
             try
             {
                                                 // Log.Information("1");
@@ -83,7 +93,6 @@ namespace Web.API.Controllers
                 if (user == null) {
                     var error = new NotFoundException($"Resource with id {userId} not found.");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
-
                 }
 
                                 // Log.Information("{@response}", position);
@@ -140,6 +149,10 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConfirmResource([FromRoute] int openingId)
         {
+            if (openingId == 0) {
+                var error = new BadRequestException("The given opening is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
             try
             {
                 Position position = await positionsRepository.GetAPosition(openingId);
