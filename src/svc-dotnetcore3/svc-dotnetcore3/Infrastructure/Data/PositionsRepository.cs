@@ -14,10 +14,14 @@ namespace Web.API.Infrastructure.Data
     public class PositionsRepository : IPositionsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
+
 
         public PositionsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
         public async Task<IEnumerable<Position>> GetAllPositions()
         {
@@ -107,13 +111,15 @@ namespace Web.API.Infrastructure.Data
                     d.Name AS Discipline,
                     STRING_AGG (s.Name, ',') as Skills
                 FROM
-                    Positions p, Disciplines d, Skills s
+                    Positions p, Disciplines d, Skills s, PositionSkills ps
                 WHERE
                     p.ProjectId = @ProjectId
                     AND p.ResourceId IS NULL
                     AND p.DisciplineId = d.Id
-                    AND p.DisciplineId = s.DisciplineId
-                GROUP BY
+                    AND p.Id = ps.PositionId
+					AND ps.SkillId = s.Id
+					AND ps.SkillDisciplineId = s.DisciplineId
+				GROUP BY
                     p.Id, p.YearsOfExperience,
                     p.ProjectedMonthlyHours,
                     d.Name

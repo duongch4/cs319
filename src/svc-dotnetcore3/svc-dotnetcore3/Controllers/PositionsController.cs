@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Application.Communication;
-using Web.API.Resources;
+using Web.API.Authorization;
 
 using System;
 using System.Data.SqlClient;
-using System.Linq;
 using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -81,6 +80,8 @@ namespace Web.API.Controllers
 
             try
             {
+                                                // Log.Information("1");
+
                 Position position = await positionsRepository.GetAPosition(openingId);
                 User user = await usersRepository.GetAUser(userId);
 
@@ -94,13 +95,19 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
 
+                                // Log.Information("{@response}", position);
+
                 position.ResourceId = userId;
                 position.IsConfirmed = false;
                 var updatedPosition = await positionsRepository.UpdateAPosition(position);
 
+
+
                 RequestProjectAssign response = new RequestProjectAssign{OpeningId = openingId, 
                                                                          UserID = userId,
                                                                          ConfirmedUtilization = user.Utilization};
+
+                // Log.Information("{@response}", response);
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)

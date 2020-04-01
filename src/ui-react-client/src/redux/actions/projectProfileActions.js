@@ -46,12 +46,18 @@ export const loadSingleProject = (projectNumber, userRoles) => {
                 return axios.get(`${baseURL + projectNumber}`, { headers });
             }).then(response => {
                 dispatch(loadSingleProjectData(response.data.payload));
-            }).catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                alert(errorParsed)
-            });
+            }) .catch(error => {
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
+                        let err = error.response.data.message
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed)
+                });
         }
     };
 };
@@ -68,11 +74,17 @@ export const createProject = (project, history, userRoles) => {
                 dispatch(addProjectSummaryData(project.projectSummary));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                alert(errorParsed)
-            })
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
+                        let err = error.response.data.message
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed)
+                })
         }
     };
 };
@@ -89,11 +101,17 @@ export const updateProject = (project, history, userRoles) => {
                 dispatch(updateProjectSummaryData(project.projectSummary));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                alert(errorParsed)
-            })
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
+                        let err = error.response.data.message
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed)
+                })
         }
     };
 };
@@ -110,11 +128,17 @@ export const deleteProject = (number, history, userRoles) => {
                 dispatch(deleteProjectSummaryData(number));
                 history.push('/projects');
             }).catch(error => {
-                let err = error.response.data.message
-                let errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                console.log(err)
-                alert(errorParsed)
-            });
+                    let errorParsed = ""
+                    console.log(error.response)
+                    if(error.response.status === 500){
+                        let err = error.response.data.message
+                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                        console.log(err)
+                    } else {
+                        errorParsed = error.response.statusText
+                    }
+                    alert(errorParsed)
+                })
         }
     };
 };

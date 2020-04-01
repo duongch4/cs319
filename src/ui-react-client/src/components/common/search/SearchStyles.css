@@ -4,12 +4,21 @@
     display: flex;
     flex-direction: row;
     background-color: #2c6232;
-    color: "white";
     border-radius: 10px;
     word-wrap: break-word;
+    color: white;
 }
 
 .curved {
     border-radius: 30px;
     padding: 10px;
+}
+
+.input-range__track--active,
+.input-range__slider {
+    background: #2c6232 !important;
+} 
+
+.input-range__label-container{
+    color: black;
 }
