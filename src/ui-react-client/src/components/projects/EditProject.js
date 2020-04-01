@@ -12,7 +12,6 @@ import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import '../common/common.css'
 import Loading from '../common/Loading';
 import LoadingOverlay from 'react-loading-overlay'
-import ClipLoader from 'react-spinners/ClipLoader'
 
 class EditProject extends Component {
     state = {
@@ -178,8 +177,15 @@ class EditProject extends Component {
             }
 
             return (
+                <LoadingOverlay 
+                styles={{
+                    overlay: (base) => ({
+                      ...base,
+                      background: 'rgba(169,169,169, 0.5)'
+                    })
+                  }} 
+                  active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
                 <div className="activity-container">
-                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                     <h1 className="greenHeader">Edit project</h1>
                     <div className="section-container">
                         <CreateEditProjectDetails locations={this.state.masterlist.locations}
@@ -215,8 +221,8 @@ class EditProject extends Component {
                             Delete
                         </Button>
                     </div>
-                    </LoadingOverlay>
-                </div>
+                    </div>
+                </LoadingOverlay>
             );
         }
         else {

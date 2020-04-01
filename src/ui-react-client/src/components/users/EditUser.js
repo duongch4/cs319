@@ -12,7 +12,6 @@ import AvailabilityCard from './AvailabilityCard';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 import LoadingOverlay from 'react-loading-overlay'
-import ClipLoader from 'react-spinners/ClipLoader'
 
 class EditUser extends Component {
     state = {
@@ -189,8 +188,15 @@ class EditUser extends Component {
             }
             
             return (
-                <div className="activity-container">
-                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
+                <LoadingOverlay 
+                styles={{
+                    overlay: (base) => ({
+                      ...base,
+                      background: 'rgba(169,169,169, 0.5)'
+                    })
+                  }} 
+                  active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
+                    <div className="activity-container">
                     <h1 className="greenHeader">Edit user</h1>
                     <div className="section-container">
                         <EditUserDetails userProfile={this.state.userProfile.userSummary}
@@ -218,9 +224,9 @@ class EditUser extends Component {
                             disableElevation
                             onClick={() => this.onSubmit()}>
                         Save
-                    </Button>
-                    </LoadingOverlay>
-                </div>
+                    </Button> 
+                    </div>
+                </LoadingOverlay>
             );
         }
     }
