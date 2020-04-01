@@ -26,6 +26,6 @@ namespace Web.API.Application.Repository
         Task<string> UpdateAProject(ProjectProfile projectProfile, int locationId);
 
         // DELETE
-        Task<Project> DeleteAProject(string number);
+        Task<int> DeleteAProject(string number);
     }
 }

@@ -433,30 +433,30 @@ namespace Web.API.Controllers
 
             try
             {
-                // Log.Logger.Here().Information("{@Project}", projectProfile);
                 var location = await locationsRepository.GetALocation(projectProfile.ProjectSummary.Location.City);
-                var updated = await projectsRepository.UpdateAProject(projectProfile, location.Id);
-                if (updated == null)
-                {
-                    var errMessage = $"Query returns failure status on updating project number '{projectProfile.ProjectSummary.ProjectNumber}'";
-                    var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
-                }
-                var response = new UpdatedResponse<string>(updated, "Successfully updated");
+                var updatedProjectNumber = await projectsRepository.UpdateAProject(projectProfile, location.Id);
+                var response = new UpdatedResponse<string>(updatedProjectNumber, "Successfully updated");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
             {
-                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
-                if (err is SqlException)
+                if (err is CustomException<InternalServerException>)
                 {
-                    var error = new InternalServerException(errMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    return StatusCode(StatusCodes.Status500InternalServerError, ((CustomException<InternalServerException>)err).GetException());
                 }
                 else
                 {
-                    var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                    if (err is SqlException)
+                    {
+                        var error = new InternalServerException(errMessage);
+                        return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                    }
+                    else
+                    {
+                        var error = new BadRequestException(errMessage);
+                        return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                    }
                 }
             }
         }
@@ -493,13 +493,13 @@ namespace Web.API.Controllers
 
             try
             {
-                var deleted = await projectsRepository.DeleteAProject(projectNumber);
-                if (deleted == null)
+                var deletedCount = await projectsRepository.DeleteAProject(projectNumber);
+                if (deletedCount != 1)
                 {
                     var error = new NotFoundException("The given project number cannot be found on database");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
-                var response = new DeletedResponse<string>(deleted.Number, $"Successfully deleted project with number '{deleted.Number}'");
+                var response = new DeletedResponse<string>(projectNumber, $"Successfully deleted project with number '{projectNumber}'");
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -513,7 +513,7 @@ namespace Web.API.Controllers
                 else
                 {
                     var error = new BadRequestException(errMessage);
-                    return StatusCode(StatusCodes.Status400BadRequest,  new CustomException<BadRequestException>(error).GetException());
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
