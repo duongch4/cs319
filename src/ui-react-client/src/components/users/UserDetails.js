@@ -25,21 +25,44 @@ class UserDetails extends Component {
                 userProfile: this.props.userProfile
             });
         } else {
-            // const userRoles = getUserRoles(this.context);
-            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['adminUser'])
-                .then(() => {
-                    var userProfile = this.props.userProfile;
-                    if (userProfile) {
-                        this.setState({
-                            ...this.state,
-                            userProfile: userProfile
-                        })
-                    }
-                })
+          // we want to check if there is a role being passed in the props first and prioritize using that role
+          // otherwise, we will try to fetch the role from the User Context Provider
+          let userRoles;
+          if (this.props.roles) {
+              userRoles = this.props.roles
+          } else {
+              userRoles = getUserRoles(this.context);
+          }
+
+          if (Object.keys(this.props.userProfile).length > 0 &&
+              this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
+              this.setState({
+                  ...this.state,
+                  userProfile: this.props.userProfile
+              })
+          } else {
+            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
+            .then(() => {
+                var userProfile = this.props.userProfile;
+                if (userProfile) {
+                    this.setState({
+                        ...this.state,
+                        userProfile: userProfile
+                    })
+                }
+            })
+          }
         }
     };
 
     render() {
+        let userRoles;
+        if (this.props.roles) {
+            userRoles = this.props.roles
+        } else {
+            userRoles = getUserRoles(this.context);
+        }
+        let currUserID = ( this.props.id || this.context.profile.userID )
         let userDetails = this.state.userProfile;
         if (Object.keys(userDetails).length === 0) {
             return (
@@ -83,13 +106,15 @@ class UserDetails extends Component {
                     )}
                     <div className="title-bar">
                         <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
-                        <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
+                        { (userRoles.includes("adminUser") || userDetails.userSummary.userID === currUserID) && (
+                            <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
                             <Button variant="contained"
                                     style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                                     disableElevation>
                                 Edit
                             </Button>
                         </Link>
+                        )}
                     </div>
                     <div className="section-container">
                         <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>

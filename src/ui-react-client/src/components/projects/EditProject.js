@@ -12,7 +12,6 @@ import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import '../common/common.css'
 import Loading from '../common/Loading';
 import LoadingOverlay from 'react-loading-overlay'
-import ClipLoader from 'react-spinners/ClipLoader'
 
 class EditProject extends Component {
     state = {
@@ -35,19 +34,35 @@ class EditProject extends Component {
             }));
         } else {
             const userRoles = getUserRoles(this.context);
-            const promise_masterlist = this.props.loadMasterlists(userRoles);
-            const promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
-            Promise.all([promise_masterlist, promise_singleProject])
-               .then(() => {
-                   this.setState((state, props) =>
-                       ({
-                           ...this.state,
-                           masterlist: props.masterlist,
-                           projectProfile: props.projectProfile,
-                           pending: false
-                       }))});
+            if (Object.keys(this.props.projectProfile).length > 0 &&
+                this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_number &&
+                Object.keys(this.props.masterlist).length > 0) {
+                this.updateMasterlistAndProjectProfile();
+            } else if (Object.keys(this.props.projectProfile).length > 0 &&
+                this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_number &&
+                Object.keys(this.props.masterlist).length === 0) {
+                this.props.loadMasterlists(userRoles)
+                    .then(() => {
+                        this.updateMasterlistAndProjectProfile();
+                    })
+            } else {
+                const promise_masterlist = this.props.loadMasterlists(userRoles);
+                const promise_singleProject = this.props.loadSingleProject(this.props.match.params.project_number, userRoles);
+                Promise.all([promise_masterlist, promise_singleProject])
+                    .then(() => {
+                        this.updateMasterlistAndProjectProfile();
+                    });
+            }
         }
+    }
 
+    updateMasterlistAndProjectProfile() {
+        this.setState({
+            ...this.state,
+            masterlist: this.props.masterlist,
+            projectProfile: this.props.projectProfile,
+            pending: false
+        })
     }
 
     compare_dates = (date1,date2) => {
@@ -178,8 +193,15 @@ class EditProject extends Component {
             }
 
             return (
+                <LoadingOverlay 
+                styles={{
+                    overlay: (base) => ({
+                      ...base,
+                      background: 'rgba(169,169,169, 0.5)'
+                    })
+                  }} 
+                  active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
                 <div className="activity-container">
-                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                     <h1 className="greenHeader">Edit project</h1>
                     <div className="section-container">
                         <CreateEditProjectDetails locations={this.state.masterlist.locations}
@@ -215,8 +237,8 @@ class EditProject extends Component {
                             Delete
                         </Button>
                     </div>
-                    </LoadingOverlay>
-                </div>
+                    </div>
+                </LoadingOverlay>
             );
         }
         else {

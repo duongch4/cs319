@@ -217,51 +217,51 @@ class FilterTab extends Component {
                     <Button variant="contained" style={{ backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                     <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
                 </div>
-                <div id="filter-closed" style={{backgroundColor: "#87c34b", color: "white", paddingLeft: "30px", paddingRight: "30px", display:  (showing ? 'none' : 'block')}}>
-                    <div style={{padding: "10px"}} >
-                    <h2  style={{color: "white"}} >Add Filters
-                    <Arrow  style={{float:"right"}} size={"large"} onClick={()=> this.setState({ showing: !showing })}>toggle </Arrow>
-                    </h2>
+                <div className="filter-box">
+                    <div className="filter-title">
+                        <h2>Add Filters</h2>
+                        { !showing && (
+                            <Arrow  size={"large"} onClick={()=> this.setState({ showing: !showing })}>toggle</Arrow>
+                        )}
+                        { showing && (
+                            <ExpandLessRoundedIcon onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
+                        )}
                     </div>
-                </div>
-                <div id="filters" style={{backgroundColor: "#87c34b", paddingLeft: "30px", paddingRight: "30px", display:  (showing ? 'block' : 'none')}}>
-                    <div style={{padding: "10px"}}> 
-                        <h2  style={{color: "white"}}>Add Filters
-                            <ExpandLessRoundedIcon style={{float:"right"}} onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
-                        </h2>
-                    </div>
-                    <div className="form-section opening">
-                        <h3 className="darkGreenHeader">Locations</h3>
-                        <div className="form-row">
-                        <AddLocation locations={this.props.masterlist.locations}
-                                        updateLocations={this.updateLocations}/>
-                        </div>
-                        <h3 className="darkGreenHeader">Disciplines</h3>
-                        <div className="form-row">
-                            <AddDisciplines disciplines={this.props.masterlist.disciplines}
+                    { showing && (
+                        <div id="filters" className="filter-controls">
+                                <h3 className="darkGreenHeader filter-header">Locations</h3>
+                                <AddLocation locations={this.props.masterlist.locations}
+                                             updateLocations={this.updateLocations}/>
+                                <h3 className="darkGreenHeader">Disciplines</h3>
+                                <AddDisciplines disciplines={this.props.masterlist.disciplines}
                                                 yearsOfExp={this.props.masterlist.yearsOfExp}
                                                 updateDisciplines={this.updateDisciplines}/>
+                                <div className="form-row">
+                                    <div>
+                                        <h3 className="darkGreenHeader filter-header">Years of Experience</h3>
+                                        <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}
+                                                     updateYears={this.updateYears}/>
+                                    </div>
+                                    <div className="availability-wrapper">
+                                        <h3 className="darkGreenHeader filter-header">Availability</h3>
+                                        <div className="date-picker-wrapper">
+                                            <DatePicker className="input-box" id="startDate" selected={this.state.searchFilter.filter.startDate}
+                                                        onChange={this.handleChangeStartDate}/>
+                                            <DatePicker className="input-box" id="endDate" selected={this.state.searchFilter.filter.endDate}
+                                                        onChange={this.handleChangeEndDate}/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="slider" style={{marginBottom: "30px"}}>
+                                    <h3 className="darkGreenHeader">Utilization Range</h3>
+                                    <div className="slider-wrapper">
+                                        <InputRange maxValue={300} minValue={0}
+                                                    value={this.state.searchFilter.filter.utilization}
+                                                    onChange={value => this.updateUtil(value)}/>
+                                    </div>
+                                </div>
                         </div>
-                        <div className="form-row">
-                        <div>
-                            <h3 className="darkGreenHeader">Years of Experience</h3>
-                            <YearsSearch yearsOfExp={this.props.masterlist.yearsOfExp}
-                                        updateYears={this.updateYears}/>
-                        </div>
-                        <div style={{marginLeft: "20px"}}>
-                                <h3 className="darkGreenHeader">Availability</h3>
-                                <DatePicker className="input-box" id="startDate" selected={this.state.searchFilter.filter.startDate}
-                                            onChange={this.handleChangeStartDate}/>
-                                <DatePicker className="input-box" id="endDate" selected={this.state.searchFilter.filter.endDate}
-                                            onChange={this.handleChangeEndDate}/>
-                        </div>
-                        </div>
-                        <div className="slider" style={{marginBottom: "30px"}}>
-                            <h3 className="darkGreenHeader">Utilization</h3>
-                            <InputRange maxValue={300} minValue={0} value={this.state.searchFilter.filter.utilization} 
-                            onChange={value => this.updateUtil(value)}/>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </form>
         </div>

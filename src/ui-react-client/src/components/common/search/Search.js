@@ -109,14 +109,13 @@ class Search extends Component {
           {(this.state.filters != null) && (this.state.search) &&
             (<div>
               <div className="form-row">
-                <h3 className="darkGreenHeader">Results</h3>
+                <h2 className="darkGreenHeader">Results</h2>
                 {(this.state.loading) &&
                 <Loading/>
                 }
                 <div style={{ position: "absolute", right: "50px" }}>
                 <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
                      placeholder='Sort by:'/>
-
                 </div>
               </div>
               <SearchResults data={this.state.filters}

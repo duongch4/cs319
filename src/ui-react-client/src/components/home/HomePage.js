@@ -22,7 +22,7 @@ const HomePage = (props) => {
   }
   else {
     return (
-      <UserDetails id={props.profile.id} showGreeting={true} />
+        <UserDetails id={props.profile.id} roles={props.account.idToken.roles} showGreeting={true} />
     );
   }
 };

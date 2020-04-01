@@ -18,7 +18,6 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 import LoadingOverlay from 'react-loading-overlay'
-import ClipLoader from 'react-spinners/ClipLoader'
 import './admin.css'
 import {Button} from "@material-ui/core";
 
@@ -341,8 +340,16 @@ class Admin extends Component {
         cityList = cityList.length > 0 ? cityList : <div>No Cities Available for Selected Province</div> 
 
         return (
-            <div className="activity-container">
-            <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
+            <LoadingOverlay
+            styles={{
+                overlay: (base) => ({
+                  ...base,
+                  background: 'rgba(169,169,169, 0.5)'
+                })
+              }}
+              active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
+                <div className="activity-container">
+
                 <h1 className="greenHeader">Admin</h1>
                 <div className="side-by-side-container">
                     <div className="side-container">
@@ -388,8 +395,8 @@ class Admin extends Component {
                     </form>
                 </div>
                 </div>
-                </LoadingOverlay>
-            </div>
+                </div>
+            </LoadingOverlay>
         )
     }
 }

@@ -27,6 +27,13 @@ class ProjectDetails extends Component {
                 })
             }
         } else {
+            if (Object.keys(this.props.projectProfile).length > 0 &&
+            this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
+                this.setState({
+                    ...this.state,
+                    projectProfile: this.props.projectProfile
+                })
+            } else {
             const userRoles = getUserRoles(this.context);
             this.props.loadSingleProject(this.props.match.params.project_id, userRoles)
                 .then(res => {
@@ -38,11 +45,15 @@ class ProjectDetails extends Component {
                     }
                 })
                 .catch(err => console.log(err));
+            }
         }
     };
 
     render() {
-        if (Object.keys(this.state.projectProfile).length !== 0) {
+        let userRoles = getUserRoles(this.context);
+        let userID = this.context.profile.userID;
+        if (Object.keys(this.state.projectProfile).length !== 0 &&
+            this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
             var openings = this.state.projectProfile.openings;
             if (openings.length > 0) {
@@ -89,13 +100,15 @@ class ProjectDetails extends Component {
                 <div className="activity-container">
                     <div className="title-bar">
                         <h1 className="blueHeader">{projectDetails.projectSummary.title}</h1>
-                        <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber} className="action-link">
-                            <Button variant="contained"
-                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
-                                    disableElevation>
-                                Edit
-                            </Button>
-                        </Link>
+                        { userRoles.includes('adminUser') && (
+                            <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber} className="action-link">
+                                <Button variant="contained"
+                                        style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
+                                        disableElevation>
+                                    Edit
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                     <div className="section-container">
                         <p>

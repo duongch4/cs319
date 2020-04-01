@@ -9,13 +9,15 @@ import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 const UsersPage = (props) => {
   const userRoles = getUserRoles(useContext(UserContext));
   useEffect(() => {
-    if (CLIENT_DEV_ENV && props.users.length === 0) {
-      props.loadUsers(["adminUser"])
-    } else {
-        props.loadUsers(userRoles)
-            .catch(error => {
-              alert('Loading users failed' + error);
-            });
+    if (props.users.length === 0) {
+        if (CLIENT_DEV_ENV) {
+            props.loadUsers(["adminUser"])
+        } else {
+            props.loadUsers(userRoles)
+                .catch(error => {
+                    alert('Loading users failed' + error);
+                });
+        }
     }}, [props.users, props.loadUsers, userRoles]);
   return (
     <div className="activity-container">

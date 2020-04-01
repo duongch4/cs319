@@ -174,7 +174,6 @@ class SearchResults extends Component {
             const userCards =[];
             users.forEach((user) => {
                 userCards.push(
-                <div className="card" key={userCards.length}>
                     <SearchUserCard user={user}
                     key={userCards.length}
                     canEdit={false}
@@ -183,10 +182,10 @@ class SearchResults extends Component {
                     openingId={this.props.openingId}
                     createAssignOpenings={(openingId, userId, utilization, user, userRoles) => 
                     this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
-                    </div>)}); 
+                    )});
             return (
                 <div>
-                    <div>
+                    <div className="pagination-controls">
                     {(this.props.data.page == 1) && 
                     (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
                     {(this.props.data.page > 1) && 
@@ -197,6 +196,7 @@ class SearchResults extends Component {
                     {(this.state.lastPage || (this.state.userSummaries).length < 50) && 
                     (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
                     </div>
+                    <hr />
                     <div>{userCards}</div>
                 </div>
                 )}
