@@ -22,8 +22,8 @@ const HomePage = (props) => {
   }
   else {
     return (
-      <div className="activity-container">
-        <h1>Welcome, {props.profile.givenName}</h1>
+      <div>
+        <h1 className="activity-container">Welcome, {props.profile.givenName}</h1>
         <UserDetails id={props.profile.id} />
       </div>
     );
