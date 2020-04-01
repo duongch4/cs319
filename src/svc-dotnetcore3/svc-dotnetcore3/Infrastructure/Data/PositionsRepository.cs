@@ -113,7 +113,7 @@ namespace Web.API.Infrastructure.Data
                 FROM
                     Positions p, Disciplines d, Skills s, PositionSkills ps
                 WHERE
-                    p.ProjectId = @ProjectID
+                    p.ProjectId = @ProjectId
                     AND p.ResourceId IS NULL
                     AND p.DisciplineId = d.Id
                     AND p.Id = ps.PositionId
