@@ -25,6 +25,7 @@ namespace Tests.Unit
         private readonly Mock<IDisciplinesRepository> _mockDisciplinesRepo;
         private readonly Mock<ISkillsRepository> _mockSkillsRepo;
         private readonly Mock<IOutOfOfficeRepository> _mockOutOfOfficeRepo;
+        private readonly Mock<IUtilizationRepository> _mockUtilizationRepo;
         private readonly Mock<IMapper> _mockMapper;
         private readonly UsersController _controller;
         
@@ -36,12 +37,13 @@ namespace Tests.Unit
             _mockDisciplinesRepo = new Mock<IDisciplinesRepository>();
             _mockSkillsRepo = new Mock<ISkillsRepository>();
             _mockOutOfOfficeRepo = new Mock<IOutOfOfficeRepository>();
+            _mockUtilizationRepo = new Mock<IUtilizationRepository>();
             _mockMapper = new Mock<IMapper>();
             _controller = new UsersController(
                 _mockUsersRepo.Object, _mockProjectsRepo.Object, 
                 _mockPositionsRepo.Object, _mockLocationsRepo.Object, 
                 _mockDisciplinesRepo.Object, _mockSkillsRepo.Object, 
-                _mockOutOfOfficeRepo.Object, _mockMapper.Object
+                _mockOutOfOfficeRepo.Object, _mockUtilizationRepo.Object, _mockMapper.Object
             );
 
         }
@@ -522,7 +524,7 @@ namespace Tests.Unit
                 Province = "province"
             };
             var summary = new UserSummary {
-                UserID = null,
+                UserID = "NoneEmpty",
                 Location = location,
                 FirstName = "first",
                 LastName = "last",
@@ -538,7 +540,7 @@ namespace Tests.Unit
                 Positions = Enumerable.Empty<PositionSummary>()
             };
             
-            var result = (await _controller.UpdateUser(user, "")) as ObjectResult;
+            var result = (await _controller.UpdateUser(user, "NoneEmpty")) as ObjectResult;
             Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
             var response = result.Value as InternalServerException;
             Assert.Equal(errMessage, response.status);

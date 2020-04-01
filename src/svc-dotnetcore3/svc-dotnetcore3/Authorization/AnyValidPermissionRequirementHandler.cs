@@ -247,15 +247,12 @@ namespace Web.API.Authorization
             {
                 if (IsUserAdminInDatabase(user))
                 {
-                    Log.Information("User is Admin in DB");
                     BuildExceptionMessage(_stringBuilderAdmin, "Admin Logged In:");
                     HandleAuthorized(IsScopeAdmin(delegatedPermissions), _stringBuilderAdmin, context, requirement);
                     return;
                 }
                 else if (IsUserManagerOnlyInDatabase(user))
                 {
-                    Log.Information("User is PM only in DB");
-
                     var projectNumbers = await _projectsRepository.GetAllProjectNumbersOfManager(objectId);
                     BuildExceptionMessage(_stringBuilderAdmin, "Project Manager Logged In:");
                     HandleAuthorized(await IsAuthorizedManager(delegatedPermissions, user, objectId, projectNumbers), _stringBuilderAdmin, context, requirement);
