@@ -61,6 +61,7 @@ namespace Tests.Unit
             );
         }
 
+        /***** Setup Projects Repo *****/
         private void Setup_ProjectsRepo_GetAllProjectResources_ThrowsException(System.Exception exception)
         {
             _mockProjectsRepo.Setup(
@@ -89,6 +90,37 @@ namespace Tests.Unit
             ).ReturnsAsync(returnValue);
         }
 
+        private void Setup_ProjectsRepo_CreateAProject_ThrowsException(System.Exception exception) 
+        {
+            _mockProjectsRepo.Setup(
+                repo => repo.CreateAProject(It.IsAny<ProjectProfile>(), It.IsAny<int>())
+            ).Throws(exception);
+        }
+
+        private void Setup_ProjectsRepo_CreateAProject_Default(string returnVal)
+        {
+            _mockProjectsRepo.Setup(
+                repo => repo.CreateAProject(It.IsAny<ProjectProfile>(), It.IsAny<int>())
+            ).ReturnsAsync(returnVal);
+        }
+        
+        /***** Setup Locations Repo *****/
+        private void Setup_LocationsRepo_GetALocation_ThrowsException(System.Exception exception)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.GetALocation(It.IsAny<string>())
+            ).Throws(exception);
+        }
+
+        private void Setup_LocationsRepo_GetALocation_Default(Location returnVal)
+        {
+            _mockLocationsRepo.Setup(
+                repo => repo.GetALocation(It.IsAny<string>())
+            ).ReturnsAsync(returnVal);
+        }
+
+
+        /***** Get All Projects Tests *****/
         [Fact]
         public async void GetAllProjects_TryBlock_SearchWordIsNull()
         {
@@ -247,6 +279,327 @@ namespace Tests.Unit
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_ProjectsRepo_GetAllProjectResourcesWithTitle_ThrowsException(badRequestException);
             await GetAllProjects_CatchBlock_BadRequestException(searchWord, errMessage);
+        }
+    
+        /***** Create Project Tests *****/
+        [Fact]
+        public async void CreateAProject_NullProfileCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            ProjectProfile profile = null;
+
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        public async void CreateAProject_NullSummaryCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            ProjectSummary summary = null;
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+
+        [Fact]
+        public async void CreateAProject_NullPMCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            ProjectManager manager = null;
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+        
+        [Fact]
+        public async void CreateAProject_NullPMIDCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+    
+        [Fact]
+        public async void CreateAProject_NullLocationCheck_ReturnBadRequestException()
+        {
+            var errMessage = "Bad Request";
+            LocationResource location = null;
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+    
+        [Fact]
+        public async void CreateAProject_TryBlock_ValidCreation()
+        {
+            Setup_LocationsRepo_GetALocation_Default(new Location());
+            Setup_ProjectsRepo_CreateAProject_Default("1");
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+        
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            Assert.IsType<CreatedResponse<string>>(result.Value);
+            var response = result.Value as CreatedResponse<string>;
+            Assert.IsType<string>(response.payload);
+        }
+
+        [Fact]
+        public async void CreateAProject_CatchBlockLocationErr_ReturnsSqlException()
+        {
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_LocationsRepo_GetALocation_ThrowsException(sqlException);
+            Setup_ProjectsRepo_CreateAProject_Default("1");
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+        
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+
+        [Fact]
+        public async void CreateAProject_CatchBlockProjectErr_ReturnsSqlException()
+        {
+            var errMessage = "Internal Server Error";
+            var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
+            Setup_LocationsRepo_GetALocation_Default(new Location());
+            Setup_ProjectsRepo_CreateAProject_ThrowsException(sqlException);
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+        
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var response = result.Value as InternalServerException;
+            Assert.Equal(errMessage, response.status);
+        }
+    
+        [Fact]
+        public async void CreateAProject_CatchBlockLocationErr_ReturnsBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_GetALocation_ThrowsException(badRequestException);
+            Setup_ProjectsRepo_CreateAProject_Default("1");
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+        
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
+        }
+    
+        [Fact]
+        public async void CreateAProject_CatchBlockProjectErr_ReturnsBadRequestException()
+        {
+            string errMessage = "Bad Request";
+            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
+            Setup_LocationsRepo_GetALocation_Default(new Location());
+            Setup_ProjectsRepo_CreateAProject_ThrowsException(badRequestException);
+            var location = new LocationResource{
+                LocationID = 1,
+                Province = "",
+                City = ""
+            };
+            var summary = new ProjectSummary {
+                Title = "",
+                Location = location,
+                ProjectStartDate = new System.DateTime(),
+                ProjectEndDate = new System.DateTime(),
+                ProjectNumber = "test"
+            };
+            var manager = new ProjectManager {
+                UserID = "1",
+                FirstName = "",
+                LastName = ""
+            };
+            var profile = new ProjectProfile{
+                ProjectSummary = summary,
+                ProjectManager = manager,
+                UsersSummary = Enumerable.Empty<UserSummary>(),
+                Openings = Enumerable.Empty<OpeningPositionsSummary>()
+            };
+        
+            var result = (await _controller.CreateAProject(profile)) as ObjectResult;
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            Assert.IsType<BadRequestException>(result.Value);
+            var response = result.Value as BadRequestException;
+            Assert.Equal(errMessage, response.status);  
         }
     }
 }

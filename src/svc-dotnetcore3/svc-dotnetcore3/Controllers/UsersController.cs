@@ -319,9 +319,7 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUser([FromBody] UserProfile userProfile, string userId)
         {
-            Log.Information("Entering UpdateAUser");
-
-            if (userProfile == null)
+            if (userProfile == null || userProfile.UserSummary == null || userProfile.UserSummary.Location == null || userProfile.Availability == null || userProfile.Disciplines == null)
             {
                 var error = new BadRequestException("The given user is null / Request Body cannot be read");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
