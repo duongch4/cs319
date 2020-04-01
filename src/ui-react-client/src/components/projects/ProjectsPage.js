@@ -11,10 +11,12 @@ import {CLIENT_DEV_ENV} from '../../config/config';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import {Button} from "@material-ui/core";
 import Loading from '../common/Loading';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 class ProjectsPage extends Component {
     state = {
-      filter: "",
+      filter: "?searchWord=&orderKey=startDate&order=asc&page=",
       projects: [],
       searchWord: null,
       searchPressed: false,
@@ -24,6 +26,9 @@ class ProjectsPage extends Component {
       sort: null,
       loading: false,
       noResults: false,
+      projectsAll: [],
+      noResultsNextPage: false,
+      currPage: 1,
     };
 
   componentDidMount() {
@@ -37,13 +42,13 @@ class ProjectsPage extends Component {
         });
       } else {
         const userRoles = getUserRoles(this.context);
-        this.props.loadProjects(this.state.filter, userRoles).then(() => {
+        this.props.loadProjects(this.state.filter.concat(this.state.currPage), userRoles).then(() => {
           this.setState({
             ...this.state,
             projects: this.props.projects,
             searchPressed: false,
             noResults: false,
-          }, () => this.setState({...this.state, loading: false}));
+          }, ()=> this.getAll(userRoles, this.state.currPage));
         }).catch(err => {
           this.setState({
             ...this.state,
@@ -58,6 +63,50 @@ class ProjectsPage extends Component {
     if (this.state.searchPressed) {
        this.componentDidMount();
     }
+}
+
+getAll(userRoles, currPage) {
+  if (!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50) {
+      var newPage = currPage + 1
+      var filter = this.getFilterWithPage(newPage);
+      this.props.loadProjects(filter, userRoles)
+      .then(() => {
+          console.log(this.state);
+          var projects = (this.props.projects).slice()
+          this.setState({
+              ...this.state,
+              projectsAll: [...this.state.projectsAll, projects],
+              noResults: false,
+              loading: true,
+          }, () => this.getAll(userRoles, newPage))
+      }).catch(err => {
+          this.setState({
+              ...this.state,
+              noResultsNextPage: true,
+              loading: false,
+          }, () => console.log(this.state));
+      });
+  }
+}
+
+toNextPage = () => {
+  // var new_page = this.state.currPage + 1;
+  // var page_index = this.state.currPage;
+  // this.setState({
+  //     ...this.state,
+  //     userSummaries: this.state.userSummariesAll[page_index],
+  //     currPage: new_page,
+  // })
+}
+
+toPrevPage = () => {
+  // var new_page = this.state.currPage - 1;
+  // var page_index = new_page - 1;
+  // this.setState({
+  //     ...this.state,
+  //     userSummaries: this.state.userSummariesAll[page_index],
+  //     currPage: new_page,
+  // })
 }
 
   handleChange = (e) => {
@@ -93,16 +142,36 @@ class ProjectsPage extends Component {
     } else {
       searchWord = this.state.searchWord;
     }
+    console.log("?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(this.state.currPage));
  
      this.setState({
        ...this.state,
-       filter: "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=1",
+       filter: "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(this.state.currPage),
        searchPressed: true,
        loading: true,
        noResults: false,
      });
    }
  }
+
+getFilterWithPage(currPage) {
+    var sort = "";
+    var searchWord = "";
+    
+    if(this.state.sort == null) {
+      sort = "startDate";
+    } else {
+      sort = this.state.sort;
+    }
+
+    if (this.state.searchWord == null) {
+      searchWord = "";
+    } else {
+      searchWord = this.state.searchWord;
+    }
+    var filter = "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(currPage);
+    return filter;
+}
 
 render() {
   return (
@@ -131,10 +200,22 @@ render() {
             </Link>
           </div>
         </div>
-        {(this.state.loading) && 
-        <Loading/>}
-        {!(this.state.loading) && !(this.state.noResults) &&
-        <ProjectList projects={this.props.projects}/>}
+        <div>
+          {(this.state.loading) && 
+          <Loading/>}
+          <div>
+            {(this.state.currPage == 1) && 
+            (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
+            {(this.state.currPage> 1) && 
+            (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
+                Page {this.state.currPage}
+            {(this.state.noResultsNextPage) && 
+            (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
+            {(!this.state.noResultsNextPage || (this.state.projects).length < 50) && 
+            (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
+          </div>
+          <ProjectList projects={this.props.projects}/>
+        </div>
         {(this.state.noResults) && 
         <div className="darkGreenHeader">There are no projects that match your search</div>}
     </div>
