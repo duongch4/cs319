@@ -1,17 +1,8 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import '../../projects/ProjectStyles.css';
 import {connect} from 'react-redux';
-import { updateSpecificUser } from '../../../redux/actions/userProfileActions';
-import { updateProject } from '../../../redux/actions/projectProfileActions';
 import {createAssignOpenings} from '../../../redux/actions/forecastingActions';
-import {Button} from "@material-ui/core";
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import { Link } from 'react-router-dom';
 import Search from '../search/Search.js';
-import UserCard from '../../users/UserCard.js';
-import {CLIENT_DEV_ENV} from '../../../config/config';
 import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import Loading from '../Loading';
 import {UserContext, getUserRoles} from "../userContext/UserContext";
