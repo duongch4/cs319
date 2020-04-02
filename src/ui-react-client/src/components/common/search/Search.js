@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
+import {clearSearchResults} from "../../../redux/actions/searchActions";
 import {connect} from 'react-redux';
 import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
@@ -15,10 +16,10 @@ class Search extends Component {
       filters: null,
       masterlist: {},
       sort_by: [{label: "No filter", value: null},  {label: "Lastname: A-Z", value: "name-AZ"}, {label: "Lastname: Z-A", value: "name-ZA"},
-                {label: "Utilization: High to Low", value: "util-high"}, {label: "Utilization: Low to High", value: "util-low"},{label: "Locations: A-Z", value: "locations-AZ"},
-                {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
-                {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
-                {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
+        {label: "Utilization: High to Low", value: "util-high"}, {label: "Utilization: Low to High", value: "util-low"},{label: "Locations: A-Z", value: "locations-AZ"},
+        {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
+        {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
+        {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
       sort: null,
       search: false,
       loading: true,
@@ -36,22 +37,26 @@ class Search extends Component {
     } else {
       const userRoles = getUserRoles(this.context);
       this.props.loadMasterlists(userRoles)
-        .then(() => {
+          .then(() => {
             this.setState({
-                ...this.state,
-                masterlist: this.props.masterlist,
+              ...this.state,
+              masterlist: this.props.masterlist,
             })
-        })
+          })
     }
-}
+  }
+
+  componentWillUnmount() {
+    this.props.clearSearchResults();
+  }
 
   handleResultChange(filter) {
     this.setState({
       ...this.state,
-     filters: filter,
-     search: true,
-     loading: true,
-     page: 1,
+      filters: filter,
+      search: true,
+      loading: true,
+      page: 1,
     });
   }
 
@@ -83,72 +88,72 @@ class Search extends Component {
   }
 
   pageRight = () => {
-      this.setState({
-        ...this.state,
-        filters: {
-          ...this.state.filters,
-          page: this.state.filters.page += 1,
-        },
-        loading: true,
-      });
+    this.setState({
+      ...this.state,
+      filters: {
+        ...this.state.filters,
+        page: this.state.filters.page += 1,
+      },
+      loading: true,
+    });
   }
 
   render() {
     if(Object.keys(this.state.masterlist).length === 0 ){
       return (
-        <div className="activity-container">
+          <div className="activity-container">
             <Loading />
-        </div>
+          </div>
       )
     } else {
       const userRoles = getUserRoles(this.context);
       return (
-        <div className="activity-container">
-          <FilterTab onDataFetched={this.handleResultChange}
-                      masterlist={this.state.masterlist} />
-          {(this.state.filters != null) && (this.state.search) &&
+          <div className="activity-container">
+            <FilterTab onDataFetched={this.handleResultChange}
+                       masterlist={this.state.masterlist} />
+            {(this.state.filters != null) && (this.state.search) &&
             (<div>
               <div className="form-row">
-                <h3 className="darkGreenHeader">Results</h3>
+                <h2 className="darkGreenHeader">Results</h2>
                 {(this.state.loading) &&
                 <Loading/>
                 }
                 <div style={{ position: "absolute", right: "50px" }}>
-                <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
-                     placeholder='Sort by:'/>
-
+                  <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.onFilterChange}
+                          placeholder='Sort by:'/>
                 </div>
               </div>
               <SearchResults data={this.state.filters}
-                sortBy={this.state.sort}
-                stopLoading={this.stopLoading} 
-                pageLeft={this.pageLeft}
-                pageRight={this.pageRight}
-                master={this.props.masterlist}
-                isAssignable={this.props.isAssignable}
-                projectNumber={this.props.projectNumber}
-                openingId={this.props.openingId}
-                createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
-      </div>)}
-      </div>
+                             sortBy={this.state.sort}
+                             stopLoading={this.stopLoading}
+                             pageLeft={this.pageLeft}
+                             pageRight={this.pageRight}
+                             master={this.props.masterlist}
+                             isAssignable={this.props.isAssignable}
+                             projectNumber={this.props.projectNumber}
+                             openingId={this.props.openingId}
+                             createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+            </div>)}
+          </div>
       )}
-    }
   }
-  
+}
+
 Search.contextType = UserContext;
 
 
 const mapStateToProps = state => {
   return {
-      masterlist: state.masterlist,
+    masterlist: state.masterlist,
   };
 };
 
 const mapDispatchToProps = {
-  loadMasterlists
+  loadMasterlists,
+  clearSearchResults
 };
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
+    mapStateToProps,
+    mapDispatchToProps,
 )(Search);

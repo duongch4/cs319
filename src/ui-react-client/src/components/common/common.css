@@ -13,6 +13,10 @@ html, body {
     padding: 24px 50px 50px 0px;
 }
 
+.activity-container-no-padding {
+    margin-left: 250px;
+}
+
 h1 {
     font-size: 2em;
     margin: 10px 0px;
@@ -175,6 +179,11 @@ input.input-box, select.input-box {
     border-radius: 3px;
     border-width: 0.5px;
     border-color: #cdcdcd;
+    margin-right: 8px;
+}
+
+input.input-box:last-child, select.input-box:last-child {
+    margin-right: 0px;
 }
 
 input.input-box:last-child, select.input-box:last-child {
