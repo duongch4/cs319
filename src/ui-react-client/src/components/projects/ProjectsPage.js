@@ -16,7 +16,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 class ProjectsPage extends Component {
     state = {
-      filter: "?searchWord=&orderKey=startDate&order=asc&page=",
+      filter: "?searchWord=&orderKey=startDate&order=asc&page=1",
       projects: [],
       searchWord: null,
       searchPressed: false,
@@ -24,11 +24,14 @@ class ProjectsPage extends Component {
                 {label: "City", value: "city"}, {label: "Start date", value: "startDate"},
                 {label: "End date", value: "endDate"}],
       sort: null,
-      loading: false,
+      loading: true,
       noResults: false,
       projectsAll: [],
       noResultsNextPage: false,
       currPage: 1,
+      offset: 1,
+      lastPage: 1,
+      doneLoading: false,
     };
 
   componentDidMount() {
@@ -42,71 +45,103 @@ class ProjectsPage extends Component {
         });
       } else {
         const userRoles = getUserRoles(this.context);
-        this.props.loadProjects(this.state.filter.concat(this.state.currPage), userRoles).then(() => {
+        this.props.loadProjects(this.state.filter, userRoles).then(() => {
           this.setState({
             ...this.state,
             projects: this.props.projects,
             searchPressed: false,
             noResults: false,
-          }, ()=> this.getAll(userRoles, this.state.currPage));
+            loading: true,
+            lastPage: 1,
+            projectsAll: [this.props.projects],
+          }, ()=> (
+            this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}, () => console.log(this.state)) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+          ))
         }).catch(err => {
           this.setState({
             ...this.state,
             noResults: true,
             searchPressed: false,
-          }, () => this.setState({...this.state, loading: false}));
+            loading: false,
+          });
         });
     }
   };
 
    componentDidUpdate() {
     if (this.state.searchPressed) {
-       this.componentDidMount();
+      this.componentDidMount();
+    } else if (!this.state.doneLoading && !this.state.loading && Math.abs(this.state.lastPage - this.state.currPage) < 5) {
+      var lastPage = this.state.lastPage;
+      this.setState({
+        ...this.state, 
+        loading: true,
+      }, () => this.getAll(getUserRoles(this.context), lastPage, this.state.offset))
     }
 }
 
-getAll(userRoles, currPage) {
-  if (!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50) {
+getAll(userRoles, currPage, offset) {
+  if (currPage <= (offset * 10)) {
+    if ((!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50)) {
       var newPage = currPage + 1
       var filter = this.getFilterWithPage(newPage);
       this.props.loadProjects(filter, userRoles)
       .then(() => {
-          console.log(this.state);
           var projects = (this.props.projects).slice()
           this.setState({
               ...this.state,
               projectsAll: [...this.state.projectsAll, projects],
               noResults: false,
               loading: true,
-          }, () => this.getAll(userRoles, newPage))
+              lastPage: currPage,
+          }, () => this.getAll(userRoles, newPage, offset))
       }).catch(err => {
           this.setState({
               ...this.state,
-              noResultsNextPage: true,
+              noResultsNextPage: false,
               loading: false,
-          }, () => console.log(this.state));
+              lastPage: currPage,
+              doneLoading: true,
+          });
       });
+    }
+  } else {
+      this.setState({
+        ...this.state,
+        noResultsNextPage: false,
+        loading: false,
+        offset: this.state.offset + 1,
+        lastPage: currPage,
+    });
   }
 }
 
 toNextPage = () => {
-  // var new_page = this.state.currPage + 1;
-  // var page_index = this.state.currPage;
-  // this.setState({
-  //     ...this.state,
-  //     userSummaries: this.state.userSummariesAll[page_index],
-  //     currPage: new_page,
-  // })
-}
+    var new_page = this.state.currPage + 1;
+    var page_index = new_page - 1;
+    if (this.state.projectsAll[page_index] != undefined) {
+      this.setState({
+          ...this.state,
+          projects: this.state.projectsAll[page_index],
+          currPage: new_page,
+          noResultsNextPage: false
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        noResultsNextPage: true,
+    })
+    } 
+  }
 
 toPrevPage = () => {
-  // var new_page = this.state.currPage - 1;
-  // var page_index = new_page - 1;
-  // this.setState({
-  //     ...this.state,
-  //     userSummaries: this.state.userSummariesAll[page_index],
-  //     currPage: new_page,
-  // })
+  var new_page = this.state.currPage - 1;
+  var page_index = new_page - 1;
+  this.setState({
+    ...this.state,
+    projects: this.state.projectsAll[page_index],
+    currPage: new_page,
+  })
 }
 
   handleChange = (e) => {
@@ -142,7 +177,6 @@ toPrevPage = () => {
     } else {
       searchWord = this.state.searchWord;
     }
-    console.log("?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(this.state.currPage));
  
      this.setState({
        ...this.state,
@@ -150,7 +184,8 @@ toPrevPage = () => {
        searchPressed: true,
        loading: true,
        noResults: false,
-     });
+       currPage: 1,
+     }, () => this.setState({...this.state,loading:false}));
    }
  }
 
@@ -201,20 +236,32 @@ render() {
           </div>
         </div>
         <div>
-          {(this.state.loading) && 
-          <Loading/>}
-          <div>
+          <div className="form-row">
             {(this.state.currPage == 1) && 
             (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
+
             {(this.state.currPage> 1) && 
             (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
+
                 Page {this.state.currPage}
-            {(this.state.noResultsNextPage) && 
+
+            {(this.state.projectsAll[this.state.currPage - 1] !== undefined) && 
+              (!this.state.noResultsNextPage) && (this.state.currPage != this.state.lastPage) &&
             (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
-            {(!this.state.noResultsNextPage || (this.state.projects).length < 50) && 
+
+            {((this.state.projectsAll[this.state.currPage - 1] === undefined)
+             || (this.state.currPage == this.state.lastPage) || (this.state.projects.length < 50) ||
+             (this.state.noResultsNextPage)) && 
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
+
+            {(this.state.loading) &&
+            <div>
+              <Loading/>
+            </div>}
+            
           </div>
-          <ProjectList projects={this.props.projects}/>
+          {(this.state.projects.length > 0) &&
+          <ProjectList projects={this.state.projects}/>}
         </div>
         {(this.state.noResults) && 
         <div className="darkGreenHeader">There are no projects that match your search</div>}

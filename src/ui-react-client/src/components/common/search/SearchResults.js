@@ -49,7 +49,7 @@ class SearchResults extends Component {
                     userSummaries: users,
                     noResults: false,
                     currPage: 1,
-                    userSummariesAll: [...this.state.userSummariesAll, users],
+                    userSummariesAll: [users],
                 }, () => (
                     users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))

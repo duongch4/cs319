@@ -104,6 +104,7 @@ class Search extends Component {
       const userRoles = getUserRoles(this.context);
       return (
         <div className="activity-container">
+          <h1 className="greenHeader">Users</h1>
           <FilterTab onDataFetched={this.handleResultChange}
                       masterlist={this.state.masterlist} />
           {(this.state.filters != null) && (this.state.search) &&
