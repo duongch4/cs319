@@ -54,6 +54,7 @@ class ProjectsPage extends Component {
             loading: true,
             lastPage: 1,
             projectsAll: [this.props.projects],
+            doneLoading: false,
           }, ()=> (
             this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
           ))
@@ -84,7 +85,7 @@ class ProjectsPage extends Component {
 getAll(userRoles, currPage, offset) {
   // only loads 10 pages at a time so that it doesnt take as long
   if (currPage <= (offset * 10)) {
-    if ((!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50)) {
+    if ((!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50) && !this.state.searchPressed) {
       var newPage = currPage + 1
       var filter = this.getFilterWithPage(newPage);
       this.props.loadProjects(filter, userRoles)
