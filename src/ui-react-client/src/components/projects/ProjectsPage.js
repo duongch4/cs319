@@ -55,7 +55,7 @@ class ProjectsPage extends Component {
             lastPage: 1,
             projectsAll: [this.props.projects],
           }, ()=> (
-            this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}, () => console.log(this.state)) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+            this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
           ))
         }).catch(err => {
           this.setState({
@@ -71,6 +71,7 @@ class ProjectsPage extends Component {
    componentDidUpdate() {
     if (this.state.searchPressed) {
       this.componentDidMount();
+      // once the user 5 pages away from the last loaded page, it will load 10 more
     } else if (!this.state.doneLoading && !this.state.loading && Math.abs(this.state.lastPage - this.state.currPage) < 5) {
       var lastPage = this.state.lastPage;
       this.setState({
@@ -81,6 +82,7 @@ class ProjectsPage extends Component {
 }
 
 getAll(userRoles, currPage, offset) {
+  // only loads 10 pages at a time so that it doesnt take as long
   if (currPage <= (offset * 10)) {
     if ((!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50)) {
       var newPage = currPage + 1
@@ -106,6 +108,7 @@ getAll(userRoles, currPage, offset) {
       });
     }
   } else {
+    // stops loading after it loads 10 pages
       this.setState({
         ...this.state,
         noResultsNextPage: false,
