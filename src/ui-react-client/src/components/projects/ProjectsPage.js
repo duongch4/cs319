@@ -216,10 +216,10 @@ getFilterWithPage(currPage) {
 render() {
   return (
     <div className="activity-container">
-        <div className="form-row">
+    <div className="form-row">
             <input className="input-box" type="text" id="search" placeholder="Search" style={{height: "25px"}}onChange={this.handleChange}/>
-                <Select id="sort" className="input-box" options={this.state.sort_arr} onChange={this.onFilterChange}
-                     placeholder='Sort by:'/>
+            <Select id="sort" className="input-box" options={this.state.sort_arr} onChange={this.onFilterChange}
+                    placeholder='Sort by:'/>
             <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={() => this.performSearch()}>Search</Button>
         </div>
         <div className="title-bar">

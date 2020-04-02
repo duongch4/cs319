@@ -50,6 +50,8 @@ class ProjectDetails extends Component {
     };
 
     render() {
+        let userRoles = getUserRoles(this.context);
+        let userID = this.context.profile.userID;
         if (Object.keys(this.state.projectProfile).length !== 0 &&
             this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
@@ -98,13 +100,15 @@ class ProjectDetails extends Component {
                 <div className="activity-container">
                     <div className="title-bar">
                         <h1 className="blueHeader">{projectDetails.projectSummary.title}</h1>
-                        <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber} className="action-link">
-                            <Button variant="contained"
-                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
-                                    disableElevation>
-                                Edit
-                            </Button>
-                        </Link>
+                        { userRoles.includes('adminUser') && (
+                            <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber} className="action-link">
+                                <Button variant="contained"
+                                        style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}
+                                        disableElevation>
+                                    Edit
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                     <div className="section-container">
                         <p>

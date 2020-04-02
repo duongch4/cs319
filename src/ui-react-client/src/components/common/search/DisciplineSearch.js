@@ -76,21 +76,16 @@ class DisciplineSearch extends Component {
       skill_keys.push('skills_' + i);
       })
     }
-
       return (
-        <div className="form-section">
-          <div className="form-section opening">
-            <div className="form-row">
-            <Select placeholder='Disciplines' id="disciplines" className="input-box" 
-            onChange={this.handleChange} options={discipline_render} isClearable/>
-              <Select id="skills" key={skill_keys} className="input-box" 
-              onChange={this.handleChangeSkills} options={skill_format} isMulti isClearable
-                placeholder='Skills' />
-            </div>
-          </div>
+        <div className="form-row">
+            <Select placeholder='Disciplines' id="disciplines" className="input-box"
+                    onChange={this.handleChange} options={discipline_render} isClearable/>
+            <Select id="skills" key={skill_keys} className="input-box"
+                    onChange={this.handleChangeSkills} options={skill_format} isMulti isClearable
+                    placeholder='Skills' />
         </div>
-        );
-    }
+      )
+  }
 }
 
 export default DisciplineSearch;

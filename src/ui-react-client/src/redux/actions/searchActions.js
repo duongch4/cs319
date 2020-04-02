@@ -13,6 +13,12 @@ export const getUsers = users => {
     };
 };
 
+export const clearSearchResultsData = () => {
+    return {
+        type: types.CLEAR_SEARCH_RESULTS
+    }
+}
+
 export const performUserSearch = (filterParams, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -40,3 +46,9 @@ export const performUserSearch = (filterParams, userRoles) => {
         }
     }
 };
+
+export const clearSearchResults = () => {
+    return dispatch => {
+        dispatch(clearSearchResultsData())
+    }
+}

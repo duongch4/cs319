@@ -108,12 +108,10 @@ class LocationsSearch extends Component {
     }
 
      return(
-        <div className="form-section">
-          <div className="form-row">
+        <div className="form-row">
             <Select placeholder='Provinces' id="province" className="input-box" onChange={this.handleChange} options={provinces_render} isClearable/>
             <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
               hideSelectedOptions={true} placeholder='Cities'/>
-          </div>
         </div>
      );
     }
