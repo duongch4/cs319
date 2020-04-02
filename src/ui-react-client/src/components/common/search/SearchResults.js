@@ -14,7 +14,9 @@ class SearchResults extends Component {
         this.state = {
             userSummaries: [],
             noResults: false,
-            lastPage: false,
+            noResultsNextPage: false,
+            currPage: 1,
+            userSummariesAll: [],
         };
     }
 
@@ -28,22 +30,29 @@ class SearchResults extends Component {
     }
     
     componentDidMount() {
+        var data = this.props.data;
         if (CLIENT_DEV_ENV) {
-            this.props.performUserSearch(this.props.data, ["adminUser"])
+            this.props.performUserSearch(data, ["adminUser"])
             this.setState({
                 ...this.state,
                 userSummaries: this.props.users,
                 noResults: false,
+                currPage: 1,
             }, () => this.props.stopLoading());
         } else {
             const userRoles = getUserRoles(this.context);
-            this.props.performUserSearch(this.props.data, userRoles)
+            this.props.performUserSearch(data, userRoles)
             .then(() => {
+                var users = this.props.users.slice()
                 this.setState({
                     ...this.state,
-                    userSummaries: this.props.users,
+                    userSummaries: users,
                     noResults: false,
-                }, this.props.stopLoading())
+                    currPage: 1,
+                    userSummariesAll: [users],
+                }, () => (
+                    users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                    ))
             }).catch(err => {
                 this.setState({
                     ...this.state,
@@ -53,28 +62,53 @@ class SearchResults extends Component {
         }
     }
 
-
     // to make multiple calls without having to refresh
     componentDidUpdate(previousProps) {
-        // check if next page has any users on it
-        if (previousProps.data.page !== this.props.data.page) {
-            this.props.performUserSearch(this.props.data)
-            .then(() => {
-                this.setState({
-                    ...this.state,
-                    lastPage: false,
-                }, () => this.componentDidMount());
-            }).catch(err => {
-                this.setState({
-                    ...this.state,
-                    lastPage: true,
-                    loading: false,
-                }, () =>  this.props.pageLeft(), this.props.stopLoading());
-            });
-        } else if (!(previousProps.data === this.props.data)) {
+        if (!(previousProps.data === this.props.data)) {
            this.componentDidMount();
         }
     }
+
+    getAll(userRoles, currPage) {
+        if (!this.state.noResultsNextPage || this.state.userSummariesAll[0].length < 50) {
+            var mock_data = JSON.parse(JSON.stringify(this.props.data));
+            mock_data.page = currPage + 1;
+            this.props.performUserSearch(mock_data, userRoles)
+            .then(() => {
+                var users = (this.props.users).slice()
+                this.setState({
+                    ...this.state,
+                    userSummariesAll: [...this.state.userSummariesAll, users],
+                    noResults: false,
+                }, () => this.getAll(userRoles, mock_data.page))
+            }).catch(err => {
+                this.setState({
+                    ...this.state,
+                    noResultsNextPage: true,
+                },() => this.props.stopLoading());
+            });
+        }
+    }
+
+    toNextPage = () => {
+        var new_page = this.state.currPage + 1;
+        var page_index = this.state.currPage;
+        this.setState({
+            ...this.state,
+            userSummaries: this.state.userSummariesAll[page_index],
+            currPage: new_page,
+        })
+      }
+    
+    toPrevPage = () => {
+        var new_page = this.state.currPage - 1;
+        var page_index = new_page - 1;
+        this.setState({
+            ...this.state,
+            userSummaries: this.state.userSummariesAll[page_index],
+            currPage: new_page,
+        })
+      }
 
     // combines users when there is a single user with more than one discipline
     combineUsers = () => {
@@ -188,12 +222,12 @@ class SearchResults extends Component {
                     <div className="pagination-controls">
                     {(this.props.data.page == 1) && 
                     (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
-                    {(this.props.data.page > 1) && 
-                    (<ChevronLeftIcon onClick={() => this.props.pageLeft()}/>)}
-                        Page {this.props.data.page}
-                    {(!this.state.lastPage && (this.state.userSummaries).length == 50) && 
-                    (<ChevronRightIcon onClick={() => this.props.pageRight()}/>)}
-                    {(this.state.lastPage || (this.state.userSummaries).length < 50) && 
+                    {(this.state.currPage> 1) && 
+                    (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
+                        Page {this.state.currPage}
+                    {(this.state.noResultsNextPage && (this.state.userSummaries).length == 50) && 
+                    (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
+                    {(!this.state.noResultsNextPage || (this.state.userSummaries).length < 50) && 
                     (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
                     </div>
                     <hr />
