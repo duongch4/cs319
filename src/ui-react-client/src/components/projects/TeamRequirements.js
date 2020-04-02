@@ -95,16 +95,11 @@ class TeamRequirements extends Component {
       }
       e.preventDefault();
       var isUserPage = this.props.isUserPage;
-      const opening = this.state.opening
+      const opening = this.state.opening;
         if(opening.discipline === null) {
             this.setState({
                 ...this.state,
                 error: "No Discipline Selected - Unable to add Opening"
-            })
-        } else if (opening.skills.length === 0){
-            this.setState({
-                ...this.state,
-                error: "No Skill Selected - Unable to add Opening"
             })
         } else if (opening.yearsOfExp === null){
             this.setState({

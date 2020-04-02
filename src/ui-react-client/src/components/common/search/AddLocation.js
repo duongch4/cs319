@@ -2,6 +2,7 @@ import React,{ Component } from 'react';
 import '../../projects/ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import LocationsSearch from "./LocationsSearch";
+import './SearchStyles.css';
 
 class AddLocation extends Component {
     constructor(props){
@@ -17,7 +18,7 @@ class AddLocation extends Component {
         var keyId = ("location_" + (this.state.count + 1));
         var newLoc = (
             <div className="form-row" key={keyId} >
-            <input className="add" type="button" value="-" onClick={()=> this.deleteLocation(keyId)}/>
+            <input className="add filter-add" type="button" value="-" onClick={()=> this.deleteLocation(keyId)}/>
             <LocationsSearch provinces={this.props.locations}
                                             addLocations={this.addLocations}
                                             keyName={keyId}/>  
@@ -65,7 +66,7 @@ class AddLocation extends Component {
           return(
               <div>
                 <div className="form-row" key={"locationSearch"} >
-                    <input className="add" type="button" value="+" onClick={()=> this.newLocations()}/>
+                    <input className="add filter-add" type="button" value="+" onClick={()=> this.newLocations()}/>
                     <LocationsSearch provinces={this.props.locations}
                                     addLocations={this.addLocations}
                                     keyName={"locationSearch"}/>

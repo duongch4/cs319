@@ -21,7 +21,7 @@ class AddDisciplines extends Component {
         var keyId = ("discipline_" + (this.state.count + 1));
         var newDisc = (
             <div className="form-row" key={keyId} >
-            <input className="add" type="button" value="-" onClick={()=> this.deleteDiscipline(keyId)}/>
+            <input className="add filter-add" type="button" value="-" onClick={()=> this.deleteDiscipline(keyId)}/>
             <DisciplineSearch disciplines={this.props.disciplines}
                                 masterYearsOfExperience={this.props.yearsOfExp}
                                 addDisciplines={this.addDisciplines}
@@ -73,7 +73,7 @@ class AddDisciplines extends Component {
           return(
             <div>
                 <div className="form-row" key="disciplineSearch">
-                    <input className="add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
+                    <input className="add filter-add" type="button" value="+" onClick={()=> this.newDisciplines()}/>
                     <DisciplineSearch disciplines={this.props.disciplines}
                                         masterYearsOfExperience={this.props.yearsOfExp}
                                         addDisciplines={this.addDisciplines}
