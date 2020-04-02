@@ -241,7 +241,7 @@ render() {
           </div>
         </div>
         <div>
-          <div className="form-row">
+            <div className="pagination-controls">
             {(this.state.currPage == 1) && 
             (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
 
@@ -258,13 +258,11 @@ render() {
              || (this.state.currPage == this.state.lastPage) || (this.state.projects.length < 50) ||
              (this.state.noResultsNextPage)) && 
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
-
+            </div>
             {(this.state.loading) &&
             <div>
               <Loading/>
             </div>}
-            
-          </div>
           {(this.state.projects.length > 0) &&
           <ProjectList projects={this.state.projects}/>}
         </div>
