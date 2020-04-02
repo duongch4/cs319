@@ -284,7 +284,6 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateAProject([FromBody] ProjectProfile projectProfile)
         {
-            Log.Information("{@A}", projectProfile);
             if (projectProfile == null)
             {
                 var error = new BadRequestException("The given project is null / Request Body cannot be read");
