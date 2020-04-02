@@ -1,2 +1,2 @@
-Insert into Users values (N'c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5',N'Clinton', N'Barton', N'ADMIN-TESTING', 9, 1000, 1, 0);
-Insert into Users values (N'8d348412-a731-41f4-a93f-de4a1296e932',N'Thor', N'Odinson', N'REGULAR-TESTING', 9, -1000, 0, 0);
+Insert into Users values (N'c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5', N'Clinton', N'Barton', N'ADMIN-TESTING', 9, 1000, 1, 0);
+Insert into Users values (N'8d348412-a731-41f4-a93f-de4a1296e932', N'Thor', N'Odinson', N'REGULAR-TESTING', 9, -1000, 0, 0);
