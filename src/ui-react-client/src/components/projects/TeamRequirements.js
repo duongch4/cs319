@@ -134,7 +134,7 @@ class TeamRequirements extends Component {
 
     changeCommitment = (date, e) => {
         let commitment = this.state.opening.commitmentMonthlyHours !== null ? this.state.opening.commitmentMonthlyHours : {};
-        commitment[date] = e.target.value;
+        commitment[date] = parseInt(e.target.value);
         this.setState({
             ...this.state,
             opening: {
