@@ -9,7 +9,7 @@ const HomePage = (props) => {
   if (!props.account) {
     return (
         <div className="banner-img-container">
-            <img className="banner-img" src="https://www.ae.ca/images/default-source/banner/edmonton-office---home-banner-full-size.jpg?sfvrsn=1063c780_0"/>
+            <img className="banner-img" src="https://www.ae.ca/images/default-source/banner/edmonton-office---home-banner-full-size.jpg?sfvrsn=1063c780_0" alt="banner" />
         </div>
     );
   }
@@ -24,7 +24,7 @@ const HomePage = (props) => {
     return (
       <div className="activity-container">
         <h1>Welcome, {props.profile.givenName}</h1>
-        <UserDetails id={props.profile.id} />
+        <UserDetails id={props.profile.id} roles={props.account.idToken.roles} />
       </div>
     );
   }

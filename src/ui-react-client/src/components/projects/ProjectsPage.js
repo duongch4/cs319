@@ -13,6 +13,7 @@ import {Button} from "@material-ui/core";
 import Loading from '../common/Loading';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import PropTypes from 'prop-types';
 
 class ProjectsPage extends Component {
     state = {
@@ -276,6 +277,9 @@ render() {
  
 ProjectsPage.contextType = UserContext;
 
+ProjectsPage.propTypes = {
+  props: PropTypes.object,
+};
 
 const mapStateToProps = state => {
   return {

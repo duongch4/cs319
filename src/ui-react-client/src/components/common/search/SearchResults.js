@@ -1,4 +1,4 @@
-import React, {Component, useContext} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import SearchUserCard from "./SearchUserCard";
 import { performUserSearch } from "../../../redux/actions/searchActions";

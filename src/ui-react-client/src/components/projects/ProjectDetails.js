@@ -27,6 +27,13 @@ class ProjectDetails extends Component {
                 })
             }
         } else {
+            if (Object.keys(this.props.projectProfile).length > 0 &&
+            this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
+                this.setState({
+                    ...this.state,
+                    projectProfile: this.props.projectProfile
+                })
+            } else {
             const userRoles = getUserRoles(this.context);
             this.props.loadSingleProject(this.props.match.params.project_id, userRoles)
                 .then(res => {
@@ -38,11 +45,13 @@ class ProjectDetails extends Component {
                     }
                 })
                 .catch(err => console.log(err));
+            }
         }
     };
 
     render() {
-        if (Object.keys(this.state.projectProfile).length !== 0) {
+        if (Object.keys(this.state.projectProfile).length !== 0 &&
+            this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
             var openings = this.state.projectProfile.openings;
             if (openings.length > 0) {

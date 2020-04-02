@@ -11,10 +11,14 @@ namespace Web.API.Infrastructure.Data
     public class OutOfOfficeRepository : IOutOfOfficeRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
+
 
         public OutOfOfficeRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
 
         public async Task<IEnumerable<OutOfOffice>> GetAllOutOfOfficeForUser(string userId)
