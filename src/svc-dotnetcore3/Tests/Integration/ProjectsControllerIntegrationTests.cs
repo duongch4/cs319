@@ -25,7 +25,7 @@ namespace Tests.Integration
 
         [Theory, TestPriority(0)]
         [InlineData("/api/projects", "1234-5678")]
-        public async Task CreateOneProject_Pass(string url, string projectNumber)
+        public async Task CreateOneProject(string url, string projectNumber)
         {
             var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, createdTitle));
             var req = new HttpRequestMessage(HttpMethod.Post, url)
@@ -43,7 +43,7 @@ namespace Tests.Integration
 
         [Theory, TestPriority(1)]
         [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterCreate_Pass(string url, string projectNumber)
+        public async Task GetOneProject_AfterCreate(string url, string projectNumber)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -56,7 +56,7 @@ namespace Tests.Integration
 
         [Theory, TestPriority(2)]
         [InlineData("/api/projects", "1234-5678")]
-        public async Task UpdateOneProject_Pass(string url, string projectNumber)
+        public async Task UpdateOneProject(string url, string projectNumber)
         {
             var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, updatedTitle));
             var req = new HttpRequestMessage(HttpMethod.Put, $"{url}/{projectNumber}")
@@ -74,7 +74,7 @@ namespace Tests.Integration
 
         [Theory, TestPriority(3)]
         [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterUpdate_Pass(string url, string projectNumber)
+        public async Task GetOneProject_AfterUpdate(string url, string projectNumber)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -87,12 +87,22 @@ namespace Tests.Integration
 
         [Theory, TestPriority(4)]
         [InlineData("/api/projects", "1234-5678")]
-        public async Task DeleteOneProject_Pass(string url, string projectNumber)
+        public async Task DeleteOneProject(string url, string projectNumber)
         {
             var req = new HttpRequestMessage(HttpMethod.Delete, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
             var res = await Client.SendAsync(req);
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        }
+
+        [Theory, TestPriority(5)]
+        [InlineData("/api/projects", "1234-5678")]
+        public async Task GetOneProject_AfterDelete(string url, string projectNumber)
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
+            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
+            var res = await Client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
         }
 
         private static IEnumerable<object[]> GetData_POST(int numTests)
@@ -141,9 +151,9 @@ namespace Tests.Integration
             {
                 PositionID = 0,
                 CommitmentMonthlyHours = new Dictionary<string, int>{ ["2020-05-01"] = 5 },
-                Discipline = "Automation?",
+                Discipline = "Automation",
                 YearsOfExp = "1-3",
-                Skills = new HashSet<string> { "Automated teller machines?", "Digital labor?" }
+                Skills = new HashSet<string> { "Automated teller machines", "Digital labor" }
             };
             return Enumerable.Empty<OpeningPositionsSummary>().Append(opening);
         }
