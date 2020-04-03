@@ -259,7 +259,7 @@ render() {
              (this.state.noResultsNextPage)) && 
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>
-            {(this.state.loading) &&
+            {(this.state.projects.length == 0) &&
             <div>
               <Loading/>
             </div>}

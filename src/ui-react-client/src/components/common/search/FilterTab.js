@@ -24,7 +24,7 @@ class FilterTab extends Component {
                 "filter": {
                 "utilization": {
                     "min": 0,
-                    "max": 200
+                    "max": 150
                 },
                 "locations": [],
                 "disciplines": null,
@@ -105,8 +105,7 @@ class FilterTab extends Component {
     performSearch = () => {
         var current_state = JSON.parse(JSON.stringify(this.state.searchFilter));
         this.setState({
-            ...this.state,
-            showing: false,
+            ...this.initialState,
          }, ()=>this.props.onDataFetched(current_state));
     };
 
@@ -127,8 +126,10 @@ class FilterTab extends Component {
 
     updateLocations = (newLocation) => {
         var loc_arr = [];
+        console.log(newLocation);
         newLocation.forEach((location) => {
-            if(location.cities.length !== 0){
+            console.log(location);
+            if(("cities" in location) && (location.cities.length !== 0)){
                 location.cities.forEach((city) => {
                         loc_arr.push({locationID: city.id, province: location.province, city: city.city});
                 });
@@ -255,7 +256,7 @@ class FilterTab extends Component {
                                 <div className="slider" style={{marginBottom: "30px"}}>
                                     <h3 className="darkGreenHeader">Utilization Range</h3>
                                     <div className="slider-wrapper">
-                                        <InputRange maxValue={300} minValue={0}
+                                        <InputRange maxValue={200} minValue={0}
                                                     value={this.state.searchFilter.filter.utilization}
                                                     onChange={value => this.updateUtil(value)}/>
                                     </div>

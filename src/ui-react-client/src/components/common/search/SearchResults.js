@@ -54,6 +54,7 @@ class SearchResults extends Component {
                     users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))
             }).catch(err => {
+                console.log("no results");
                 this.setState({
                     ...this.state,
                     noResults: true,
@@ -64,8 +65,27 @@ class SearchResults extends Component {
 
     // to make multiple calls without having to refresh
     componentDidUpdate(previousProps) {
-        if (!(previousProps.data === this.props.data)) {
-           this.componentDidMount();
+        if (previousProps.data !== this.props.data) {
+            var data = this.props.data;
+            const userRoles = getUserRoles(this.context);
+            this.props.performUserSearch(data, userRoles)
+            .then(() => {
+                var users = this.props.users.slice()
+                this.setState({
+                    ...this.state,
+                    userSummaries: users,
+                    noResults: false,
+                    currPage: 1,
+                    userSummariesAll: [users],
+                }, () => (
+                    users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                    ))
+            }).catch(err => {
+                this.setState({
+                    ...this.state,
+                    noResults: true,
+                }, this.props.stopLoading());
+            });
         }
     }
 

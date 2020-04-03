@@ -40,6 +40,7 @@ export const performUserSearch = (filterParams, userRoles) => {
                     } else {
                         errorParsed = error.response.statusText
                     }
+                    alert(errorParsed);
                     throw(error);
                 })
             })
