@@ -42,6 +42,7 @@ class FilterTab extends Component {
         disciplines_temp: null,
         years_temp: [],
         locations_temp: [],
+        cityFilled: true,
         }
         this.state = this.initialState;
     }
@@ -124,11 +125,9 @@ class FilterTab extends Component {
             }, () =>  this.performSearch());
     }
 
-    updateLocations = (newLocation) => {
+    updateLocations = (newLocation, cityFilledIn) => {
         var loc_arr = [];
-        console.log(newLocation);
         newLocation.forEach((location) => {
-            console.log(location);
             if(("cities" in location) && (location.cities.length !== 0)){
                 location.cities.forEach((city) => {
                         loc_arr.push({locationID: city.id, province: location.province, city: city.city});
@@ -136,11 +135,13 @@ class FilterTab extends Component {
                     this.setState({
                         ...this.state,
                         locations_temp: loc_arr,
+                        cityFilled: cityFilledIn,
                     });
             } else {
                 this.setState({
                     ...this.state,
                     locations_temp: loc_arr,
+                    cityFilled: cityFilledIn,
                 });
             }
         })
@@ -209,15 +210,21 @@ class FilterTab extends Component {
 
     render(){
         const {showing} = this.state;
-
         return (
         <div className="form-section">
             <form>
-                <div className="form-row">
+                {(this.state.cityFilled) && 
+                (<div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
                     <Button variant="contained" style={{ backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                     <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
-                </div>
+                </div>)}
+                {(!this.state.cityFilled) && 
+                (<div className="form-row">
+                    <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
+                    <Button variant="contained" style={{ backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation>Must select city</Button>
+                    <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
+                </div>)}
                 <div className="filter-box">
                     <div className="filter-title">
                         <h2>Add Filters</h2>

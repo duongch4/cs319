@@ -13,6 +13,7 @@ class LocationsSearch extends Component {
             province: null, 
             cities: [],
           },
+        cityFilledIn: true,
     };
     
 
@@ -25,6 +26,7 @@ class LocationsSearch extends Component {
                 ...this.state.locations,
                 province: e.value,
               },
+              cityFilledIn: false,
           }, () => this.props.addLocations(this.state));
       } else {
         this.setState({
@@ -34,6 +36,7 @@ class LocationsSearch extends Component {
                 province: null,
                 cities: [],
               },
+              cityFilledIn: true,
           }, () => this.props.addLocations(this.state));
       }
     }
@@ -51,8 +54,9 @@ class LocationsSearch extends Component {
           this.setState({
             locations: {
               ...this.state.locations,
-              cities: cities_return
-            }
+              cities: cities_return,
+            },
+            cityFilledIn: true,
         }, () => this.props.addLocations(this.state));
       } else {
           var cities_arr = e.map(function (e) { 
@@ -62,7 +66,8 @@ class LocationsSearch extends Component {
             locations: {
               ...this.state.locations,
               cities: cities_arr
-            }
+            },
+            cityFilledIn: true,
          }, () => this.props.addLocations(this.state));
         }    
      } else {
@@ -70,12 +75,13 @@ class LocationsSearch extends Component {
         locations: {
           ...this.state.locations,
           cities: []
-        }}, () => this.props.addLocations(this.state));
+        },
+        cityFilledIn: false,
+      }, () => this.props.addLocations(this.state));
      }
     }
 
   render(){
-
     var provinces = this.props.provinces; 
     var provinces_render = [];
     var province_key = [];
@@ -107,11 +113,15 @@ class LocationsSearch extends Component {
       cities_key.push('all_cities');
     }
 
-     return(
+    return(
         <div className="form-row">
             <Select placeholder='Provinces' id="province" className="input-box" onChange={this.handleChange} options={provinces_render} isClearable/>
-            <Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
-              hideSelectedOptions={true} placeholder='Cities'/>
+            {(this.state.cityFilledIn) && 
+            (<Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
+              hideSelectedOptions={true} placeholder='Cities'/>)}
+            {(!this.state.cityFilledIn) && 
+            (<Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
+              required hideSelectedOptions={true} placeholder='Must select a city' />)}
         </div>
      );
     }

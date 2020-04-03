@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import UserList from './UserList';
 import { loadUsers } from '../../redux/actions/usersActions';
 import {CLIENT_DEV_ENV} from '../../config/config';
@@ -8,7 +7,6 @@ import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Select from 'react-select';
 
 class UsersPage extends Component {
   constructor(props) {
@@ -28,7 +26,7 @@ class UsersPage extends Component {
       currPage: 1,
       usersAll: [],
       noResultsNextPage: false,
-      lastPage: 0,
+      lastPage: 1,
       doneLoading: false,
       offset: 1,
       url: "?&orderKey=lastName&order=asc",
@@ -71,6 +69,7 @@ class UsersPage extends Component {
       });
     }
   }
+
   componentDidUpdate() {
     if (!this.state.doneLoading && !this.state.loading && (Math.abs(this.state.lastPage - this.state.currPage) < 5)) {
       this.setState({
@@ -203,15 +202,10 @@ class UsersPage extends Component {
 
   render() {
     return (
-      <div className="activity-container">
-        <div className="form-row">
-        <h1 className="greenHeader">Users</h1>
-        <div style={{ position: "absolute", right: "50px" }}>
-                  <Select id="sort" className="input-box" options={this.state.sort_by} onChange={this.sortUsers}
-                          placeholder='Sort by:'/>
-          </div>
-        </div>
-          <div className="pagination-controls">
+      <div>
+        {(this.props.showUsers) && (
+        <div>
+        <div className="pagination-controls">
             {(this.state.currPage == 1) && 
             (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
 
@@ -229,8 +223,10 @@ class UsersPage extends Component {
              (this.state.noResultsNextPage)) && 
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>
+            <hr />
           <UserList users={this.state.users} />
-      </div>
+          </div>)}
+          </div>
     );
   }
 }
