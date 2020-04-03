@@ -6,7 +6,7 @@ export default function errorHandler(error) {
         errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
         console.log(err)                 
     } else if(error.response){
-        errorParsed = error.response.text
+        errorParsed = error.response.statusText;
     } else {
         errorParsed = error
     }
