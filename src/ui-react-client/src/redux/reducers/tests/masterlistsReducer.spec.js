@@ -76,14 +76,8 @@ it('should load the initial state as default' , () => {
     let received = masterlistsReducer(initialState, action);
 
     expect(received).toEqual(initialState);
+    expect(received.error).toBeUndefined();
 });
-
-// it('should handle invalid action return initial state', () => {
-//     let action = null;
-//     let received = masterlistsReducer(initialState, action);
-
-//     expect(received).toEqual(initialState);
-// });
 
 it('should should load masterlist payload from action', () => {
     let action = {type: types.LOAD_MASTERLIST, masterlist: {}};
@@ -100,31 +94,161 @@ it('should add a new discipline to the masterlist in state', () => {
     };
     let action = {type: types.CREATE_DISCIPLINE, disciplines: discipline};
     let received = masterlistsReducer(initialState, action);
-    let receivedKeys = Object.keys(received.disciplines);
+    let receivedDisciplines = received.disciplines;
+    let disciplineKeys = Object.keys(receivedDisciplines);
 
-    expect(receivedKeys.length).toEqual(4);
-    expect(receivedKeys).toEqual(expect.arrayContaining([discipline.name]));
-    expect(received.disciplines[discipline.name]).not.toBeUndefined();
-    expect(received.disciplines[discipline.name].disciplineID).not.toBeUndefined();
-    expect(received.disciplines[discipline.name].disciplineID).toEqual(discipline.id);
-    expect(received.disciplines[discipline.name].skills).not.toBeUndefined();
-    expect(received.disciplines[discipline.name].skills).toEqual([]);
+    expect(disciplineKeys.length).toEqual(4);
+    expect(disciplineKeys).toContain(discipline.name);
+    expect(receivedDisciplines[discipline.name]).not.toBeUndefined();
+    expect(receivedDisciplines[discipline.name].disciplineID).not.toBeUndefined();
+    expect(receivedDisciplines[discipline.name].skills).not.toBeUndefined();
+    expect(receivedDisciplines[discipline.name]).toEqual(
+        expect.objectContaining({
+            disciplineID: 42,
+            skills: []
+    }));
+    expect(received.error).toBeNull();
 });
 
 it('should add a new skill to the masterlist in state', () => {
+    let skill = {
+        disciplineID: 2,
+        skillID: 1,
+        name: 'new test skill'
+    };
+    let action = {type: types.CREATE_SKILL, skill: skill};
+    let received = masterlistsReducer(initialState, action);
+    let receivedDiscipline = received.disciplines['Waste Management'];
+
+    expect(receivedDiscipline.skills.length).toEqual(3);
+    expect(receivedDiscipline.skills).toContain(skill.name);
+    expect(received.error).toBeNull();
 });
 
-it('should add a new province to the masterlist in state', () => {});
+it('should add a new province to the masterlist in state', () => {
+    let location = {
+        id: 0,
+        province: 'Pawnee',
+        city: null
+    };
+    let action = {type: types.CREATE_PROVINCE, location: location};
+    let received = masterlistsReducer(initialState, action);
+    let receivedLocations = received.locations;
+    let locationKeys = Object.keys(receivedLocations);
 
-it('should add a new city to the masterlist in state', () => {});
+    expect(locationKeys.length).toEqual(4);
+    expect(locationKeys).toContain(location.province);
+    expect(receivedLocations[location.province]).toEqual({});
+    expect(received.error).toBeNull();
+});
 
-it('should remove a discipline from the masterlist in state', () => {});
+it('should add a new city to the masterlist in state', () => {
+    let location = {
+        id: 12,
+        province: 'British Columbia',
+        city: 'Tofino'
+    };
+    let action = {type: types.CREATE_CITY, location: location};
+    let received = masterlistsReducer(initialState, action);
+    let receivedLocation = received.locations[location.province];
+    let cityKeys = Object.keys(receivedLocation);
 
-it('should remove a skill from the masterlist in state', () => {});
+    expect(cityKeys.length).toEqual(3);
+    expect(cityKeys).toContain(location.city);
+    expect(receivedLocation[location.city]).toEqual(location.id);
+    expect(received.error).toBeNull();
+});
 
-it('should remove a province from the masterlist in state', () => {});
+it('should remove a discipline from the masterlist in state', () => {
+    let discipline = {
+        name: 'Secret Keeping',
+        id: 42
+    };
+    let prepAction = {type: types.CREATE_DISCIPLINE, disciplines: discipline};
+    let prepState = masterlistsReducer(initialState, prepAction);
 
-it('should remove a city from the masterlist in state', () => {});
+    expect(prepState.disciplines).toEqual(expect.objectContaining({
+        [discipline.name]: { disciplineID: 42,
+                             skills: []}
+    }))
+
+    let action = {type: types.DELETE_DISCIPLINE, id: discipline.id};
+    let received = masterlistsReducer(prepState, action);
+
+    expect(received.disciplines).not.toEqual(expect.objectContaining({
+        [discipline.name]: { disciplineID: 42,
+                             skills: []}
+    }));
+    expect(received.error).toBeNull();
+});
+
+it('should remove a skill from the masterlist in state', () => {
+    let skill = {
+        disciplineID: 2,
+        skillID: 1,
+        name: 'new test skill'
+    };
+    let prepAction = {type: types.CREATE_SKILL, skill: skill};
+    let prepState = masterlistsReducer(initialState, prepAction);
+
+    expect(prepState.disciplines['Waste Management'].skills).toContain(skill.name);
+    expect(prepState.disciplines['Waste Management'].skills.length).toEqual(3);
+
+    let action = {type: types.DELETE_SKILL, disciplineID: skill.disciplineID, skillName: skill.name};
+    let received = masterlistsReducer(prepState, action);
+    let receivedDiscipline = received.disciplines['Waste Management'];
+
+    expect(receivedDiscipline.skills.length).toEqual(2);
+    expect(receivedDiscipline.skills).not.toContain(skill.name);
+    expect(received.error).toBeNull();
+});
+
+it('should remove a province from the masterlist in state', () => {
+    let location = {
+        id: 0,
+        province: 'Pawnee',
+        city: null
+    };
+    let prepAction = {type: types.CREATE_PROVINCE, location: location};
+    let prepState = masterlistsReducer(initialState, prepAction);
+
+    expect(prepState.locations).toEqual(expect.objectContaining({
+        [location.province]: {}
+    }));
+
+    let action = {type: types.DELETE_PROVINCE, provinceName: location.province};
+    let received = masterlistsReducer(prepState, action);
+
+    expect(received.locations).not.toEqual(expect.objectContaining({
+        [location.province]: {}
+    }));
+    expect(received.error).toBeNull();
+});
+
+it('should remove a city from the masterlist in state', () => {
+    let location = {
+        id: 12,
+        province: 'British Columbia',
+        city: 'Tofino'
+    };
+    let prepAction = {type: types.CREATE_CITY, location: location};
+    let prepState = masterlistsReducer(initialState, prepAction);
+
+    expect(prepState.locations).toEqual(expect.objectContaining({
+        "British Columbia": expect.objectContaining({
+            [location.city]: location.id
+        })
+    }));
+
+    let action = {type: types.DELETE_CITY, name: location.city, id: location.id};
+    let received = masterlistsReducer(prepState, action);
+    expect(received.locations).toEqual(expect.objectContaining({
+        "British Columbia": expect.not.objectContaining({
+            [location.city]: location.id
+        })
+    }));
+    expect(received.error).toBeNull();
+});
 
 it('should append deletion error to the state', () => {});
 
