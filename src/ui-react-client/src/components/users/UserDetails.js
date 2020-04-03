@@ -34,17 +34,15 @@ class UserDetails extends Component {
                 userRoles = getUserRoles(this.context);
             }
 
-            if (this.props.match) {
-                if (Object.keys(this.props.userProfile).length > 0 &&
-                    this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
-                    this.setState({
-                        ...this.state,
-                        userProfile: this.props.userProfile
-                    })
-                }
-            }
-            else {
-                this.props.loadSpecificUser(this.props.id, userRoles)
+            if (this.props.match &&
+                Object.keys(this.props.userProfile).length > 0 &&
+                this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
+                this.setState({
+                    ...this.state,
+                    userProfile: this.props.userProfile
+                })
+            } else {
+                this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
                     .then(() => {
                         var userProfile = this.props.userProfile;
                         if (userProfile) {
@@ -55,9 +53,6 @@ class UserDetails extends Component {
                         }
                     })
             }
-
-
-
         }
     };
 
