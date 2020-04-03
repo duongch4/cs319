@@ -21,8 +21,7 @@ class Header extends React.Component {
                             {this.isAdmin() ? (
                                 <nav className="navlink">
                                     <div><Link to="/">Home</Link></div>
-                                    <div><Link to="/search">Search</Link></div>
-                                    <div><Link to="/users">Users</Link></div>
+                                    <div><Link to="/search">Users</Link></div>
                                     <div><Link to="/projects">Projects</Link></div>
                                     <div><Link to="/admin">Admin</Link></div>
                                 </nav>

@@ -29,7 +29,7 @@ class UsersPage extends Component {
       lastPage: 1,
       doneLoading: false,
       offset: 1,
-      url: "?&orderKey=lastName&order=asc",
+      url: "?&orderKey=utilization&order=desc",
     };
     this.state = this.initialState;
   }

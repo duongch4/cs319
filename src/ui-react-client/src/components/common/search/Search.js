@@ -27,12 +27,6 @@ class Search extends Component {
       sort: null,
       search: false,
       loading: true,
-      currPage: 1,
-      usersAll: [],
-      noResultsNextPage: false,
-      lastPage: 1,
-      doneLoading: false,
-      offset: 1,
       showUsers: true,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
@@ -62,14 +56,17 @@ class Search extends Component {
   }
 
   handleResultChange(filter) {
-    this.setState({
-      ...this.state,
-      filters: filter,
-      search: true,
-      loading: true,
-      page: 1,
-      showUsers: false,
-    });
+    // if search filter is the same as previous search filter, it will not reload 
+    // because the results are the same
+    if (JSON.stringify(filter) !== JSON.stringify(this.state.filters)) {
+      this.setState({
+        ...this.state,
+        filters: filter,
+        search: true,
+        loading: true,
+        showUsers: false,
+      });
+    }
   }
 
   onFilterChange = (e) => {
@@ -105,7 +102,8 @@ class Search extends Component {
       <div className="activity-container">
         <h1 className="greenHeader">All Users</h1>
         <FilterTab onDataFetched={this.handleResultChange}
-                      masterlist={this.state.masterlist} />
+                      masterlist={this.state.masterlist} 
+                      isClosed={this.state.showUsers}/>
         <UsersPage showUsers={this.state.showUsers}/>
         </div>)
       } else {
