@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System.Collections.Generic;
 
 namespace Web.API.Resources
 {
@@ -22,6 +22,6 @@ namespace Web.API.Resources
         
         /// <summary>Committment hours</summary>
         /// <example>300</example>
-        public JsonElement ProjectedMonthlyHours { get; set; }
+        public Dictionary<string, int> ProjectedMonthlyHours { get; set; }
     }
 }
