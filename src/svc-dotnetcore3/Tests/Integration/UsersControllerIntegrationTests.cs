@@ -191,14 +191,14 @@ namespace Tests.Integration
 
         private static IEnumerable<ResourceDisciplineResource> GetDisciplines_OneElem()
         {
-            var skills_one = new HashSet<string> { "Aircraft manufacturing?", "Automotive engineering?" };
+            var skills_one = new HashSet<string> { "Aircraft manufacturing", "Automotive engineering" };
             var discipline_one = GetDisciplineResource("Mechanical engineering", skills_one, "1-3");
             return Enumerable.Empty<ResourceDisciplineResource>().Append(discipline_one);
         }
 
         private static IEnumerable<ResourceDisciplineResource> GetDisciplines_TwoElems()
         {
-            var skills_one = new HashSet<string> { "Aircraft manufacturing?", "Automotive engineering?" };
+            var skills_one = new HashSet<string> { "Aircraft manufacturing", "Automotive engineering" };
             var discipline_one = GetDisciplineResource("Mechanical engineering", skills_one, "1-3");
             var skills_two = new HashSet<string>();
             var discipline_two = GetDisciplineResource("Design Engineering", skills_two, "10+");
