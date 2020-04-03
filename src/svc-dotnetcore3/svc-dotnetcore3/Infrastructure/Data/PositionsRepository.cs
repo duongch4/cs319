@@ -94,9 +94,9 @@ namespace Web.API.Infrastructure.Data
                                 disciplines d,
                                 skills s
                             where 
-                                pos.Id = 928
+                                pos.Id = @PositionId
                                 and pos.Id = ps.PositionId
-                                and pos.ResourceId is null
+                                and pos.ResourceId is null 
                                 and ps.SkillDisciplineId = d.Id
                                 and ps.SkillId = s.Id
                             group by
