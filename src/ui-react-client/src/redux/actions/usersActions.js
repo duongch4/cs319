@@ -41,6 +41,7 @@ export const loadUsers = (filter, userRoles) => {
                         errorParsed = error.response.statusText
                     }
                     alert(errorParsed)
+                    throw(error);
                 })
         }
     };
