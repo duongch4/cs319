@@ -350,7 +350,7 @@ namespace Web.API.Infrastructure.Data
                 VALUES
                     (
                         @PositionId,
-                        (SELECT Id FROM Skills WHERE Name = @SkillName),
+                        (SELECT Id FROM Skills WHERE Name = @SkillName AND DisciplineId = (SELECT DisciplineId FROM Positions WHERE Id = @PositionId)),
                         (SELECT DisciplineId FROM Positions WHERE Id = @PositionId)
                     )
             ;";

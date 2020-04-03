@@ -27,3 +27,15 @@ p {
 .entry{
     margin-right: 15px;
 }
+
+.input-box.css-2b097c-container {
+    margin-right: 8px;
+}
+
+.pagination-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
