@@ -3,12 +3,13 @@ using AzureAdOptions = Web.API.Authentication.AzureAdOptions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Net.Http;
 using Xunit;
 
 namespace Tests.Integration.Utils
 {
-    public class AppFixture : IClassFixture<WebApplicationFactory<Startup>>
+    public class AppFixture : IDisposable
     {
         private readonly WebApplicationFactory<Startup> _webAppFactory;
         public HttpClient Client { get; }
@@ -45,6 +46,28 @@ namespace Tests.Integration.Utils
                 });
             });
             Client = _webAppFactory.CreateDefaultClient();
+        }
+
+        private bool _disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _webAppFactory.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
         }
     }
 }
