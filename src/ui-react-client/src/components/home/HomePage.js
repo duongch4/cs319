@@ -22,10 +22,7 @@ const HomePage = (props) => {
   }
   else {
     return (
-      <div>
-        <h1 className="activity-container">Welcome, {props.profile.givenName}</h1>
-        <UserDetails id={props.profile.id} />
-      </div>
+        <UserDetails id={props.profile.id} roles={props.account.idToken.roles} showGreeting={true} />
     );
   }
 };

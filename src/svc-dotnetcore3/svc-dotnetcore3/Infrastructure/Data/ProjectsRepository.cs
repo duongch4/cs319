@@ -3,11 +3,11 @@ using Web.API.Application.Repository;
 using Web.API.Application.Communication;
 using Web.API.Resources;
 using System;
-using System.Text.Json;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Linq;
+using Newtonsoft.Json;
 using Dapper;
 using Serilog;
 
@@ -328,7 +328,7 @@ namespace Web.API.Infrastructure.Data
                 SELECT CAST(scope_identity() as int);
             ;";
 
-            string hours = JsonSerializer.Serialize<JsonElement>(opening.CommitmentMonthlyHours);
+            string hours = JsonConvert.SerializeObject(opening.CommitmentMonthlyHours);
 
             connection.Open();
             var id = await connection.QuerySingleAsync<int>(sql, new
@@ -350,7 +350,7 @@ namespace Web.API.Infrastructure.Data
                 VALUES
                     (
                         @PositionId,
-                        (SELECT Id FROM Skills WHERE Name = @SkillName),
+                        (SELECT Id FROM Skills WHERE Name = @SkillName AND DisciplineId = (SELECT DisciplineId FROM Positions WHERE Id = @PositionId)),
                         (SELECT DisciplineId FROM Positions WHERE Id = @PositionId)
                     )
             ;";
@@ -406,7 +406,7 @@ namespace Web.API.Infrastructure.Data
                 var currentOpeningIds = await this.GetCurrentOpeningIdsForProject(connection, projectId);
                 if ((projectProfile.Openings == null) || (projectProfile.Openings.Count() == 0))
                 {
-                    var deletedCount = await this.DeleteAllOpeningPotions(connection, projectId);
+                    var deletedCount = await this.DeleteAllOpeningPositions(connection, projectId);
                     if (deletedCount != currentOpeningIds.Count())
                     {
                         var error = new InternalServerException(
@@ -484,7 +484,7 @@ namespace Web.API.Infrastructure.Data
             return deletedCount;
         }
 
-        private async Task<int> DeleteAllOpeningPotions(SqlConnection connection, int projectId)
+        private async Task<int> DeleteAllOpeningPositions(SqlConnection connection, int projectId)
         {
             var sql = @"
                 DELETE FROM
@@ -497,12 +497,6 @@ namespace Web.API.Infrastructure.Data
             connection.Close();
             return deletedCount;
         }
-
-        // Id IN (
-        //     SELECT Id
-        //     FROM Positions p
-        //     WHERE p.ProjectId = @ProjectId
-        // )
 
         private async Task<IEnumerable<int>> GetCurrentPositionSkillIds(SqlConnection connection, int positionId)
         {
@@ -560,7 +554,7 @@ namespace Web.API.Infrastructure.Data
                     Id = @PositionId
             ;";
 
-            var hours = JsonSerializer.Serialize<JsonElement>(opening.CommitmentMonthlyHours);
+            var hours = JsonConvert.SerializeObject(opening.CommitmentMonthlyHours);
 
             connection.Open();
             int success = await connection.ExecuteAsync(sql, new

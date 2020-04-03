@@ -14,7 +14,10 @@ class TeamRequirements extends Component {
           yearsOfExp: null,
           commitmentMonthlyHours: null,
       },
-        months: []
+        months: [],
+        monthNames: ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+        ]
     };
 
     componentDidMount() {
@@ -35,9 +38,6 @@ class TeamRequirements extends Component {
     createMonthsList = (start, end) => {
         if(start && end){
             start = new Date(start)
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-                ];
             const months = [];
             let startIndex = start.getMonth();
             let startYear = start.getYear()
@@ -45,7 +45,7 @@ class TeamRequirements extends Component {
             const endYear = end.getYear()
             while((startIndex <= endIndex || startYear < endYear) && !(startYear > endYear)){
                 const year = 1900 + startYear
-                months.push(monthNames[startIndex] + " " + year)
+                months.push(this.state.monthNames[startIndex] + " " + year)
                 startIndex++;
                 if(startIndex > 11){
                     startIndex = 0;
@@ -95,16 +95,11 @@ class TeamRequirements extends Component {
       }
       e.preventDefault();
       var isUserPage = this.props.isUserPage;
-      const opening = this.state.opening
+      const opening = this.state.opening;
         if(opening.discipline === null) {
             this.setState({
                 ...this.state,
                 error: "No Discipline Selected - Unable to add Opening"
-            })
-        } else if (opening.skills.length === 0){
-            this.setState({
-                ...this.state,
-                error: "No Skill Selected - Unable to add Opening"
             })
         } else if (opening.yearsOfExp === null){
             this.setState({
@@ -133,8 +128,15 @@ class TeamRequirements extends Component {
     };
 
     changeCommitment = (date, e) => {
+        
+        let dateSplit = date.split(" ")
+        let monthIndex = this.state.monthNames.indexOf(dateSplit[0]);
+        if(monthIndex < 10){
+            monthIndex = "0" + monthIndex;
+        }
+        let newDate = dateSplit[1] + "-" + monthIndex + "-01"
         let commitment = this.state.opening.commitmentMonthlyHours !== null ? this.state.opening.commitmentMonthlyHours : {};
-        commitment[date] = e.target.value;
+        commitment[newDate] = parseInt(e.target.value);
         this.setState({
             ...this.state,
             opening: {
@@ -145,16 +147,12 @@ class TeamRequirements extends Component {
     }
 
     createMonthsDiv = (months) => {
-        let val = 0;
         const monthArr = []
         months.forEach(month => {
-            if(this.state.opening.commitmentMonthlyHours !== null) {
-                val = this.state.opening.commitmentMonthlyHours[month];
-            }
             monthArr.push(
             <div className="entry" key={monthArr.length} >
                 <p className="label">{month}</p>
-                <input type="number" name="name" placeholder="hours" value={val} onChange={(e) => this.changeCommitment(month, e)}/>
+                <input type="number" name="name" placeholder="hours" onChange={(e) => this.changeCommitment(month, e)}/>
             </div>
             )
         })

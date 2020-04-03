@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace Web.API.Resources
 {
@@ -11,7 +10,7 @@ namespace Web.API.Resources
         
         /// <summary>Commitment Monthly Hours</summary>
         /// <example>160</example>
-        public JsonElement CommitmentMonthlyHours { get; set; }
+        public Dictionary<string, int> CommitmentMonthlyHours { get; set; }
 
         /// <summary>Discipline Name</summary>
         /// <example>Language</example>

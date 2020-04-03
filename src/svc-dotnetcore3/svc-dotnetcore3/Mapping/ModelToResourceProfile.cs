@@ -2,8 +2,8 @@ using AutoMapper;
 using Web.API.Application.Models;
 using Web.API.Resources;
 using System;
-using System.Text.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Web.API.Mapping
 {
@@ -78,7 +78,7 @@ namespace Web.API.Mapping
             ).ForMember(
                 destinationMember => destinationMember.CommitmentMonthlyHours,
                 opt => opt.MapFrom(
-                    sourceMember => JsonSerializer.Deserialize<JsonElement>(sourceMember.CommitmentMonthlyHours, null)
+                    sourceMember => JsonConvert.DeserializeObject<Dictionary<string, int>>(sourceMember.CommitmentMonthlyHours)
                 )
             ).ReverseMap();
         }
@@ -157,7 +157,7 @@ namespace Web.API.Mapping
             ).ForMember(
                 destinationMember => destinationMember.ProjectedMonthlyHours,
                 opt => opt.MapFrom(
-                    sourceMember => JsonSerializer.Deserialize<JsonElement>(sourceMember.ProjectedMonthlyHours, null)
+                    sourceMember => JsonConvert.DeserializeObject<Dictionary<string, int>>(sourceMember.ProjectedMonthlyHours)
                 )
             ).ReverseMap();
         }

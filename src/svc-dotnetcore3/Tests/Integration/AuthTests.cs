@@ -38,8 +38,7 @@ namespace Tests.Integration
             // Assert.Equal(HttpStatusCode.OK, res.StatusCode);
 
             // res.EnsureSuccessStatusCode(); // Status Code: 200-299            
-            var responseString = await res.Content.ReadAsStringAsync();
-            var responseString2 = await res.Content.ReadAsStringAsync();
+            // var responseString = await res.Content.ReadAsStringAsync();
             // var responseJSON = JsonConvert.DeserializeObject<OkResponse<IEnumerable<ProjectSummary>>>(responseString);
         }
 

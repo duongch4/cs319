@@ -27,6 +27,10 @@ const executeSearch = (action, state) => {
 */ 
 };
 
+const executeClearSearchResultsData = () => {
+  return []
+}
+
 export const usersReducer = (
     state = initialState.users,
     action
@@ -38,6 +42,8 @@ export const usersReducer = (
       return executeUpdateUserSummaryData(state, action);
     case types.PERFORM_USER_SEARCH:
       return executeSearch(action, state);
+    case types.CLEAR_SEARCH_RESULTS:
+      return executeClearSearchResultsData();
     default:
       return state;
   }

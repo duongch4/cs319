@@ -406,6 +406,8 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAProject([FromBody] ProjectProfile projectProfile, string projectNumber)
         {
+            Log.Information("{@A}", projectProfile);
+
             if (projectProfile == null)
             {
                 var error = new BadRequestException("The given project profile is null / Request Body cannot be read");
