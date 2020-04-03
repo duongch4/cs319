@@ -44,7 +44,7 @@ class UserDetails extends Component {
                 }
             }
             else {
-                this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
+                this.props.loadSpecificUser(this.props.id, userRoles)
                     .then(() => {
                         var userProfile = this.props.userProfile;
                         if (userProfile) {
