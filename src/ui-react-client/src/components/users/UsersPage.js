@@ -28,7 +28,7 @@ class UsersPage extends Component {
       currPage: 1,
       usersAll: [],
       noResultsNextPage: false,
-      lastPage: 1,
+      lastPage: 0,
       doneLoading: false,
       offset: 1,
       url: "?&orderKey=lastName&order=asc",
@@ -233,7 +233,6 @@ class UsersPage extends Component {
       </div>
     );
   }
-
 }
 
 UsersPage.contextType = UserContext;
