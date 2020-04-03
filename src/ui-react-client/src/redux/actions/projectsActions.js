@@ -1,6 +1,6 @@
 import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
-import { headers } from '../../config/adalConfig';
+import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState_client from '../reducers/_initialState_client';
 
@@ -34,19 +34,32 @@ export const updateProjectSummaryData = projectSummary => {
     }
 };
 
-export const loadProjects = () => {
-  return dispatch => {
+export const loadProjects = (filterParams, userRoles) => {
+  return async dispatch => {
     if (CLIENT_DEV_ENV) {
-      dispatch(loadProjectsData(_initialState_client.projectSummaries));
+        dispatch(loadProjectsData(_initialState_client.projectSummaries));
     } else {
-      return axios
-          .get(baseURL, { headers })
+        return getHeaders(userRoles).then(headers => {
+          var url = baseURL.concat(filterParams);
+          return axios
+          .get(`${url}`, { headers })
           .then(response => {
-            dispatch(loadProjectsData(response.data.payload));
+              dispatch(loadProjectsData(response.data.payload));
           })
           .catch(error => {
-            throw error;
-          });
+            let errorParsed = ""
+            console.log(error.response)
+            if(error.response.status === 500){
+                let err = error.response.data.message
+                errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
+                console.log(err)                 
+            } else {
+                errorParsed = error.response.statusText
+            }
+            alert(errorParsed)
+            throw(error)
+          })
+        })
     }
-  };
+  }
 };

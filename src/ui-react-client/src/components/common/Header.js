@@ -1,43 +1,48 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import UserHeaderMenu from './UserHeaderMenu';
+import { Link } from 'react-router-dom';
 import './Header.css';
+import { RequestButton } from "./RequestButton";
 
-const Header = () => {
-  const activeStyle = { color: '#ffffff' };
-  const style={ color: '#ffffff', fontSize: '20px'};
-  return (
-    <div className="sidenav">
-      <p className="ae-logo">AE</p>
-      <p className="ae-subtitle">Associated Engineering</p>
-      <svg width={80} height={80}>
-        <circle r={40} cx={40} cy={40}></circle>
-      </svg>
-      <UserHeaderMenu />
-      <nav>
-        <div>
-        <NavLink to="/" style={style} activeStyle={activeStyle} exact>
-          Home
-        </NavLink>
-        </div>
-        <div>
-        <NavLink to="/users" style={style} activeStyle={activeStyle} exact>
-          Users
-        </NavLink>
-        </div>
-        <div>
-        <NavLink to="/projects" style={style} activeStyle={activeStyle} exact>
-          Projects
-        </NavLink>
-        </div>
-        <div>
-        <NavLink to="/admin" style={style} activeStyle={activeStyle} exact>
-          Admin
-        </NavLink>
-        </div>
-      </nav>
-    </div>
-  );
-};
+class Header extends React.Component {
+    render() {
+        return (
+            <div className="sidenav">
+                <p className="ae-logo">AE</p>
+                <p className="ae-subtitle">Associated Engineering</p>
+                {
+                    !this.props.appProps.account ? <RequestButton text="Log In" onClick={this.props.appProps.onSignIn} /> : (
+                        <div className="navigation">
+                            {!this.props.appProps.graphProfile ? <div/> : (
+                                <div className="user-info">
+                                    <p>{this.props.appProps.graphProfile.displayName}</p>
+                                </div>
+                            )}
+                            <RequestButton text="Log Out" onClick={this.props.appProps.onSignOut} />
+                            {this.isAdmin() ? (
+                                <nav className="navlink">
+                                    <div><Link to="/">Home</Link></div>
+                                    <div><Link to="/search">Search</Link></div>
+                                    <div><Link to="/users">Users</Link></div>
+                                    <div><Link to="/projects">Projects</Link></div>
+                                    <div><Link to="/admin">Admin</Link></div>
+                                </nav>
+                            ) : (
+                                <nav className="navlink">
+                                    <div><Link to="/">Home</Link></div>
+                                </nav>
+                            )}
+                        </div>
+                    )
+                }
+                {this.props.appProps.error && alert(`Error: ${this.props.appProps.error}`)}
+            </div>
+        );
+    }
+
+    isAdmin() {
+        let roles = this.props.appProps.account.idToken.roles;
+        return (roles && roles.length > 0 && roles.includes('adminUser'));
+    }
+}
 
 export default Header;

@@ -9,3 +9,33 @@ a {
 p {
     color: #333333;
 }
+
+.errorMessage {
+    color: red;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.label{
+    margin-top: 5px;
+    margin-bottom: 0;
+    margin-left: 3px;
+}
+.entry{
+    margin-right: 15px;
+}
+
+.input-box.css-2b097c-container {
+    margin-right: 8px;
+}
+
+.pagination-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+

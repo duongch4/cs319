@@ -2,8 +2,8 @@ using AutoMapper;
 using Web.API.Application.Models;
 using Web.API.Resources;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Web.API.Mapping
 {
@@ -20,6 +20,7 @@ namespace Web.API.Mapping
             SetSkillProfile();
             SetOutOfOffice();
             SetRSkill();
+            SetPositionSummary();
         }
 
         private void SetProjectSummary()
@@ -73,6 +74,11 @@ namespace Web.API.Mapping
                 destinationMember => destinationMember.PositionID,
                 opt => opt.MapFrom(
                     sourceMember => sourceMember.Id
+                )
+            ).ForMember(
+                destinationMember => destinationMember.CommitmentMonthlyHours,
+                opt => opt.MapFrom(
+                    sourceMember => JsonConvert.DeserializeObject<Dictionary<string, int>>(sourceMember.CommitmentMonthlyHours)
                 )
             ).ReverseMap();
         }
@@ -143,6 +149,17 @@ namespace Web.API.Mapping
         private void SetRSkill()
         {
             CreateMap<ResourceSkill, RSkillResource>();
+        }
+
+        private void SetPositionSummary()
+        {
+            CreateMap<PositionResource, PositionSummary>(
+            ).ForMember(
+                destinationMember => destinationMember.ProjectedMonthlyHours,
+                opt => opt.MapFrom(
+                    sourceMember => JsonConvert.DeserializeObject<Dictionary<string, int>>(sourceMember.ProjectedMonthlyHours)
+                )
+            ).ReverseMap();
         }
     }
 }

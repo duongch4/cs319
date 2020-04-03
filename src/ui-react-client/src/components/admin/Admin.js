@@ -10,40 +10,51 @@ import {loadMasterlists,
     deleteDiscipline,
     deleteSkill,
     deleteProvince,
-    deleteCity} from '../../redux/actions/masterlistsActions';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+    deleteCity,
+    clearError} from '../../redux/actions/masterlistsActions';
+import MenuItem from "@material-ui/core/MenuItem";
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete'
+import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import Loading from '../common/Loading';
+import LoadingOverlay from 'react-loading-overlay'
+import './admin.css'
+import {Button} from "@material-ui/core";
 
 class Admin extends Component {
-    state = {
-        discipline: {
-            name: "", 
-            id: 0
-        },
-        skill: {
-            disciplineID: 0, 
-            name: "", 
-            skillID: 0
-        },
-        location: {
-            city: "", 
-            province: "", 
-            id: 0
-        },
-        selectedprovince: "",
-        masterlist: {
-            disciplines: {},
-            locations: {},
-            yearsOfExp: []
-        }
-    };
+    constructor(props){
+        super(props);
+        this.removeItem = this.removeItem.bind(this);
+        this.state = {
+            discipline: {
+                name: "", 
+                id: 0
+            },
+            skill: {
+                disciplineID: 0, 
+                name: "", 
+                skillID: 0
+            },
+            location: {
+                city: "", 
+                province: "", 
+                id: 0
+            },
+            selectedprovince: "",
+            masterlist: {
+                disciplines: {},
+                locations: {},
+                yearsOfExp: []
+            },
+            sending: false
+        };
+    }
+    
 
     componentDidMount(){
         if(this.state.masterlist.yearsOfExp.length === 0){
             if(CLIENT_DEV_ENV){
-                this.props.loadMasterlists()
+                this.props.loadMasterlists(['adminUser'])
                 var masterlist = this.props.masterlist
                     this.setState({
                         ...this.state,
@@ -54,13 +65,13 @@ class Admin extends Component {
                         },
                         location: {
                             ...this.state.location,
-                            province: Object.keys(masterlist.locations)[0],
                             id: Object.values(masterlist.locations).length > 0 ? Object.values(Object.values(masterlist.locations)[0])[0] : 0
                         },
                         selectedprovince: Object.keys(masterlist.locations)[0]
                     })
             } else {
-                this.props.loadMasterlists()
+                const userRoles = getUserRoles(this.context);
+                this.props.loadMasterlists(userRoles)
                 .then(() => {
                     var masterlist = this.props.masterlist
                     this.setState({
@@ -80,39 +91,46 @@ class Admin extends Component {
             }
         }
     }
+
     componentDidUpdate(prevProps){
         let found = false;
-        Object.values(this.props.masterlist.disciplines).filter(elem => {
-            if(elem.disciplineID === this.state.skill.disciplineID){
-                found = true
+        if(this.props.masterlist.error) {
+            this.setState({
+                sending:false
+            })
+            this.props.clearError();
+        }
+        if (this.props.masterlist.disciplines) {
+            Object.values(this.props.masterlist.disciplines).filter(elem => {
+                if(elem.disciplineID === this.state.skill.disciplineID){
+                    found = true
+                }
+                return true;
+            })
+            if(!found){
+                let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
+                this.setState({
+                    ...this.state,
+                    skill: {
+                        ...this.state.skill,
+                        disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
+                    },
+                    masterlist: this.props.masterlist,
+                    sending: false
+                })
             }
-            return true;
-        })
-        if(!found){
-            let disciplineName = Object.keys(this.props.masterlist.disciplines)[0]
-            this.setState({
-                ...this.state,
-                skill: {
-                    ...this.state.skill,
-                    disciplineID: this.props.masterlist.disciplines[disciplineName].disciplineID
-                },
-                masterlist: this.props.masterlist,
-            })
+            else if(prevProps.masterlist !== this.props.masterlist){
+                this.setState({
+                    ...this.state,
+                    masterlist: this.props.masterlist,
+                    sending: false
+                })
+            }
         }
-        else if(prevProps.masterlist !== this.props.masterlist){
-            this.setState({
-                ...this.state,
-                masterlist: this.props.masterlist
-            })
-        }
-        
-        
     }
-
 
     handleChange = (e) => {
         this.setState({
-            ...this.state,
             [e.target.name]: {
                 ...this.state[e.target.name],
                 name: e.target.value
@@ -122,7 +140,6 @@ class Admin extends Component {
 
     handleLocationChange = (e) => {
         this.setState({
-            ...this.state,
             location: {
                 ...this.state.location,
                 [e.target.name]: e.target.value
@@ -132,58 +149,69 @@ class Admin extends Component {
 
     onSubmit = (e) => {
         e.preventDefault();
+        let userRoles;
+        if (CLIENT_DEV_ENV) {
+            userRoles = ['adminUser'];
+        } else {
+            userRoles = getUserRoles(this.context);
+        }
         switch(e.target.name) {
             case "discipline":
                 const discipline = this.state.discipline;
-                this.props.createDiscpline(discipline);
+                this.props.createDiscpline(discipline, userRoles);
                 this.setState({
                     ...this.state,
                     discipline: {
                         name: "",
                         id: 0
-                    }
-                }, () => console.log(this.state))
+                    },
+                    sending: true
+                })
                 
                 return;
             case "skill":
                 const skill = this.state.skill;
-                this.props.createSkill(skill);
+                this.props.createSkill(skill, userRoles);
                 this.setState({
                     ...this.state,
                     skill:{
                         ...this.state.skill,
                         name: ""
-                    }
+                    },
+                    sending: true
                 })
                 return ;
             case "province":
                 const location = this.state.location;
-                this.props.createProvince(location);
+                this.props.createProvince(location, userRoles);
                 this.setState({
                     ...this.state,
                     location:{
                         ...this.state.location,
                         province: ""
-                    }
+                    },
+                    sending: true
                 })
                 return;
             case "city":
+            this.setState({
+                ...this.state,
+                location: {
+                    ...this.state.location,
+                    province: this.state.selectedprovince
+                }
+            }, () =>  {
+                this.props.createCity(this.state.location, userRoles)
                 this.setState({
                     ...this.state,
-                    location: {
+                    location:{
                         ...this.state.location,
-                        province: this.state.selectedprovince
+                        city: "",
+                        province: "",
+                        sending: true
                     }
-                }, () =>  {
-                    this.props.createCity(this.state.location)
-                    this.setState({
-                        ...this.state,
-                        location:{
-                            ...this.state.location,
-                            city: "",
-                            province: "",
-                        }
-                    })})
+                })})
+
                 
                 return;
             default:
@@ -191,26 +219,51 @@ class Admin extends Component {
         }
     }
 
-    removeItem = (e, item) => {
+    removeItem(e, item) {
+        let userRoles;
+        if (CLIENT_DEV_ENV) {
+            userRoles = ['adminUser'];
+        } else {
+            userRoles = getUserRoles(this.context);
+        }
         switch(e) {
             case "discipline":
-                return this.props.deleteDiscipline(this.state.masterlist.disciplines[item].disciplineID);
+                this.setSending();
+                return this.props.deleteDiscipline(
+                    this.state.masterlist.disciplines[item].disciplineID,
+                    userRoles
+                );
             case "skill":
-                return this.props.deleteSkill(this.state.skill.disciplineID, item);
+                this.setSending();
+                return this.props.deleteSkill(
+                    this.state.skill.disciplineID, item, userRoles
+                );
             case "province":
-                return this.props.deleteProvince(item);
+                this.setSending();
+                return this.props.deleteProvince(item, userRoles);
             case "city":
-                return this.props.deleteCity(item, this.state.masterlist.locations[this.state.selectedprovince][item]);
+                this.setSending();
+                return this.props.deleteCity(
+                    item,
+                    this.state.masterlist.locations[this.state.selectedprovince][item],
+                    userRoles
+                );
             default:
                 console.log("ERR")
         }
+    }
+
+    setSending = () => {
+        this.setState({
+            ...this.state,
+            sending: true
+        })
     }
 
     changeSelected = (elem, name, id) => {
         switch(name) {
             case "discipline":
                 return this.setState({
-                    ...this.state,
                     skill: {
                         ...this.state.skill,
                         disciplineID: id
@@ -221,7 +274,6 @@ class Admin extends Component {
                 return;
             case "province":
                 return this.setState({
-                    ...this.state,
                     location: {
                         ...this.state.location,
                     }, 
@@ -237,31 +289,29 @@ class Admin extends Component {
     listGen = (inputList, name) => {
         let list = []
         inputList.forEach(elem =>{
+            let selected = (name === "province" && elem === this.state.selectedprovince)
             list.push(<div key={list.length}>
-                <List>
-                    <ListItem button name={name} onClick={() => this.changeSelected(elem, name)}>
+                    <MenuItem dense={true} button name={name} selected={selected} onClick={() => this.changeSelected(elem, name)}>
                     <ListItemText primary={elem} />
                     <DeleteIcon name={name} onClick={()=>this.removeItem(name, elem)}/>
-                    </ListItem>
-                </List>
+                    </MenuItem>
             </div>)
         })
-        return list
+        return list;
     }
 
     listGenID = (inputList, name, param) => {
         let list = []
         Object.keys(inputList).forEach(elem =>{
+            let selected = (inputList[elem][param] === this.state.skill.disciplineID);
             list.push(<div key={list.length}>
-                <List>
-                    <ListItem button name={name} onClick={() => this.changeSelected(elem, name, inputList[elem][param])}>
+                    <MenuItem dense={true} button name={name} selected={selected} onClick={() => this.changeSelected(elem, name, inputList[elem][param])}>
                     <ListItemText primary={elem} />
                     <DeleteIcon name={name} onClick={()=>this.removeItem(name, elem)}/>
-                    </ListItem>
-                </List>
+                    </MenuItem>
             </div>)
         })
-        return list
+        return list;
     }
 
     render() {
@@ -288,42 +338,65 @@ class Admin extends Component {
 
         skillList = skillList.length > 0 ? skillList : <div>No Skills Available for Selected Discipline</div>
         cityList = cityList.length > 0 ? cityList : <div>No Cities Available for Selected Province</div> 
+
         return (
-            <div className="activity-container">
+            <LoadingOverlay
+            styles={{
+                overlay: (base) => ({
+                  ...base,
+                  background: 'rgba(169,169,169, 0.5)'
+                })
+              }}
+              active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
+                <div className="activity-container">
+
                 <h1 className="greenHeader">Admin</h1>
-                <div>
-                    <h2>Disciplines</h2>
-                    {disciplineList}
-                    <form name="discipline" onSubmit={this.onSubmit}>
-                    <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
-                    </form>
-                    <button name="discipline" id="discipline" onClick={this.onSubmit} >Add Discipline</button>
+                <div className="side-by-side-container">
+                    <div className="side-container">
+                        <h2 className="blueHeader">Disciplines</h2>
+                        <div className="options-container">
+                        {disciplineList.length === 0 ? <Loading /> : disciplineList}
+                        </div>
+                        <form className="add-form" name="discipline" onSubmit={this.onSubmit}>
+                            <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
+                            <button className="logout-button" name="discipline" id="discipline" onClick={this.onSubmit} >Add Discipline</button>
+                        </form>
+                    </div>
+                    <div className="side-container">
+                        <h2 className="blueHeader">{selectedDiscipline} Skills</h2>
+                        <div className="options-container">
+                        {disciplineList.length === 0 ? <Loading /> : skillList}
+                        </div>
+                        <form className= "add-form" name="skill" onSubmit={this.onSubmit}>
+                            <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
+                            <button className="logout-button" id="skill" name="skill" onClick={this.onSubmit}>Add Skill</button>
+                        </form>
+                    </div>
                 </div>
-                <div>
-                    <h2>{selectedDiscipline} Skills</h2>
-                    {skillList}
-                    <form name="skill" onSubmit={this.onSubmit}>
-                        <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
-                    </form>
-                    <button id="skill" name="skill" onClick={this.onSubmit}>Add Skill</button>
-                </div>
-                <div>
-                    <h2>Province</h2>
-                    {provinceList}
-                    <form name="province" onSubmit={this.onSubmit}>
+                <div className="side-by-side-container">
+                <div className="side-container">
+                    <h2 className="blueHeader">Province</h2>
+                    <div className="options-container">
+                    {provinceList.length === 0 ? <Loading /> : provinceList}
+                    </div>
+                    <form className= "add-form" name="province" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.province} name="province"/>
+                        <button className="logout-button" id="province" name="province" onClick={this.onSubmit} >Add Province</button>
                     </form>
-                    <button id="province" name="province" onClick={this.onSubmit} >Add Province</button>
                 </div>
-                <div>
-                    <h2>{selectedProvince} Cities</h2>
-                    {cityList}
-                    <form name="city" onSubmit={this.onSubmit}>
+                <div className="side-container">
+                    <h2 className="blueHeader">{selectedProvince} Cities</h2>
+                    <div className="options-container">
+                    {provinceList.length === 0 ? <Loading /> : cityList}
+                    </div>
+                    <form className= "add-form" name="city" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.city} name="city"/>
+                        <button className="logout-button" id="city" name="city" onClick={this.onSubmit}>Add City</button>
                     </form>
-                    <button id="city" name="city" onClick={this.onSubmit}>Add City</button>
                 </div>
-            </div>
+                </div>
+                </div>
+            </LoadingOverlay>
         )
     }
 }
@@ -332,9 +405,12 @@ Admin.propTypes = {
     masterlist: PropTypes.object.isRequired
 };
 
+Admin.contextType = UserContext;
+
 const mapStateToProps = state => {
     return {
         masterlist: state.masterlist,
+        error: state.masterlist.error,
     };
 };
 
@@ -347,7 +423,8 @@ const mapDispatchToProps = {
     deleteDiscipline,
     deleteSkill,
     deleteProvince,
-    deleteCity
+    deleteCity,
+    clearError
 };
   
 export default connect(

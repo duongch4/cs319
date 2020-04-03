@@ -2,9 +2,7 @@ import React,{ Component } from 'react';
 import './ProjectStyles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button} from "@material-ui/core";
-
 
 
 class TeamRequirements extends Component {
@@ -14,20 +12,53 @@ class TeamRequirements extends Component {
           discipline: null,
           skills: [],
           yearsOfExp: null,
-          commitmentMonthlyHours: 0
-      }
+          commitmentMonthlyHours: null,
+      },
+        months: [],
+        monthNames: ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+        ]
     };
 
+    componentDidMount() {
+        const months = this.createMonthsList(new Date(this.props.startDate), new Date(this.props.endDate));
+        this.setState({
+            months
+        })
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.startDate !== this.props.startDate || prevProps.endDate !== this.props.endDate){
+            const months = this.createMonthsList(this.props.startDate, this.props.endDate);
+            this.setState({
+                months
+            })
+        }
+    }
+    createMonthsList = (start, end) => {
+        if(start && end){
+            start = new Date(start)
+            const months = [];
+            let startIndex = start.getMonth();
+            let startYear = start.getYear()
+            const endIndex = end.getMonth();
+            const endYear = end.getYear()
+            while((startIndex <= endIndex || startYear < endYear) && !(startYear > endYear)){
+                const year = 1900 + startYear
+                months.push(this.state.monthNames[startIndex] + " " + year)
+                startIndex++;
+                if(startIndex > 11){
+                    startIndex = 0;
+                    startYear++;
+                }
+            }
+            return months;
+        }
+        return [];        
+    }
+
     handleChange = (e) => {
-      if (e.target.id === "commitmentMonthlyHours") {
-          this.setState({
-              opening: {
-                  ...this.state.opening,
-                  commitmentMonthlyHours: parseInt(e.target.value)
-              }
-          });
-      }
-       else if (e.target.id === "yearsOfExp") {
+      if (e.target.id === "yearsOfExp") {
           this.setState({
               opening: {
                 ...this.state.opening,
@@ -63,25 +94,82 @@ class TeamRequirements extends Component {
         e.target.elements.commitmentMonthlyHours.value = null;
       }
       e.preventDefault();
-      this.props.addOpening(this.state.opening);
-      this.setState({
-          opening: {
-              positionID: 0,
-              discipline: null,
-              skills: [],
-              yearsOfExp: null,
-              commitmentMonthlyHours: null
-          }
-      })
+      var isUserPage = this.props.isUserPage;
+      const opening = this.state.opening;
+        if(opening.discipline === null) {
+            this.setState({
+                ...this.state,
+                error: "No Discipline Selected - Unable to add Opening"
+            })
+        } else if (opening.yearsOfExp === null){
+            this.setState({
+                ...this.state,
+                error: "No Years of Experience Selected - Unable to add Opening"
+            })
+        } else if (opening.commitmentMonthlyHours === null && !isUserPage){
+            this.setState({
+                ...this.state,
+                error: "No monthly time commitments added - Please enter and estimate of how many hours are required each month"
+            })
+        } else {
+            this.props.addOpening(this.state.opening);
+            this.setState({
+                ...this.state,
+                opening: {
+                    positionID: 0,
+                    discipline: null,
+                    skills: [],
+                    yearsOfExp: null,
+                    commitmentMonthlyHours: null
+                },
+                error: ""
+            })
+        }
     };
 
+    changeCommitment = (date, e) => {
+        
+        let dateSplit = date.split(" ")
+        let monthIndex = this.state.monthNames.indexOf(dateSplit[0]);
+        if(monthIndex < 10){
+            monthIndex = "0" + monthIndex;
+        }
+        let newDate = dateSplit[1] + "-" + monthIndex + "-01"
+        let commitment = this.state.opening.commitmentMonthlyHours !== null ? this.state.opening.commitmentMonthlyHours : {};
+        commitment[newDate] = parseInt(e.target.value);
+        this.setState({
+            ...this.state,
+            opening: {
+                ...this.state.opening,
+                  commitmentMonthlyHours: commitment
+            }
+        });
+    }
+
+    createMonthsDiv = (months) => {
+        const monthArr = []
+        months.forEach(month => {
+            monthArr.push(
+            <div className="entry" key={monthArr.length} >
+                <p className="label">{month}</p>
+                <input type="number" name="name" placeholder="hours" onChange={(e) => this.changeCommitment(month, e)}/>
+            </div>
+            )
+        })
+        return monthArr;
+    }
+
   render(){
-    var disciplines = this.props.disciplines;
-    var yearsOfExperience = this.props.masterYearsOfExperience;
+    const {disciplines} = this.props;
     var isUserPage = this.props.isUserPage;
+    let monthDiv = null;
+    if(!isUserPage){
+        monthDiv = this.createMonthsDiv(this.state.months);
+    }
+    var yearsOfExperience = this.props.masterYearsOfExperience;
 
     var discipline_render = [];
-    var all_disciplines_keys = Object.keys(disciplines);
+    var all_disciplines_keys = disciplines ? Object.keys(disciplines) : [];
     all_disciplines_keys.forEach((discipline, i) => {
         discipline_render.push(<option key={"discipline_" + i} value={discipline}>{discipline}</option>)
     });
@@ -137,13 +225,7 @@ class TeamRequirements extends Component {
                       </select>
                   </label>
                   {!isUserPage && (
-                      <div className="form-row">
-                          <label htmlFor= "commitmentMonthlyHours">
-                              <p className="form-label">Expected Hourly Commitment Per Month</p>
-                          </label>
-                          <input className="input-box" type="text"
-                                 id="commitmentMonthlyHours" onChange={this.handleChange}/>
-                      </div>
+                    <div className="flex">{monthDiv}</div>
                   )}
                   <div className="form-row">
                       <Button type="submit" variant="contained"
@@ -152,6 +234,7 @@ class TeamRequirements extends Component {
                   </div>
               </div>
           </form>
+          <p className="errorMessage">{this.state.error}</p>
       </div>
     );
 }

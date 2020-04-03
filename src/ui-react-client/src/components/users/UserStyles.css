@@ -2,3 +2,7 @@
     font-size: 0.75em;
     font-weight: 900;
 }
+
+.errorMessage {
+    color: red;
+}

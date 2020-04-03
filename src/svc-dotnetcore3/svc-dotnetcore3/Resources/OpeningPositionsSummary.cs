@@ -10,7 +10,7 @@ namespace Web.API.Resources
         
         /// <summary>Commitment Monthly Hours</summary>
         /// <example>160</example>
-        public int CommitmentMonthlyHours { get; set; }
+        public Dictionary<string, int> CommitmentMonthlyHours { get; set; }
 
         /// <summary>Discipline Name</summary>
         /// <example>Language</example>

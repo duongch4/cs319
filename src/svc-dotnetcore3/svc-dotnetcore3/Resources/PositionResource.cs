@@ -20,6 +20,6 @@ namespace Web.API.Resources
         
         /// <summary>Committment hours</summary>
         /// <example>300</example>
-        public int ProjectedMonthlyHours { get; set; }
+        public string ProjectedMonthlyHours { get; set; }
     }
 }

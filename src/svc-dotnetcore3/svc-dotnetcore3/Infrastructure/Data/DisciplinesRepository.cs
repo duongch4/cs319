@@ -16,6 +16,7 @@ namespace Web.API.Infrastructure.Data
         public DisciplinesRespository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+
         }
         public async Task<Discipline> GetADiscipline(int disciplineId)
         {
@@ -46,10 +47,9 @@ namespace Web.API.Infrastructure.Data
             var sql = @"
                 SELECT
                     d.Id, d.Name, STRING_AGG (s.Name, ',') as Skills
-                FROM
-                    Disciplines d, Skills s
-                WHERE
-                    d.Id = s.DisciplineId
+                FROM Disciplines d
+                LEFT JOIN Skills s
+                    ON d.Id = s.DisciplineId
                 GROUP BY
                     d.Id, d.Name
             ;";
@@ -159,7 +159,7 @@ namespace Web.API.Infrastructure.Data
             return discipline;
         }
 
-        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(int userId)
+        public async Task<IEnumerable<ResourceDiscipline>> GetUserDisciplines(string userId)
         {
             var sql = @"
                 select rd.ResourceId, d.Name, rd.YearsOfExperience, rd.DisciplineId

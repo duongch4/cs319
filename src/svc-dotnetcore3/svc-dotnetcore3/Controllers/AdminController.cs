@@ -8,6 +8,7 @@ using Web.API.Application.Repository;
 using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 using Web.API.Application.Communication;
 using Web.API.Resources;
+using Web.API.Authorization;
 
 using System;
 using System.Data.SqlClient;
@@ -15,7 +16,8 @@ using System.Linq;
 using Serilog;
 
 namespace Web.API.Controllers {
-    [Authorize]
+    // [Authorize]
+    [Authorize(Actions.AdminThings)]
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
@@ -434,7 +436,7 @@ namespace Web.API.Controllers {
             {
                 var createdProvinceName = await locationsRepository.CreateAProvince(location.Province);
                 var response = new CreatedResponse<string>(createdProvinceName, $"Successfully created province '{createdProvinceName}'");
-                Log.Information("@{a}", response);
+                // Log.Information("@{a}", response);
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception err)
@@ -447,12 +449,13 @@ namespace Web.API.Controllers {
                 }
                 else
                 {
-                    Log.Information("second bad request");
+                    // Log.Information("second bad request");
                     var error = new BadRequestException(errMessage);
                     return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
             }
         }
+
 
         /// <summary>Delete a province</summary>
         /// <remarks>

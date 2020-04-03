@@ -13,6 +13,7 @@ export const executeCreateDiscipline = (action, state) => {
     }
     let newState = {
         ...state,
+        error: null,
         disciplines: newDisciplines
     }
     return newState
@@ -29,6 +30,7 @@ export const executeCreateSkill = (action, state) => {
     }
     let newState = {
         ...state,
+        error: null,
         disciplines: newDisciplines
     }
     return newState
@@ -39,6 +41,7 @@ export const executeCreateProvince = (action, state) => {
     newLocation[action.location.province] = []
     let newState = {
         ...state,
+        error: null,
         locations: newLocation
     }
     return newState
@@ -55,6 +58,7 @@ export const executeCreateCity = (action, state) => {
     }
     let newState = {
         ...state,
+        error: null,
         locations: newLocation
     }
     return newState
@@ -70,6 +74,7 @@ export const executeDeleteDiscipline = (action, state) => {
       }, {})
     let newState = {
         ...state,
+        error: null,
         disciplines: newDisciplines
     }
     return newState;
@@ -93,6 +98,7 @@ export const executeDeleteSkill = (action, state) => {
       }, {})
     let newState = {
         ...state,
+        error: null,
         disciplines: newDisciplines
     }
     return newState;
@@ -107,6 +113,7 @@ export const executeDeleteProvince = (action, state) => {
       }, {})
     let newState = {
         ...state,
+        error: null,
         locations: newLocations
     }
     return newState;
@@ -131,8 +138,33 @@ export const executeDeleteCity = (action, state) => {
       }, {})
       let newState = {
           ...state,
+          error: null,
           locations: newLocations
       }
+    return newState;
+}
+
+export const executeDeleteError = (action, state) => {
+    let newState = {
+        ...state,
+        error: action.error
+    }
+    return newState;
+}
+
+export const executeCreateError = (action, state) => {
+    let newState = {
+        ...state,
+        error: action.error
+    }
+    return newState;
+}
+
+export const executeClearError = (state) => {
+    let newState = {
+        ...state,
+        error: null
+    }
     return newState;
 }
 
@@ -159,6 +191,12 @@ export const masterlistsReducer = (
             return executeDeleteProvince(action, state);
         case types.DELETE_CITY:
             return executeDeleteCity(action, state);
+        case types.ERROR_DELETING:
+            return executeDeleteError(action, state);
+        case types.ERROR_CREATING:
+            return executeCreateError(action, state);
+        case types.CLEAR_ERROR:
+            return executeClearError(state);
         default:
             return state;
     }

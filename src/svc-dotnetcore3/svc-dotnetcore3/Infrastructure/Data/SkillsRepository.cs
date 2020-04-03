@@ -13,10 +13,13 @@ namespace Web.API.Infrastructure.Data
     public class SkillsRepository : ISkillsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
 
         public SkillsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
         }
         //GET
         public async Task<IEnumerable<Skill>> GetAllSkills()
@@ -175,19 +178,19 @@ namespace Web.API.Infrastructure.Data
             return skill;
         }
 
-        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(int userId)
+        public async Task<IEnumerable<ResourceSkill>> GetUserSkills(string userId)
         {
             var sql = @"
-            select 
-                rs.ResourceId, d.Name as ResourceDisciplineName, s.Id, s.Name
-            from 
-                ResourceSkill as rs, Disciplines as d, Skills as s
-            where
-                rs.ResourceId = @Id
-                and rs.ResourceDisciplineId = d.Id
-                and rs.SkillDisciplineId = s.DisciplineId
-                and rs.SkillId = s.Id;
-                ";
+                select 
+                    rs.ResourceId, d.Name as ResourceDisciplineName, s.Id, s.Name
+                from 
+                    ResourceSkill as rs, Disciplines as d, Skills as s
+                where
+                    rs.ResourceId = @Id
+                    and rs.ResourceDisciplineId = d.Id
+                    and rs.SkillDisciplineId = s.DisciplineId
+                    and rs.SkillId = s.Id
+            ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -200,17 +203,22 @@ namespace Web.API.Infrastructure.Data
         public async Task<ResourceSkill> DeleteResourceSkill(ResourceSkill skill)
         {
             var sql = @"
-                delete from ResourceSkill
-                where ResourceId = @ResourceId
-                and SkillDisciplineId = (select Id 
-                                        from Disciplines 
-                                        where Name = @ResourceDisciplineName)
-                and ResourceDisciplineID = SkillDisciplineID
-                and SkillId = (select Id
-                                from Skills
-                                where Name = @Name);
-
-            ";
+                DELETE FROM
+                    ResourceSkill
+                WHERE
+                    ResourceId = @ResourceId
+                    AND SkillDisciplineId IN (
+                        SELECT Id
+                        FROM Disciplines
+                        WHERE Name = @ResourceDisciplineName
+                    )
+                    AND ResourceDisciplineID = SkillDisciplineID
+                    AND SkillId IN (
+                        SELECT Id
+                        FROM Skills
+                        WHERE Name = @Name
+                    )
+            ;";
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -225,13 +233,14 @@ namespace Web.API.Infrastructure.Data
         public async Task<ResourceSkill> InsertResourceSkill(ResourceSkill skill)
         {
             var sql = @"
-                insert into ResourceSkill
-                values 
-                    (@ResourceId, 
-                    (select Id from Disciplines where Name = @ResourceDisciplineName), 
-                    (select Id from Disciplines where Name = @ResourceDisciplineName), 
-                    (select Id from Skills where Name = @Name))
-                ;";
+                INSERT INTO ResourceSkill
+                VALUES (
+                    @ResourceId, 
+                    (SELECT Id FROM Disciplines WHERE Name = @ResourceDisciplineName), 
+                    (SELECT Id FROM Disciplines WHERE Name = @ResourceDisciplineName), 
+                    (SELECT Id FROM Skills WHERE Name = @Name AND DisciplineId = (SELECT Id FROM Disciplines WHERE Name = @ResourceDisciplineName))
+                )
+            ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.QueryFirstOrDefaultAsync(sql, new

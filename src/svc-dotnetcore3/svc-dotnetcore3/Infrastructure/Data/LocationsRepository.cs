@@ -16,11 +16,14 @@ namespace Web.API.Infrastructure.Data
     public class LocationsRepository : ILocationsRepository
     {
         private readonly string connectionString = string.Empty;
+        // private readonly System.Data.SqlClient.SqlConnection connection;
         private readonly Dictionary<string, IEnumerable<string>> locations;
 
         public LocationsRepository(string connectionString)
         {
             this.connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            // connection = new SqlConnection(connectionString);
+            // connection.Open();
             this.locations = new Dictionary<string, IEnumerable<string>>();
             this.SetStaticLocations();
         }
@@ -43,11 +46,13 @@ namespace Web.API.Infrastructure.Data
         {
             var sql = @"
                 SELECT
-                    Province, STRING_AGG(CONVERT(nvarchar(max),CONCAT(City, '-', Id)), ',') as CitiesIds
-                FROM
-                    Locations
+                    p.Name AS Province,
+                    STRING_AGG(CONVERT(nvarchar(max),CONCAT(l.City, '#', l.Id)), ',') as CitiesIds
+                FROM Provinces p
+                LEFT JOIN Locations l
+                    ON l.Province = p.Name
                 GROUP BY
-                    Province
+                    p.Name
             ;";
 
             using var connection = new SqlConnection(connectionString);
