@@ -22,6 +22,9 @@ namespace Web.API.Authorization
             AuthorizationPolicy policy, AuthenticateResult authenticationResult, HttpContext context, object resource
         )
         {
+            // This call will check 2 places (requirements): 
+            // - AnyValidPermissionRequirementHandler
+            // - ActionAuthorizationRequirementHandler OR the default [Authorize]
             var result = await base.AuthorizeAsync(policy, authenticationResult, context, resource);
 
             if (result.Challenged)

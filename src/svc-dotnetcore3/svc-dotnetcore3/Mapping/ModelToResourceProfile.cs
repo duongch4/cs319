@@ -63,7 +63,7 @@ namespace Web.API.Mapping
             ).ForMember(
                 destinationMember => destinationMember.Skills,
                 opt => opt.MapFrom(
-                    sourceMember => new HashSet<string>(sourceMember.Skills.Split(sep))
+                    sourceMember => (sourceMember.Skills == null) ? new HashSet<string>() : new HashSet<string>(sourceMember.Skills.Split(sep))
                 )
             ).ForMember(
                 destinationMember => destinationMember.YearsOfExp,

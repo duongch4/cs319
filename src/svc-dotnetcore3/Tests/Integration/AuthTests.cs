@@ -35,11 +35,6 @@ namespace Tests.Integration
             var req = new HttpRequestMessage(HttpMethod.Get, url);
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
             var res = await Client.SendAsync(req);
-            // Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-
-            // res.EnsureSuccessStatusCode(); // Status Code: 200-299            
-            // var responseString = await res.Content.ReadAsStringAsync();
-            // var responseJSON = JsonConvert.DeserializeObject<OkResponse<IEnumerable<ProjectSummary>>>(responseString);
         }
 
         [Theory]
@@ -56,7 +51,7 @@ namespace Tests.Integration
         }
 
         [Theory]
-        [InlineData("/api/locations")]
+        [InlineData("/api/masterlists")]
         [InlineData("/api/users")]
         [InlineData("/api/projects")]
         public async Task Request_Auth_UserRegular_Pass(string url)
@@ -68,7 +63,7 @@ namespace Tests.Integration
         }
 
         [Theory]
-        [InlineData("/api/masterlists")]
+        [InlineData("/api/locations")]
         public async Task Request_Auth_UserRegular_Forbidden(string url)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, url);
