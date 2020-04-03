@@ -43,7 +43,8 @@ class LocationsSearch extends Component {
  
 
     handleChangeCities = (e) => {
-      if (e){
+      console.log(e);
+      if (e !== null && e.length !== 0){
         if (e[0].label === "All cities"){
           var cities_return = [];
           e.map(function (e) { 
@@ -117,11 +118,11 @@ class LocationsSearch extends Component {
         <div className="form-row">
             <Select placeholder='Provinces' id="province" className="input-box" onChange={this.handleChange} options={provinces_render} isClearable/>
             {(this.state.cityFilledIn) && 
-            (<Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
-              hideSelectedOptions={true} placeholder='Cities'/>)}
+            (<Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} 
+                      isMulti isClearable placeholder='Cities'/>)}
             {(!this.state.cityFilledIn) && 
             (<Select id="cities" key={cities_key} className="input-box" onChange={this.handleChangeCities} options={cities_format} isMulti isClearable
-              required hideSelectedOptions={true} placeholder='Must select a city' />)}
+              placeholder='Must select a city' />)}
         </div>
      );
     }
