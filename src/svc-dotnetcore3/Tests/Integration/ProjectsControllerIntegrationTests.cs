@@ -19,13 +19,13 @@ namespace Tests.Integration
         private static readonly string createdTitle = "Created-Title";
         private static readonly string updatedTitle = "Updated-Title";
         private static readonly string managerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
-        // private static readonly string notManagerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
+        private static readonly string projectNumber = "9999-9999-9999";
         public ProjectsControllerIntegrationTests(AppFixture app) : base(app)
         { }
 
         [Theory, TestPriority(0)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task CreateOneProject(string url, string projectNumber)
+        [InlineData("/api/projects")]
+        public async Task CreateOneProject(string url)
         {
             var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, createdTitle));
             var req = new HttpRequestMessage(HttpMethod.Post, url)
@@ -42,8 +42,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(1)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterCreate(string url, string projectNumber)
+        [InlineData("/api/projects")]
+        public async Task GetOneProject_AfterCreate(string url)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -55,8 +55,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(2)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task UpdateOneProject(string url, string projectNumber)
+        [InlineData("/api/projects")]
+        public async Task UpdateOneProject(string url)
         {
             var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, updatedTitle));
             var req = new HttpRequestMessage(HttpMethod.Put, $"{url}/{projectNumber}")
@@ -73,8 +73,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(3)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterUpdate(string url, string projectNumber)
+        [InlineData("/api/projects")]
+        public async Task GetOneProject_AfterUpdate(string url)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -86,8 +86,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(4)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task DeleteOneProject(string url, string projectNumber)
+        [InlineData("/api/projects")]
+        public async Task DeleteOneProject(string url)
         {
             var req = new HttpRequestMessage(HttpMethod.Delete, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -96,8 +96,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(5)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterDelete(string url, string projectNumber)
+        [InlineData("/api/projects")]
+        public async Task GetOneProject_AfterDelete(string url)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
