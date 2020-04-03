@@ -490,7 +490,7 @@ namespace Web.API.Infrastructure.Data
                 DELETE FROM
                     Positions
                 WHERE
-                    p.ProjectId = @ProjectId
+                    ProjectId = @ProjectId
             ";
             connection.Open();
             var deletedCount = await connection.ExecuteAsync(sql, new { ProjectId = projectId });
