@@ -10,7 +10,6 @@ import {CLIENT_DEV_ENV} from '../../config/config';
 import Loading from '../common/Loading';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import LoadingOverlay from 'react-loading-overlay'
-import ClipLoader from 'react-spinners/ClipLoader'
 
 class AddProject extends Component {
     state = {
@@ -170,8 +169,15 @@ class AddProject extends Component {
                                         index={index}/>)
             });
             return (
+                <LoadingOverlay 
+                styles={{
+                    overlay: (base) => ({
+                      ...base,
+                      background: 'rgba(169,169,169, 0.5)'
+                    })
+                  }} 
+                  active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
                 <div className="activity-container">
-                <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
                     <h1 className="greenHeader">Create new project</h1>
                     <CreateEditProjectDetails locations={this.props.masterlist.locations}
                                               addProjDetails={(project) => this.addProjDetails(project)}/>
@@ -193,8 +199,8 @@ class AddProject extends Component {
                                 disableElevation
                                 onClick={() => this.onSubmit()}>Save</Button>
                     </div>
-                    </LoadingOverlay>
                 </div>
+                </LoadingOverlay>
             )
         }
     }

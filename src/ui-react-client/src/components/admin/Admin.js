@@ -12,14 +12,14 @@ import {loadMasterlists,
     deleteProvince,
     deleteCity,
     clearError} from '../../redux/actions/masterlistsActions';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import MenuItem from "@material-ui/core/MenuItem";
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete'
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 import LoadingOverlay from 'react-loading-overlay'
-import ClipLoader from 'react-spinners/ClipLoader'
+import './admin.css'
+import {Button} from "@material-ui/core";
 
 class Admin extends Component {
     constructor(props){
@@ -289,13 +289,12 @@ class Admin extends Component {
     listGen = (inputList, name) => {
         let list = []
         inputList.forEach(elem =>{
+            let selected = (name === "province" && elem === this.state.selectedprovince)
             list.push(<div key={list.length}>
-                <List>
-                    <ListItem button name={name} onClick={() => this.changeSelected(elem, name)}>
+                    <MenuItem dense={true} button name={name} selected={selected} onClick={() => this.changeSelected(elem, name)}>
                     <ListItemText primary={elem} />
                     <DeleteIcon name={name} onClick={()=>this.removeItem(name, elem)}/>
-                    </ListItem>
-                </List>
+                    </MenuItem>
             </div>)
         })
         return list;
@@ -304,13 +303,12 @@ class Admin extends Component {
     listGenID = (inputList, name, param) => {
         let list = []
         Object.keys(inputList).forEach(elem =>{
+            let selected = (inputList[elem][param] === this.state.skill.disciplineID);
             list.push(<div key={list.length}>
-                <List>
-                    <ListItem button name={name} onClick={() => this.changeSelected(elem, name, inputList[elem][param])}>
+                    <MenuItem dense={true} button name={name} selected={selected} onClick={() => this.changeSelected(elem, name, inputList[elem][param])}>
                     <ListItemText primary={elem} />
                     <DeleteIcon name={name} onClick={()=>this.removeItem(name, elem)}/>
-                    </ListItem>
-                </List>
+                    </MenuItem>
             </div>)
         })
         return list;
@@ -342,43 +340,63 @@ class Admin extends Component {
         cityList = cityList.length > 0 ? cityList : <div>No Cities Available for Selected Province</div> 
 
         return (
-            <div className="activity-container">
-            <LoadingOverlay active={this.state.sending} spinner={<ClipLoader />}>
+            <LoadingOverlay
+            styles={{
+                overlay: (base) => ({
+                  ...base,
+                  background: 'rgba(169,169,169, 0.5)'
+                })
+              }}
+              active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
+                <div className="activity-container">
+
                 <h1 className="greenHeader">Admin</h1>
-                <div>
-                    <h2>Disciplines</h2>
-                    {disciplineList.length === 0 ? <Loading /> : disciplineList}
-                    <form name="discipline" onSubmit={this.onSubmit}>
-                    <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
-                    </form>
-                    <button name="discipline" id="discipline" onClick={this.onSubmit} >Add Discipline</button>
+                <div className="side-by-side-container">
+                    <div className="side-container">
+                        <h2 className="blueHeader">Disciplines</h2>
+                        <div className="options-container">
+                        {disciplineList.length === 0 ? <Loading /> : disciplineList}
+                        </div>
+                        <form className="add-form" name="discipline" onSubmit={this.onSubmit}>
+                            <input type="text" onChange={this.handleChange} value={this.state.discipline.name} name="discipline"/>
+                            <button className="logout-button" name="discipline" id="discipline" onClick={this.onSubmit} >Add Discipline</button>
+                        </form>
+                    </div>
+                    <div className="side-container">
+                        <h2 className="blueHeader">{selectedDiscipline} Skills</h2>
+                        <div className="options-container">
+                        {disciplineList.length === 0 ? <Loading /> : skillList}
+                        </div>
+                        <form className= "add-form" name="skill" onSubmit={this.onSubmit}>
+                            <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
+                            <button className="logout-button" id="skill" name="skill" onClick={this.onSubmit}>Add Skill</button>
+                        </form>
+                    </div>
                 </div>
-                <div>
-                    <h2>{selectedDiscipline} Skills</h2>
-                    {disciplineList.length === 0 ? <Loading /> : skillList}
-                    <form name="skill" onSubmit={this.onSubmit}>
-                        <input type="text" onChange={this.handleChange} value={this.state.skill.name} name="skill"/>
-                    </form>
-                    <button id="skill" name="skill" onClick={this.onSubmit}>Add Skill</button>
-                </div>
-                <div>
-                    <h2>Province</h2>
+                <div className="side-by-side-container">
+                <div className="side-container">
+                    <h2 className="blueHeader">Province</h2>
+                    <div className="options-container">
                     {provinceList.length === 0 ? <Loading /> : provinceList}
-                    <form name="province" onSubmit={this.onSubmit}>
+                    </div>
+                    <form className= "add-form" name="province" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.province} name="province"/>
+                        <button className="logout-button" id="province" name="province" onClick={this.onSubmit} >Add Province</button>
                     </form>
-                    <button id="province" name="province" onClick={this.onSubmit} >Add Province</button>
                 </div>
-                <div>
-                    <h2>{selectedProvince} Cities</h2>
+                <div className="side-container">
+                    <h2 className="blueHeader">{selectedProvince} Cities</h2>
+                    <div className="options-container">
                     {provinceList.length === 0 ? <Loading /> : cityList}
-                    <form name="city" onSubmit={this.onSubmit}>
+                    </div>
+                    <form className= "add-form" name="city" onSubmit={this.onSubmit}>
                         <input type="text" onChange={this.handleLocationChange} value={this.state.location.city} name="city"/>
+                        <button className="logout-button" id="city" name="city" onClick={this.onSubmit}>Add City</button>
                     </form>
-                    <button id="city" name="city" onClick={this.onSubmit}>Add City</button>
                 </div>
-                </LoadingOverlay>
-            </div>
+                </div>
+                </div>
+            </LoadingOverlay>
         )
     }
 }
