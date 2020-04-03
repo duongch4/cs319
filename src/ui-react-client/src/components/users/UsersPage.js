@@ -21,8 +21,6 @@ class UsersPage extends Component {
         {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
         {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
         {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
-      sort: null,
-      search: false,
       loading: true,
       currPage: 1,
       usersAll: [],
