@@ -93,7 +93,7 @@ class UserDetails extends Component {
             let unavailability = [];
             if(userDetails.availability && userDetails.availability.length > 0) {
                 userDetails.availability.forEach(currentAvailability => {
-                    unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}/>)
+                    unavailability.push(<AvailabilityCard edit={false} availability={currentAvailability} key={unavailability.length}/>)
                 })
             } else {
                 unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
