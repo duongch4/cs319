@@ -53,6 +53,30 @@ describe('Create Disciplines', () => {
         expect(axios.post).toHaveBeenCalledTimes(1);
         expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/disciplines`, discipline, {headers:{ Authorization: `Bearer 100` }});
     });
+
+    // TODO
+    it('should properly handle internal server error', async () => {
+        axios.post.mockRejectedValueOnce(new Error({response: {status: 400}}));
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        
+        const discipline = {
+            id: 5,
+            name: "Intel",
+            skills: "\"Deception,False Identity Creation\""
+          }
+
+        // const expectedAction = [{
+        //       type: types.CREATE_DISCIPLINE,
+        //       disciplines: discipline
+        //   }];
+        let error;
+        try {
+            await store.dispatch(masterlistsActions.createDiscpline(discipline, adminRole));
+        } catch (e) {
+            error = e;
+            console.log("test catch block");
+        };
+    })
 })
 
 describe('Delete Disciplines', () => {
