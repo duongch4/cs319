@@ -51,6 +51,66 @@ namespace Web.API.Infrastructure.Data
             Position position = await ConvertToPosition(sqlRes);
             return position;
         }
+
+        public async Task<OpeningPositionsResource> GetAnOpeningPositionsResource(int positionId)
+        {
+            var sql = @" 
+                begin
+                if ((select Id 
+                        from 
+                            positions as pos
+                        where exists (select 
+                            PositionId 
+                        from 
+                            positionSkills as  ps2
+                        where ps2.PositionId = @PositionId
+                              and ps2.PositionId = pos.Id))
+                    is null)
+                    BEGIN
+                            select
+                                pos.Id as Id, 
+                                pos.ProjectedMonthlyHours as CommitmentMonthlyHours, 
+                                d.[Name] as Discipline, 
+                                null as Skills,
+                                pos.YearsOfExperience as YearsOfExperience
+                            from 
+                                positions as pos,
+                                disciplines d
+                            where 
+                                pos.Id = @PositionId
+                                and pos.DisciplineId = d.Id   ;   
+                    END
+                else 
+                    BEGIN 
+                            select
+                                pos.Id as Id, 
+                                pos.ProjectedMonthlyHours as CommitmentMonthlyHours, 
+                                d.[Name] as Discipline, 
+                                STRING_AGG (s.[Name], ',' )as Skills, 
+                                pos.YearsOfExperience as YearsOfExperience
+                            from 
+                                positions as pos,
+                                PositionSkills as ps,
+                                disciplines d,
+                                skills s
+                            where 
+                                pos.Id = 928
+                                and pos.Id = ps.PositionId
+                                and pos.ResourceId is null
+                                and ps.SkillDisciplineId = d.Id
+                                and ps.SkillId = s.Id
+                            group by
+                                pos.Id, 
+                                pos.YearsOfExperience,
+                                pos.ProjectedMonthlyHours,
+                                d.Name;
+                    end
+                end
+                ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            return await connection.QuerySingleOrDefaultAsync<OpeningPositionsResource>(sql, new { PositionId = positionId} );
+        }
         public async Task<IEnumerable<PositionResource>> GetPositionsOfUser(string userId)
         {
             var sql = @"

@@ -8,6 +8,8 @@ using Web.API.Application.Models;
 using Web.API.Application.Repository;
 using Web.API.Application.Communication;
 using Web.API.Authorization;
+using Web.API.Resources;
+using System.Text.Json;
 
 using System;
 using System.Data.SqlClient;
@@ -68,8 +70,10 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignAResource([FromRoute] int openingId, string userId)
         {
+            try
+            {
             if (openingId == 0) {
-                var error = new BadRequestException("The given opening is invalid");
+                var error = new BadRequestException($"The given opening {openingId} is invalid");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
@@ -77,9 +81,6 @@ namespace Web.API.Controllers
                 var error = new BadRequestException("The given user is invalid");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
-
-            try
-            {
                                                 // Log.Information("1");
 
                 Position position = await positionsRepository.GetAPosition(openingId);
@@ -93,6 +94,7 @@ namespace Web.API.Controllers
                 if (user == null) {
                     var error = new NotFoundException($"Resource with id {userId} not found.");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+
                 }
 
                                 // Log.Information("{@response}", position);
@@ -139,7 +141,7 @@ namespace Web.API.Controllers
         ///          The (confirmed) utilization of the resource that has been confirmed</returns>
         /// <response code="200">Returns openingId, resourceId, resource's utilization</response>
         /// <response code="400">Bad Request</response>
-        /// <response code="404">If either the opening cannot be found</response>
+        /// <response code="404">If the opening cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("positions/{openingId}/confirm")]
@@ -149,10 +151,6 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConfirmResource([FromRoute] int openingId)
         {
-            if (openingId == 0) {
-                var error = new BadRequestException("The given opening is invalid");
-                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-            }
             try
             {
                 Position position = await positionsRepository.GetAPosition(openingId);
@@ -197,7 +195,83 @@ namespace Web.API.Controllers
                 }
             }
         }
-    }
 
+        /// <summary>Unassign a Resource to a Position</summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/positions/25/unassign/
+        ///
+        /// </remarks>
+        /// <param name="openingId">Id of position that we're unassign resource from</param>
+        /// <returns>The OpeningPositionsResource of the opening that we're unassigning a resource from</returns>
+        /// <response code="200">Returns OpeningPositionResource of opening</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">If either the opening or user cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPut]
+        [Route("positions/{openingId}/unassign/")]
+        [ProducesResponseType(typeof(OkResponse<RequestProjectAssign>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UnassignResource([FromRoute] int openingId)
+        {
+            try
+            {
+                Position position = await positionsRepository.GetAPosition(openingId);
+
+                if (position.ResourceId == null) 
+                {
+                    var error = new BadRequestException($"Position does not have a resource to unassign");
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
+
+                User user = await usersRepository.GetAUser(position.ResourceId);
+
+                if (position == null)
+                {
+                    var error = new NotFoundException($"Invalid positionId {openingId}.");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                }
+                if (user == null) {
+                    var error = new NotFoundException($"Resource with id {position.ResourceId} not found.");
+                    return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+
+                }
+                position.ResourceId = null;
+                position.IsConfirmed = false;
+
+                position = await positionsRepository.UpdateAPosition(position);
+                
+                IEnumerable<Position> positions = await positionsRepository.GetAllPositionsOfUser(user.Id);
+                IEnumerable<OutOfOffice> outOfOffices = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user.Id); 
+
+                int newUtilizationOfUser = await utilizationRepository.CalculateUtilizationOfUser(positions, outOfOffices);
+                await usersRepository.UpdateUtilizationOfUser(newUtilizationOfUser, user.Id);
+
+                OpeningPositionsResource openingRes = await positionsRepository.GetAnOpeningPositionsResource(openingId);
+                OpeningPositionsSummary openingSummary = mapper.Map<OpeningPositionsResource, OpeningPositionsSummary>(openingRes);
+
+ 
+                 Log.Information("{@response}", openingSummary);
+                return StatusCode(StatusCodes.Status200OK, openingSummary);
+            }
+            catch (Exception err)
+            {
+                var errMessage = $"Source: {err.Source}\n  Message: {err.Message}\n  StackTrace: {err.StackTrace}\n";
+                if (err is SqlException)
+                {
+                    var error = new InternalServerException(errMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, new CustomException<InternalServerException>(error).GetException());
+                }
+                else
+                {
+                    var error = new BadRequestException(errMessage);
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
+            }
+        }
+    }
 
 }
