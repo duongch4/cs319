@@ -64,9 +64,32 @@ class SearchResults extends Component {
 
     // to make multiple calls without having to refresh
     componentDidUpdate(previousProps) {
-        if (!(previousProps.data === this.props.data)) {
-           this.componentDidMount();
+        if (previousProps.data !== this.props.data) {
+            this.newSearch();
         }
+    }
+
+    newSearch = () => {
+        var data = this.props.data;
+        const userRoles = getUserRoles(this.context);
+        this.props.performUserSearch(data, userRoles)
+        .then(() => {
+            var users = this.props.users.slice()
+            this.setState({
+                ...this.state,
+                userSummaries: users,
+                noResults: false,
+                currPage: 1,
+                userSummariesAll: [users],
+            }, () => (
+                users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                ))
+        }).catch(err => {
+            this.setState({
+                ...this.state,
+                noResults: true,
+            }, this.props.stopLoading());
+        });
     }
 
     getAll(userRoles, currPage) {
@@ -220,9 +243,9 @@ class SearchResults extends Component {
             return (
                 <div>
                     <div className="pagination-controls">
-                    {(this.props.data.page === 1) && 
+                    {(this.state.currPage === 1) && 
                     (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
-                    {(this.state.currPage> 1) && 
+                    {(this.state.currPage > 1) && 
                     (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
                         Page {this.state.currPage}
                     {(this.state.noResultsNextPage && (this.state.userSummaries).length === 50) && 

@@ -21,17 +21,19 @@ export const updateUserSummary = userSummary => {
     }
 };
 
-export const loadUsers = (userRoles) => {
+export const loadUsers = (filter, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(loadUsersAllData(_initialState.userSummaries));
         } else {
+            var url = baseURL.concat(filter);
             return getHeaders(userRoles).then(headers => {
-                return axios.get(baseURL, { headers });
+                return axios.get(url, { headers });
             }).then(response => {
                 dispatch(loadUsersAllData(response.data.payload));
             }).catch(error => {
                 errorHandler(error);
+                throw(error);
             })
         }
     };

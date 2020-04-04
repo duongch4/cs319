@@ -27,9 +27,8 @@ const App = (appProps) => {
       <Switch>
         {/*All our Routes goes here!*/}
         <PropsRoute exact path="/" component={HomePage} profile={appProps.graphProfile} account={appProps.account} />
-        <PropsRoute exact path="/users" component={UsersPage} account={appProps.account} />
+        <PropsRoute exact path="/search" component={Search} account={appProps.account} />
         <PropsRoute exact path="/projects" component={ProjectsPage} profile={appProps.graphProfile} account={appProps.account}/>
-        <Route exact path="/search" component={Search} />
         <Route path="/projects/:project_id" component={ProjectDetails} />
         <Route path="/users/:user_id" component={UserDetails} />
         <Route path="/add_project" component={AddProject} />
