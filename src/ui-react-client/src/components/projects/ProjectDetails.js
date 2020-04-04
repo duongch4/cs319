@@ -27,6 +27,8 @@ class ProjectDetails extends Component {
                 })
             }
         } else {
+            // checks if there is a newly added opening to the project, if there is, it makes a server call to get
+            // the correct openingID for the project
             if (Object.keys(this.props.projectProfile).length > 0 &&
             this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id
             && this.props.projectProfile.openings.findIndex(opening => opening.openingID === 0) !== -1) {
