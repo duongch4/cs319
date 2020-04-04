@@ -95,10 +95,8 @@ it('should add a new discipline to the masterlist in state', () => {
     let action = {type: types.CREATE_DISCIPLINE, disciplines: discipline};
     let received = masterlistsReducer(initialState, action);
     let receivedDisciplines = received.disciplines;
-    let disciplineKeys = Object.keys(receivedDisciplines);
 
-    expect(disciplineKeys.length).toEqual(4);
-    expect(disciplineKeys).toContain(discipline.name);
+    expect(receivedDisciplines).toHaveProperty(discipline.name);
     expect(receivedDisciplines[discipline.name]).toEqual(
         expect.objectContaining({
             disciplineID: 42,
@@ -117,7 +115,7 @@ it('should add a new skill to the masterlist in state', () => {
     let received = masterlistsReducer(initialState, action);
     let receivedDiscipline = received.disciplines['Waste Management'];
 
-    expect(receivedDiscipline.skills.length).toEqual(3);
+    expect(receivedDiscipline.skills).toHaveLength(3);
     expect(receivedDiscipline.skills).toContain(skill.name);
     expect(received.error).toBeNull();
 });
@@ -131,11 +129,8 @@ it('should add a new province to the masterlist in state', () => {
     let action = {type: types.CREATE_PROVINCE, location: location};
     let received = masterlistsReducer(initialState, action);
     let receivedLocations = received.locations;
-    let locationKeys = Object.keys(receivedLocations);
 
-    expect(locationKeys.length).toEqual(4);
-    expect(locationKeys).toContain(location.province);
-    expect(receivedLocations[location.province]).toEqual({});
+    expect(receivedLocations).toHaveProperty(location.province, {});
     expect(received.error).toBeNull();
 });
 
@@ -148,11 +143,8 @@ it('should add a new city to the masterlist in state', () => {
     let action = {type: types.CREATE_CITY, location: location};
     let received = masterlistsReducer(initialState, action);
     let receivedLocation = received.locations[location.province];
-    let cityKeys = Object.keys(receivedLocation);
 
-    expect(cityKeys.length).toEqual(3);
-    expect(cityKeys).toContain(location.city);
-    expect(receivedLocation[location.city]).toEqual(location.id);
+    expect(receivedLocation).toHaveProperty(location.city, location.id);
     expect(received.error).toBeNull();
 });
 
@@ -195,7 +187,7 @@ it('should remove a skill from the masterlist in state', () => {
     let received = masterlistsReducer(prepState, action);
     let receivedDiscipline = received.disciplines['Waste Management'];
 
-    expect(receivedDiscipline.skills.length).toEqual(2);
+    expect(receivedDiscipline.skills).toHaveLength(2);
     expect(receivedDiscipline.skills).not.toContain(skill.name);
     expect(received.error).toBeNull();
 });
