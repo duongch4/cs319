@@ -17,7 +17,6 @@ namespace Web.API.Application.Repository
         Task<IEnumerable<Project>> GetMostRecentProjects();
         Task<Project> GetAProject(string projectNumber);
         Task<ProjectResource> GetAProjectResource(string projectNumber);
-        Task<IEnumerable<Project>> GetAllProjectsOfUser(User user);
 
         // POST
         Task<string> CreateAProject(ProjectProfile projectProfile, int locationId);
