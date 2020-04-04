@@ -3,8 +3,6 @@ import './HomePage.css';
 import UserDetails from '../users/UserDetails';
 import Loading from '../common/Loading';
 
-const Json = ({ data }) => <pre>{JSON.stringify(data, null, 4)}</pre>;
-
 const HomePage = (props) => {
   if (!props.account) {
     return (

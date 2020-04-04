@@ -147,9 +147,9 @@ class FilterTab extends Component {
 
     updateDisciplines = (newDiscipline) => {
         // if there are no disciplines yet
+        var name = null;
+        var skills = [];
         if (this.state.disciplines_temp == null) {
-            var name = null;
-            var skills = [];
             newDiscipline.forEach((discipline) => {
                 name = discipline[1].name;
                 skills = discipline[1].skills;
@@ -161,8 +161,6 @@ class FilterTab extends Component {
                 });
             } 
         } else {
-            var name = null;
-            var skills = [];
             var new_obj = {}
                 newDiscipline.forEach((discipline) => {
                     name = discipline[1].name;

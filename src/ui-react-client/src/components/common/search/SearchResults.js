@@ -220,12 +220,12 @@ class SearchResults extends Component {
             return (
                 <div>
                     <div className="pagination-controls">
-                    {(this.props.data.page == 1) && 
+                    {(this.props.data.page === 1) && 
                     (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
                     {(this.state.currPage> 1) && 
                     (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
                         Page {this.state.currPage}
-                    {(this.state.noResultsNextPage && (this.state.userSummaries).length == 50) && 
+                    {(this.state.noResultsNextPage && (this.state.userSummaries).length === 50) && 
                     (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
                     {(!this.state.noResultsNextPage || (this.state.userSummaries).length < 50) && 
                     (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}

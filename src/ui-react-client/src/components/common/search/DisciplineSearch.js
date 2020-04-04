@@ -34,7 +34,7 @@ class DisciplineSearch extends Component {
     };
 
     handleChangeSkills = (e) => {
-      if (e != null && e.length != 0){
+      if (e !== null && e.length !== 0){
           var skills_array = e.map(function (e) { return e.label; });
             this.setState({
               disciplines: {

@@ -51,7 +51,6 @@ class ProjectDetails extends Component {
 
     render() {
         let userRoles = getUserRoles(this.context);
-        let userID = this.context.profile.userID;
         if (Object.keys(this.state.projectProfile).length !== 0 &&
             this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
