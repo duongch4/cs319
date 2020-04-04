@@ -13,20 +13,13 @@ namespace Web.API.Application.Repository
         // Task<Location> GetALocationWithCity(string city);
         Task<Location> GetALocation(int locationId);
         Task<Location> GetALocation(string city);
-        
-        Dictionary<string, IEnumerable<string>> GetStaticLocations();
 
         Task<Location> GetUserLocation(User user);
         //POST 
         Task<int> CreateALocation(LocationResource location);
 
-        // //PUT
-        // Task<Location> UpdateALocation(Location location);
-
         //DELETE
         Task<Location> DeleteALocation(int locationId);
-
-        // Task<Location> GetLocationIdByCityProvince(LocationResource location);
 
         Task<string> GetAProvince(string province);
         Task<string> CreateAProvince(string province);

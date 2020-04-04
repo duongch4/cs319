@@ -1,15 +1,15 @@
-import React, { Component}  from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './UserStyles.css';
 import { connect } from 'react-redux';
 import Openings from '../projects/Openings';
 import ProjectCard from '../projects/ProjectCard'
 import AvailabilityCard from './AvailabilityCard';
-import {Button} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { Link } from 'react-router-dom';
-import {loadSpecificUser} from "../../redux/actions/userProfileActions";
-import {CLIENT_DEV_ENV} from '../../config/config';
-import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import { loadSpecificUser } from "../../redux/actions/userProfileActions";
+import { CLIENT_DEV_ENV } from '../../config/config';
+import { UserContext, getUserRoles } from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class UserDetails extends Component {
@@ -18,9 +18,9 @@ class UserDetails extends Component {
     };
 
     componentDidMount = () => {
-        if(CLIENT_DEV_ENV){
+        if (CLIENT_DEV_ENV) {
             this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, ['adminUser']);
-            this.setState( {
+            this.setState({
                 ...this.state,
                 userProfile: this.props.userProfile
             });
@@ -33,15 +33,15 @@ class UserDetails extends Component {
           } else {
               userRoles = getUserRoles(this.context);
           }
-
-          if (Object.keys(this.props.userProfile).length > 0 &&
-              this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
-              this.setState({
-                  ...this.state,
-                  userProfile: this.props.userProfile
-              })
-          } else {
-            this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
+        let id = this.props.match ? this.props.match.params.user_id : this.props.id;
+        if (Object.keys(this.props.userProfile).length > 0 &&
+            this.props.userProfile.userSummary.userID === id) {
+            this.setState({
+                ...this.state,
+                userProfile: this.props.userProfile
+            })
+         } else {
+            this.props.loadSpecificUser(id, userRoles)
             .then(() => {
                 var userProfile = this.props.userProfile;
                 if (userProfile) {
@@ -51,9 +51,9 @@ class UserDetails extends Component {
                     })
                 }
             })
-          }
         }
-    };
+    }
+    }
 
     render() {
         let userRoles;
@@ -62,7 +62,7 @@ class UserDetails extends Component {
         } else {
             userRoles = getUserRoles(this.context);
         }
-        let currUserID = ( this.props.id || this.context.profile.userID )
+        let currUserID = (this.props.id || this.context.profile.userID)
         let userDetails = this.state.userProfile;
         if (Object.keys(userDetails).length === 0) {
             return (
@@ -79,21 +79,21 @@ class UserDetails extends Component {
             }
 
             const currentProjects = [];
-            if(userDetails.currentProjects && userDetails.currentProjects.length > 0){
+            if (userDetails.currentProjects && userDetails.currentProjects.length > 0) {
                 userDetails.currentProjects.forEach((project, index) => {
                     let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
                     currentProjects.push(
                         <ProjectCard number={index + 1} project={project} canEditProject={false}
-                                     onUserCard={true} userRole={projectRole[0]} key={currentProjects.length}/>
+                            onUserCard={true} userRole={projectRole[0]} key={currentProjects.length} />
                     )
                 })
             } else {
                 currentProjects.push(<p className="empty-statements" key={currentProjects.length}>There are currently no projects assigned to this resource.</p>)
             }
             let unavailability = [];
-            if(userDetails.availability && userDetails.availability.length > 0) {
+            if (userDetails.availability && userDetails.availability.length > 0) {
                 userDetails.availability.forEach(currentAvailability => {
-                    unavailability.push(<AvailabilityCard edit={false} availability={currentAvailability} key={unavailability.length}/>)
+                    unavailability.push(<AvailabilityCard edit={false} availability={currentAvailability} key={unavailability.length} />)
                 })
             } else {
                 unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)
@@ -103,17 +103,17 @@ class UserDetails extends Component {
                     {
                         this.props.showGreeting && (
                             <h1>Welcome, {userDetails.userSummary.firstName}!</h1>
-                    )}
+                        )}
                     <div className="title-bar">
                         <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
-                        { (userRoles.includes("adminUser") || userDetails.userSummary.userID === currUserID) && (
+                        {(userRoles.includes("adminUser") || userDetails.userSummary.userID === currUserID) && (
                             <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
-                            <Button variant="contained"
-                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                <Button variant="contained"
+                                    style={{ backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                                     disableElevation>
-                                Edit
+                                    Edit
                             </Button>
-                        </Link>
+                            </Link>
                         )}
                     </div>
                     <div className="section-container">

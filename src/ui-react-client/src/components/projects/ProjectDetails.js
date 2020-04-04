@@ -23,12 +23,16 @@ class ProjectDetails extends Component {
             var projectProfile = this.props.projectProfile;
             if (projectProfile) {
                 this.setState({
+                    ...this.state,
                     projectProfile
                 })
             }
         } else {
+            // checks if there is a newly added opening to the project, if there is, it makes a server call to get
+            // the correct openingID for the project
             if (Object.keys(this.props.projectProfile).length > 0 &&
-            this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
+            this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id
+            && this.props.projectProfile.openings.findIndex(opening => opening.openingID === 0) !== -1) {
                 this.setState({
                     ...this.state,
                     projectProfile: this.props.projectProfile
@@ -40,6 +44,7 @@ class ProjectDetails extends Component {
                     var projectProfile = this.props.projectProfile;
                     if (projectProfile) {
                         this.setState({
+                            ...this.state,
                             projectProfile
                         })
                     }
@@ -49,9 +54,20 @@ class ProjectDetails extends Component {
         }
     };
 
+    componentDidUpdate = (prevProps) => {
+        if(prevProps.projectProfile !== this.props.projectProfile){
+            var projectProfile = this.props.projectProfile;
+            if (projectProfile) {
+                this.setState({
+                    ...this.state,
+                    projectProfile,
+                })
+            }
+        }
+    }
+
     render() {
         let userRoles = getUserRoles(this.context);
-        let userID = this.context.profile.userID;
         if (Object.keys(this.state.projectProfile).length !== 0 &&
             this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
@@ -74,7 +90,7 @@ class ProjectDetails extends Component {
             const userSummaries = this.state.projectProfile.usersSummary;
             const projectManager = this.state.projectProfile.projectManager;
             const projectDetails = this.state.projectProfile;
-            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
+            teamMembersRender.push(<ProjectManagerCard userRoles={userRoles} projectManager={projectManager} key={teamMembersRender.length}/>);
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
                     <UserCard user={userSummary}

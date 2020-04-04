@@ -3,11 +3,11 @@ using Web.API.Application.Repository;
 using Web.API.Application.Communication;
 using Web.API.Resources;
 using System;
-using System.Text.Json;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Linq;
+using Newtonsoft.Json;
 using Dapper;
 using Serilog;
 
@@ -109,6 +109,26 @@ namespace Web.API.Infrastructure.Data
                 RowsPerPage = 50
             });
             return GetSorted(projects, orderKey, order);
+        }
+
+        public async Task<IEnumerable<string>> GetAllProjectNumbersOfManager(string managerId)
+        {
+            var sql = @"
+                SELECT
+                    p.Number
+                FROM
+                    Projects p
+                WHERE
+                    p.ManagerId = @ManagerId
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var projectNumbers = await connection.QueryAsync<string>(sql, new
+            {
+                ManagerId = managerId
+            });
+            connection.Close();
+            return projectNumbers;
         }
 
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page)
@@ -308,7 +328,7 @@ namespace Web.API.Infrastructure.Data
                 SELECT CAST(scope_identity() as int);
             ;";
 
-            string hours = JsonSerializer.Serialize<JsonElement>(opening.CommitmentMonthlyHours);
+            string hours = JsonConvert.SerializeObject(opening.CommitmentMonthlyHours);
 
             connection.Open();
             var id = await connection.QuerySingleAsync<int>(sql, new
@@ -330,7 +350,7 @@ namespace Web.API.Infrastructure.Data
                 VALUES
                     (
                         @PositionId,
-                        (SELECT Id FROM Skills WHERE Name = @SkillName),
+                        (SELECT Id FROM Skills WHERE Name = @SkillName AND DisciplineId = (SELECT DisciplineId FROM Positions WHERE Id = @PositionId)),
                         (SELECT DisciplineId FROM Positions WHERE Id = @PositionId)
                     )
             ;";
@@ -371,14 +391,46 @@ namespace Web.API.Infrastructure.Data
 
             var projectSummary = projectProfile.ProjectSummary;
             var projectManager = projectProfile.ProjectManager;
-            var success = await this.UpdateAProject(connection, locationId, projectSummary, projectManager);
+            var updatedCount = await this.UpdateAProject(connection, locationId, projectSummary, projectManager);
 
-            if (success == 1)
+            if (updatedCount != 1)
             {
-                if (projectProfile.Openings != null)
+                var errMessage = $"Query returns failure status on updating project number '{projectProfile.ProjectSummary.ProjectNumber}'";
+                var error = new InternalServerException(errMessage);
+                throw new CustomException<InternalServerException>(error);
+            }
+
+            else
+            {
+                var projectId = await this.GetProjectId(connection, projectSummary.ProjectNumber);
+                var currentOpeningIds = await this.GetCurrentOpeningIdsForProject(connection, projectId);
+                if ((projectProfile.Openings == null) || (projectProfile.Openings.Count() == 0))
                 {
-                    var projectId = await this.GetProjectId(connection, projectSummary.ProjectNumber);
-                    var currentOpeningIds = await this.GetCurrentOpeningIdsForProject(connection, projectId);
+                    var deletedCount = await this.DeleteAllOpeningPositions(connection, projectId);
+                    if (deletedCount != currentOpeningIds.Count())
+                    {
+                        var error = new InternalServerException(
+                            $@"Deleted opening counts ({deletedCount}) is not the same as Current opening counts ({currentOpeningIds.Count()})"
+                        );
+                        throw new CustomException<InternalServerException>(error);
+                    }
+                }
+                else
+                {
+                    var request = projectProfile.Openings.Select(opening => opening.PositionID);
+                    var toDeleteIds = currentOpeningIds.Except(request);
+                    if (toDeleteIds != null && toDeleteIds.Count() > 0)
+                    {
+                        var deletedCount = await this.DeleteOpeningPositions(connection, toDeleteIds);
+                        if (deletedCount != toDeleteIds.Count())
+                        {
+                            var error = new InternalServerException(
+                                $@"Deleted opening counts ({deletedCount}) is not the same as To Be Deleted opening counts ({toDeleteIds.Count()})"
+                            );
+                            throw new CustomException<InternalServerException>(error);
+                        }
+                    }
+
                     foreach (var opening in projectProfile.Openings)
                     {
                         if (!currentOpeningIds.Contains(opening.PositionID))
@@ -413,13 +465,37 @@ namespace Web.API.Infrastructure.Data
                         }
                     }
                 }
-
                 return projectSummary.ProjectNumber;
             }
-            else
-            {
-                return null;
-            }
+        }
+
+        private async Task<int> DeleteOpeningPositions(SqlConnection connection, IEnumerable<int> toDeleteIds)
+        {
+            var sql = @"
+                DELETE FROM
+                    Positions
+                WHERE
+                    Id IN @ToDeleteIds
+            ";
+
+            connection.Open();
+            var deletedCount = await connection.ExecuteAsync(sql, new { ToDeleteIds = toDeleteIds });
+            connection.Close();
+            return deletedCount;
+        }
+
+        private async Task<int> DeleteAllOpeningPositions(SqlConnection connection, int projectId)
+        {
+            var sql = @"
+                DELETE FROM
+                    Positions
+                WHERE
+                    ProjectId = @ProjectId
+            ";
+            connection.Open();
+            var deletedCount = await connection.ExecuteAsync(sql, new { ProjectId = projectId });
+            connection.Close();
+            return deletedCount;
         }
 
         private async Task<IEnumerable<int>> GetCurrentPositionSkillIds(SqlConnection connection, int positionId)
@@ -478,7 +554,7 @@ namespace Web.API.Infrastructure.Data
                     Id = @PositionId
             ;";
 
-            var hours = JsonSerializer.Serialize<JsonElement>(opening.CommitmentMonthlyHours);
+            var hours = JsonConvert.SerializeObject(opening.CommitmentMonthlyHours);
 
             connection.Open();
             int success = await connection.ExecuteAsync(sql, new
@@ -497,7 +573,7 @@ namespace Web.API.Infrastructure.Data
         private async Task<IEnumerable<int>> GetCurrentOpeningIdsForProject(SqlConnection connection, int projectId)
         {
             var sql = @"
-                SELECT Id
+                SELECT DISTINCT Id
                 FROM Positions
                 WHERE
                     ProjectId = @ProjectId
@@ -561,9 +637,9 @@ namespace Web.API.Infrastructure.Data
             return projectId;
         }
 
-        public async Task<Project> DeleteAProject(string number)
+        public async Task<int> DeleteAProject(string number)
         {
-            var project = await GetAProject(number);
+            // var project = await GetAProject(number);
             var sql = @"
                 DELETE
                 FROM Projects
@@ -572,10 +648,10 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            await connection.ExecuteAsync(sql, new { Number = number });
+            var count = await connection.ExecuteAsync(sql, new { Number = number });
             connection.Close();
-            
-            return project;
+
+            return count;
         }
     }
 }
