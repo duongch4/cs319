@@ -19,6 +19,46 @@ namespace Web.API.Application.Communication
         public int ConfirmedUtilization { get; set; }
     }
 
+    public class RequestUnassign
+    {
+        /// <summary>Id of position from which we unassigned a resource</summary>
+        /// <example>941</example>
+        public int OpeningId { get; set; }
+
+        /// <summary>Id resource that was unassigned from position</summary>
+        /// <example>15</example>
+        public string UserId { get; set; }
+
+        /// <summary>Updated Utilization of Resource that was removed</summary>
+        /// <example>0</example>
+        public int ConfirmedUtilization { get; set; }
+
+        /// <summary>OpeningPositionsSummery of position from which we unassigned a resource</summary>
+        /// <example>
+        /// {
+        ///    "positionID": 941,
+        ///    "commitmentMonthlyHours": {
+        ///        "2025-01-26": 110,
+        ///        "2025-02-09": 58,
+        ///        "2025-03-05": 65,
+        ///        "2025-04-01": 102,
+        ///        "2025-05-16": 114,
+        ///        "2025-06-05": 179,
+        ///        "2025-07-04": 123,
+        ///        "2025-08-10": 100,
+        ///        "2025-09-04": 30,
+        ///        "2025-10-01": 140,
+        ///        "2025-11-10": 175,
+        ///        "2025-12-07": 187
+        ///    },
+        ///    "discipline": "Mining engineering‎",
+        ///    "yearsOfExp": "10+",
+        ///    "skills": []
+        /// }
+        /// </example>
+        public OpeningPositionsSummary Opening { get; set; }
+    }
+
     public class Utilization
     {
         public int Min { get; set; }

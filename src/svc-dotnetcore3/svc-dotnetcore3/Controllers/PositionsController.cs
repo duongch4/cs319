@@ -219,10 +219,13 @@ namespace Web.API.Controllers
         ///
         /// </remarks>
         /// <param name="openingId">Id of position that we're unassign resource from</param>
-        /// <returns>The OpeningPositionsResource of the opening that we're unassigning a resource from</returns>
-        /// <response code="200">Returns OpeningPositionResource of opening</response>
+        /// <returns>The OpeningId of the opening that we're unassigning a resource from,
+        ///          The UserId of the Resource that we unassigned
+        ///          The updated ConfirmedUtilization of the Resource that we unassigned
+        ///          The OpeningPositionsSummary of the position that we unassigned from</returns>
+        /// <response code="200">Returns RequestUnassign of opening</response>
         /// <response code="400">Bad Request</response>
-        /// <response code="404">If either the opening or user cannot be found</response>
+        /// <response code="404">If opening cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("positions/{openingId}/unassign/")]
@@ -269,14 +272,19 @@ namespace Web.API.Controllers
                 IEnumerable<OutOfOffice> outOfOffices = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user.Id);
 
                 int newUtilizationOfUser = await utilizationRepository.CalculateUtilizationOfUser(positions, outOfOffices);
-                await usersRepository.UpdateUtilizationOfUser(newUtilizationOfUser, user.Id);
+                user = await usersRepository.UpdateUtilizationOfUser(newUtilizationOfUser, user.Id);
 
                 OpeningPositionsResource openingRes = await positionsRepository.GetAnOpeningPositionsResource(openingId);
                 OpeningPositionsSummary openingSummary = mapper.Map<OpeningPositionsResource, OpeningPositionsSummary>(openingRes);
+                RequestUnassign response = new RequestUnassign{
+                                                                 OpeningId = position.Id,
+                                                                 UserId = user.Id,
+                                                                 ConfirmedUtilization = user.Utilization,
+                                                                 Opening = openingSummary                                               
+                                                                };
 
 
-                Log.Information("{@response}", openingSummary);
-                return StatusCode(StatusCodes.Status200OK, openingSummary);
+                return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
             {
