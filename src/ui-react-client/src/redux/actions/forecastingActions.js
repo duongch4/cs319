@@ -3,6 +3,7 @@ import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
+import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/`;
 
@@ -55,16 +56,7 @@ export const confirmAssignOpenings = (openingId, userID, confirmedUtilization, u
                     dispatch(confirmAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, userSummaryDisciplineName))
                 })
                 .catch(error => {
-                    let errorParsed = "";
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message;
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err);
-                    } else {
-                        errorParsed = error.response.statusText;
-                    }
-                    alert(errorParsed);
+                    errorHandler(error);
                 })
         })
       }
@@ -84,16 +76,7 @@ export const createAssignOpenings = (openingId, userId, confirmedUtilization, us
                   dispatch(createAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, user))
                 })
                 .catch(error => {
-                    let errorParsed = "";
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message;
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err);
-                    } else {
-                        errorParsed = error.response.statusText;
-                    }
-                    alert(errorParsed);
+                    errorHandler(error);
                 })
         })
       }

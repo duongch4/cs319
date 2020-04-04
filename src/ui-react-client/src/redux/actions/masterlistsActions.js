@@ -3,6 +3,7 @@ import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
+import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/`;
 
@@ -120,16 +121,7 @@ export const createDiscpline = (discipline, userRoles) => {
                     dispatch(createDiscplineData(discipline))
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed);
+                    let errorParsed = errorHandler(error);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -149,16 +141,7 @@ export const createSkill = (skill, userRoles) => {
                     dispatch(createSkillData(skill))
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed);
+                    let errorParsed = errorHandler(error);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -178,16 +161,7 @@ export const createProvince = (location, userRoles) => {
                     dispatch(createProvinceData(location))
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed);
+                    let errorParsed = errorHandler(error);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -208,16 +182,7 @@ export const createCity = (location, userRoles) => {
                     dispatch(createCityData(location))
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed);
+                    let errorParsed = errorHandler(error);
                     dispatch(errorCreating(errorParsed));
                 })
             })
@@ -237,16 +202,7 @@ export const deleteDiscipline = (id, userRoles) => {
                     dispatch(deleteDisciplineData(id))
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed);
+                    let errorParsed = errorHandler(error);
                     dispatch(errorDeleting(errorParsed));
                 })
             })
@@ -266,18 +222,9 @@ export const deleteSkill = (disciplineID, skillName, userRoles) => {
                 dispatch(deleteSkillData(disciplineID, skillName));
             })
             .catch(error => {
-                let errorParsed = ""
-                console.log(error.response)
-                if(error.response.status === 500){
-                    let err = error.response.data.message
-                    errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)                 
-                } else {
-                    errorParsed = error.response.statusText
-                }
-                alert(errorParsed);
+                let errorParsed = errorHandler(error);
                 dispatch(errorDeleting(errorParsed));
-                    })
+            })
             })
         }
     } 
@@ -295,16 +242,7 @@ export const deleteProvince = (provinceName, userRoles) => {
                     dispatch(deleteProvinceData(response.data.payload))
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed);
+                    let errorParsed = errorHandler(error);
                     dispatch(errorDeleting(errorParsed));
                 })
             })
@@ -324,18 +262,9 @@ export const deleteCity = (cityName, id, userRoles) => {
                 dispatch(deleteCityData(cityName, id))
             })
             .catch(error => {
-                let errorParsed = ""
-                console.log(error.response)
-                if(error.response.status === 500){
-                    let err = error.response.data.message
-                    errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                    console.log(err)                 
-                } else {
-                    errorParsed = error.response.statusText
-                }
-                alert(errorParsed);
+                let errorParsed = errorHandler(error);
                 dispatch(errorDeleting(errorParsed));
-                    })
+            })
             })
         }
     } 
