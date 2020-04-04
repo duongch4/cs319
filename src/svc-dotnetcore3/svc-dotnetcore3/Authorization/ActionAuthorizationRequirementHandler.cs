@@ -32,7 +32,11 @@ namespace Web.API.Authorization
                 context.Succeed(requirement);
             }
 
-            _httpContext.HttpContext.Items[AuthorizationPolicyEvaluator.contextKey] = "Failed ActionAuthorizationRequirement!";
+            if (_httpContext.HttpContext.Items.ContainsKey(AuthorizationPolicyEvaluator.contextKey))
+            {
+                var prevMes = _httpContext.HttpContext.Items[AuthorizationPolicyEvaluator.contextKey] as string;
+                _httpContext.HttpContext.Items[AuthorizationPolicyEvaluator.contextKey] = $@"{prevMes} Failed ActionAuthorizationRequirement!".Trim();
+            }
 
             return Task.CompletedTask;
         }
