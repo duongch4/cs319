@@ -221,36 +221,37 @@ namespace Web.API.Infrastructure.Data
 
         }
 
-        public async Task<IEnumerable<Project>> GetAllProjectsOfUser(User user)
-        {
-            var sql = @"
-                select 
-                    p.Id, p.Number, p.Title, p.LocationId, 
-                    p.CreatedAt, p.UpdatedAt, p.ManagerId, 
-                    p.ProjectStartDate, p.ProjectEndDate
-                from Positions as pos, Projects as p
-                where pos.ResourceId = " + user.Id + "and pos.ProjectId = p.Id;";
-
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-            return await connection.QueryAsync<Project>(sql, new { UserId = user.Id });
-        }
-
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(string userId)
         {
             var sql = @"
-                SELECT
-                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
-                    p.ManagerId, p.LocationId, p.Number,
-                    u.FirstName, u.LastName,
-                    l.Province, l.City
-                FROM
-                    Positions as pos, Projects as p, Users u, Locations l
-                WHERE
-                    pos.ResourceId = u.Id
-                    AND pos.ResourceId = @UserId 
-                    AND pos.ProjectId = p.Id
-                    AND l.Id = p.LocationId
+                (	
+                    SELECT
+                        p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                        p.ManagerId, p.LocationId, p.Number,
+                        u.FirstName, u.LastName,
+                        l.Province, l.City
+                    FROM
+                        Positions as pos, Projects as p, Users u, Locations l
+                    WHERE
+                        pos.ResourceId = u.Id
+                        AND pos.ResourceId = @UserId
+                        AND pos.ProjectId = p.Id
+                        AND l.Id = p.LocationId
+                )
+                UNION
+                (
+                    SELECT
+                        p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                        p.ManagerId, p.LocationId, p.Number,
+                        u.FirstName, u.LastName,
+                        l.Province, l.City 
+                    FROM
+                        Projects p, Locations l, Users u
+                    WHERE
+                        p.LocationId = l.Id
+                        AND p.ManagerId = u.Id
+                        AND p.ManagerId = @UserId
+                )
             ;";
 
             using var connection = new SqlConnection(connectionString);

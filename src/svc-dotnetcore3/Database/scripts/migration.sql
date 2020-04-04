@@ -33,7 +33,7 @@ CREATE TABLE [dbo].[Users]
 	[Id] [nvarchar](100) NOT NULL,
 	[FirstName] [nvarchar](50) NOT NULL,
 	[LastName] [nvarchar](50) NOT NULL,
-	[Username] [nvarchar](50) NOT NULL,
+	[Username] [nvarchar](100) NOT NULL,
 	[LocationId] [int] NOT NULL,
 	[Utilization] [int] NOT NULL, 
 	[IsAdmin] [bit] NOT NULL,
