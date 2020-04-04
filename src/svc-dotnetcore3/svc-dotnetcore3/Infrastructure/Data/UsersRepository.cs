@@ -144,13 +144,25 @@ namespace Web.API.Infrastructure.Data
                     d.Name AS DisciplineName,
                     STRING_AGG (s.Name, ',') as Skills
                 FROM
-                    Users u, Locations l, Positions p, Disciplines d, Skills s
+                    Users u
+                INNER JOIN Locations l
+                    ON
+                        u.LocationId = l.Id
+                INNER JOIN Positions p
+                    ON
+                        p.ResourceId = u.Id
+                INNER JOIN Disciplines d
+                    ON
+                        d.Id = p.DisciplineId
+                LEFT JOIN PositionSkills ps
+                    ON
+                        p.Id = ps.PositionId
+                LEFT JOIN Skills s
+                    ON
+                        ps.SkillId = s.Id
+                        AND ps.SkillDisciplineId = s.DisciplineId
                 WHERE
-                    u.LocationId = l.Id
-                    AND p.ResourceId = u.Id
-                    AND p.ProjectId = @ProjectId
-                    AND d.Id = p.DisciplineId
-                    AND s.DisciplineId = d.Id
+                    p.ProjectId = @ProjectId
                     AND u.Id != @ProjectManagerId
                 GROUP BY
                     u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
@@ -324,7 +336,7 @@ namespace Web.API.Infrastructure.Data
                     ON
                         rd.DisciplineId = d.Id
                         AND d.Name IN @Disciplines
-                INNER JOIN Skills s
+                LEFT JOIN Skills s
                     ON
                         s.DisciplineId = d.Id
                         AND s.Name IN @Skills
