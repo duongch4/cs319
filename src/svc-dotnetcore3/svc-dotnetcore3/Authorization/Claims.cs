@@ -6,6 +6,7 @@ namespace Web.API.Authorization
     {
         internal const string ScopeClaimType = "http://schemas.microsoft.com/identity/claims/scope";
         internal const string ObjectIdentifier = "http://schemas.microsoft.com/identity/claims/objectidentifier";
+        internal const string NameIdentifier = ClaimTypes.NameIdentifier;
         internal const string AppPermissionOrRolesClaimType = ClaimTypes.Role;
     }
 }

@@ -10,6 +10,7 @@ namespace Web.API.Application.Repository
     {
         // GET
         Task<IEnumerable<ProjectResource>> GetAllProjects();
+        Task<IEnumerable<string>> GetAllProjectNumbersOfManager(string managerId);
         Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page);
         Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page);
         Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(string userId);
@@ -25,6 +26,6 @@ namespace Web.API.Application.Repository
         Task<string> UpdateAProject(ProjectProfile projectProfile, int locationId);
 
         // DELETE
-        Task<Project> DeleteAProject(string number);
+        Task<int> DeleteAProject(string number);
     }
 }

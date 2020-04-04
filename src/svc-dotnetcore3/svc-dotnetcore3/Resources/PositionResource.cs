@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Web.API.Resources
 {
     public class PositionResource
