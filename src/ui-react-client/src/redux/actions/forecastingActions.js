@@ -2,7 +2,6 @@ import * as types from './actionTypes';
 import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
-import _initialState from '../reducers/_initialState';
 import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/`;

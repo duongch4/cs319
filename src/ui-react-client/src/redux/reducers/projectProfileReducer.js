@@ -49,7 +49,6 @@ const executeConfirmAssignOpening = (state, action) => {
 
 const executeUnassignOpening = (state, action) => {
   const usersSummaryCopy = state.usersSummary.slice();
-  const disciplineName = action.userSummaryDisciplineName;
   let newUsersSummaryCopy = usersSummaryCopy.filter(userSummary => userSummary.userID !== action.userId
   || userSummary.resourceDiscipline.discipline !== action.userSummaryDisciplineName);
   //TODO once backend done updateopenings to have previosuly assigned opening back in openings array

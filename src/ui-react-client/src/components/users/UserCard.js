@@ -63,7 +63,7 @@ class UserCard extends Component {
   }
 
     render(){
-        const {user, canEdit, canConfirm, projectDetails, showOpeningInfo, canUnassign, canUnassignEditProject} = this.props;
+        const {user, canEdit, canConfirm, showOpeningInfo, canUnassign, canUnassignEditProject} = this.props;
         let isUserConfirmed = user.isConfirmed;
 
         let colour = ""

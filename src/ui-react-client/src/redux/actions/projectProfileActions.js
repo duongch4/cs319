@@ -47,7 +47,7 @@ export const loadSingleProject = (projectNumber, userRoles) => {
                 return axios.get(`${baseURL + projectNumber}`, { headers });
             }).then(response => {
                 dispatch(loadSingleProjectData(response.data.payload));
-            }) .catch(error => {
+            }).catch(error => {
                 errorHandler(error);
                 });
         }
