@@ -87,7 +87,7 @@ class Forecasting extends Component {
                             isAssignable={true}
                             openingId={this.state.openingId}
                             projectNumber={project_number}
-                            createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+                            createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles, project_number, this.props.history)}/>
                 </div>
             )
         }

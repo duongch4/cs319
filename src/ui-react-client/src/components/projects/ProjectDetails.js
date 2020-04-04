@@ -14,7 +14,7 @@ import Loading from '../common/Loading';
 
 class ProjectDetails extends Component {
     state = {
-        projectProfile: this.props.projectProfile
+        projectProfile: this.props.projectProfile,
     };
 
     componentDidMount = () => {
@@ -23,6 +23,7 @@ class ProjectDetails extends Component {
             var projectProfile = this.props.projectProfile;
             if (projectProfile) {
                 this.setState({
+                    ...this.state,
                     projectProfile
                 })
             }
@@ -40,6 +41,7 @@ class ProjectDetails extends Component {
                     var projectProfile = this.props.projectProfile;
                     if (projectProfile) {
                         this.setState({
+                            ...this.state,
                             projectProfile
                         })
                     }
@@ -48,6 +50,18 @@ class ProjectDetails extends Component {
             // }
         }
     };
+
+    componentDidUpdate = (prevProps) => {
+        if(prevProps.projectProfile !== this.props.projectProfile){
+            var projectProfile = this.props.projectProfile;
+            if (projectProfile) {
+                this.setState({
+                    ...this.state,
+                    projectProfile,
+                })
+            }
+        }
+    }
 
     render() {
         let userRoles = getUserRoles(this.context);
@@ -73,7 +87,7 @@ class ProjectDetails extends Component {
             const userSummaries = this.state.projectProfile.usersSummary;
             const projectManager = this.state.projectProfile.projectManager;
             const projectDetails = this.state.projectProfile;
-            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
+            teamMembersRender.push(<ProjectManagerCard userRoles={userRoles} projectManager={projectManager} key={teamMembersRender.length}/>);
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
                     <UserCard user={userSummary}
