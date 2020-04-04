@@ -51,14 +51,10 @@ class UserDetails extends Component {
                             })
                         }
                     })
-                }
-            })
+            }
         }
     }
-<<<<<<< HEAD
-=======
-    }
->>>>>>> client
+
 
     render() {
         let userRoles;
