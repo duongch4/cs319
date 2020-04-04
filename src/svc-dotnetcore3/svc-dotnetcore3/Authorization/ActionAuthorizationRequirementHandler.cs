@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Web.API.Authorization
 {
@@ -26,10 +27,12 @@ namespace Web.API.Authorization
             if (acceptedDelegatedPermissions.Any(accepted => delegatedPermissions.Contains(accepted)))
             {
                 context.Succeed(requirement);
+                return Task.CompletedTask;
             }
             else if (acceptedApplicationPermissions.Any(accepted => appPermissionsOrRoles.Contains(accepted)))
             {
                 context.Succeed(requirement);
+                return Task.CompletedTask;
             }
 
             if (_httpContext.HttpContext.Items.ContainsKey(AuthorizationPolicyEvaluator.contextKey))
@@ -37,7 +40,6 @@ namespace Web.API.Authorization
                 var prevMes = _httpContext.HttpContext.Items[AuthorizationPolicyEvaluator.contextKey] as string;
                 _httpContext.HttpContext.Items[AuthorizationPolicyEvaluator.contextKey] = $@"{prevMes} Failed ActionAuthorizationRequirement!".Trim();
             }
-
             return Task.CompletedTask;
         }
     }
