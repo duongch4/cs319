@@ -123,6 +123,33 @@ it('should update user summary from action payload', () => {
   expect(received).toHaveLength(2);
 });
 
+it('should not update user summary if matching user id not found', () => {
+  let userSummary = {
+    firstName: "New User",
+    lastName: "Name",
+    userID: 42,
+    location: {
+        locationID: 2,
+        province: "British Columbia",
+        city: "Vancouver"
+    },
+    utilization: 100,
+    resourceDiscipline: {
+        disciplineID: 456,
+        discipline: "Intel",
+        yearsOfExp: "3-5"
+    },
+    isConfirmed: true
+  };
+  let action = {
+      type: types.UPDATE_USER_SUMMARIES,
+      userSummary: userSummary
+  };
+  let received = usersReducer(initialState, action);
+
+  expect(received).toEqual(initialState);
+});
+
 it('should return the searched for users from action payload', () => {
   let users = [{user: 'testA'}, {user: 'testB'}, {user: 'testC'}];
   let action = {
