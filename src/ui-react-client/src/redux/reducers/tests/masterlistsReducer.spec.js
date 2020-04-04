@@ -99,9 +99,6 @@ it('should add a new discipline to the masterlist in state', () => {
 
     expect(disciplineKeys.length).toEqual(4);
     expect(disciplineKeys).toContain(discipline.name);
-    expect(receivedDisciplines[discipline.name]).not.toBeUndefined();
-    expect(receivedDisciplines[discipline.name].disciplineID).not.toBeUndefined();
-    expect(receivedDisciplines[discipline.name].skills).not.toBeUndefined();
     expect(receivedDisciplines[discipline.name]).toEqual(
         expect.objectContaining({
             disciplineID: 42,
@@ -250,9 +247,32 @@ it('should remove a city from the masterlist in state', () => {
     expect(received.error).toBeNull();
 });
 
-it('should append deletion error to the state', () => {});
+it('should append deletion error to the state', () => {
+    let error = 'deleting error';
+    let action = {type: types.ERROR_DELETING, error: error};
+    let received = masterlistsReducer(initialState, action);
 
-it('should append creation error to the state', () => {});
+    expect(received).toEqual(expect.objectContaining({error: error}))
+});
 
-it('should remove error from the state',() => {});
+it('should append creation error to the state', () => {
+    let error = 'creating error';
+    let action = {type: types.ERROR_CREATING, error: error};
+    let received = masterlistsReducer(initialState, action);
+
+    expect(received).toEqual(expect.objectContaining({error: error}))
+});
+
+it('should remove error from the state',() => {
+    let error = 'deleting error';
+    let prepAction = {type: types.ERROR_DELETING, error: error};
+    let prepState = masterlistsReducer(initialState, prepAction);
+
+    expect(prepState).toEqual(expect.objectContaining({error: error}));
+
+    let action = {type: types.CLEAR_ERROR};
+    let received = masterlistsReducer(prepState, action);
+
+    expect(received).toEqual(expect.not.objectContaining({error: error}));
+});
 
