@@ -38,7 +38,7 @@ export const executeCreateSkill = (action, state) => {
 
 export const executeCreateProvince = (action, state) => {
     let newLocation = state.locations
-    newLocation[action.location.province] = []
+    newLocation[action.location.province] = {}
     let newState = {
         ...state,
         error: null,
