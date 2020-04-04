@@ -11,11 +11,12 @@ using Web.API.Resources;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using Web.API.Authorization;
 using Serilog;
 
 namespace Web.API.Controllers
 {
-    [Authorize]
+    [Authorize(Actions.AdminThings)] // TODO: Purpose for now: Auth Integration Testing on Regular User Will Fail on Forbidden 403
     [Route("api")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
