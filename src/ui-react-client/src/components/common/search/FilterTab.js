@@ -220,17 +220,17 @@ class FilterTab extends Component {
                 {(!this.state.cityFilled) && 
                 (<div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
-                    <Button variant="contained" style={{ backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation>Must select city</Button>
+                    <Button variant="contained" style={{ backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation isDisabled>Apply Filters</Button>
                     <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
                 </div>)}
                 <div className="filter-box">
                     <div className="filter-title">
                         <h2>Add Filters</h2>
                         { !showing && (
-                            <Arrow  size={"large"} onClick={()=> this.setState({ showing: !showing })}>toggle</Arrow>
+                            <Arrow  size={"large"} onClick={()=> this.setState({ showing: !showing})}>toggle</Arrow>
                         )}
                         { showing && (
-                            <ExpandLessRoundedIcon onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
+                            <ExpandLessRoundedIcon onClick={()=> this.setState({ showing: !showing, cityFilled: true })}>toggle </ExpandLessRoundedIcon>
                         )}
                     </div>
                     { showing && (
@@ -238,6 +238,11 @@ class FilterTab extends Component {
                                 <h3 className="darkGreenHeader filter-header">Locations</h3>
                                 <AddLocation locations={this.props.masterlist.locations}
                                              updateLocations={this.updateLocations}/>
+                                {(!this.state.cityFilled) && (
+                                    <div style={{color: "red"}}>
+                                        Must select a city
+                                    </div>
+                                )}
                                 <h3 className="darkGreenHeader">Disciplines</h3>
                                 <AddDisciplines disciplines={this.props.masterlist.disciplines}
                                                 yearsOfExp={this.props.masterlist.yearsOfExp}

@@ -73,8 +73,8 @@ class ProjectsPage extends Component {
   componentDidUpdate() {
     if (this.state.searchPressed) {
       this.resetSearch();
-    } else if (!this.state.doneLoading && !this.state.loading && Math.abs(this.state.lastPage - this.state.currPage) < 5) {
-      // once the user 5 pages away from the last loaded page, it will load 10 more
+    } else if (!this.state.doneLoading && !this.state.loading && Math.abs(this.state.lastPage - this.state.currPage) < 2) {
+      // once the user 1 page away from the last loaded page, it will load 2 more
       this.loadMore();
     }
   }
@@ -113,8 +113,8 @@ class ProjectsPage extends Component {
   }
 
   getAll(userRoles, currPage, offset) {
-    // only loads 10 pages at a time so that it doesnt take as long
-    if (currPage <= (offset * 10)) {
+    // only loads 2 pages at a time so that it doesnt take as long
+    if (currPage <= (offset * 3)) {
       if ((!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50) && !this.state.searchPressed) {
         var newPage = currPage + 1
         var filter = this.getFilterWithPage(newPage);
