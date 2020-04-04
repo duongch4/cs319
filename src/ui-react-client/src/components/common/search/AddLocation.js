@@ -34,7 +34,7 @@ class AddLocation extends Component {
       addLocations = (state) => {
             var key = state.key;
             var location = state.locations;
-            if (key != undefined) {
+            if (key !== undefined) {
                 this.setState({
                     status: Object.assign({}, this.state.status, {[key]: location}),
                 }, () => this.props.updateLocations(Object.values(this.state.status)));

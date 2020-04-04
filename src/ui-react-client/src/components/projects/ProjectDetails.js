@@ -23,6 +23,7 @@ class ProjectDetails extends Component {
             var projectProfile = this.props.projectProfile;
             if (projectProfile) {
                 this.setState({
+                    ...this.state,
                     projectProfile
                 })
             }
@@ -43,6 +44,7 @@ class ProjectDetails extends Component {
                     var projectProfile = this.props.projectProfile;
                     if (projectProfile) {
                         this.setState({
+                            ...this.state,
                             projectProfile
                         })
                     }
@@ -52,18 +54,20 @@ class ProjectDetails extends Component {
         }
     };
 
-    componentDidUpdate(prevProps) {
-        if (this.props.projectProfile !== prevProps.projectProfile) {
-            this.setState({
-                ...this.state,
-                projectProfile: this.props.projectProfile
-            })
+    componentDidUpdate = (prevProps) => {
+        if(prevProps.projectProfile !== this.props.projectProfile){
+            var projectProfile = this.props.projectProfile;
+            if (projectProfile) {
+                this.setState({
+                    ...this.state,
+                    projectProfile,
+                })
+            }
         }
     }
 
     render() {
         let userRoles = getUserRoles(this.context);
-        let userID = this.context.profile.userID;
         if (Object.keys(this.state.projectProfile).length !== 0 &&
             this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
@@ -86,7 +90,7 @@ class ProjectDetails extends Component {
             const userSummaries = this.state.projectProfile.usersSummary;
             const projectManager = this.state.projectProfile.projectManager;
             const projectDetails = this.state.projectProfile;
-            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
+            teamMembersRender.push(<ProjectManagerCard userRoles={userRoles} projectManager={projectManager} key={teamMembersRender.length}/>);
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
                     <UserCard user={userSummary}

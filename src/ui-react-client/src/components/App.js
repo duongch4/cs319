@@ -18,6 +18,7 @@ import Forecasting from './common/forecasting/Forecasting.js';
 import AuthProvider from "../config/AuthProvider";
 import PropTypes from "prop-types";
 import { PropsRoute } from "../util/CustomRoute";
+import EditManager from './projects/EditManager';
 
 const App = (appProps) => {
   return (
@@ -35,6 +36,7 @@ const App = (appProps) => {
         <Route path="/editproject/:project_number" component={EditProject} />
         <Route path="/edituser/:user_id" component={EditUser} />
         <Route path="/forecasting/:positionID" component={Forecasting} />
+        <Route path="/editmanager/:projectNumber" component={EditManager} />
         <Route path="/admin" component={Admin} />
         <Route component={PageNotFound} />
       </Switch>

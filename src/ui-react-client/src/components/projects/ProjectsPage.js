@@ -124,7 +124,7 @@ getAll(userRoles, currPage, offset) {
 toNextPage = () => {
     var new_page = this.state.currPage + 1;
     var page_index = new_page - 1;
-    if (this.state.projectsAll[page_index] != undefined) {
+    if (this.state.projectsAll[page_index] !== undefined) {
       this.setState({
           ...this.state,
           projects: this.state.projectsAll[page_index],
@@ -242,7 +242,7 @@ render() {
         </div>
         <div>
             <div className="pagination-controls">
-            {(this.state.currPage == 1) && 
+            {(this.state.currPage === 1) && 
             (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
 
             {(this.state.currPage> 1) && 
@@ -251,11 +251,11 @@ render() {
                 Page {this.state.currPage}
 
             {(this.state.projectsAll[this.state.currPage - 1] !== undefined) && 
-              (!this.state.noResultsNextPage) && (this.state.currPage != this.state.lastPage) &&
+              (!this.state.noResultsNextPage) && (this.state.currPage !== this.state.lastPage) &&
             (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
 
             {((this.state.projectsAll[this.state.currPage - 1] === undefined)
-             || (this.state.currPage == this.state.lastPage) || (this.state.projects.length < 50) ||
+             || (this.state.currPage === this.state.lastPage) || (this.state.projects.length < 50) ||
              (this.state.noResultsNextPage)) && 
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>
