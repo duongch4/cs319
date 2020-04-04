@@ -82,7 +82,8 @@ class ProjectDetails extends Component {
                     key={teamMembersRender.length}
                     canConfirm={true}
                     projectDetails={projectDetails}
-                    showOpeningInfo={true}/>)
+                    showOpeningInfo={true}
+                    canUnassign={true}/>)
             });
 
             if (this.state.projectProfile === null) {

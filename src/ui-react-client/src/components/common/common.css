@@ -224,3 +224,8 @@ input.add:hover {
     position: sticky;
     top: 250px;
 }
+
+.confirmAssign {
+    display: flex;
+    flex-direction: row;
+}
