@@ -167,7 +167,9 @@ class EditProject extends Component {
                         <UserCard user={userSummary}
                         canEdit={false}
                         key={teamMembersRender.length}
-                        showOpeningInfo={true}/>
+                        showOpeningInfo={true}
+                        projectDetails={projectProfile}
+                        canUnassignEditProject={true}/>
                     )
                 })
             } else {

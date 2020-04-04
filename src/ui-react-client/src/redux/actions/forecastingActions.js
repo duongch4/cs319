@@ -26,6 +26,23 @@ export const confirmAssignOpening = (openingId, userId, confirmedUtilization, us
     }
 };
 
+export const unassignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName) => {
+    return {
+        type: types.UNASSIGN_OPENING,
+        openingId: openingId,
+        userId: userId,
+        confirmedUtilization: confirmedUtilization,
+        userSummaryDisciplineName: userSummaryDisciplineName
+    }
+};
+
+export const unassignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName) => {
+    return dispatch => {
+      dispatch(unassignOpening(openingId, userID, confirmedUtilization, userSummaryDisciplineName))
+      // TODO once backend unassign API done add proper code below
+    }
+};
+
 export const confirmAssignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName) => {
     return dispatch => {
       if (CLIENT_DEV_ENV) {
