@@ -49,9 +49,11 @@ class UserDetails extends Component {
                         ...this.state,
                         userProfile: userProfile
                     })
-            }
+                }
+            })
         }
-    };
+    }
+    }
 
     render() {
         let userRoles;
