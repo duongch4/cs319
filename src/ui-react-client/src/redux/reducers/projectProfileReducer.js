@@ -19,7 +19,7 @@ const executeDeleteProjectData = () => {
 
 
 const executeCreateAssignOpening = (state, action) => {
-  let newOpenings = state.openings.filter(opening => opening.positionID !== action.openingID);
+  let newOpenings = state.openings.filter(opening => opening.positionID !== action.openingId);
   let newState = {
   ...state,
   openings: newOpenings,

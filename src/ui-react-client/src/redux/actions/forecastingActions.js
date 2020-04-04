@@ -63,7 +63,7 @@ export const confirmAssignOpenings = (openingId, userID, confirmedUtilization, u
 };
 
 
-export const createAssignOpenings = (openingId, userId, confirmedUtilization, user, userRoles) => {
+export const createAssignOpenings = (openingId, userId, confirmedUtilization, user, userRoles, projectNumber, history) => {
     return dispatch => {
       if (CLIENT_DEV_ENV) {
           dispatch(createAssignOpening(openingId, userId, confirmedUtilization, user))
@@ -73,6 +73,7 @@ export const createAssignOpenings = (openingId, userId, confirmedUtilization, us
             .put(`${baseURL}positions/${openingId}/assign/${userId}`, {}, { headers })
                 .then(response => {
                   dispatch(createAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, user))
+                  history.push('/projects/' + projectNumber);
                 })
                 .catch(error => {
                     errorHandler(error);
