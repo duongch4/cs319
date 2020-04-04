@@ -84,8 +84,8 @@ Insert into Locations values (N'Ontario', N'Toronto');
 Insert into Locations values (N'Ontario', N'Kitchener');
 Insert into Locations values (N'Ontario', N'Niagara-on-the-Lake');
 
-Insert into Users values (N'f58a0b92-ff23-4bc3-9382-2bd80cfbc3ed',N'Natasha', N'Romanova', N'ADMIN-OVERPOWER', 9, 1000, 1, 0);
-Insert into Users values (N'83625056-9a43-402d-adca-2cb5f532a2b6',N'Json', N'Bourne', N'REGULAR-NO-POWER-WHATSOEVER', 9, -1000, 0, 0);
+Insert into Users values (N'f58a0b92-ff23-4bc3-9382-2bd80cfbc3ed',N'Natasha', N'Romanova', N'ADMIN-OVERPOWER', 9, 0, 1, 0);
+Insert into Users values (N'83625056-9a43-402d-adca-2cb5f532a2b6',N'Json', N'Bourne', N'REGULAR-NO-POWER-WHATSOEVER', 9, 80, 0, 0);
 Insert into Users values (N'1',N'Lucia', N'Stein', N'fruitlesspz', 9, 0, 1, 0);
 Insert into Users values (N'2',N'Frida', N'Chandler', N'gynhesestzt', 19, 0, 0, 0);
 Insert into Users values (N'3',N'Magdalena', N'Johnston', N'tyralieraih', 4, 0, 0, 1);
