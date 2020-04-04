@@ -171,15 +171,21 @@ namespace Web.API.Infrastructure.Data
                     d.Name AS Discipline,
                     STRING_AGG (s.Name, ',') as Skills
                 FROM
-                    Positions p, Disciplines d, Skills s, PositionSkills ps
+                    Positions p
+                INNER JOIN Disciplines d
+                    ON
+                        p.DisciplineId = d.Id
+                LEFT JOIN PositionSkills ps
+                    ON
+                        p.Id = ps.PositionId
+                LEFT JOIN Skills s
+                    ON
+                        ps.SkillId = s.Id
+                        AND ps.SkillDisciplineId = s.DisciplineId
                 WHERE
                     p.ProjectId = @ProjectId
                     AND p.ResourceId IS NULL
-                    AND p.DisciplineId = d.Id
-                    AND p.Id = ps.PositionId
-					AND ps.SkillId = s.Id
-					AND ps.SkillDisciplineId = s.DisciplineId
-				GROUP BY
+                GROUP BY
                     p.Id, p.YearsOfExperience,
                     p.ProjectedMonthlyHours,
                     d.Name
