@@ -56,8 +56,10 @@ describe('Create Disciplines', () => {
 
     // TODO
     it('should properly handle internal server error', async () => {
-        axios.post.mockRejectedValueOnce(new Error({response: {status: 400}}));
+        let error = new Error({status: 400});
+        axios.post.mockRejectedValueOnce(error);
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
         
         const discipline = {
             id: 5,
@@ -65,17 +67,18 @@ describe('Create Disciplines', () => {
             skills: "\"Deception,False Identity Creation\""
           }
 
-        // const expectedAction = [{
-        //       type: types.CREATE_DISCIPLINE,
-        //       disciplines: discipline
-        //   }];
-        let error;
-        try {
-            await store.dispatch(masterlistsActions.createDiscpline(discipline, adminRole));
-        } catch (e) {
-            error = e;
-            console.log("test catch block");
-        };
+        const expectedAction = [{
+            type: types.ERROR_CREATING,
+            error: error
+        }];
+
+        await store.dispatch(masterlistsActions.createDiscpline(discipline, adminRole));
+        
+        expect(alert).toHaveBeenCalledTimes(1);
+        expect(store.getActions()).toEqual(expectedAction);
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/disciplines`, discipline, {headers:{ Authorization: `Bearer 100` }});
+
     })
 })
 
