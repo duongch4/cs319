@@ -37,7 +37,7 @@ namespace Web.API.Authorization
         {
             if (context.Items.ContainsKey(AuthorizationPolicyEvaluator.contextKey))
             {
-                var options = context.Items[AuthorizationPolicyEvaluator.contextKey];
+                var options = context.Items[AuthorizationPolicyEvaluator.contextKey] as ForbiddenException;
                 var routeData = context.GetRouteData();
                 var actionDescriptor = new ActionDescriptor();
                 var actionContext = new ActionContext(context, routeData, actionDescriptor);
