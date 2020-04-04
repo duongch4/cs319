@@ -50,6 +50,15 @@ class ProjectDetails extends Component {
         }
     };
 
+    componentDidUpdate(prevProps) {
+        if (this.props.projectProfile !== prevProps.projectProfile) {
+            this.setState({
+                ...this.state,
+                projectProfile: this.props.projectProfile
+            })
+        }
+    }
+
     render() {
         let userRoles = getUserRoles(this.context);
         let userID = this.context.profile.userID;
