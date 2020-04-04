@@ -163,13 +163,11 @@ class FilterTab extends Component {
                 });
             } 
         } else {
-            var name = null;
-            var skills = [];
             var new_obj = {}
                 newDiscipline.forEach((discipline) => {
-                    name = discipline[1].name;
-                    skills = discipline[1].skills;
-                    if (name != null) {
+                    var name = discipline[1].name;
+                    var skills = discipline[1].skills;
+                    if (name !== null) {
                         new_obj = {...new_obj, [name]: skills}
                     };
                     }

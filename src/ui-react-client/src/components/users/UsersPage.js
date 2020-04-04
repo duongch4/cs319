@@ -70,7 +70,7 @@ class UsersPage extends Component {
     }
   }
 
-  componentDidUpdate(previousProps, previousState) {
+  componentDidUpdate() {
     if (!this.state.doneLoading && !this.state.loading && (Math.abs(this.state.lastPage - this.state.currPage) < 2)) {
       this.setState({
         ...this.state, 
@@ -105,7 +105,7 @@ class UsersPage extends Component {
   }
 
   getAll(userRoles, currPage, offset) {
-    // only loads 10 pages at a time so that it doesnt take as long
+    // only loads 5 pages at a time so that it doesnt take as long
     if (currPage <= (offset * 5)) {
       if ((!this.state.noResultsNextPage || this.state.usersAll[0].length < 50) 
       && (this.state.filters === null) && this.state.loading){
@@ -147,7 +147,7 @@ class UsersPage extends Component {
     toNextPage = () => {
       var new_page = this.state.currPage + 1;
       var page_index = this.state.currPage;
-      if (this.state.usersAll[page_index] != undefined && !this.state.noResultsNextPage) {
+      if (this.state.usersAll[page_index] !== undefined && !this.state.noResultsNextPage) {
         this.setState({
             ...this.state,
             users: this.state.usersAll[page_index],
@@ -255,7 +255,7 @@ class UsersPage extends Component {
                 </div>)}
                 </div>
         <div className="pagination-controls">
-            {(this.state.currPage == 1) && 
+            {(this.state.currPage === 1) && 
             (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
 
              {(this.state.currPage> 1) && 
@@ -264,11 +264,11 @@ class UsersPage extends Component {
                 Page {this.state.currPage}
 
             {(this.state.usersAll[this.state.currPage - 1] !== undefined) && 
-              (!this.state.noResultsNextPage) && (this.state.currPage != this.state.lastPage) && !this.state.reloading &&
+              (!this.state.noResultsNextPage) && (this.state.currPage !== this.state.lastPage) && !this.state.reloading &&
             (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
 
             {((this.state.usersAll[this.state.currPage - 1] === undefined)
-             || (this.state.currPage == this.state.lastPage) || (this.state.users.length < 50) ||
+             || (this.state.currPage === this.state.lastPage) || (this.state.users.length < 50) ||
              (this.state.noResultsNextPage) || this.state.reloading) && 
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>

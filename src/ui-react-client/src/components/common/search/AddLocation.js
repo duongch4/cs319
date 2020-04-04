@@ -37,10 +37,10 @@ class AddLocation extends Component {
             var location = state.locations;
             var cityFilledIn = true;
 
-            if (key != undefined) {
-                if ((state.locations.cities.length == 0) && (state.locations.province == null)) {
+            if (key !== undefined) {
+                if ((state.locations.cities.length === 0) && (state.locations.province === null)) {
                     cityFilledIn = true;
-                } else if (state.locations.cities.length == 0) {
+                } else if (state.locations.cities.length === 0) {
                     cityFilledIn = false;
                 }
                 this.setState({

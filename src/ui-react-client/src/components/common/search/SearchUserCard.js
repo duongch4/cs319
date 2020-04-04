@@ -26,7 +26,7 @@ class SearchUserCard extends Component {
         var disc_string = "";
 
         user.resourceDiscipline.forEach((disc, index) => {
-            if (index == 0) {
+            if (index === 0) {
                 disc_string = disc.discipline + " (" + disc.yearsOfExp + ")";
             } else {
                 disc_string = disc_string + ", " + disc.discipline + " (" + disc.yearsOfExp + ")";
