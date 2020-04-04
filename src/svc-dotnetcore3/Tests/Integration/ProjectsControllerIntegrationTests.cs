@@ -16,18 +16,15 @@ namespace Tests.Integration
     [TestCaseOrderer("Tests.Integration.Utils.PriorityOrderer", "Tests")]
     public class ProjectsControllerIntegrationTests : IntegrationTestBase
     {
-        private static readonly string createdTitle = "Created-Title";
-        private static readonly string updatedTitle = "Updated-Title";
         private static readonly string managerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
-        // private static readonly string notManagerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
         public ProjectsControllerIntegrationTests(AppFixture app) : base(app)
         { }
 
         [Theory, TestPriority(0)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task CreateOneProject(string url, string projectNumber)
+        [MemberData(nameof(Data_POST_PUT), parameters: new object[] { 2, "Created-Title" })]
+        public async Task CreateOneProject(string url, string projectNumber, string title, string discipline, HashSet<string> skills)
         {
-            var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, createdTitle));
+            var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, title, discipline, skills));
             var req = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Content = new StringContent(
@@ -42,8 +39,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(1)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterCreate(string url, string projectNumber)
+        [MemberData(nameof(Data_GET), parameters: new object[] { 2, "Created-Title" })]
+        public async Task GetOneProject_AfterCreate(string url, string projectNumber, string title)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -51,14 +48,17 @@ namespace Tests.Integration
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
             string jsonString = await res.Content.ReadAsStringAsync();
             var jsonObject = JsonConvert.DeserializeObject<OkResponse<ProjectProfile>>(jsonString);
-            Assert.Equal(createdTitle, jsonObject.payload.ProjectSummary.Title);
+            Assert.Equal(title, jsonObject.payload.ProjectSummary.Title);
+            Assert.Single(jsonObject.payload.Openings);
         }
 
         [Theory, TestPriority(2)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task UpdateOneProject(string url, string projectNumber)
+        [MemberData(nameof(Data_POST_PUT), parameters: new object[] { 2, "Updated-Title" })]
+        public async Task UpdateOneProject(string url, string projectNumber, string title, string discipline, HashSet<string> skills)
         {
-            var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, updatedTitle));
+            // var discipline = "Automation";
+            // var skills = new HashSet<string> { "Automated teller machines", "Digital labor" };
+            var projectProfile = JsonConvert.SerializeObject(GetProjectProfile(managerId, projectNumber, title, discipline, skills));
             var req = new HttpRequestMessage(HttpMethod.Put, $"{url}/{projectNumber}")
             {
                 Content = new StringContent(
@@ -73,8 +73,8 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(3)]
-        [InlineData("/api/projects", "1234-5678")]
-        public async Task GetOneProject_AfterUpdate(string url, string projectNumber)
+        [MemberData(nameof(Data_GET), parameters: new object[] { 2, "Updated-Title" })]
+        public async Task GetOneProject_AfterUpdate(string url, string projectNumber, string title)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
@@ -82,11 +82,12 @@ namespace Tests.Integration
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
             string jsonString = await res.Content.ReadAsStringAsync();
             var jsonObject = JsonConvert.DeserializeObject<OkResponse<ProjectProfile>>(jsonString);
-            Assert.Equal(updatedTitle, jsonObject.payload.ProjectSummary.Title);
+            Assert.Equal(title, jsonObject.payload.ProjectSummary.Title);
+            Assert.Single(jsonObject.payload.Openings);
         }
 
         [Theory, TestPriority(4)]
-        [InlineData("/api/projects", "1234-5678")]
+        [MemberData(nameof(Data_DEL_GET_FINAL), parameters: 2)]
         public async Task DeleteOneProject(string url, string projectNumber)
         {
             var req = new HttpRequestMessage(HttpMethod.Delete, $"{url}/{projectNumber}");
@@ -96,7 +97,7 @@ namespace Tests.Integration
         }
 
         [Theory, TestPriority(5)]
-        [InlineData("/api/projects", "1234-5678")]
+        [MemberData(nameof(Data_DEL_GET_FINAL), parameters: 2)]
         public async Task GetOneProject_AfterDelete(string url, string projectNumber)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{projectNumber}");
@@ -105,14 +106,45 @@ namespace Tests.Integration
             Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
         }
 
-        private static IEnumerable<object[]> GetData_POST(int numTests)
+        public static IEnumerable<object[]> Data_POST_PUT(int numTests, string title)
         {
+            var url = "/api/projects";
+            // var createdTitle = "Created-Title";
+            // var updatedTitle = "Updated-Title";
+            // var managerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
+            // var discipline = "Automation";
+            // var skills = new HashSet<string> { "Automated teller machines", "Digital labor" };
+
             var allData = new List<object[]>
             {
-                new object[] { 1, 2, 3 },
-                new object[] { -4, -6, -10 },
-                new object[] { -2, 2, 0 },
-                new object[] { int.MinValue, -1, int.MaxValue },
+                new object[] { url, "0999-9999-9999", title, "Automation", new HashSet<string> { "Automated teller machines", "Digital labor" } },
+                new object[] { url, "1999-9999-9999", title, "Bionics", new HashSet<string>() }
+            };
+
+            return allData.Take(numTests);
+        }
+
+        public static IEnumerable<object[]> Data_GET(int numTests, string title)
+        {
+            var url = "/api/projects";
+
+            var allData = new List<object[]>
+            {
+                new object[] { url, "0999-9999-9999", title },
+                new object[] { url, "1999-9999-9999", title }
+            };
+
+            return allData.Take(numTests);
+        }
+
+        public static IEnumerable<object[]> Data_DEL_GET_FINAL(int numTests)
+        {
+            var url = "/api/projects";
+
+            var allData = new List<object[]>
+            {
+                new object[] { url, "0999-9999-9999" },
+                new object[] { url, "1999-9999-9999" }
             };
 
             return allData.Take(numTests);
@@ -145,27 +177,27 @@ namespace Tests.Integration
             };
         }
 
-        private static IEnumerable<OpeningPositionsSummary> GetOpenings()
+        private static IEnumerable<OpeningPositionsSummary> GetOpenings(string discipline, HashSet<string> skills)
         {
             var opening = new OpeningPositionsSummary
             {
                 PositionID = 0,
-                CommitmentMonthlyHours = new Dictionary<string, int>{ ["2020-05-01"] = 5 },
-                Discipline = "Automation",
+                CommitmentMonthlyHours = new Dictionary<string, int> { ["2020-05-01"] = 5 },
+                Discipline = discipline,
                 YearsOfExp = "1-3",
-                Skills = new HashSet<string> { "Automated teller machines", "Digital labor" }
+                Skills = skills
             };
             return Enumerable.Empty<OpeningPositionsSummary>().Append(opening);
         }
 
-        private static ProjectProfile GetProjectProfile(string managerId, string projectNumber, string title)
+        private static ProjectProfile GetProjectProfile(string managerId, string projectNumber, string title, string discipline, HashSet<string> skills)
         {
             return new ProjectProfile
             {
                 ProjectManager = GetProjectManager(managerId, "Clinton", "Barton"),
                 ProjectSummary = GetProjectSummary(title, projectNumber),
                 UsersSummary = Enumerable.Empty<UserSummary>(),
-                Openings = GetOpenings()
+                Openings = GetOpenings(discipline, skills)
             };
         }
     }

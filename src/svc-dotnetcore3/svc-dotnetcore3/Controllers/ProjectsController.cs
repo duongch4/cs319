@@ -144,9 +144,9 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAProject(string projectNumber)
         {
-            if (projectNumber == null)
+            if (String.IsNullOrEmpty(projectNumber))
             {
-                var error = new BadRequestException("The given project number is null");
+                var error = new BadRequestException("The given project number is null/empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
             try
@@ -406,8 +406,6 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAProject([FromBody] ProjectProfile projectProfile, string projectNumber)
         {
-            Log.Information("{@A}", projectProfile);
-
             if (projectProfile == null)
             {
                 var error = new BadRequestException("The given project profile is null / Request Body cannot be read");
@@ -417,7 +415,7 @@ namespace Web.API.Controllers
             if (
                 projectProfile.ProjectManager == null || String.IsNullOrEmpty(projectProfile.ProjectManager.UserID) ||
                 projectProfile.ProjectSummary == null ||
-                String.IsNullOrEmpty(projectProfile.ProjectSummary.ProjectNumber) ||
+                String.IsNullOrEmpty(projectProfile.ProjectSummary.ProjectNumber) || String.IsNullOrEmpty(projectNumber) ||
                 projectProfile.ProjectSummary.Location == null
             )
             {
@@ -487,9 +485,9 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAProject([FromRoute] string projectNumber)
         {
-            if (projectNumber == null)
+            if (String.IsNullOrEmpty(projectNumber))
             {
-                var error = new BadRequestException("The given project number is null");
+                var error = new BadRequestException("The given project number is null/empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
