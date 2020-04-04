@@ -25,7 +25,6 @@ namespace Web.API.Infrastructure.Data
             // connection = new SqlConnection(connectionString);
             // connection.Open();
             this.locations = new Dictionary<string, IEnumerable<string>>();
-            this.SetStaticLocations();
         }
 
         public async Task<IEnumerable<Location>> GetAllLocations()
@@ -98,31 +97,7 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = city });
         }
-        
-        private void SetStaticLocations()
-        {
-            var jsonStr = System.IO.File.ReadAllText(@"Infrastructure/Data/Locations.json");
-            dynamic jsonArr = JsonConvert.DeserializeObject(jsonStr);
-            foreach (var json in jsonArr)
-            {
-                string province = (string)json["admin_name"];
-                string country = (string)json["country"];
-                string city = (string)json["city"];
-                if (country.Equals("Canada") && province != null && !this.locations.ContainsKey(province) && city != null)
-                {
-                    this.locations.Add(province, new List<string>());
-                }
-                if (this.locations.ContainsKey(province))
-                {
-                    this.locations[province] = this.locations[province].Append(city);
-                }
-            }
-        }
 
-        public Dictionary<string, IEnumerable<string>> GetStaticLocations()
-        {
-            return this.locations;
-        }
         // //POST 
         public async Task<int> CreateALocation(LocationResource location) {
             var sql = @"
@@ -160,15 +135,6 @@ namespace Web.API.Infrastructure.Data
             connection.Open();
             return await connection.QueryFirstOrDefaultAsync<Location>(sql, new { City = location.City, Province = location.Province });
         }
-        // //PUT
-        // public async Task<Location> UpdateALocation(Location location) {
-        //     return null;
-        // }
-
-        // //DELETE
-        // public async Task<Location> DeleteALocation(Location locationCode) {
-        //     return null;
-        // }
 
         public async Task<string> GetAProvince(string province) {
             var sql = @"
