@@ -26,6 +26,7 @@ namespace Web.API.Authorization
             _usersRepository = usersRepository;
             _projectsRepository = projectsRepository;
         }
+        
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, AnyValidPermissionRequirement requirement)
         {
             string objectId = context.User.FindAll(Claims.ObjectIdentifier).Select(c => c.Value).FirstOrDefault();

@@ -32,7 +32,7 @@ namespace Web.API.Controllers
 
         public PositionsController(
             IProjectsRepository projectsRepository, IUsersRepository usersRepository,
-            IPositionsRepository positionsRepository, 
+            IPositionsRepository positionsRepository,
             IOutOfOfficeRepository outOfOfficeRepository,
             IUtilizationRepository utilizationRepository,
             IMapper mapper
@@ -72,16 +72,17 @@ namespace Web.API.Controllers
         {
             try
             {
-            if (openingId == 0) {
-                var error = new BadRequestException($"The given opening {openingId} is invalid");
-                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-            }
+                if (openingId == 0)
+                {
+                    var error = new BadRequestException($"The given opening {openingId} is invalid");
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
 
-            if(String.IsNullOrEmpty(userId)) {
-                var error = new BadRequestException("The given user is invalid");
-                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
-            }
-                                                // Log.Information("1");
+                if (String.IsNullOrEmpty(userId))
+                {
+                    var error = new BadRequestException("The given user is invalid");
+                    return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+                }
 
                 Position position = await positionsRepository.GetAPosition(openingId);
                 User user = await usersRepository.GetAUser(userId);
@@ -91,13 +92,14 @@ namespace Web.API.Controllers
                     var error = new NotFoundException($"Invalid positionId {openingId}.");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
-                if (user == null) {
+                if (user == null)
+                {
                     var error = new NotFoundException($"Resource with id {userId} not found.");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
 
                 }
 
-                                // Log.Information("{@response}", position);
+                // Log.Information("{@response}", position);
 
                 position.ResourceId = userId;
                 position.IsConfirmed = false;
@@ -105,9 +107,12 @@ namespace Web.API.Controllers
 
 
 
-                RequestProjectAssign response = new RequestProjectAssign{OpeningId = openingId, 
-                                                                         UserID = userId,
-                                                                         ConfirmedUtilization = user.Utilization};
+                RequestProjectAssign response = new RequestProjectAssign
+                {
+                    OpeningId = openingId,
+                    UserID = userId,
+                    ConfirmedUtilization = user.Utilization
+                };
 
                 // Log.Information("{@response}", response);
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -151,6 +156,12 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConfirmResource([FromRoute] int openingId)
         {
+
+            if (openingId == 0)
+            {
+                var error = new BadRequestException($"The given opening {openingId} is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
             try
             {
                 Position position = await positionsRepository.GetAPosition(openingId);
@@ -161,7 +172,8 @@ namespace Web.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
 
-                if (position.ResourceId == null || position.ResourceId == "") {
+                if (position.ResourceId == null || position.ResourceId == "")
+                {
                     var error = new BadRequestException($"Position {position.Id} does not have a resource assigned.");
                     return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
                 }
@@ -175,9 +187,12 @@ namespace Web.API.Controllers
                 var utilization = await utilizationRepository.CalculateUtilizationOfUser(positionsOfUser, outOfOfficesOfUser);
                 await usersRepository.UpdateUtilizationOfUser(utilization, position.ResourceId);
 
-                RequestProjectAssign response = new RequestProjectAssign{OpeningId = openingId, 
-                                                                         UserID = position.ResourceId,
-                                                                         ConfirmedUtilization = utilization};
+                RequestProjectAssign response = new RequestProjectAssign
+                {
+                    OpeningId = openingId,
+                    UserID = position.ResourceId,
+                    ConfirmedUtilization = utilization
+                };
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (Exception err)
@@ -217,11 +232,16 @@ namespace Web.API.Controllers
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UnassignResource([FromRoute] int openingId)
         {
+            if (openingId == 0)
+            {
+                var error = new BadRequestException($"The given opening {openingId} is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
             try
             {
                 Position position = await positionsRepository.GetAPosition(openingId);
 
-                if (position.ResourceId == null) 
+                if (position.ResourceId == null)
                 {
                     var error = new BadRequestException($"Position does not have a resource to unassign");
                     return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
@@ -234,7 +254,8 @@ namespace Web.API.Controllers
                     var error = new NotFoundException($"Invalid positionId {openingId}.");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
-                if (user == null) {
+                if (user == null)
+                {
                     var error = new NotFoundException($"Resource with id {position.ResourceId} not found.");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
 
@@ -243,9 +264,9 @@ namespace Web.API.Controllers
                 position.IsConfirmed = false;
 
                 position = await positionsRepository.UpdateAPosition(position);
-                
+
                 IEnumerable<Position> positions = await positionsRepository.GetAllPositionsOfUser(user.Id);
-                IEnumerable<OutOfOffice> outOfOffices = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user.Id); 
+                IEnumerable<OutOfOffice> outOfOffices = await outOfOfficeRepository.GetAllOutOfOfficeForUser(user.Id);
 
                 int newUtilizationOfUser = await utilizationRepository.CalculateUtilizationOfUser(positions, outOfOffices);
                 await usersRepository.UpdateUtilizationOfUser(newUtilizationOfUser, user.Id);
@@ -253,8 +274,8 @@ namespace Web.API.Controllers
                 OpeningPositionsResource openingRes = await positionsRepository.GetAnOpeningPositionsResource(openingId);
                 OpeningPositionsSummary openingSummary = mapper.Map<OpeningPositionsResource, OpeningPositionsSummary>(openingRes);
 
- 
-                 Log.Information("{@response}", openingSummary);
+
+                Log.Information("{@response}", openingSummary);
                 return StatusCode(StatusCodes.Status200OK, openingSummary);
             }
             catch (Exception err)

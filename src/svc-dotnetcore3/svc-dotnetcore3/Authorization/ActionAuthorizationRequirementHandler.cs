@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,6 +7,12 @@ namespace Web.API.Authorization
 {
     internal class ActionAuthorizationRequirementHandler : AuthorizationHandler<ActionAuthorizationRequirement>
     {
+        private readonly IHttpContextAccessor _httpContext;
+        public ActionAuthorizationRequirementHandler(IHttpContextAccessor httpContext)
+        {
+            _httpContext = httpContext;
+        }
+
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             ActionAuthorizationRequirement requirement)
@@ -24,6 +31,8 @@ namespace Web.API.Authorization
             {
                 context.Succeed(requirement);
             }
+
+            _httpContext.HttpContext.Items[AuthorizationPolicyEvaluator.contextKey] = "Failed ActionAuthorizationRequirement!";
 
             return Task.CompletedTask;
         }

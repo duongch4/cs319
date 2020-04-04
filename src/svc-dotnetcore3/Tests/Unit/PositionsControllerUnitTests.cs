@@ -340,7 +340,7 @@ namespace Tests.Unit
         }
 
         [Fact]
-        private async void ConfirmResource_NullOpeningCheck_ReturnBadRequestException()
+        private async void ConfirmResource_NullOpeningCheck_ReturnNotFoundException()
         {
             var errMessage = "Bad Request";
 
