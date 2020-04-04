@@ -210,7 +210,7 @@ class FilterTab extends Component {
         const {showing} = this.state;
         return (
         <div className="form-section">
-            <form>
+            <form onSubmit={e => { e.preventDefault()}}>
                 {(this.state.cityFilled) && 
                 (<div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
