@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom';
 //Import all needed Components
 import Header from './common/Header';
 import HomePage from './home/HomePage';
-import UsersPage from './users/UsersPage';
 import ProjectsPage from './projects/ProjectsPage';
 import ProjectDetails from './projects/ProjectDetails';
 import PageNotFound from './PageNotFound';
