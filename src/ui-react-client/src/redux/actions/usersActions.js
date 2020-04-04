@@ -14,13 +14,6 @@ export const loadUsersAllData = userSummaries => {
   };
 };
 
-export const updateUserSummary = userSummary => {
-    return {
-        type: types.UPDATE_USER_SUMMARIES,
-        userSummary: userSummary
-    }
-};
-
 export const loadUsers = (filter, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
