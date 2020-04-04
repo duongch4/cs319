@@ -51,9 +51,14 @@ class UserDetails extends Component {
                             })
                         }
                     })
-            }
+                }
+            })
         }
     }
+<<<<<<< HEAD
+=======
+    }
+>>>>>>> client
 
     render() {
         let userRoles;
@@ -91,14 +96,23 @@ class UserDetails extends Component {
                 });
                 uniqueProjects.forEach(project => {
                     let projectRoles = userDetails.positions.filter((position => position.projectTitle === project.title));
-                    // we find all the positions related to the project and create a card for each one
-                    projectRoles.forEach(role => {
+                    if (projectRoles.length === 0) {
+                        // if a position doesn't exist, then the project is one that the user is a project manager for
                         currentProjects.push(
-                            <ProjectCard number={counter} project={project} canEditProject={false}
-                                         onUserCard={true} userRole={role} key={currentProjects.length} />
+                            <ProjectCard number={counter} project={project} canEditProject={false} onUserCard={true}
+                                         userRole={{disciplineName: "Project Manager"}} key={currentProjects.length} />
                         )
                         counter++
-                    })
+                    } else {
+                        // we find all the positions related to the project and create a card for each one
+                        projectRoles.forEach(role => {
+                            currentProjects.push(
+                                <ProjectCard number={counter} project={project} canEditProject={false}
+                                             onUserCard={true} userRole={role} key={currentProjects.length} />
+                            )
+                            counter++
+                        })
+                    }
                 });
             } else {
                 currentProjects.push(<p className="empty-statements" key={currentProjects.length}>There are currently no projects assigned to this resource.</p>)

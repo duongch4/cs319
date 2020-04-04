@@ -14,7 +14,7 @@ import Loading from '../common/Loading';
 
 class ProjectDetails extends Component {
     state = {
-        projectProfile: this.props.projectProfile,
+        projectProfile: this.props.projectProfile
     };
 
     componentDidMount = () => {
@@ -28,13 +28,16 @@ class ProjectDetails extends Component {
                 })
             }
         } else {
-            // if (Object.keys(this.props.projectProfile).length > 0 &&
-            // this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
-            //     this.setState({
-            //         ...this.state,
-            //         projectProfile: this.props.projectProfile
-            //     })
-            // } else {
+            // checks if there is a newly added opening to the project, if there is, it makes a server call to get
+            // the correct openingID for the project
+            if (Object.keys(this.props.projectProfile).length > 0 &&
+            this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id
+            && this.props.projectProfile.openings.findIndex(opening => opening.openingID === 0) !== -1) {
+                this.setState({
+                    ...this.state,
+                    projectProfile: this.props.projectProfile
+                })
+            } else {
             const userRoles = getUserRoles(this.context);
             this.props.loadSingleProject(this.props.match.params.project_id, userRoles)
                 .then(res => {
@@ -47,7 +50,7 @@ class ProjectDetails extends Component {
                     }
                 })
                 .catch(err => console.log(err));
-            // }
+            }
         }
     };
 

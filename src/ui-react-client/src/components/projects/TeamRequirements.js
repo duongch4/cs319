@@ -127,14 +127,17 @@ class TeamRequirements extends Component {
         }
     };
 
-    changeCommitment = (date, e) => {
-        
-        let dateSplit = date.split(" ")
-        let monthIndex = this.state.monthNames.indexOf(dateSplit[0]);
+    parseDate = (date) => {
+        let dateSplit = date.split(" ");
+        let monthIndex = this.state.monthNames.indexOf(dateSplit[0]) + 1;
         if(monthIndex < 10){
             monthIndex = "0" + monthIndex;
         }
         let newDate = dateSplit[1] + "-" + monthIndex + "-01"
+        return newDate;
+    }
+    changeCommitment = (date, e) => {
+        let newDate = this.parseDate(date);
         let commitment = this.state.opening.commitmentMonthlyHours !== null ? this.state.opening.commitmentMonthlyHours : {};
         commitment[newDate] = parseInt(e.target.value);
         this.setState({
@@ -149,10 +152,14 @@ class TeamRequirements extends Component {
     createMonthsDiv = (months) => {
         const monthArr = []
         months.forEach(month => {
+            let newMonth = this.parseDate(month);
+            let hours = this.state.opening.commitmentMonthlyHours;
             monthArr.push(
             <div className="entry" key={monthArr.length} >
                 <p className="label">{month}</p>
-                <input type="number" name="name" placeholder="hours" onChange={(e) => this.changeCommitment(month, e)}/>
+                <input type="number" name="name" placeholder="hours" 
+                    value={hours && hours[newMonth] ? hours[newMonth] : ""} 
+                    onChange={(e) => this.changeCommitment(month, e)}/>
             </div>
             )
         })
