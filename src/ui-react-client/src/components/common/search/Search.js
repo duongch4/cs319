@@ -114,7 +114,7 @@ class Search extends Component {
         <h1 className="greenHeader">Users</h1>
         {(!this.state.loading) && (!this.state.showUsers) &&
        (<Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", position: "absolute", right: "50px", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation 
-        onClick={()=> this.showAllUsers()}>Show all users</Button>)}
+        onClick={()=> this.showAllUsers()}>Remove All Filters</Button>)}
         </div>
           <FilterTab onDataFetched={this.handleResultChange}
                       masterlist={this.state.masterlist} />
