@@ -61,6 +61,12 @@ namespace Web.API.Controllers {
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
+            if (String.IsNullOrEmpty(discipline.Name))
+            {
+                var error = new BadRequestException("Discipline Name cannot be null or empty");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
             try
             {
                 var createdDisciplineID = await disciplinesRepository.CreateADiscipline(discipline);
