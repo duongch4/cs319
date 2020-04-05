@@ -1,103 +1,167 @@
 import projectsReducer from '../projectsReducer';
-import * as actions from '../../actions/projectsActions';
+import * as types from '../../actions/actionTypes';
 
-const initialState = [
+let initialState = [
   {
-    id: 1,
-    number: '111',
-    title: 'Test1',
-    location: '',
-    createdAt: '',
-    updatedAt: '',
+  title: "Martensville Athletic Pavillion",
+  location: {
+      locationID: 1,
+      province: "Seskatchewan",
+      city: "Saskatoon"
   },
+  projectStartDate: "2020-10-31T00:00:00.0000000",
+  projectEndDate: "2021-12-31T00:00:00.0000000",
+  projectNumber: "2009-VD9D-15"
+},
   {
-    id: 2,
-    number: '222',
-    title: 'Test2',
-    location: '',
-    createdAt: '',
-    updatedAt: '',
+  title: "University of British Columbia Science Building",
+  location: {
+      locationID: 2,
+      province: "British Columbia",
+      city: "Vancouver"
   },
-];
+  projectStartDate: "2020-10-31T00:00:00.0000000",
+  projectEndDate: "2021-12-31T00:00:00.0000000",
+  projectNumber: "2009-VD9D-16"
+}];
 
-const newProject = {
-  number: '',
-  title: 'Test3',
-  location: '',
-};
-
-const updateProject = {
-  id: 2,
-  number: '',
-  title: 'Test22',
-  location: '',
-  createdAt: '',
-  updatedAt: '',
-};
-
-const deleteProject = {
-  id: 2,
-  number: '222',
-  title: 'Test2',
-  location: '',
-  createdAt: '',
-  updatedAt: '',
-};
-
-it('should load most recent projects when passed LOAD_PROJECTS_MOST_RECENT', () => {
-  const action = actions.loadProjectsMostRecentData(initialState);
-
-  const newState = projectsReducer(initialState, action);
-
-  expect(newState.length).toEqual(2);
-  expect(newState[0].title).toEqual('Test1');
-  expect(newState[1].title).toEqual('Test2');
+afterEach(() => {
+  initialState = [
+    {
+      title: "Martensville Athletic Pavillion",
+      location: {
+          locationID: 1,
+          province: "Seskatchewan",
+          city: "Saskatoon"
+      },
+      projectStartDate: "2020-10-31T00:00:00.0000000",
+      projectEndDate: "2021-12-31T00:00:00.0000000",
+      projectNumber: "2009-VD9D-15"
+    },
+    {
+      title: "University of British Columbia Science Building",
+      location: {
+          locationID: 2,
+          province: "British Columbia",
+          city: "Vancouver"
+      },
+      projectStartDate: "2020-10-31T00:00:00.0000000",
+      projectEndDate: "2021-12-31T00:00:00.0000000",
+      projectNumber: "2009-VD9D-16"
+    }]
 });
 
-it('should load all projects when passed LOAD_PROJECTS_ALL', () => {
-  const action = actions.loadProjectsData(initialState);
+it('should load the initial state as default' , () => {
+  let action = {type: 'random_string'};
+  let received = projectsReducer(initialState, action);
 
-  const newState = projectsReducer(initialState, action);
-
-  expect(newState.length).toEqual(2);
-  expect(newState[0].title).toEqual('Test1');
-  expect(newState[1].title).toEqual('Test2');
+  expect(received).toEqual(initialState);
 });
 
-it('should add project when passed CREATE_PROJECT', () => {
-  const action = actions.createProjectData(newProject);
+it('should load all projects from action payload', () => {
+  let projectSummaries = [{project:'test1'}, {project:'test3'}, {project:'test3'}]
+  let action = {
+    type: types.LOAD_PROJECTS_ALL,
+    projects: projectSummaries,
+  };
+  let received = projectsReducer(initialState, action);
 
-  const newState = projectsReducer(initialState, action);
+  expect(received).not.toEqual(initialState);
+  expect(received).toHaveLength(3);
+  expect(received).toEqual(projectSummaries);
+})
 
-  expect(newState.length).toEqual(3);
-  expect(newState[0].title).toEqual('Test1');
-  expect(newState[1].title).toEqual('Test2');
-  expect(newState[2].title).toEqual('Test3');
+it('should remove project matching number from action payload', () => {
+  let projectNumber = '2009-VD9D-16';
+  let removedProject = initialState[1];
+  let action = {
+    type: types.DELETE_PROJECT_SUMMARY,
+    projectNumber: projectNumber
+  };
+  let received = projectsReducer(initialState, action);
+
+  expect(received).not.toEqual(initialState);
+  expect(received).toHaveLength(1);
+  expect(received).not.toContain(removedProject);
 });
 
-it('should update project when passed UPDATE_PROJECT', () => {
-  const action = actions.updateProjectData(updateProject);
+it('should not remove project if matching project number not found', () => {
+  let projectNumber = 'stark-3000';
+  let action = {
+      type: types.DELETE_PROJECT_SUMMARY,
+      projectNumber: projectNumber
+  };
+  let received = projectsReducer(initialState, action);
 
-  const newState = projectsReducer(initialState, action);
-  const updatedProject = newState.find(
-    element => element.id == updateProject.id,
-  );
-  const untouchedProject = newState.find(element => element.id == 1);
-
-  expect(newState.length).toEqual(2);
-  expect(untouchedProject.title).toEqual('Test1');
-  expect(updatedProject.title).toEqual('Test22');
+  expect(received).toEqual(initialState);
 });
 
-it('should delete project when passed DELETE_PROJECT', () => {
-  const action = actions.deleteProjectData(deleteProject);
+it('should add a project summary from action payload', () => {
+  let projectSummary =   {
+    title: "Defeat Vanko and Hammer Drones",
+    location: {
+        locationID: 2,
+        province: "British Columbia",
+        city: "Vancouver"
+    },
+    projectStartDate: "2020-10-31T00:00:00.0000000",
+    projectEndDate: "2021-12-31T00:00:00.0000000",
+    projectNumber: "stark-3000"
+  };
+  let action = {
+    type: types.ADD_PROJECT_SUMMARY,
+    projectSummary: projectSummary
+  };
+  let received = projectsReducer(initialState, action);
 
-  const newState = projectsReducer(initialState, action);
-  const deletedProject = newState.find(
-    element => element.id == deleteProject.id,
-  );
-  const untouchedProject = newState.find(element => element.id == 1);
+  expect(received).not.toEqual(initialState);
+  expect(received).toHaveLength(3);
+  expect(received).toContain(projectSummary);
+})
 
-  expect(newState.length).toEqual(1);
-  expect(untouchedProject.title).toEqual('Test1');
+it('should update the project matching the action payload', () => {
+  let projectSummary =   {
+    title: "Find and defeat the Mandarin",
+    location: {
+        locationID: 10,
+        province: "Florida",
+        city: "Miami"
+    },
+    projectStartDate: "2020-10-31T00:00:00.0000000",
+    projectEndDate: "2021-12-31T00:00:00.0000000",
+    projectNumber: "2009-VD9D-15"
+  };
+  let oldProjectSummary = initialState[0];
+  let action = {
+    type: types.UPDATE_PROJECT_SUMMARY,
+    projectSummary: projectSummary
+  };
+  let received = projectsReducer(initialState, action);
+
+  expect(received).not.toEqual(initialState);
+  expect(received).toHaveLength(2);
+  expect(received).not.toContain(oldProjectSummary);
+  expect(received).toContain(projectSummary);
 });
+
+it('should not update project if matching project number not found', () => {
+  let projectSummary =   {
+    title: "Defeat Vanko and Hammer Drones",
+    location: {
+        locationID: 2,
+        province: "British Columbia",
+        city: "Vancouver"
+    },
+    projectStartDate: "2020-10-31T00:00:00.0000000",
+    projectEndDate: "2021-12-31T00:00:00.0000000",
+    projectNumber: "stark-3000"
+  };
+  let action = {
+    type: types.UPDATE_PROJECT_SUMMARY,
+    projectSummary: projectSummary
+  };
+  let received = projectsReducer(initialState, action);
+
+  expect(received).toEqual(initialState);
+})
+

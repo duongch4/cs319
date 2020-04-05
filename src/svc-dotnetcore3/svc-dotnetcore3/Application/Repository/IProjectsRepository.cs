@@ -11,13 +11,12 @@ namespace Web.API.Application.Repository
         // GET
         Task<IEnumerable<ProjectResource>> GetAllProjects();
         Task<IEnumerable<string>> GetAllProjectNumbersOfManager(string managerId);
-        Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page);
-        Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page);
+        Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page, int rowsPerPage);
+        Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page, int rowsPerPage);
         Task<IEnumerable<ProjectResource>> GetAllProjectResourcesOfUser(string userId);
         Task<IEnumerable<Project>> GetMostRecentProjects();
         Task<Project> GetAProject(string projectNumber);
         Task<ProjectResource> GetAProjectResource(string projectNumber);
-        Task<IEnumerable<Project>> GetAllProjectsOfUser(User user);
 
         // POST
         Task<string> CreateAProject(ProjectProfile projectProfile, int locationId);

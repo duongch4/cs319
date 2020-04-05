@@ -12,6 +12,8 @@ import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import '../common/common.css'
 import Loading from '../common/Loading';
 import LoadingOverlay from 'react-loading-overlay'
+import ProjectManagerCard from "../users/ProjectManagerCard";
+
 
 class EditProject extends Component {
     state = {
@@ -167,7 +169,9 @@ class EditProject extends Component {
                         <UserCard user={userSummary}
                         canEdit={false}
                         key={teamMembersRender.length}
-                        showOpeningInfo={true}/>
+                        showOpeningInfo={true}
+                        projectDetails={projectProfile}
+                        canUnassignEditProject={true}/>
                     )
                 })
             } else {
@@ -203,6 +207,8 @@ class EditProject extends Component {
                   active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
                 <div className="activity-container">
                     <h1 className="greenHeader">Edit project</h1>
+                    <ProjectManagerCard projectNumber={this.state.projectProfile.projectSummary.projectNumber} userRoles={getUserRoles(this.context)} projectManager={projectProfile.projectManager} key={teamMembersRender.length}/>
+
                     <div className="section-container">
                         <CreateEditProjectDetails locations={this.state.masterlist.locations}
                                                   addProjDetails={(project) => this.addProjDetails(project)}

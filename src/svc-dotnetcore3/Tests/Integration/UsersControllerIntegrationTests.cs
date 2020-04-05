@@ -16,7 +16,8 @@ namespace Tests.Integration
     [TestCaseOrderer("Tests.Integration.Utils.PriorityOrderer", "Tests")]
     public class UsersControllerIntegrationTests : IntegrationTestBase
     {
-        private static readonly string userId = "1";
+        // User: integrationTestingAdmin@chibangduong1993gmail501.onmicrosoft.com
+        private static readonly string userId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
         public UsersControllerIntegrationTests(AppFixture app) : base(app)
         { }
 

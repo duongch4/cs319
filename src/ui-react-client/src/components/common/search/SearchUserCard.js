@@ -21,17 +21,20 @@ class SearchUserCard extends Component {
 
 
     render(){
+
         const {user} = this.props;
 
         var disc_string = "";
-        
-        user.resourceDiscipline.forEach((disc, index) => {
-            if (index == 0) {
-                disc_string = disc.discipline + " (" + disc.yearsOfExp + ")";
-            } else {
-                disc_string = disc_string + ", " + disc.discipline + " (" + disc.yearsOfExp + ")";
-            }
-        });
+
+        if (!this.props.isUserPage) {
+            user.resourceDiscipline.forEach((disc, index) => {
+                if (index === 0) {
+                    disc_string = disc.discipline + " (" + disc.yearsOfExp + ")";
+                } else {
+                    disc_string = disc_string + ", " + disc.discipline + " (" + disc.yearsOfExp + ")";
+                }
+            });
+        }
 
         let colour = ""
         if(user.utilization <= LOW_UTILIZATION){
@@ -52,12 +55,13 @@ class SearchUserCard extends Component {
                         <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
-                    <p><b>Disciplines:</b> {disc_string}</p>
+                    {(!this.props.isUserPage) &&
+                    (<p><b>Disciplines:</b> {disc_string}</p>)}
                     {this.props.isAssignable &&
                         (  <Button variant="contained"
                                     style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
                                     disableElevation onClick={() => this.onSubmit(this.props.openingId, user.userID, user.utilization, user, userRoles)}
-                                    component={Link} to={"/projects/" + this.props.projectNumber}>
+                                    >
                                 Assign
                             </Button>)}
                 </div>

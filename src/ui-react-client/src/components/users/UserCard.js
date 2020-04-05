@@ -5,9 +5,11 @@ import {Link} from "react-router-dom";
 import {Button} from "@material-ui/core";
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import {confirmAssignOpenings} from '../../redux/actions/forecastingActions';
+import {unassignOpenings} from '../../redux/actions/forecastingActions';
 import {loadSpecificUser} from '../../redux/actions/userProfileActions';
 import {UserContext, getUserRoles} from "../common/userContext/UserContext";
 import {connect} from "react-redux";
+import ClearIcon from '@material-ui/icons/Clear';
 import {
     LOW_UTILIZATION,
     MEDIUM_UTILIZATION,
@@ -40,8 +42,28 @@ class UserCard extends Component {
    });
  }
 
+   onUnassign = (user) => {
+     const userRoles = getUserRoles(this.context);
+     let userSummaryDisciplineName = user.resourceDiscipline.discipline;
+     let projectTitle = this.props.projectDetails.projectSummary.title;
+
+     //because userSummary doesn't include positionID, need to triage to get it from the usersProfile
+     this.props.loadSpecificUser(user.userID, userRoles).then(() => {
+       let targetUsersPositionsInProject = this.props.userProfile.positions.filter(opening => opening.projectTitle === projectTitle);
+
+       targetUsersPositionsInProject.forEach((position, index) => {
+         let userProfileDisciplineName = position.disciplineName;
+         //ideally we would compare disciplineID here instead of name, but positions
+         //in userProfile only have name, not ID
+         if (userProfileDisciplineName === userSummaryDisciplineName){
+           this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName);
+         }
+       });
+    });
+  }
+
     render(){
-        const {user, canEdit, canConfirm, projectDetails, showOpeningInfo} = this.props;
+        const {user, canEdit, canConfirm, showOpeningInfo, canUnassign, canUnassignEditProject} = this.props;
         let isUserConfirmed = user.isConfirmed;
 
         let colour = ""
@@ -57,17 +79,38 @@ class UserCard extends Component {
         return(
             <div className="card-summary">
                 <div className="card-summary-title">
+                <div className="confirmAssign">
                     <Link to={'/users/' + user.userID}>
                         <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
                     </Link>
-                    {showOpeningInfo && (
-                      <p><b>Discipline:</b> {user.resourceDiscipline.discipline + " | "} <b>Years of Experience:</b> {user.resourceDiscipline.yearsOfExp + " years"}</p>
-                    )}
-                    <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
+
                     {canConfirm && !isUserConfirmed && (
                      <Button onClick={() => this.onConfirm(user)} className="action-link">
                               <FiberManualRecordIcon style={{fontSize: 'small', color: 'red'}}/> Confirm
                       </Button>
+                    )}
+                    </div>
+                    {showOpeningInfo && (
+                      <p><b>Discipline:</b> {user.resourceDiscipline.discipline + " | "} <b>Years of Experience:</b> {user.resourceDiscipline.yearsOfExp + " years"}</p>
+                    )}
+                    <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
+
+                    {canUnassign && (
+                     <Button onClick={() => this.onUnassign(user)}>
+                      <div className="action-link">
+                        <ClearIcon style={{fontSize: 'small', color: '#87C34B'}}/> Unassign
+                      </div>
+                      </Button>
+                    )}
+
+                    {canUnassignEditProject && (
+                          <div>
+                              <Button variant="contained" onClick={() => this.onUnassign(user)}
+                                      style={{backgroundColor: "rgb(235, 87, 87)", color: "#ffffff", size: "small" }}
+                                      disableElevation>
+                                  Unassign
+                              </Button>
+                          </div>
                     )}
 
                     {canEdit && (
@@ -88,13 +131,14 @@ UserCard.contextType = UserContext;
 const mapStateToProps = state => {
     return {
         userProfile: state.userProfile,
-        projectProfile: state.projectProfile
+        projectProfile: state.projectProfile,
     };
 };
 
 const mapDispatchToProps = {
     confirmAssignOpenings,
-    loadSpecificUser
+    loadSpecificUser,
+    unassignOpenings
 };
 
 export default connect(

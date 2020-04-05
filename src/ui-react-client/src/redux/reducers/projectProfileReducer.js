@@ -19,7 +19,7 @@ const executeDeleteProjectData = () => {
 
 
 const executeCreateAssignOpening = (state, action) => {
-  let newOpenings = state.openings.filter(opening => opening.positionID !== action.openingID);
+  let newOpenings = state.openings.filter(opening => opening.positionID !== action.openingId);
   let newState = {
   ...state,
   openings: newOpenings,
@@ -47,6 +47,18 @@ const executeConfirmAssignOpening = (state, action) => {
   return newState;
 };
 
+const executeUnassignOpening = (state, action) => {
+  const usersSummaryCopy = state.usersSummary.slice();
+  let newUsersSummaryCopy = usersSummaryCopy.filter(userSummary => userSummary.userID !== action.userId
+  || userSummary.resourceDiscipline.discipline !== action.userSummaryDisciplineName);
+  //TODO once backend done updateopenings to have previosuly assigned opening back in openings array
+  let newState = {
+    ...state,
+    usersSummary: newUsersSummaryCopy
+  };
+  return newState;
+};
+
 
 export const projectProfileReducer = (
     state = initialState.projectProfile,
@@ -65,6 +77,8 @@ export const projectProfileReducer = (
           return executeCreateAssignOpening(state, action, initialState);
         case types.CONFIRM_ASSIGN_OPENING:
           return executeConfirmAssignOpening(state, action);
+        case types.UNASSIGN_OPENING:
+          return executeUnassignOpening(state, action);
         default:
             return state;
     }
