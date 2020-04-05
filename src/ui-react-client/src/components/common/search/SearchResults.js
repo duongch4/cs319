@@ -93,7 +93,8 @@ class SearchResults extends Component {
     }
 
     getAll(userRoles, currPage) {
-        if (!this.state.noResultsNextPage || this.state.userSummariesAll[0].length < 50) {
+        if (!this.state.noResultsNextPage && this.state.userSummariesAll[0].length === 50 &&
+            (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length === 50) {
             var mock_data = JSON.parse(JSON.stringify(this.props.data));
             mock_data.page = currPage + 1;
             this.props.performUserSearch(mock_data, userRoles)
@@ -110,6 +111,13 @@ class SearchResults extends Component {
                     noResultsNextPage: true,
                 },() => this.props.stopLoading());
             });
+        }
+        // if the last page has less than 50 users, that means it is done and it will stop loading more pages
+        else if ( (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length < 50) {
+            this.setState({
+                ...this.state,
+                noResultsNextPage: true,
+            },() => this.props.stopLoading());
         }
     }
 

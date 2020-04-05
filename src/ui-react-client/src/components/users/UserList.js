@@ -1,17 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import UserCard from './UserCard';
 import Loading from '../common/Loading';
+import SearchUserCard from '../common/search/SearchUserCard'
 
-const UserList = ({ users }) => {
+const UserList = ({ users,  isAssignable, projectNumber, openingId, createAssignOpenings}) => {
   const userCards =[];
   users.forEach(user => {
     userCards.push(
-        <div className="card" key={userCards.length}>
-            <UserCard user={user} key={userCards.length} canEdit={true}/>
-        </div>)
-    
-  });
+      <SearchUserCard user={user}
+        key={userCards.length}
+        isUserPage={true}
+        canEdit={false}
+        isAssignable={isAssignable}
+        projectNumber={projectNumber}
+        openingId={openingId}
+        createAssignOpenings={(openingId, userId, utilization, user, userRoles) => 
+        createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+        )});
   if(users.length === 0){
     return(<Loading />)
   }

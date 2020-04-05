@@ -112,42 +112,52 @@ class ProjectsPage extends Component {
         });
     }
 
-    getAll(userRoles, currPage, offset) {
-        // only loads 2 pages at a time so that it doesnt take as long
-        if (currPage <= (offset * 3)) {
-            if ((!this.state.noResultsNextPage || this.state.projectsAll[0].length < 50) && !this.state.searchPressed) {
-                var newPage = currPage + 1
-                var filter = this.getFilterWithPage(newPage);
-                this.props.loadProjects(filter, userRoles)
-                    .then(() => {
-                        var projects = (this.props.projects).slice()
-                        this.setState({
-                            ...this.state,
-                            projectsAll: [...this.state.projectsAll, projects],
-                            noResults: false,
-                            loading: true,
-                            lastPage: currPage,
-                        }, () => this.getAll(userRoles, newPage, offset))
-                    }).catch(err => {
-                    this.setState({
-                        ...this.state,
-                        noResultsNextPage: false,
-                        loading: false,
-                        lastPage: currPage,
-                        doneLoading: true,
-                    });
-                });
-            }
-        } else {
-            // stops loading after it loads 10 pages
+  getAll(userRoles, currPage, offset) {
+    // only loads 2 pages at a time so that it doesnt take as long
+    if (currPage <= (offset * 3)) {
+      if (!this.state.noResultsNextPage && this.state.projectsAll[0].length === 50 && !this.state.searchPressed) {
+        var newPage = currPage + 1
+        var filter = this.getFilterWithPage(newPage);
+        this.props.loadProjects(filter, userRoles)
+        .then(() => {
+            var projects = (this.props.projects).slice()
+            this.setState({
+                ...this.state,
+                projectsAll: [...this.state.projectsAll, projects],
+                noResults: false,
+                loading: true,
+                lastPage: currPage,
+            }, () => this.getAll(userRoles, newPage, offset))
+        }).catch(err => {
             this.setState({
                 ...this.state,
                 noResultsNextPage: false,
                 loading: false,
-                offset: this.state.offset + 1,
                 lastPage: currPage,
+                doneLoading: true,
             });
-        }
+        });
+        // if the last page of projects has less than 50 projects, that means it's at the end
+        // and there are no more projects to load
+      } else if (this.state.projectsAll[this.state.projectsAll.length - 1].length < 50) {
+          this.setState({
+            ...this.state,
+            noResultsNextPage: false,
+            loading: false,
+            lastPage: currPage,
+            doneLoading: true,
+        });
+      }
+    } else {
+      // stops loading after it loads 10 pages
+        this.setState({
+          ...this.state,
+          noResultsNextPage: false,
+          loading: false,
+          offset: this.state.offset + 1,
+          lastPage: currPage,
+      });
+      }
     }
 
     toNextPage = () => {
