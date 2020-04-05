@@ -18,7 +18,6 @@ import { UserContext, getUserRoles } from "../userContext/UserContext";
 class FilterTab extends Component {
     constructor(props) {
         super(props);
-        this.reset = false;
         this.initialState = {
             searchFilter: {
                 "filter": {
@@ -43,7 +42,6 @@ class FilterTab extends Component {
         years_temp: [],
         locations_temp: [],
         cityFilled: true,
-        reload: false,
         }
         this.state = this.initialState;
     }
@@ -119,10 +117,6 @@ class FilterTab extends Component {
             showing: false,
         }, () => this.props.onDataFetched(current_state));
     };
-
-    resetSearch = () => {
-        this.setState({...this.initialState, clear: true},() => this.setState({...this.state, clear: false}));
-    }
 
     saveFilter = () => {
         this.setState({
@@ -224,7 +218,7 @@ class FilterTab extends Component {
         const {showing} = this.state;
         return (
         <div key={this.props.clear} className="form-section">
-            <form id="create-course-form" onSubmit={e => { e.preventDefault()}}>
+            <form onSubmit={e => { e.preventDefault()}}>
                 {(this.state.cityFilled) && 
                 (<div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange} value={this.state.searchFilter.searchWord}/>
