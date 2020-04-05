@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import {clearSearchResults} from "../../../redux/actions/searchActions";
+import { loadUsers } from '../../../redux/actions/usersActions';
 import {connect} from 'react-redux';
 import FilterTab from "./FilterTab";
 import SearchResults from "./SearchResults";
@@ -8,11 +9,14 @@ import {CLIENT_DEV_ENV} from '../../../config/config';
 import Select from 'react-select';
 import Loading from '../Loading';
 import { UserContext, getUserRoles } from "../userContext/UserContext";
+import {Button} from "@material-ui/core";
+import UsersPage from '../../users/UsersPage';
 
 class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      users: [],
       filters: null,
       masterlist: {},
       sort_by: [{label: "No filter", value: null},  {label: "Lastname: A-Z", value: "name-AZ"}, {label: "Lastname: Z-A", value: "name-ZA"},
@@ -23,6 +27,8 @@ class Search extends Component {
       sort: null,
       search: false,
       loading: true,
+      showUsers: true,
+      clearFilters: false,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -42,7 +48,7 @@ class Search extends Component {
               ...this.state,
               masterlist: this.props.masterlist,
             })
-          })
+          });
     }
   }
 
@@ -51,13 +57,17 @@ class Search extends Component {
   }
 
   handleResultChange(filter) {
-    this.setState({
-      ...this.state,
-      filters: filter,
-      search: true,
-      loading: true,
-      page: 1,
-    });
+    // if search filter is the same as previous search filter, it will not reload 
+    // because the results are the same
+    if (JSON.stringify(filter) !== JSON.stringify(this.state.filters)) {
+      this.setState({
+        ...this.state,
+        filters: filter,
+        search: true,
+        loading: true,
+        showUsers: false,
+      });
+    }
   }
 
   onFilterChange = (e) => {
@@ -74,28 +84,13 @@ class Search extends Component {
     });
   }
 
-  pageLeft = () => {
-    if (this.state.filters.page > 1) {
-      this.setState({
-        ...this.state,
-        filters: {
-          ...this.state.filters,
-          page: this.state.filters.page -= 1,
-        },
-        loading: true,
-      });
-    }
-  }
-
-  pageRight = () => {
+  showAllUsers = () => {
     this.setState({
       ...this.state,
-      filters: {
-        ...this.state.filters,
-        page: this.state.filters.page += 1,
-      },
-      loading: true,
-    });
+      showUsers: true,
+      filters: null,
+      clearFilters: true,
+    }, () => this.setState({...this.state, clearFilters: false}))
   }
 
   render() {
@@ -105,17 +100,37 @@ class Search extends Component {
             <Loading />
           </div>
       )
-    } else {
-      const userRoles = getUserRoles(this.context);
+    } else if (this.state.showUsers) {
+      return (
+      <div className="activity-container">
+        <h1 className="greenHeader">All Users</h1>
+        <FilterTab onDataFetched={this.handleResultChange}
+                      masterlist={this.state.masterlist}
+                      clear={this.state.clearFilters}/>
+        <UsersPage data={this.state.filters}
+                  showUsers={this.state.showUsers}
+                  isAssignable={this.props.isAssignable}
+                  projectNumber={this.props.projectNumber}
+                  openingId={this.props.openingId}
+                  createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
+        </div>)
+      } else {
+      const {showing} = (this.state.filters != null);
       return (
         <div className="activity-container">
-          <h1 className="greenHeader">Users</h1>
+        <div className="form-row">
+        <h1 className="greenHeader">Users</h1>
+        {(!this.state.loading) && (!this.state.showUsers) &&
+       (<Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", position: "absolute", right: "50px", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation 
+        onClick={()=> this.showAllUsers()}>Show all users</Button>)}
+        </div>
           <FilterTab onDataFetched={this.handleResultChange}
-                      masterlist={this.state.masterlist} />
+                      masterlist={this.state.masterlist}
+                      clear={this.state.clearFilters} />
           {(this.state.filters != null) && (this.state.search) &&
             (<div>
               <div className="form-row">
-                <h2 className="darkGreenHeader">Results</h2>
+                <h2 className="darkGreenHeader">Search Results</h2>
                 {(this.state.loading) &&
                 <Loading/>
                 }
@@ -146,12 +161,14 @@ Search.contextType = UserContext;
 const mapStateToProps = state => {
   return {
     masterlist: state.masterlist,
+    users: state.users,
   };
 };
 
 const mapDispatchToProps = {
   loadMasterlists,
-  clearSearchResults
+  clearSearchResults,
+  loadUsers,
 };
 
 export default connect(

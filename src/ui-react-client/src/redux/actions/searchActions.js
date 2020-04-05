@@ -3,6 +3,7 @@ import { CLIENT_DEV_ENV, SVC_ROOT } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
+import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/search`;
 
@@ -31,15 +32,7 @@ export const performUserSearch = (filterParams, userRoles) => {
                     dispatch(getUsers(response.data.payload));
                 })
                 .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)                 
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
+                    errorHandler(error);
                     throw(error);
                 })
             })

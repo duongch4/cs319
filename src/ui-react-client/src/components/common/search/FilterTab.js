@@ -18,13 +18,12 @@ import { UserContext, getUserRoles } from "../userContext/UserContext";
 class FilterTab extends Component {
     constructor(props) {
         super(props);
-        this.reset = false;
         this.initialState = {
             searchFilter: {
                 "filter": {
                 "utilization": {
                     "min": 0,
-                    "max": 200
+                    "max": 150
                 },
                 "locations": [],
                 "disciplines": null,
@@ -32,7 +31,7 @@ class FilterTab extends Component {
                 "startDate": new Date(),
                 "endDate": new Date(),
             },
-            "searchWord": null,
+            "searchWord": "",
             "orderKey": "utilization",
             "order": "desc",
             "page": 1,
@@ -42,6 +41,7 @@ class FilterTab extends Component {
         disciplines_temp: null,
         years_temp: [],
         locations_temp: [],
+        cityFilled: true,
         }
         this.state = this.initialState;
     }
@@ -61,6 +61,14 @@ class FilterTab extends Component {
                     ...this.state,
                     masterlist: this.props.masterlist,
                 })
+            })
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.props.clear) {
+            this.setState({
+                ...this.initialState,
             })
         }
     }
@@ -107,7 +115,7 @@ class FilterTab extends Component {
         this.setState({
             ...this.state,
             showing: false,
-         }, ()=>this.props.onDataFetched(current_state));
+        }, () => this.props.onDataFetched(current_state));
     };
 
     saveFilter = () => {
@@ -125,21 +133,23 @@ class FilterTab extends Component {
             }, () =>  this.performSearch());
     }
 
-    updateLocations = (newLocation) => {
+    updateLocations = (newLocation, cityFilledIn) => {
         var loc_arr = [];
         newLocation.forEach((location) => {
-            if(location.cities.length !== 0){
+            if(("cities" in location) && (location.cities.length !== 0)){
                 location.cities.forEach((city) => {
                         loc_arr.push({locationID: city.id, province: location.province, city: city.city});
                 });
                     this.setState({
                         ...this.state,
                         locations_temp: loc_arr,
+                        cityFilled: cityFilledIn,
                     });
             } else {
                 this.setState({
                     ...this.state,
                     locations_temp: loc_arr,
+                    cityFilled: cityFilledIn,
                 });
             }
         })
@@ -147,9 +157,9 @@ class FilterTab extends Component {
 
     updateDisciplines = (newDiscipline) => {
         // if there are no disciplines yet
+        var name = null;
+        var skills = [];
         if (this.state.disciplines_temp == null) {
-            var name = null;
-            var skills = [];
             newDiscipline.forEach((discipline) => {
                 name = discipline[1].name;
                 skills = discipline[1].skills;
@@ -161,13 +171,11 @@ class FilterTab extends Component {
                 });
             } 
         } else {
-            var name = null;
-            var skills = [];
             var new_obj = {}
                 newDiscipline.forEach((discipline) => {
-                    name = discipline[1].name;
-                    skills = discipline[1].skills;
-                    if (name != null) {
+                    var name = discipline[1].name;
+                    var skills = discipline[1].skills;
+                    if (name !== null) {
                         new_obj = {...new_obj, [name]: skills}
                     };
                     }
@@ -208,30 +216,40 @@ class FilterTab extends Component {
 
     render(){
         const {showing} = this.state;
-
         return (
-        <div className="form-section">
-            <form>
-                <div className="form-row">
-                    <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
+        <div key={this.props.clear} className="form-section">
+            <form onSubmit={e => { e.preventDefault()}}>
+                {(this.state.cityFilled) && 
+                (<div className="form-row">
+                    <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange} value={this.state.searchFilter.searchWord}/>
                     <Button variant="contained" style={{ backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                     <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
-                </div>
+                </div>)}
+                {(!this.state.cityFilled) && 
+                (<div className="form-row">
+                    <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
+                    <Button variant="contained" style={{ backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation >Apply Filters</Button>
+                    <Button variant="contained" style={{backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation >Search</Button>
+                </div>)}
                 <div className="filter-box">
                     <div className="filter-title">
                         <h2>Add Filters</h2>
                         { !showing && (
-                            <Arrow  size={"large"} onClick={()=> this.setState({ showing: !showing })}>toggle</Arrow>
+                            <Arrow  size={"large"} onClick={()=> this.setState({...this.state, showing: !showing})}>toggle</Arrow>
                         )}
                         { showing && (
-                            <ExpandLessRoundedIcon onClick={()=> this.setState({ showing: !showing })}>toggle </ExpandLessRoundedIcon>
+                            <ExpandLessRoundedIcon onClick={()=> this.setState({ ...this.state, showing: !showing })}>toggle </ExpandLessRoundedIcon>
                         )}
                     </div>
-                    { showing && (
-                        <div id="filters" className="filter-controls">
+                        <div id="filters" className="filter-controls"  style={{ display:(showing ? 'block' : 'none')}}>
                                 <h3 className="darkGreenHeader filter-header">Locations</h3>
                                 <AddLocation locations={this.props.masterlist.locations}
                                              updateLocations={this.updateLocations}/>
+                                {(!this.state.cityFilled) && (
+                                    <div style={{color: "red"}}>
+                                        Must select a city
+                                    </div>
+                                )}
                                 <h3 className="darkGreenHeader">Disciplines</h3>
                                 <AddDisciplines disciplines={this.props.masterlist.disciplines}
                                                 yearsOfExp={this.props.masterlist.yearsOfExp}
@@ -255,13 +273,12 @@ class FilterTab extends Component {
                                 <div className="slider" style={{marginBottom: "30px"}}>
                                     <h3 className="darkGreenHeader">Utilization Range</h3>
                                     <div className="slider-wrapper">
-                                        <InputRange maxValue={300} minValue={0}
+                                        <InputRange maxValue={200} minValue={0}
                                                     value={this.state.searchFilter.filter.utilization}
                                                     onChange={value => this.updateUtil(value)}/>
                                     </div>
                                 </div>
                         </div>
-                    )}
                 </div>
             </form>
         </div>

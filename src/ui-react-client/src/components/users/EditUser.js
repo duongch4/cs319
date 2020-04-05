@@ -198,7 +198,7 @@ class EditUser extends Component {
             let unavailability = [];
             if(this.state.userProfile.availability && this.state.userProfile.availability.length > 0) {
                 this.state.userProfile.availability.forEach(currentAvailability => {
-                    unavailability.push(<AvailabilityCard availability={currentAvailability} key={unavailability.length}  removeAvailability={this.removeAvailability}/>)
+                    unavailability.push(<AvailabilityCard edit={true} availability={currentAvailability} key={unavailability.length}  removeAvailability={this.removeAvailability}/>)
                 })
             } else {
                 unavailability.push(<p className="empty-statements" key={unavailability.length}>This resource does not have any unavailabilities.</p>)

@@ -4,6 +4,7 @@ import './ProjectStyles.css';
 import {Button} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Link } from 'react-router-dom'
+import MonthlyDetails from '../projects/MonthlyDetails';
 
 const Openings = ({ opening, index, commitment, isAssignable, isRemovable, removeOpening}) => {
 
@@ -33,7 +34,10 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
             {(skills.length > 0) && (<p><b>Skills:</b> {skills}</p>)}
             <p><b>Experience:</b> {opening.yearsOfExp}</p>
             {(commitment) &&
-            (<p><b>Total Expected Number of Hours:</b> {totalCommitment}</p>)}
+            (<div>
+            <p><b>Total Expected Number of Hours:</b> {totalCommitment}</p>
+            <MonthlyDetails commitment={Object.entries(commitment)}/>
+            </div>)}
         </div>
         {isAssignable &&
             (<div className="card-summary-title assign">
@@ -50,7 +54,7 @@ const Openings = ({ opening, index, commitment, isAssignable, isRemovable, remov
                 <div>
                     <DeleteIcon style={{color: "#EB5757", cursor: "pointer"}} onClick={()=> removeOpening(opening)}/>
                 </div>
-            </div>)}
+            </div>)}                        
     </div>
 
       )
