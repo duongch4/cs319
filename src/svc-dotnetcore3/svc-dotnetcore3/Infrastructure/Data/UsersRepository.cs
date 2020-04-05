@@ -291,7 +291,16 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req, int rowsPerPage)
         {
-            if (req.Filter == null) return await GetAllUserResources(req.SearchWord, req.OrderKey, req.Order, req.Page, rowsPerPage);
+            if (
+                req.Filter == null ||
+                (
+                    req.Filter.Disciplines == null &&
+                    (req.Filter.YearsOfExps == null || !req.Filter.YearsOfExps.Any())
+                )
+            )
+            {
+                return await GetAllUserResources(req.SearchWord, req.OrderKey, req.Order, req.Page, rowsPerPage);
+            }
 
             using var connection = new SqlConnection(connectionString);
 
@@ -340,11 +349,11 @@ namespace Web.API.Infrastructure.Data
                                 o.FromDate > @EndDate
                                 OR o.ToDate < @StartDate
                             )
-                    LEFT JOIN ResourceDiscipline rd
+                    INNER JOIN ResourceDiscipline rd
                         ON
                             rd.ResourceId = ul.Id
                             AND rd.YearsOfExperience IN @YearsOfExps
-                    LEFT JOIN Disciplines d
+                    INNER JOIN Disciplines d
                         ON
                             rd.DisciplineId = d.Id
                             AND d.Name IN @Disciplines
@@ -380,11 +389,6 @@ namespace Web.API.Infrastructure.Data
                 OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                 FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
             ;";
-
-                    // SELECT SUM(p.[rows])
-                    // FROM sys.partitions p
-                    // WHERE p.[object_id] = OBJECT_ID('Data_CTE')
-                    //     AND p.index_id < 2
 
             connection.Open();
             var users = await connection.QueryAsync<UserResource>(sql, new
@@ -475,11 +479,11 @@ namespace Web.API.Infrastructure.Data
             {
                 disciplines = disciplinesReq.Keys.ToHashSet();
                 skills = disciplinesReq.Values.SelectMany(x => x).ToHashSet();
-                foreach(var discipline in disciplinesReq.Keys.ToList())
+                foreach(var discipline in disciplines)
                 {
                     if (disciplinesReq[discipline] == null || !disciplinesReq[discipline].Any())
                     {
-                        var sqlGetSkillsForDiscipline = @"
+                        var sqlGetAllSkillsForDiscipline = @"
                             SELECT
                                 s.Name
                             FROM
@@ -490,7 +494,7 @@ namespace Web.API.Infrastructure.Data
                         ";
                         connection.Open();
                         skills.UnionWith(
-                            (await connection.QueryAsync<Skill>(sqlGetSkillsForDiscipline, new {
+                            (await connection.QueryAsync<Skill>(sqlGetAllSkillsForDiscipline, new {
                                 DisciplineName = discipline
                             })).Select(x => x.Name).ToHashSet()
                         );
@@ -512,11 +516,11 @@ namespace Web.API.Infrastructure.Data
             {
                 yearsOfExpsReq = new HashSet<string>();
                 var sqlGetAllUsersYearsOfExps = @"
-                    SELECT YearsOfExperience
+                    SELECT DISTINCT YearsOfExperience
                     FROM ResourceDiscipline
                 ";
                 connection.Open();
-                yearsOfExpsReq = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience).ToHashSet();
+                yearsOfExpsReq = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience);
                 connection.Close();
             }
             return yearsOfExpsReq;
