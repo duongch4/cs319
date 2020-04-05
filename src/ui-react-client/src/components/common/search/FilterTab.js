@@ -32,7 +32,7 @@ class FilterTab extends Component {
                 "startDate": new Date(),
                 "endDate": new Date(),
             },
-            "searchWord": null,
+            "searchWord": "",
             "orderKey": "utilization",
             "order": "desc",
             "page": 1,
@@ -43,6 +43,7 @@ class FilterTab extends Component {
         years_temp: [],
         locations_temp: [],
         cityFilled: true,
+        reload: false,
         }
         this.state = this.initialState;
     }
@@ -62,6 +63,14 @@ class FilterTab extends Component {
                     ...this.state,
                     masterlist: this.props.masterlist,
                 })
+            })
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.props.clear) {
+            this.setState({
+                ...this.initialState,
             })
         }
     }
@@ -106,9 +115,14 @@ class FilterTab extends Component {
     performSearch = () => {
         var current_state = JSON.parse(JSON.stringify(this.state.searchFilter));
         this.setState({
-            ...this.initialState,
-         }, ()=>this.props.onDataFetched(current_state));
+            ...this.state,
+            showing: false,
+        }, () => this.props.onDataFetched(current_state));
     };
+
+    resetSearch = () => {
+        this.setState({...this.initialState, clear: true},() => this.setState({...this.state, clear: false}));
+    }
 
     saveFilter = () => {
         this.setState({
@@ -209,32 +223,31 @@ class FilterTab extends Component {
     render(){
         const {showing} = this.state;
         return (
-        <div className="form-section">
-            <form onSubmit={e => { e.preventDefault()}}>
+        <div key={this.props.clear} className="form-section">
+            <form id="create-course-form" onSubmit={e => { e.preventDefault()}}>
                 {(this.state.cityFilled) && 
                 (<div className="form-row">
-                    <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
+                    <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange} value={this.state.searchFilter.searchWord}/>
                     <Button variant="contained" style={{ backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation onClick={()=> this.saveFilter()}>Apply Filters</Button>
                     <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
                 </div>)}
                 {(!this.state.cityFilled) && 
                 (<div className="form-row">
                     <input className="input-box" type="text" id="search" placeholder="Search" onChange={this.handleChange}/>
-                    <Button variant="contained" style={{ backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation isDisabled>Apply Filters</Button>
-                    <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation onClick={()=> this.saveFilter()}>Search</Button>
+                    <Button variant="contained" style={{ backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'block' : 'none')}} disableElevation >Apply Filters</Button>
+                    <Button variant="contained" style={{backgroundColor: "#808080", color: "#ffffff", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation >Search</Button>
                 </div>)}
                 <div className="filter-box">
                     <div className="filter-title">
                         <h2>Add Filters</h2>
                         { !showing && (
-                            <Arrow  size={"large"} onClick={()=> this.setState({ showing: !showing})}>toggle</Arrow>
+                            <Arrow  size={"large"} onClick={()=> this.setState({...this.state, showing: !showing})}>toggle</Arrow>
                         )}
                         { showing && (
-                            <ExpandLessRoundedIcon onClick={()=> this.setState({ showing: !showing, cityFilled: true })}>toggle </ExpandLessRoundedIcon>
+                            <ExpandLessRoundedIcon onClick={()=> this.setState({ ...this.state, showing: !showing })}>toggle </ExpandLessRoundedIcon>
                         )}
                     </div>
-                    { showing && (
-                        <div id="filters" className="filter-controls">
+                        <div id="filters" className="filter-controls"  style={{ display:(showing ? 'block' : 'none')}}>
                                 <h3 className="darkGreenHeader filter-header">Locations</h3>
                                 <AddLocation locations={this.props.masterlist.locations}
                                              updateLocations={this.updateLocations}/>
@@ -272,7 +285,6 @@ class FilterTab extends Component {
                                     </div>
                                 </div>
                         </div>
-                    )}
                 </div>
             </form>
         </div>
