@@ -107,7 +107,12 @@ class Search extends Component {
         <FilterTab onDataFetched={this.handleResultChange}
                       masterlist={this.state.masterlist}
                       clear={this.state.clearFilters}/>
-        <UsersPage showUsers={this.state.showUsers}/>
+        <UsersPage data={this.state.filters}
+                  showUsers={this.state.showUsers}
+                  isAssignable={this.props.isAssignable}
+                  projectNumber={this.props.projectNumber}
+                  openingId={this.props.openingId}
+                  createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
         </div>)
       } else {
       const {showing} = (this.state.filters != null);

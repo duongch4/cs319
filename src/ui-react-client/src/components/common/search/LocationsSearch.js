@@ -86,9 +86,11 @@ class LocationsSearch extends Component {
     var provinces_render = [];
     var province_key = [];
     Object.keys(provinces).forEach((province, i) => {
-      province_key.push("province_" + i);
-      var province_obj = {label: province, value: province};
-      provinces_render.push(province_obj);
+      if (Object.values(this.props.provinces[province]).length !== 0) {
+        province_key.push("province_" + i);
+        var province_obj = {label: province, value: province};
+        provinces_render.push(province_obj);
+      }
     });
     
     var cities = [];
