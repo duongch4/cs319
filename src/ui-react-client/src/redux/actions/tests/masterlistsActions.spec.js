@@ -15,6 +15,7 @@ const store = mockStore({});
 const adminRole = ["adminUser", "regularUser"];
 const regularRole = ["regularUser"];
 const baseURL = `${SVC_ROOT}api/`;
+let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
 // TODO for all the test groups
 // Invalid authentication error from getHeaders
@@ -54,12 +55,10 @@ describe('Create Disciplines', () => {
         expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/disciplines`, discipline, {headers:{ Authorization: `Bearer 100` }});
     });
 
-    // TODO
-    it('should properly handle internal server error', async () => {
+    it('should properly handle server errors', async () => {
         let error = new Error({status: 400});
         axios.post.mockRejectedValueOnce(error);
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
-        let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
         
         const discipline = {
             id: 5,
@@ -74,12 +73,11 @@ describe('Create Disciplines', () => {
 
         await store.dispatch(masterlistsActions.createDiscpline(discipline, adminRole));
         
-        expect(alert).toHaveBeenCalledTimes(1);
+        expect(alert).toHaveBeenCalled();
         expect(store.getActions()).toEqual(expectedAction);
         expect(axios.post).toHaveBeenCalledTimes(1);
         expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/disciplines`, discipline, {headers:{ Authorization: `Bearer 100` }});
-
-    })
+    });
 })
 
 describe('Delete Disciplines', () => {
@@ -103,6 +101,23 @@ describe('Delete Disciplines', () => {
         }];
       await store.dispatch(masterlistsActions.deleteDiscipline(id, adminRole));
 
+      expect(store.getActions()).toEqual(expectedAction);
+      expect(axios.delete).toHaveBeenCalledTimes(1);
+      expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/disciplines/${id}`, {headers:{ Authorization: `Bearer 100` }});
+    })
+
+    it('should handle error from server', async () => {
+        let error = new Error({status: 500});
+        axios.delete.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let id = 1;
+        const expectedAction = [{
+            type: types.ERROR_DELETING,
+            error: error
+        }];
+      await store.dispatch(masterlistsActions.deleteDiscipline(id, adminRole));
+
+      expect(alert).toHaveBeenCalled();
       expect(store.getActions()).toEqual(expectedAction);
       expect(axios.delete).toHaveBeenCalledTimes(1);
       expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/disciplines/${id}`, {headers:{ Authorization: `Bearer 100` }});
@@ -139,6 +154,28 @@ describe('Create Skills', () => {
         expect(axios.post).toHaveBeenCalledTimes(1);
         expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/disciplines/100/skills`, skill, {headers:{ Authorization: `Bearer 100` }});
     })
+
+    it('should properly handle error from server', async () => {
+        let error = new Error({status: 400});
+        axios.post.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let skill = {
+            disciplineID: 100,
+            skillID: 1,
+            Name: 'new test skill'
+        };
+        let expectedAction = [{
+            type: types.ERROR_CREATING,
+            error: error
+        }];
+
+        await store.dispatch(masterlistsActions.createSkill(skill, adminRole));
+
+        expect(alert).toHaveBeenCalled();
+        expect(store.getActions()).toEqual(expectedAction);
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/disciplines/100/skills`, skill, {headers:{ Authorization: `Bearer 100` }});
+    })
 })
 
 describe('Delete Skills', () => {
@@ -167,6 +204,27 @@ describe('Delete Skills', () => {
         }];
       await store.dispatch(masterlistsActions.deleteSkill(skill.disciplineID, skill.name, adminRole));
 
+      expect(store.getActions()).toEqual(expectedAction);
+      expect(axios.delete).toHaveBeenCalledTimes(1);
+      expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/disciplines/${skill.disciplineID}/skills/${skill.name}`, {headers:{ Authorization: `Bearer 100` }});
+    })
+
+    it('should properly handle error from server', async () => {
+        let error = new Error({status: 500});
+        axios.delete.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let skill = {
+            disciplineID: 100,
+            skillID: 1,
+            name: 'some skill name'
+        };
+        let expectedAction = [{
+            type: types.ERROR_DELETING,
+            error: error
+        }];
+      await store.dispatch(masterlistsActions.deleteSkill(skill.disciplineID, skill.name, adminRole));
+
+      expect(alert).toHaveBeenCalled();
       expect(store.getActions()).toEqual(expectedAction);
       expect(axios.delete).toHaveBeenCalledTimes(1);
       expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/disciplines/${skill.disciplineID}/skills/${skill.name}`, {headers:{ Authorization: `Bearer 100` }});
@@ -202,7 +260,28 @@ describe('Create Provinces', () => {
         expect(store.getActions()).toEqual(expectedAction);
         expect(axios.post).toHaveBeenCalledTimes(1);
         expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/provinces`, location, {headers:{ Authorization: `Bearer 100` }});
-    
+    })
+
+    it('should properly handle error from server', async () => {
+        let error = new Error({status: 400})
+        axios.post.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let location = {
+            locationID: 0,
+            province: 'new province',
+            city: null
+        }
+        let expectedAction = [{
+            type: types.ERROR_CREATING,
+            error: error
+        }];
+
+        await store.dispatch(masterlistsActions.createProvince(location, adminRole));
+
+        expect(alert).toHaveBeenCalled();
+        expect(store.getActions()).toEqual(expectedAction);
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/provinces`, location, {headers:{ Authorization: `Bearer 100` }});
     })
 })
 
@@ -226,6 +305,22 @@ describe('Delete Provinces', () => {
         }];
       await store.dispatch(masterlistsActions.deleteProvince('test_province', adminRole));
 
+      expect(store.getActions()).toEqual(expectedAction);
+      expect(axios.delete).toHaveBeenCalledTimes(1);
+      expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/provinces/test_province`, {headers:{ Authorization: `Bearer 100` }});
+    })
+
+    it('should properly handle error from server', async () => {
+        let error = new Error({status: 500})
+        axios.delete.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        const expectedAction = [{
+            type: types.ERROR_DELETING,
+            error: error
+        }];
+      await store.dispatch(masterlistsActions.deleteProvince('test_province', adminRole));
+
+      expect(alert).toHaveBeenCalled();
       expect(store.getActions()).toEqual(expectedAction);
       expect(axios.delete).toHaveBeenCalledTimes(1);
       expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/provinces/test_province`, {headers:{ Authorization: `Bearer 100` }});
@@ -263,6 +358,29 @@ describe('Create City', () => {
         expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/locations`, location, {headers:{ Authorization: `Bearer 100` }});
     
     })
+
+    it('should properly handle error from server', async () => {
+        let error = new Error({status: 500})
+        axios.post.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let location = {
+            locationID: 12,
+            province: 'province',
+            city: 'new city'
+        }
+        let expectedAction = [{
+            type: types.ERROR_CREATING,
+            error: error
+        }];
+
+        await store.dispatch(masterlistsActions.createCity(location, adminRole));
+
+        expect(alert).toHaveBeenCalled();
+        expect(store.getActions()).toEqual(expectedAction);
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith(`${baseURL}admin/locations`, location, {headers:{ Authorization: `Bearer 100` }});
+    
+    })
 })
 
 describe('Delete Disciplines', () => {
@@ -291,6 +409,27 @@ describe('Delete Disciplines', () => {
         }];
       await store.dispatch(masterlistsActions.deleteCity(location.city, location.locationID, adminRole));
 
+      expect(store.getActions()).toEqual(expectedAction);
+      expect(axios.delete).toHaveBeenCalledTimes(1);
+      expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/locations/${location.locationID}`, {headers:{ Authorization: `Bearer 100` }});
+    })
+
+    it('should properly handle error from server', async () => {
+        let error = new Error({status: 500})
+        axios.delete.mockRejectedValueOnce(error);
+        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        let location = {
+            locationID: 12,
+            province: 'province',
+            city: 'new city'
+        }
+        const expectedAction = [{
+            type: types.ERROR_DELETING,
+            error: error
+        }];
+      await store.dispatch(masterlistsActions.deleteCity(location.city, location.locationID, adminRole));
+
+      expect(alert).toHaveBeenCalled();
       expect(store.getActions()).toEqual(expectedAction);
       expect(axios.delete).toHaveBeenCalledTimes(1);
       expect(axios.delete).toHaveBeenCalledWith(`${baseURL}admin/locations/${location.locationID}`, {headers:{ Authorization: `Bearer 100` }});
