@@ -239,7 +239,10 @@ namespace Tests.Unit
         public async void CreateADiscipline_TryBlock_ReturnValidId()
         {
             var returnVal = 1;
-            var discipline = new DisciplineResource();
+            var discipline = new DisciplineResource
+            {
+                Name = "A Discipline Name"
+            };
             Setup_DisciplinesRepo_CreateADiscipline_Default(returnVal);
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Verify_DisciplinesRepo_CreateADiscipline(Times.Once);
@@ -256,7 +259,10 @@ namespace Tests.Unit
             var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
             Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(sqlException);
 
-            var discipline = new DisciplineResource();
+            var discipline = new DisciplineResource
+            {
+                Name = "A Discipline Name"
+            };
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
             var response = result.Value as InternalServerException;
@@ -267,8 +273,6 @@ namespace Tests.Unit
         public async void CreateADiscipline_CatchBlock_ReturnBadRequestException()
         {
             string errMessage = "Bad Request";
-            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
-            Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(badRequestException);
 
             var discipline = new DisciplineResource();
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
