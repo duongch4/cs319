@@ -22,7 +22,8 @@ class CreateEditProjectDetails extends Component {
     };
 
     componentDidMount() {
-        let provinces = Object.keys(this.props.locations);
+        let allProvinces = Object.keys(this.props.locations);
+        let provinces = allProvinces.filter(province => Object.keys(this.props.locations[province]).length > 0)
         let currentProj = this.props.currentProject;
         if (currentProj) {
             let cities = Object.keys(this.props.locations[currentProj.location.province]);

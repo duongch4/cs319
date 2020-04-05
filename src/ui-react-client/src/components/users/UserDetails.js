@@ -84,7 +84,7 @@ class UserDetails extends Component {
             if (userDetails.currentProjects && userDetails.currentProjects.length > 0) {
                 // we want to get only the unique project titles from the list of projects.
                 let uniqueProjects = [];
-                userDetails.currentProjects.map(project => {
+                userDetails.currentProjects.forEach(project => {
                     if (uniqueProjects.length === 0 ||
                         uniqueProjects.find(proj => proj.projectNumber === project.projectNumber) === undefined) {
                         uniqueProjects.push(project)
