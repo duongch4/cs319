@@ -16,6 +16,11 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import PropTypes from 'prop-types';
 
 class ProjectsPage extends Component {
+  constructor(props) {
+    super(props);
+    this._ismounted = false;
+  }
+
     state = {
       filter: "?searchWord=&orderKey=startDate&order=asc&page=1",
       projects: [],
@@ -36,29 +41,34 @@ class ProjectsPage extends Component {
     };
 
   componentDidMount() {
+    this._ismounted = true;
       if (CLIENT_DEV_ENV) {
         this.props.loadProjects(this.state.filter, ["adminUser"]);
-        this.setState({
-          ...this.state,
-          projects: this.props.projects,
-          searchPressed: false,
-          loading: false,
-        });
-      } else {
-        const userRoles = getUserRoles(this.context);
-        this.props.loadProjects(this.state.filter, userRoles).then(() => {
+        if (this._ismounted) {
           this.setState({
             ...this.state,
             projects: this.props.projects,
             searchPressed: false,
-            noResults: false,
-            loading: true,
-            lastPage: 1,
-            projectsAll: [this.props.projects],
-            doneLoading: false,
-          }, ()=> (
-            this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-          ))
+            loading: false,
+          });
+        }
+      } else {
+        const userRoles = getUserRoles(this.context);
+        this.props.loadProjects(this.state.filter, userRoles).then(() => {
+          if (this._ismounted) {
+            this.setState({
+              ...this.state,
+              projects: this.props.projects,
+              searchPressed: false,
+              noResults: false,
+              loading: true,
+              lastPage: 1,
+              projectsAll: [this.props.projects],
+              doneLoading: false,
+            }, ()=> (
+              this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+            ))
+          }   
         }).catch(err => {
           this.setState({
             ...this.state,
@@ -79,29 +89,37 @@ class ProjectsPage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._ismounted = false;
+  }
+
   loadMore = () => {
     var lastPage = this.state.lastPage;
-    this.setState({
-      ...this.state, 
-      loading: true,
-    }, () => this.getAll(getUserRoles(this.context), lastPage, this.state.offset))
+    if (this._ismounted) {
+      this.setState({
+        ...this.state, 
+        loading: true,
+      }, () => this.getAll(getUserRoles(this.context), lastPage, this.state.offset))  
+    }
   }
 
   resetSearch = () => {
     const userRoles = getUserRoles(this.context);
     this.props.loadProjects(this.state.filter, userRoles).then(() => {
-      this.setState({
-        ...this.state,
-        projects: this.props.projects,
-        searchPressed: false,
-        noResults: false,
-        loading: true,
-        lastPage: 1,
-        projectsAll: [this.props.projects],
-        doneLoading: false,
-      }, ()=> (
-        this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-      ))
+      if (this._ismounted) {
+        this.setState({
+          ...this.state,
+          projects: this.props.projects,
+          searchPressed: false,
+          noResults: false,
+          loading: true,
+          lastPage: 1,
+          projectsAll: [this.props.projects],
+          doneLoading: false,
+        }, ()=> (
+          this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+        ))
+      }      
     }).catch(err => {
       this.setState({
         ...this.state,
@@ -121,13 +139,15 @@ class ProjectsPage extends Component {
         this.props.loadProjects(filter, userRoles)
         .then(() => {
             var projects = (this.props.projects).slice()
-            this.setState({
+            if (this._ismounted) {
+              this.setState({
                 ...this.state,
                 projectsAll: [...this.state.projectsAll, projects],
                 noResults: false,
                 loading: true,
                 lastPage: currPage,
             }, () => this.getAll(userRoles, newPage, offset))
+            }       
         }).catch(err => {
             this.setState({
                 ...this.state,
