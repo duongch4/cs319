@@ -183,10 +183,17 @@ namespace Tests.Integration
         public static IEnumerable<object[]> Data_POST_Pass()
         {
             var url = "/api/admin/disciplines";
-            var allData = new List<object[]>
+            var allData = new List<object[]> // Using these names for both disciplines and skills
             {
                 new object[] { url, "D" },
-                new object[] { url, "Disc" }
+                new object[] { url, "Disc" },
+                new object[] { url, "12345Disc" },
+                new object[] { url, "Disc12345" },
+                new object[] { url, "Disc12345Skill" },
+                new object[] { url, "12345Skill54321" },
+                new object[] { url, "12345-Skill-54321" },
+                new object[] { url, "Disc_12345_Skill" },
+                new object[] { url, "Disc_12345-Skill" }
             };
             return allData;
         }
@@ -196,7 +203,7 @@ namespace Tests.Integration
             var url = "/api/admin/disciplines";
             var allData = new List<object[]>
             {
-                new object[] { url, "!@#$%^&*()_+-=[]{}\\|;:'\",./<>?" }
+                new object[] { url, "!@#$%^&*()_+-=[]{}\\|;:'\",./<>?" } // Will NOT WORK for URL-Encoded param for skill name!!
             };
             return allData;
         }
