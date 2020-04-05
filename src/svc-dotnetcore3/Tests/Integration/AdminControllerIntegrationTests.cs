@@ -14,27 +14,16 @@ using Xunit;
 namespace Tests.Integration
 {
     [TestCaseOrderer("Tests.Integration.Utils.PriorityOrderer", "Tests")]
-    public class AdminControllerDisciplineTests : IntegrationTestBase
+    public class AdminControllerDisciplineAndSkillTests : IntegrationTestBase
     {
-        public AdminControllerDisciplineTests(AppFixture app) : base(app)
+        public AdminControllerDisciplineAndSkillTests(AppFixture app) : base(app)
         { }
 
         [Theory, TestPriority(0)]
-        // [InlineData("/api/admin/disciplines")]
         [MemberData(nameof(Data_POST_Pass))]
         public async Task CreateOneDiscipline_Pass(string url, string disciplineName)
         {
-            var userProfile = JsonConvert.SerializeObject(GetDisciplineResource(disciplineName));
-            var req = new HttpRequestMessage(HttpMethod.Post, url)
-            {
-                Content = new StringContent(
-                    userProfile,
-                    Encoding.UTF8,
-                    "application/json"
-                )
-            };
-            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-            var res = await Client.SendAsync(req);
+            var res = await GetResponseMessage_Discipline_POST(url, disciplineName);
             Assert.Equal(HttpStatusCode.Created, res.StatusCode);
         }
 
@@ -42,7 +31,7 @@ namespace Tests.Integration
         [InlineData("/api/masterlists")]
         public async Task GetDisciplines_AfterCreate(string url)
         {
-            var added = Data_POST_Pass().Select(p => p.GetValue(1)).ToHashSet();           
+            var added = Data_POST_Pass().Select(p => p.GetValue(1)).ToHashSet();
             var req = new HttpRequestMessage(HttpMethod.Get, url);
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
             var res = await Client.SendAsync(req);
@@ -54,38 +43,122 @@ namespace Tests.Integration
 
         [Theory, TestPriority(2)]
         [MemberData(nameof(Data_POST_Pass))]
-        public async Task DeleteOneDiscipline(string url, string disciplineName)
+        public async Task CreateOneSkill_Pass(string url, string name)
+        {
+            var id = await GetDisciplineIdFromName(name);
+            var res = await GetResponseMessage_Skill_POST($"{url}/{id}/skills", id, name);
+            Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        }
+
+        [Theory, TestPriority(3)]
+        [MemberData(nameof(Data_POST_Pass))]
+        public async Task Cleanup_Skill(string url, string name)
+        {
+            var id = await GetDisciplineIdFromName(name);
+            var res = await DeleteDisciplineOrSkill($"{url}/{id}/skills/{name}");
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        }
+
+        [Theory, TestPriority(4)]
+        [MemberData(nameof(Data_POST_Pass))]
+        public async Task Cleanup_Discipline_0(string url, string disciplineName)
+        {
+            var id = await GetDisciplineIdFromName(disciplineName);
+            var res = await DeleteDisciplineOrSkill($"{url}/{id}");
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        }
+
+        [Theory, TestPriority(5)]
+        [MemberData(nameof(Data_POST_SpecialChars_Pass))]
+        public async Task CreateOneDiscipline_SpecialChars_Pass(string url, string disciplineName)
+        {
+            var res = await GetResponseMessage_Discipline_POST(url, disciplineName);
+            Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        }
+
+        [Theory, TestPriority(6)]
+        [MemberData(nameof(Data_POST_SpecialChars_Pass))]
+        public async Task Cleanup_Discipline_1(string url, string disciplineName)
+        {
+            var id = await GetDisciplineIdFromName(disciplineName);
+            var res = await DeleteDisciplineOrSkill($"{url}/{id}");
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        }
+
+        [Theory, TestPriority(7)]
+        [InlineData("/api/admin/disciplines")]
+        public async Task CreateDisciplines_SameName_Fail(string url)
+        {
+            var res_1 = await GetResponseMessage_Discipline_POST(url, "D");
+            Assert.Equal(HttpStatusCode.Created, res_1.StatusCode);
+
+            var res_2 = await GetResponseMessage_Discipline_POST(url, "D");
+            Assert.Equal(HttpStatusCode.InternalServerError, res_2.StatusCode);
+        }
+
+        [Theory, TestPriority(8)]
+        [InlineData("/api/admin/disciplines")]
+        public async Task Cleanup_1(string url)
+        {
+            var id = await GetDisciplineIdFromName("D");
+            var res = await DeleteDisciplineOrSkill($"{url}/{id}");
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        }
+
+        [Theory, TestPriority(9)]
+        [MemberData(nameof(Data_POST_Fail))]
+        public async Task CreateDisciplines_Fail(string url, string disciplineName)
+        {
+            var res = await GetResponseMessage_Discipline_POST(url, disciplineName);
+            Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+        }
+
+        private async Task<HttpResponseMessage> GetResponseMessage_Discipline_POST(string url, string disciplineName)
+        {
+            var discipline = JsonConvert.SerializeObject(GetDisciplineResource(disciplineName));
+            var req = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(
+                    discipline,
+                    Encoding.UTF8,
+                    "application/json"
+                )
+            };
+            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
+            return await Client.SendAsync(req);
+        }
+
+        private async Task<HttpResponseMessage> GetResponseMessage_Skill_POST(string url, int disciplineId, string skillName)
+        {
+            var discSkill = JsonConvert.SerializeObject(GetDisciplineSkillResource(disciplineId, skillName));
+            var req = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(
+                    discSkill,
+                    Encoding.UTF8,
+                    "application/json"
+                )
+            };
+            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
+            return await Client.SendAsync(req);
+        }
+
+        private async Task<int> GetDisciplineIdFromName(string disciplineName)
         {
             var reqMasterlist = new HttpRequestMessage(HttpMethod.Get, "/api/masterlists");
             await AccessTokenProvider.AuthenticateRequestAsAppAsync(reqMasterlist);
             var resMasterlist = await Client.SendAsync(reqMasterlist);
             string jsonString = await resMasterlist.Content.ReadAsStringAsync();
             var disc = JsonConvert.DeserializeObject<OkResponse<MasterResource>>(jsonString).payload.Disciplines;
-            var id = disc.Select(d => d.Key);
-                // .Where(
-                    // d => d.Key == disciplineName
-                // );
-                // .Select(d => d.Value.DisciplineID);
-                // .Select(d => d.Key);
-
-            var req = new HttpRequestMessage(HttpMethod.Delete, $"{url}/{id}");
-            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-            var res = await Client.SendAsync(req);
-            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            return disc[disciplineName].DisciplineID;
         }
 
-        // [Theory, TestPriority(3)]
-        // [InlineData("/api/admin/disciplines")]
-        // public async Task GetOneDiscipline_AfterDelete(string url)
-        // {
-        //     var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{userId}");
-        //     await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-        //     var res = await Client.SendAsync(req);
-        //     Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-        //     string jsonString = await res.Content.ReadAsStringAsync();
-        //     var jsonObject = JsonConvert.DeserializeObject<OkResponse<UserProfile>>(jsonString);
-        //     Assert.Single(jsonObject.payload.Disciplines);
-        // }
+        private async Task<HttpResponseMessage> DeleteDisciplineOrSkill(string url)
+        {
+            var req = new HttpRequestMessage(HttpMethod.Delete, url);
+            await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
+            return await Client.SendAsync(req);
+        }
 
         private DisciplineResource GetDisciplineResource(string disciplineName)
         {
@@ -97,123 +170,48 @@ namespace Tests.Integration
             };
         }
 
+        private DisciplineSkillResource GetDisciplineSkillResource(int disciplineId, string skillName)
+        {
+            return new DisciplineSkillResource
+            {
+                DisciplineId = disciplineId,
+                SkillId = 0, // DOES NOT MATTER
+                Name = skillName
+            };
+        }
+
         public static IEnumerable<object[]> Data_POST_Pass()
         {
             var url = "/api/admin/disciplines";
-
             var allData = new List<object[]>
             {
                 new object[] { url, "D" },
-                // new object[] { url, "Disc" },
-                // new object[] { url, " D" },
-                // new object[] { url, "D " },
-                // new object[] { url, "       D" }, // => " D"
-                // new object[] { url, "D       " }, // => "D "
-                // new object[] { url, "    D   " }, // => " D "
-                // new object[] { url, "!@#$%^&*()_+-=[]{}\\|;:'\",./<>?" }
+                new object[] { url, "Disc" }
             };
-
             return allData;
         }
 
-        // public static IEnumerable<object[]> Data_DEL_Pass()
-        // {
-        //     // var url = "/api/admin/disciplines";
-
-        //     var allData = new List<object[]>
-        //     {
-        //         null,
-        //         new object[] { url, null },
-        //         new object[] { url, "" }
-        //     };
-        //     return allData;
-        // }
+        public static IEnumerable<object[]> Data_POST_SpecialChars_Pass()
+        {
+            var url = "/api/admin/disciplines";
+            var allData = new List<object[]>
+            {
+                new object[] { url, "!@#$%^&*()_+-=[]{}\\|;:'\",./<>?" }
+            };
+            return allData;
+        }
 
         public static IEnumerable<object[]> Data_POST_Fail()
         {
             var url = "/api/admin/disciplines";
-
             var allData = new List<object[]>
             {
-                null,
                 new object[] { url, null },
                 new object[] { url, "" }
             };
-
             return allData;
         }
     }
-
-
-    // [TestCaseOrderer("Tests.Integration.Utils.PriorityOrderer", "Tests")]
-    // public class AdminControllerSkillTests : IntegrationTestBase
-    // {
-    //     public  AdminControllerSkillTests(AppFixture app) : base(app)
-    //     { }
-
-    //     [Theory, TestPriority(0)]
-    //     [InlineData("/api/admin/skills")]
-    //     public async Task CreateOneSkill(string url)
-    //     {
-    //         var userProfile = JsonConvert.SerializeObject(GetUserProfile(getTwo: true));
-    //         var req = new HttpRequestMessage(HttpMethod.Put, $"{url}/{userId}")
-    //         {
-    //             Content = new StringContent(
-    //                 userProfile,
-    //                 Encoding.UTF8,
-    //                 "application/json"
-    //             )
-    //         };
-    //         await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-    //         var res = await Client.SendAsync(req);
-    //         Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-    //     }
-
-    //     [Theory, TestPriority(1)]
-    //     [InlineData("/api/admin/skills")]
-    //     public async Task GetOneDiscipline_AfterCreate(string url)
-    //     {
-    //         var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{userId}");
-    //         await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-    //         var res = await Client.SendAsync(req);
-    //         Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-    //         string jsonString = await res.Content.ReadAsStringAsync();
-    //         var jsonObject = JsonConvert.DeserializeObject<OkResponse<UserProfile>>(jsonString);
-    //         Assert.Equal(2, jsonObject.payload.Disciplines.Count());
-    //     }
-
-    //     [Theory, TestPriority(2)]
-    //     [InlineData("/api/admin/skills")]
-    //     public async Task DeleteOneDiscipline(string url)
-    //     {
-    //         var userProfile = JsonConvert.SerializeObject(GetUserProfile(getTwo: false));
-    //         var req = new HttpRequestMessage(HttpMethod.Put, $"{url}/{userId}")
-    //         {
-    //             Content = new StringContent(
-    //                 userProfile,
-    //                 Encoding.UTF8,
-    //                 "application/json"
-    //             )
-    //         };
-    //         await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-    //         var res = await Client.SendAsync(req);
-    //         Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-    //     }
-
-    //     [Theory, TestPriority(3)]
-    //     [InlineData("/api/admin/skills")]
-    //     public async Task GetOneDiscipline_AfterDelete(string url)
-    //     {
-    //         var req = new HttpRequestMessage(HttpMethod.Get, $"{url}/{userId}");
-    //         await AccessTokenProvider.AuthenticateRequestAsAppAsync(req);
-    //         var res = await Client.SendAsync(req);
-    //         Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-    //         string jsonString = await res.Content.ReadAsStringAsync();
-    //         var jsonObject = JsonConvert.DeserializeObject<OkResponse<UserProfile>>(jsonString);
-    //         Assert.Single(jsonObject.payload.Disciplines);
-    //     }
-    // }
-
 
     // [TestCaseOrderer("Tests.Integration.Utils.PriorityOrderer", "Tests")]
     // public class AdminControllerLocationTests : IntegrationTestBase

@@ -191,7 +191,7 @@ namespace Web.API.Controllers {
         ///
         /// </remarks>
         /// <param name="disciplineID"></param>
-        /// <param name="skill"></param>
+        /// <param name="req"></param>
         /// <returns>The ID of the newly created skill</returns>
         /// <response code="200">Returns the skill ID</response>
         /// <response code="400">Bad Request</response>
@@ -203,22 +203,28 @@ namespace Web.API.Controllers {
         [ProducesResponseType(typeof(BadRequestException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(UnauthorizedException), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateASkill([FromBody] DisciplineSkillResource skill, int disciplineID) {
-            if (skill == null)
+        public async Task<IActionResult> CreateASkill([FromBody] DisciplineSkillResource req, int disciplineID) {
+            if (req == null)
             {
-                var error =  new BadRequestException("The given skill is null / Request Body cannot be read");
+                var error =  new BadRequestException("The given request body is null / Request Body cannot be read");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
-            if (disciplineID == 0 || disciplineID != skill.DisciplineId)
+            if (disciplineID == 0 || disciplineID != req.DisciplineId)
             {
-                var error = new BadRequestException("The given discipline is invalid / Request Body cannot be read");
+                var error = new BadRequestException("The given discipline ID is invalid");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if (String.IsNullOrEmpty(req.Name))
+            {
+                var error = new BadRequestException("Skill Name cannot be null or empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
             try
             {
-                var createdSkillID = await skillsRepository.CreateASkill(skill);
+                var createdSkillID = await skillsRepository.CreateASkill(req);
                 var response = new CreatedResponse<int>(createdSkillID, $"Successfully created skill '{createdSkillID}' associated with discipline '{disciplineID}'");
                 return StatusCode(StatusCodes.Status201Created, response);
             }
@@ -261,9 +267,9 @@ namespace Web.API.Controllers {
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteASkill([FromRoute] int disciplineID, [FromRoute] string skillName) {
-            if (skillName == null)
+            if (String.IsNullOrEmpty(skillName))
             {
-                var error = new BadRequestException("The given skill is invalid");
+                var error = new BadRequestException("Skill Name cannot be null or empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
@@ -323,7 +329,13 @@ namespace Web.API.Controllers {
         public async Task<IActionResult> CreateALocation([FromBody] LocationResource location) {
             if (location == null)
             {
-                var error = new BadRequestException("The given location is null / Request Body cannot be read");
+                var error = new BadRequestException("The given request body is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if (String.IsNullOrEmpty(location.Province) || String.IsNullOrEmpty(location.City))
+            {
+                var error = new BadRequestException("Province or City cannot be null or empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
@@ -434,7 +446,13 @@ namespace Web.API.Controllers {
         public async Task<IActionResult> CreateAProvince([FromBody] LocationResource location) {
             if (location == null)
             {
-                var error = new BadRequestException("The given province is null / Request Body cannot be read");
+                var error = new BadRequestException("The given request body is null / Request Body cannot be read");
+                return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
+            }
+
+            if (String.IsNullOrEmpty(location.Province))
+            {
+                var error = new BadRequestException("Province cannot be null or empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
@@ -485,9 +503,9 @@ namespace Web.API.Controllers {
         [ProducesResponseType(typeof(NotFoundException), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(InternalServerException), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAProvince([FromRoute] string province) {
-            if (province == null)
+            if (String.IsNullOrEmpty(province))
             {
-                var error = new BadRequestException("The given province is invalid");
+                var error = new BadRequestException("Province cannot be null or empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
