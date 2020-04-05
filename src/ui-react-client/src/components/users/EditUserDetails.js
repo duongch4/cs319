@@ -19,7 +19,7 @@ class EditUserDetails extends Component {
 
     componentDidMount() {
         let allProvinces = Object.keys(this.props.locations);
-        let provinces = allProvinces.filter(province => Object.keys(this.props.locations[province]).length > 0)
+        let provinces = allProvinces.filter(province => Object.keys(this.props.locations[province]).length > 0);
         let cities = Object.keys(this.props.locations[this.props.userProfile.location.province]);
         this.setState({
             ...this.state,

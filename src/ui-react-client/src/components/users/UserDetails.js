@@ -55,6 +55,15 @@ class UserDetails extends Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.userProfile !== prevProps.userProfile) {
+            this.setState({
+                ...this.state,
+                userProfile: this.props.userProfile
+            })
+        }
+    }
+
 
     render() {
         let userRoles;

@@ -23,7 +23,7 @@ class CreateEditProjectDetails extends Component {
 
     componentDidMount() {
         let allProvinces = Object.keys(this.props.locations);
-        let provinces = allProvinces.filter(province => Object.keys(this.props.locations[province]).length > 0)
+        let provinces = allProvinces.filter(province => Object.keys(this.props.locations[province]).length > 0);
         let currentProj = this.props.currentProject;
         if (currentProj) {
             let cities = Object.keys(this.props.locations[currentProj.location.province]);
@@ -141,7 +141,8 @@ class CreateEditProjectDetails extends Component {
             <div className="form-section">
                 <div className="form-row">
                     <label htmlFor="projectNumber"><p className="form-label">ProjectNumber</p></label>
-                    <input className="input-box" type="text" id="projectNumber" placeholder="Project Number" onChange={this.handleChange}
+                    <input className="input-box" type="text" id="projectNumber"
+                           placeholder="Project Number" onChange={this.handleChange}
                            defaultValue={def_projectNumber}/>
                 </div>
                 <div className="form-row">
