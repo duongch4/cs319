@@ -88,28 +88,28 @@ namespace Tests.Unit
         private void Setup_UsersRepo_GetAllUserResourcesOnFilter_ThrowsException(System.Exception exception)
         {
             _mockUsersRepo.Setup(
-                repo => repo.GetAllUserResourcesOnFilter(It.IsAny<RequestSearchUsers>())
+                repo => repo.GetAllUserResourcesOnFilter(It.IsAny<RequestSearchUsers>(), It.IsAny<int>())
             ).Throws(exception);
         }
 
         private void Setup_UsersRepo_GetAllUserResourcesOnFilter_Default(IEnumerable<UserResource> returnVal)
         {
             _mockUsersRepo.Setup(
-                repo => repo.GetAllUserResourcesOnFilter(It.IsAny<RequestSearchUsers>())
+                repo => repo.GetAllUserResourcesOnFilter(It.IsAny<RequestSearchUsers>(), It.IsAny<int>())
             ).ReturnsAsync(returnVal);
         }
 
         private void Setup_UsersRepo_GetAllUserResources_ThrowsException(System.Exception exception)
         {
             _mockUsersRepo.Setup(
-                repo => repo.GetAllUserResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())
+                repo => repo.GetAllUserResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())
             ).Throws(exception);
         }
 
         private void Setup_UsersRepo_GetAllUserResources_Default(IEnumerable<UserResource> returnVal)
         {
             _mockUsersRepo.Setup(
-                repo => repo.GetAllUserResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())
+                repo => repo.GetAllUserResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())
             ).ReturnsAsync(returnVal);
         }
 

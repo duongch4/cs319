@@ -5,6 +5,10 @@ namespace Web.API.Resources
 {
     public class ProjectResource
     {
+        /// <summary>Max Pages from A Search</summary>
+        /// <example>10</example>
+        public int MaxPages { get; set; }
+        
         /// <summary>Project Id</summary>
         /// <example>1</example>
         public int Id { get; set; }

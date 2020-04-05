@@ -81,24 +81,34 @@ namespace Web.API.Infrastructure.Data
             }
         }
 
-        public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page)
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResources(string orderKey, string order, int page, int rowsPerPage)
         {
             var sql = @"
-                SELECT
-                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
-                    p.ManagerId, p.LocationId, p.Number,
-                    u.FirstName, u.LastName,
-                    l.Province, l.City 
-                FROM
-                    Projects p, Locations l, Users u
-                WHERE
-                    p.LocationId = l.Id
-                    AND p.ManagerId = u.Id
-                    AND p.ProjectEndDate > @DateTimeSpecific
-                ORDER BY
-                    p.Id
-                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
-                    FETCH NEXT @RowsPerPage ROWS ONLY
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                        p.ManagerId, p.LocationId, p.Number,
+                        u.FirstName, u.LastName,
+                        l.Province, l.City 
+                    FROM
+                        Projects p, Locations l, Users u
+                    WHERE
+                        p.LocationId = l.Id
+                        AND p.ManagerId = u.Id
+                        AND p.ProjectEndDate > @DateTimeSpecific
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
+                ORDER BY Data_CTE.Id
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -106,7 +116,7 @@ namespace Web.API.Infrastructure.Data
             {
                 DateTimeSpecific = DateTime.Today,
                 PageNumber = page,
-                RowsPerPage = 50
+                RowsPerPage = rowsPerPage
             });
             return GetSorted(projects, orderKey, order);
         }
@@ -131,24 +141,36 @@ namespace Web.API.Infrastructure.Data
             return projectNumbers;
         }
 
-        public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(string searchWord, string orderKey, string order, int page)
+        public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(
+            string searchWord, string orderKey, string order, int page, int rowsPerPage
+        )
         {
             var sql = @"
-                SELECT
-                    p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
-                    p.ManagerId, p.LocationId, p.Number,
-                    u.FirstName, u.LastName,
-                    l.Province, l.City 
-                FROM
-                    Projects p, Locations l, Users u
-                WHERE
-                    p.LocationId = l.Id
-                    AND p.ManagerId = u.Id
-                    AND LOWER(TRIM(p.Title)) LIKE @SearchWord
-                ORDER BY
-                    p.Id
-                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
-                    FETCH NEXT @RowsPerPage ROWS ONLY
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        p.Id, p.Title, p.ProjectStartDate, p.ProjectEndDate,
+                        p.ManagerId, p.LocationId, p.Number,
+                        u.FirstName, u.LastName,
+                        l.Province, l.City 
+                    FROM
+                        Projects p, Locations l, Users u
+                    WHERE
+                        p.LocationId = l.Id
+                        AND p.ManagerId = u.Id
+                        AND LOWER(TRIM(p.Title)) LIKE @SearchWord
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
+                ORDER BY Data_CTE.Id
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
             ;";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -156,7 +178,7 @@ namespace Web.API.Infrastructure.Data
             {
                 SearchWord = GetFilteredSearchWord(searchWord),
                 PageNumber = page,
-                RowsPerPage = 50
+                RowsPerPage = rowsPerPage
             });
             return GetSorted(projects, orderKey, order);
         }
