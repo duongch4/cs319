@@ -77,20 +77,28 @@ namespace Web.API.Controllers
             page = (page == 0) ? 1 : page;
             try
             {
+                var rowsPerPage = 50;
                 IEnumerable<ProjectResource> projects;
                 if (String.IsNullOrEmpty(searchWord))
                 {
-                    projects = await projectsRepository.GetAllProjectResources(orderKey, order, page);
+                    projects = await projectsRepository.GetAllProjectResources(orderKey, order, page, rowsPerPage);
                 }
                 else
                 {
-                    projects = await projectsRepository.GetAllProjectResourcesWithTitle(searchWord, orderKey, order, page);
+                    projects = await projectsRepository.GetAllProjectResourcesWithTitle(searchWord, orderKey, order, page, rowsPerPage);
                 }
 
                 if (projects == null || !projects.Any())
                 {
                     var error = new NotFoundException("No projects data found");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                }
+                bool isLastPage = (projects.Count() <= rowsPerPage);
+                if (!isLastPage)
+                {
+                    var projectsList = projects.ToList();
+                    projectsList.RemoveAt(rowsPerPage);
+                    projects = projectsList;
                 }
                 var resource = mapper.Map<IEnumerable<ProjectResource>, IEnumerable<ProjectSummary>>(projects);
                 var extra = new
@@ -99,7 +107,9 @@ namespace Web.API.Controllers
                     page = page,
                     size = resource.Count(),
                     order = order,
-                    orderKey = orderKey
+                    orderKey = orderKey,
+                    isLastPage = isLastPage,
+                    maxPages = projects.Select(u => u.MaxPages).FirstOrDefault()
                 };
                 var response = new OkResponse<IEnumerable<ProjectSummary>>(resource, "Everything is good", extra);
                 return StatusCode(StatusCodes.Status200OK, response);
