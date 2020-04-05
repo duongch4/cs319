@@ -2,6 +2,10 @@ namespace Web.API.Resources
 {
     public class UserResource
     {
+        /// <summary>Max Pages from A Search</summary>
+        /// <example>10</example>
+        public int MaxPages { get; set; }
+
         /// <summary>User Id</summary>
         /// <example>"5"</example>
         public string Id { get; set; }

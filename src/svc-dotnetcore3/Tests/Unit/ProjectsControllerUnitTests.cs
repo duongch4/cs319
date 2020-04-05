@@ -48,7 +48,7 @@ namespace Tests.Unit
         private void Verify_ProjectsRepo_GetAllProjectResources_Default(System.Func<Times> times)
         {
             _mockProjectsRepo.Verify(
-                repo => repo.GetAllProjectResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()),
+                repo => repo.GetAllProjectResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()),
                 times
             );
         }
@@ -56,7 +56,7 @@ namespace Tests.Unit
         private void Verify_ProjectsRepo_GetAllProjectResourcesWithTitle_Default(System.Func<Times> times)
         {
             _mockProjectsRepo.Verify(
-                repo => repo.GetAllProjectResourcesWithTitle(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()),
+                repo => repo.GetAllProjectResourcesWithTitle(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()),
                 times
             );
         }
@@ -65,28 +65,28 @@ namespace Tests.Unit
         private void Setup_ProjectsRepo_GetAllProjectResources_ThrowsException(System.Exception exception)
         {
             _mockProjectsRepo.Setup(
-                repo => repo.GetAllProjectResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())
+                repo => repo.GetAllProjectResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())
             ).Throws(exception);
         }
 
         private void Setup_ProjectsRepo_GetAllProjectResourcesWithTitle_ThrowsException(System.Exception exception)
         {
             _mockProjectsRepo.Setup(
-                repo => repo.GetAllProjectResourcesWithTitle(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())
+                repo => repo.GetAllProjectResourcesWithTitle(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())
             ).Throws(exception);
         }
 
         private void Setup_Return_ProjectsRepo_GetAllProjectResources_Default(IEnumerable<ProjectResource> returnValue)
         {
             _mockProjectsRepo.Setup(
-                repo => repo.GetAllProjectResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())
+                repo => repo.GetAllProjectResources(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())
             ).ReturnsAsync(returnValue);
         }
 
         private void Setup_Return_ProjectsRepo_GetAllProjectResourcesWithTitle_Default(IEnumerable<ProjectResource> returnValue)
         {
             _mockProjectsRepo.Setup(
-                repo => repo.GetAllProjectResourcesWithTitle(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())
+                repo => repo.GetAllProjectResourcesWithTitle(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())
             ).ReturnsAsync(returnValue);
         }
 
