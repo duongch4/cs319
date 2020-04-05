@@ -335,7 +335,7 @@ namespace Web.API.Controllers {
 
             if (String.IsNullOrEmpty(location.Province) || String.IsNullOrEmpty(location.City))
             {
-                var error = new BadRequestException("Province or City cannot be null or empty");
+                var error = new BadRequestException("Province and City cannot be null or empty");
                 return StatusCode(StatusCodes.Status400BadRequest, new CustomException<BadRequestException>(error).GetException());
             }
 
