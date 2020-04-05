@@ -18,9 +18,7 @@ class UsersPage extends Component {
       masterlist: {},
       sort_by: [{label: "No filter", value: null},  {label: "Lastname: A-Z", value: "name-AZ"}, {label: "Lastname: Z-A", value: "name-ZA"},
         {label: "Utilization: High to Low", value: "util-high"}, {label: "Utilization: Low to High", value: "util-low"},{label: "Locations: A-Z", value: "locations-AZ"},
-        {label: "Locations: Z-A", value: "locations-ZA"}, {label: "Disciplines: A-Z", value: "disciplines-AZ"},
-        {label: "Disciplines: Z-A", value: "disciplines-ZA"}, {label: "Years of Experience: High to Low", value: "yearsOfExp-high"},
-        {label: "Years of Experience: Low to High", value: "yearsOfExp-low"}],
+        {label: "Locations: Z-A", value: "locations-ZA"}],
       loading: true,
       currPage: 1,
       usersAll: [],
@@ -209,30 +207,6 @@ class UsersPage extends Component {
         reloading: true,
         url: "?&orderKey=province&order=desc",
       }, () => this.restartLoad());  
-    } else if (sortBy === "disciplines-AZ") {
-      this.setState({
-        ...this.initialState,
-        reloading: true,
-        url: "?&orderKey=discipline&order=asc",
-      }, () => this.restartLoad());  
-    } else if (sortBy === "disciplines-ZA") {
-      this.setState({
-        ...this.initialState,
-        reloading: true,
-        url: "?&orderKey=discipline&order=desc",
-      }, () => this.restartLoad());  
-    } else if (sortBy === "yearsOfExp-high") {
-      this.setState({
-        ...this.initialState,
-        reloading: true,
-        url: "?&orderKey=yearsOfExp&order=asc",
-      }, () => this.restartLoad());  
-    } else if (sortBy === "yearsOfExp-low") {
-      this.setState({
-        ...this.initialState,
-        reloading: true,
-        url: "?&orderKey=yearsOfExp&order=desc",
-      }, () => this.restartLoad());  
     }
 };
 
@@ -273,7 +247,11 @@ class UsersPage extends Component {
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>
             <hr />
-          <UserList users={this.state.users} />
+          <UserList users={this.state.users}
+                    isAssignable={this.props.isAssignable}
+                    projectNumber={this.props.projectNumber}
+                    openingId={this.props.openingId}
+                    createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)} />
           </div>)}
           </div>
     );
