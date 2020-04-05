@@ -119,9 +119,9 @@ class UserCard extends Component {
 
                         { canEdit && (
                             <Link to={'/edituser/' + user.userID} className="action-link">
-                                <Button onClick={() => this.onUnassign(user)}>
+                                <Button>
                                     <div className="action-link">
-                                        <EditIcon style={{fontSize: 'small'}}/> Edit
+                                        <EditIcon style={{fontSize: 'small'}}/> Manage User
                                     </div>
                                 </Button>
                             </Link>
