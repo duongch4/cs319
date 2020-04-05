@@ -22,45 +22,47 @@ import {
 
 class UserCard extends Component {
 
-  onConfirm = (user) => {
-    const userRoles = getUserRoles(this.context);
-    let userSummaryDisciplineName = user.resourceDiscipline.discipline;
-    let projectTitle = this.props.projectDetails.projectSummary.title;
+    onConfirm = (user) => {
+        const userRoles = getUserRoles(this.context);
+        let userSummaryDisciplineName = user.resourceDiscipline.discipline;
+        let projectTitle = this.props.projectDetails.projectSummary.title;
 
-    //because userSummary doesn't include positionID, need to triage to get it from the usersProfile
-    this.props.loadSpecificUser(user.userID, userRoles).then(() => {
-      let targetUsersPositionsInProject = this.props.userProfile.positions.filter(opening => opening.projectTitle === projectTitle);
+        //because userSummary doesn't include positionID, need to triage to get it from the usersProfile
+        this.props.loadSpecificUser(user.userID, userRoles).then(() => {
+            let targetUsersPositionsInProject = this.props.userProfile.positions.filter(opening => opening.projectTitle === projectTitle);
 
-      targetUsersPositionsInProject.forEach((position, index) => {
-        let userProfileDisciplineName = position.disciplineName;
-        //ideally we would compare disciplineID here instead of name, but positions
-        //in userProfile only have name, not ID
-        if (userProfileDisciplineName === userSummaryDisciplineName){
-          this.props.confirmAssignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName);
-        }
-      });
-   });
- }
+            targetUsersPositionsInProject.forEach((position, index) => {
+                let userProfileDisciplineName = position.disciplineName;
+                //ideally we would compare disciplineID here instead of name, but positions
+                //in userProfile only have name, not ID
+                if (userProfileDisciplineName === userSummaryDisciplineName){
+                    this.props.confirmAssignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName);
+                }
+            });
+        });
+    }
 
-   onUnassign = (user) => {
-     const userRoles = getUserRoles(this.context);
-     let userSummaryDisciplineName = user.resourceDiscipline.discipline;
-     let projectTitle = this.props.projectDetails.projectSummary.title;
+    onUnassign = (user) => {
+        const userRoles = getUserRoles(this.context);
+        let userSummaryDisciplineName = user.resourceDiscipline.discipline;
+        let projectTitle = this.props.projectDetails.projectSummary.title;
 
-     //because userSummary doesn't include positionID, need to triage to get it from the usersProfile
-     this.props.loadSpecificUser(user.userID, userRoles).then(() => {
-       let targetUsersPositionsInProject = this.props.userProfile.positions.filter(opening => opening.projectTitle === projectTitle);
+        //because userSummary doesn't include positionID, need to triage to get it from the usersProfile
+        this.props.loadSpecificUser(user.userID, userRoles).then(() => {
+            let targetUsersPositionsInProject = this.props.userProfile.positions.filter(opening => {
+                return opening.projectTitle === projectTitle
+            });
 
-       targetUsersPositionsInProject.forEach((position, index) => {
-         let userProfileDisciplineName = position.disciplineName;
-         //ideally we would compare disciplineID here instead of name, but positions
-         //in userProfile only have name, not ID
-         if (userProfileDisciplineName === userSummaryDisciplineName){
-           this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName);
-         }
-       });
-    });
-  }
+            targetUsersPositionsInProject.forEach((position, index) => {
+                let userProfileDisciplineName = position.disciplineName;
+                //ideally we would compare disciplineID here instead of name, but positions
+                //in userProfile only have name, not ID
+                if (userProfileDisciplineName === userSummaryDisciplineName){
+                    this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName);
+                }
+            });
+        });
+    }
 
     render(){
         const {user, canEdit, canConfirm, showOpeningInfo, canUnassign, canUnassignEditProject} = this.props;
@@ -79,45 +81,52 @@ class UserCard extends Component {
         return(
             <div className="card-summary">
                 <div className="card-summary-title">
-                <div className="confirmAssign">
-                    <Link to={'/users/' + user.userID}>
-                        <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
-                    </Link>
+                    <div className="confirmAssign">
+                        <Link to={'/users/' + user.userID}>
+                            <h2 className="blueHeader">{user.firstName + " " + user.lastName}</h2>
+                        </Link>
 
-                    {canConfirm && !isUserConfirmed && (
-                     <Button onClick={() => this.onConfirm(user)} className="action-link">
-                              <FiberManualRecordIcon style={{fontSize: 'small', color: 'red'}}/> Confirm
-                      </Button>
-                    )}
+                        {canConfirm && !isUserConfirmed && (
+                            <Button onClick={() => this.onConfirm(user)} className="action-link">
+                                <FiberManualRecordIcon style={{fontSize: 'small', color: 'red'}}/> Confirm
+                            </Button>
+                        )}
                     </div>
-                    {showOpeningInfo && (
-                      <p><b>Discipline:</b> {user.resourceDiscipline.discipline + " | "} <b>Years of Experience:</b> {user.resourceDiscipline.yearsOfExp + " years"}</p>
+                    { showOpeningInfo && (
+                        <p><b>Discipline:</b> {user.resourceDiscipline.discipline + " | "}
+                        <b>Years of Experience:</b> {user.resourceDiscipline.yearsOfExp + " years"}</p>
                     )}
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
 
-                    {canUnassign && (
-                     <Button onClick={() => this.onUnassign(user)}>
-                      <div className="action-link">
-                        <ClearIcon style={{fontSize: 'small', color: '#87C34B'}}/> Unassign
-                      </div>
-                      </Button>
-                    )}
+                    <div className="form-row">
+                        { canUnassign && (
+                            <Button onClick={() => this.onUnassign(user)}>
+                                <div className="action-link">
+                                    <ClearIcon style={{fontSize: 'small', color: '#87C34B'}}/> Unassign
+                                </div>
+                            </Button>
+                        )}
 
-                    {canUnassignEditProject && (
-                          <div>
-                              <Button variant="contained" onClick={() => this.onUnassign(user)}
-                                      style={{backgroundColor: "rgb(235, 87, 87)", color: "#ffffff", size: "small" }}
-                                      disableElevation>
-                                  Unassign
-                              </Button>
-                          </div>
-                    )}
+                        {canUnassignEditProject && (
+                            <div>
+                                <Button variant="contained" onClick={() => this.onUnassign(user)}
+                                        style={{backgroundColor: "rgb(235, 87, 87)", color: "#ffffff", size: "small" }}
+                                        disableElevation>
+                                    Unassign
+                                </Button>
+                            </div>
+                        )}
 
-                    {canEdit && (
-                        <Link to={'/edituser/' + user.userID} className="action-link">
-                            <EditIcon style={{fontSize: 'small'}}/> Edit
-                        </Link>
-                    )}
+                        { canEdit && (
+                            <Link to={'/edituser/' + user.userID} className="action-link">
+                                <Button onClick={() => this.onUnassign(user)}>
+                                    <div className="action-link">
+                                        <EditIcon style={{fontSize: 'small'}}/> Edit
+                                    </div>
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
                 <div className="card-summary-title utilization">
                     <p style={{color: colour}}>{user.utilization}%</p>

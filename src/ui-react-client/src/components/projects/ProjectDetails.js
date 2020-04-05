@@ -76,7 +76,7 @@ class ProjectDetails extends Component {
                 openings.forEach((opening, index) => {
                     openingsRender.push(<Openings opening={opening}
                                                   index={index} commitment={opening.commitmentMonthlyHours}
-                                                  isAssignable={true} key={openingsRender.length}/>);
+                                                  isAssignable={userRoles.includes('adminUser')} key={openingsRender.length}/>);
                     if (openings.length - 1 !== index) {
                         openingsRender.push(<hr key={openingsRender.length}/>)
                     }
@@ -94,12 +94,12 @@ class ProjectDetails extends Component {
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
                     <UserCard user={userSummary}
-                    canEdit={false}
+                    canEdit={userRoles.includes('adminUser')}
                     key={teamMembersRender.length}
-                    canConfirm={true}
+                    canConfirm={userRoles.includes('adminUser')}
                     projectDetails={projectDetails}
                     showOpeningInfo={true}
-                    canUnassign={true}/>)
+                    canUnassign={userRoles.includes('adminUser')}/>)
             });
 
             if (this.state.projectProfile === null) {

@@ -7,8 +7,8 @@ const MonthlyDetails = ({commitment}) => {
     let months = [];
     let hours = [];
     const monthArr = []
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         ];
     let start = new Date(commitment[0][0]);
     let end = new Date(commitment[commitment.length - 1][0]);
@@ -34,7 +34,7 @@ const MonthlyDetails = ({commitment}) => {
         monthArr.push(
         <div className="entry" key={monthArr.length} >
             <p className="label"  style={{color: "#2c6232"}}><b>{month}</b></p>
-            <p className="label">{hours[index]}</p>
+            <p className="label">{hours[index]} hrs</p>
         </div>
         )
     })
@@ -53,4 +53,3 @@ const MonthlyDetails = ({commitment}) => {
       };
       
       export default MonthlyDetails;
-      
