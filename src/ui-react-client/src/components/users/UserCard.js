@@ -63,7 +63,7 @@ class UserCard extends Component {
   }
 
     render(){
-        const {user, canEdit, canConfirm, showOpeningInfo, canUnassign, canUnassignEditProject} = this.props;
+        const {user, canEdit, canConfirm, showOpeningInfo, canUnassign} = this.props;
         let isUserConfirmed = user.isConfirmed;
 
         let colour = ""
@@ -101,16 +101,6 @@ class UserCard extends Component {
                         <ClearIcon style={{fontSize: 'small', color: '#87C34B'}}/> Unassign
                       </div>
                       </Button>
-                    )}
-
-                    {canUnassignEditProject && (
-                          <div>
-                              <Button variant="contained" onClick={() => this.onUnassign(user)}
-                                      style={{backgroundColor: "rgb(235, 87, 87)", color: "#ffffff", size: "small" }}
-                                      disableElevation>
-                                  Unassign
-                              </Button>
-                          </div>
                     )}
 
                     {canEdit && (
