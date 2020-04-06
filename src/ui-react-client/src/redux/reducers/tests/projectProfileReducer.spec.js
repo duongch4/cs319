@@ -227,7 +227,7 @@ it('should add new opening to the state', () => {
     let receivedUsers = received.usersSummary;
     let receivedOpenings = received.openings;
 
-    expect(receivedOpenings).toHaveLength(1);
+    expect(receivedOpenings).toHaveLength(2);
     expect(receivedOpenings).not.toContain({
         positionID: 2,
         discipline: "Waste Management",
