@@ -295,13 +295,7 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req, int rowsPerPage)
         {
-            if (
-                req.Filter == null ||
-                (
-                    req.Filter.Disciplines == null &&
-                    (req.Filter.YearsOfExps == null || !req.Filter.YearsOfExps.Any())
-                )
-            )
+            if (req.Filter == null || (IsNoDisciplinesAndNoYearsOfExpFilters(req) && IsNoLocationFilter(req)))
             {
                 return await GetAllUserResources(req.SearchWord, req.OrderKey, req.Order, req.Page, rowsPerPage);
             }
@@ -325,74 +319,7 @@ namespace Web.API.Infrastructure.Data
             var filteredStartDate = GetFilteredStartDate(req.Filter.StartDate);
             var filteredEndDate = GetFilteredEndDate(req.Filter.EndDate);
 
-            var sql = @"
-                WITH Data_CTE AS
-                (
-                    SELECT
-                        Utilization,
-                        ul.Id, FirstName, LastName, Username,
-                        rd.DisciplineId, rd.YearsOfExperience, 
-                        LocationId, Province, City,
-                        d.Name AS DisciplineName,
-                        STRING_AGG (s.Name, ',') as Skills
-                    FROM
-                    (
-                        SELECT
-                            u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
-                            l.Province, l.City
-                        FROM
-                            Users u, Locations l
-                        WHERE
-                            u.LocationId = l.Id
-                    ) AS ul
-                    LEFT JOIN OutOfOffice o
-                        ON
-                            o.ResourceId = ul.Id
-                            AND
-                            (
-                                o.FromDate > @EndDate
-                                OR o.ToDate < @StartDate
-                            )
-                    INNER JOIN ResourceDiscipline rd
-                        ON
-                            rd.ResourceId = ul.Id
-                            AND rd.YearsOfExperience IN @YearsOfExps
-                    INNER JOIN Disciplines d
-                        ON
-                            rd.DisciplineId = d.Id
-                            AND d.Name IN @Disciplines
-                    LEFT JOIN Skills s
-                        ON
-                            s.DisciplineId = d.Id
-                            AND s.Name IN @Skills
-                    WHERE
-                        (
-                            LOWER(TRIM(ul.FirstName)) LIKE @SearchWord
-                            OR LOWER(TRIM(ul.LastName)) LIKE @SearchWord
-                        )
-                        AND ul.Province IN @Provinces
-                        AND ul.City IN @Cities
-                        AND ul.Utilization >= @UtilMin
-                        AND ul.Utilization <= @UtilMax
-                    GROUP BY
-                        Utilization,
-                        ul.Id, FirstName, LastName, Username,
-                        rd.DisciplineId, rd.YearsOfExperience,
-                        LocationId, Province, City,
-                        d.Name
-                ), 
-                Count_CTE AS 
-                (
-                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
-                )
-
-                SELECT *
-                FROM Data_CTE
-                CROSS JOIN Count_CTE
-                ORDER BY Data_CTE.Id
-                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
-                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
-            ;";
+            var sql = IsNoDisciplinesAndNoYearsOfExpFilters(req) ? GetSqlForOnlyLocationFilter() : GetSqlForMoreThanTwoFilters();
 
             connection.Open();
             var users = await connection.QueryAsync<UserResource>(sql, new
@@ -412,6 +339,137 @@ namespace Web.API.Infrastructure.Data
             });
 
             return GetSorted(users, req.OrderKey, req.Order);
+        }
+
+        private bool IsNoDisciplinesAndNoYearsOfExpFilters(RequestSearchUsers req)
+        {
+            return (
+                req.Filter.Disciplines == null &&
+                (req.Filter.YearsOfExps == null || !req.Filter.YearsOfExps.Any())
+            );
+        }
+
+        private bool IsNoLocationFilter(RequestSearchUsers req)
+        {
+            return (req.Filter.Locations == null || !req.Filter.Locations.Any());
+        }
+
+        private string GetSqlForMoreThanTwoFilters()
+        {
+            var sql = @"
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name AS DisciplineName,
+                        STRING_AGG (s.Name, ',') as Skills
+                    FROM 
+                        Users u
+                    INNER JOIN Locations l
+                        ON
+                            u.LocationId = l.Id
+                            AND l.Province IN @Provinces
+                            AND l.City IN @Cities
+                    INNER JOIN ResourceDiscipline rd
+                        ON
+                            rd.ResourceId = u.Id
+                            AND rd.YearsOfExperience IN @YearsOfExps
+                    INNER JOIN Disciplines d
+                        ON
+                            rd.DisciplineId = d.Id
+                            AND d.Name IN @Disciplines
+                    LEFT JOIN Skills s
+                        ON
+                            s.DisciplineId = d.Id
+                            AND s.Name IN @Skills
+                    LEFT JOIN OutOfOffice o
+                        ON
+                            o.ResourceId = u.Id
+                            AND
+                            (
+                                o.FromDate > @EndDate
+                                OR o.ToDate < @StartDate
+                            )
+                    WHERE
+                        (
+                            LOWER(TRIM(u.FirstName)) LIKE @SearchWord
+                            OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
+                        )
+                        AND u.Utilization >= @UtilMin
+                        AND u.Utilization <= @UtilMax
+                    GROUP BY
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
+                ORDER BY Data_CTE.Id
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
+            ;";
+            return sql;
+        }
+
+        private string GetSqlForOnlyLocationFilter()
+        {
+            var sql = @"
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name AS DisciplineName
+                    FROM 
+                        Users u
+                    INNER JOIN Locations l
+                        ON
+                            u.LocationId = l.Id
+                            AND l.Province IN @Provinces
+                            AND l.City IN @Cities
+                    LEFT JOIN ResourceDiscipline rd
+                        ON rd.ResourceId = u.Id
+                    LEFT JOIN Disciplines d
+                        ON rd.DisciplineId = d.Id
+                    LEFT JOIN OutOfOffice o
+                        ON
+                            o.ResourceId = u.Id
+                            AND
+                            (
+                                o.FromDate > @EndDate
+                                OR o.ToDate < @StartDate
+                            )
+                    WHERE
+                        (
+                            LOWER(TRIM(u.FirstName)) LIKE @SearchWord
+                            OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
+                        )
+                        AND u.Utilization >= @UtilMin
+                        AND u.Utilization <= @UtilMax
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
+                ORDER BY Data_CTE.Id
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
+            ;";
+            return sql;
         }
 
         private string GetFilteredSearchWord(string searchWordReq)
@@ -483,7 +541,7 @@ namespace Web.API.Infrastructure.Data
             {
                 disciplines = disciplinesReq.Keys.ToHashSet();
                 skills = disciplinesReq.Values.SelectMany(x => x).ToHashSet();
-                foreach(var discipline in disciplines)
+                foreach (var discipline in disciplines)
                 {
                     if (disciplinesReq[discipline] == null || !disciplinesReq[discipline].Any())
                     {
@@ -498,7 +556,8 @@ namespace Web.API.Infrastructure.Data
                         ";
                         connection.Open();
                         skills.UnionWith(
-                            (await connection.QueryAsync<Skill>(sqlGetAllSkillsForDiscipline, new {
+                            (await connection.QueryAsync<Skill>(sqlGetAllSkillsForDiscipline, new
+                            {
                                 DisciplineName = discipline
                             })).Select(x => x.Name).ToHashSet()
                         );
@@ -588,7 +647,7 @@ namespace Web.API.Infrastructure.Data
             return result == 1 ? user.UserID : "-1";
         }
 
-        public async Task<User> UpdateUtilizationOfUser(int util, string userId) 
+        public async Task<User> UpdateUtilizationOfUser(int util, string userId)
         {
             var sql = @"
                 update Users
@@ -603,8 +662,11 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QuerySingleAsync<User>(sql, new {Util = util, 
-                                                                     Id = userId});
+            return await connection.QuerySingleAsync<User>(sql, new
+            {
+                Util = util,
+                Id = userId
+            });
         }
 
 
