@@ -221,7 +221,7 @@ it('should add new opening to the state', () => {
         },
         isConfirmed: false
     };
-    let action = {type: types.UPDATE_ASSIGN_OPENING, openingID: 2,
+    let action = {type: types.UPDATE_ASSIGN_OPENING, openingId: 2,
                 userId: user.userID, confirmedUtilization: 100, user: user};
     let received = projectProfileReducer(initialState, action);
     let receivedUsers = received.usersSummary;

@@ -35,7 +35,7 @@ namespace Tests.Unit
                 _mockSkillsRepo.Object, _mockMapper.Object
             );
         }
-        
+
         /********** Helper functions for verification **********/
         private void Verify_DisciplinesRepo_CreateADiscipline(System.Func<Times> times)
         {
@@ -44,7 +44,7 @@ namespace Tests.Unit
                 times
             );
         }
-        
+
         private void Verify_DisciplinesRepo_DeleteADiscipline(System.Func<Times> times)
         {
             _mockDisciplinesRepo.Verify(
@@ -60,7 +60,7 @@ namespace Tests.Unit
                 times
             );
         }
-        
+
         private void Verify_SkillsRepo_DeleteASkill(System.Func<Times> times)
         {
             _mockSkillsRepo.Verify(
@@ -129,7 +129,7 @@ namespace Tests.Unit
                 repo => repo.DeleteADiscipline(It.IsAny<int>())
             ).ReturnsAsync(returnVal);
         }
-        
+
         /********** Helper function for skill repo setup **********/
         private void Setup_SkillsRepo_CreateASkill_Default(int returnVal)
         {
@@ -181,7 +181,8 @@ namespace Tests.Unit
             ).ReturnsAsync(returnVal);
         }
 
-        private void Setup_LocationsRepo_DeleteALocation_ThrowsException(System.Exception exception){
+        private void Setup_LocationsRepo_DeleteALocation_ThrowsException(System.Exception exception)
+        {
             _mockLocationsRepo.Setup(
                 repo => repo.DeleteALocation(It.IsAny<int>())
             ).Throws(exception);
@@ -227,9 +228,9 @@ namespace Tests.Unit
             var response = result.Value as BadRequestException;
             Assert.Equal(errMessage, response.status);
         }
-        
+
         [Fact]
-        public async Task CreateADiscipline_TryBlock_ReturnObjectResult() 
+        public async Task CreateADiscipline_TryBlock_ReturnObjectResult()
         {
             var result = await _controller.CreateADiscipline(It.IsAny<DisciplineResource>());
             Assert.IsType<ObjectResult>(result);
@@ -239,7 +240,10 @@ namespace Tests.Unit
         public async void CreateADiscipline_TryBlock_ReturnValidId()
         {
             var returnVal = 1;
-            var discipline = new DisciplineResource();
+            var discipline = new DisciplineResource
+            {
+                Name = "A Discipline Name"
+            };
             Setup_DisciplinesRepo_CreateADiscipline_Default(returnVal);
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Verify_DisciplinesRepo_CreateADiscipline(Times.Once);
@@ -256,7 +260,10 @@ namespace Tests.Unit
             var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
             Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(sqlException);
 
-            var discipline = new DisciplineResource();
+            var discipline = new DisciplineResource
+            {
+                Name = "A Discipline Name"
+            };
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
             Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
             var response = result.Value as InternalServerException;
@@ -267,8 +274,6 @@ namespace Tests.Unit
         public async void CreateADiscipline_CatchBlock_ReturnBadRequestException()
         {
             string errMessage = "Bad Request";
-            var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
-            Setup_DisciplinesRepo_CreateADiscipline_ThrowsException(badRequestException);
 
             var discipline = new DisciplineResource();
             var result = (await _controller.CreateADiscipline(discipline)) as ObjectResult;
@@ -283,7 +288,7 @@ namespace Tests.Unit
         public async void DeleteADiscipline_NullCheck_ReturnBadRequestException()
         {
             string errMessage = "Bad Request";
-            
+
             var result = (await _controller.DeleteADiscipline(0)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
@@ -305,7 +310,7 @@ namespace Tests.Unit
             var response = result.Value as NotFoundException;
             Assert.Equal(errMessage, response.status);
         }
-        
+
         [Fact]
         public async void DeleteADiscipline_TryBlock_ReturnValidDelete()
         {
@@ -331,7 +336,7 @@ namespace Tests.Unit
             var response = result.Value as InternalServerException;
             Assert.Equal(errMessage, response.status);
         }
-        
+
         [Fact]
         public async void DeleteADiscipline_CatchBlock_ReturnBadRequestException()
         {
@@ -354,11 +359,11 @@ namespace Tests.Unit
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
 
-            var result = (await _controller.CreateASkill(null, 1)) as ObjectResult; 
+            var result = (await _controller.CreateASkill(null, 1)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
             var response = result.Value as BadRequestException;
-            Assert.Equal(errMessage, response.status);  
+            Assert.Equal(errMessage, response.status);
         }
 
         [Fact]
@@ -367,16 +372,18 @@ namespace Tests.Unit
             var errMessage = "Bad Request";
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
-            var skill = new DisciplineSkillResource{
-                DisciplineId= 0,
-                SkillId= 0,
-                Name = ""};
+            var skill = new DisciplineSkillResource
+            {
+                DisciplineId = 0,
+                SkillId = 0,
+                Name = ""
+            };
 
-            var result = (await _controller.CreateASkill(skill, 0)) as ObjectResult; 
+            var result = (await _controller.CreateASkill(skill, 0)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
             var response = result.Value as BadRequestException;
-            Assert.Equal(errMessage, response.status);           
+            Assert.Equal(errMessage, response.status);
         }
 
         [Fact]
@@ -385,25 +392,29 @@ namespace Tests.Unit
             var errMessage = "Bad Request";
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
-            var skill = new DisciplineSkillResource{
-                DisciplineId= 2,
-                SkillId= 0,
-                Name = ""};
+            var skill = new DisciplineSkillResource
+            {
+                DisciplineId = 2,
+                SkillId = 0,
+                Name = "A Skill"
+            };
 
-            var result = (await _controller.CreateASkill(skill, 9)) as ObjectResult; 
+            var result = (await _controller.CreateASkill(skill, 9)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
             var response = result.Value as BadRequestException;
-            Assert.Equal(errMessage, response.status);           
+            Assert.Equal(errMessage, response.status);
         }
 
         [Fact]
         private async void CreateASkill_TryBlock_ReturnValidId()
         {
-            var skill = new DisciplineSkillResource{
-                DisciplineId= 1,
-                SkillId= 0,
-                Name = ""};
+            var skill = new DisciplineSkillResource
+            {
+                DisciplineId = 1,
+                SkillId = 0,
+                Name = "A Skill"
+            };
             var returnVal = 1;
             Setup_SkillsRepo_CreateASkill_Default(returnVal);
             var result = (await _controller.CreateASkill(skill, 1)) as ObjectResult;
@@ -420,11 +431,13 @@ namespace Tests.Unit
             string errMessage = "Internal Server Error";
             var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
             Setup_SkillsRepo_CreateASkill_ThrowsException(sqlException);
-            var skill = new DisciplineSkillResource{
-                DisciplineId= 2,
-                SkillId= 0,
-                Name = ""};
-            
+            var skill = new DisciplineSkillResource
+            {
+                DisciplineId = 2,
+                SkillId = 0,
+                Name = "A Skill Name"
+            };
+
             var result = (await _controller.CreateASkill(skill, 2)) as ObjectResult;
             Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
             var response = result.Value as InternalServerException;
@@ -437,11 +450,13 @@ namespace Tests.Unit
             var errMessage = "Bad Request";
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_SkillsRepo_CreateASkill_ThrowsException(badRequestException);
-            var skill = new DisciplineSkillResource{
-                DisciplineId= 2,
-                SkillId= 0,
-                Name = ""};
-            
+            var skill = new DisciplineSkillResource
+            {
+                DisciplineId = 2,
+                SkillId = 0,
+                Name = ""
+            };
+
             var result = (await _controller.CreateASkill(skill, 2)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
@@ -454,7 +469,7 @@ namespace Tests.Unit
         public async void DeleteASkill_SkillNullCheck_ReturnBadRequestException()
         {
             string errMessage = "Bad Request";
-            
+
             var result = (await _controller.DeleteASkill(1, null)) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
@@ -466,7 +481,7 @@ namespace Tests.Unit
         public async void DeleteASkill_DisciplineInvalidCheck_ReturnBadRequestException()
         {
             string errMessage = "Bad Request";
-            
+
             var result = (await _controller.DeleteASkill(0, It.IsAny<string>())) as ObjectResult;
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.IsType<BadRequestException>(result.Value);
@@ -488,7 +503,7 @@ namespace Tests.Unit
             var response = result.Value as NotFoundException;
             Assert.Equal(errMessage, response.status);
         }
-        
+
         [Fact]
         public async void DeleteASkill_TryBlock_ReturnValidDelete()
         {
@@ -514,7 +529,7 @@ namespace Tests.Unit
             var response = result.Value as InternalServerException;
             Assert.Equal(errMessage, response.status);
         }
-        
+
         [Fact]
         public async void DeleteASkill_CatchBlock_ReturnBadRequestException()
         {
@@ -547,19 +562,23 @@ namespace Tests.Unit
         [Fact]
         public async void CreateALocation_TryBlock_ReturnValidId()
         {
-            var location = new LocationResource();
+            var location = new LocationResource
+            {
+                Province = "A Province",
+                City = "A City"
+            };
             var returnVal = 1;
             Setup_LocationsRepo_CreateALocation_Default(returnVal);
-            
+
             var result = (await _controller.CreateALocation(location)) as ObjectResult;
             Verify_LocationsRepo_CreateALocation(Times.Once);
             Verify_LocationsRepo_CreateAProvince(Times.Never);
             Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
             Assert.IsType<CreatedResponse<int>>(result.Value);
             var response = result.Value as CreatedResponse<int>;
-            Assert.IsType<int>(response.payload); 
+            Assert.IsType<int>(response.payload);
         }
-    
+
         [Fact]
         public async void CreateALocation_CatchBlock_ReturnsSqlException()
         {
@@ -567,7 +586,11 @@ namespace Tests.Unit
             var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
             Setup_LocationsRepo_CreateALocation_ThrowsException(sqlException);
 
-            var location = new LocationResource();
+            var location = new LocationResource
+            {
+                Province = "A Province",
+                City = "A City"
+            };
             var result = (await _controller.CreateALocation(location)) as ObjectResult;
             Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
             var response = result.Value as InternalServerException;
@@ -678,22 +701,23 @@ namespace Tests.Unit
         [Fact]
         public async void CreateAProvince_TryBlock_ReturnValidId()
         {
-            var location = new LocationResource{
+            var location = new LocationResource
+            {
                 LocationID = 0,
                 Province = "test",
                 City = ""
             };
             Setup_LocationsRepo_CreateAProvince_Default(location.Province);
-            
+
             var result = (await _controller.CreateAProvince(location)) as ObjectResult;
             Verify_LocationsRepo_CreateALocation(Times.Never);
             Verify_LocationsRepo_CreateAProvince(Times.Once);
             Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
             Assert.IsType<CreatedResponse<string>>(result.Value);
             var response = result.Value as CreatedResponse<string>;
-            Assert.IsType<string>(response.payload); 
+            Assert.IsType<string>(response.payload);
         }
-    
+
         [Fact]
         public async void CreateAProvince_CatchBlock_ReturnsSqlException()
         {
@@ -701,7 +725,8 @@ namespace Tests.Unit
             var sqlException = new SqlExceptionBuilder().WithErrorNumber(50000).WithErrorMessage(errMessage).Build();
             Setup_LocationsRepo_CreateAProvince_ThrowsException(sqlException);
 
-            var location = new LocationResource{
+            var location = new LocationResource
+            {
                 LocationID = 0,
                 Province = "test",
                 City = ""
@@ -719,7 +744,8 @@ namespace Tests.Unit
             var badRequestException = new CustomException<BadRequestException>(new BadRequestException(errMessage));
             Setup_LocationsRepo_CreateAProvince_ThrowsException(badRequestException);
 
-            var location = new LocationResource{
+            var location = new LocationResource
+            {
                 LocationID = 0,
                 Province = "test",
                 City = ""
@@ -730,10 +756,11 @@ namespace Tests.Unit
             var response = result.Value as BadRequestException;
             Assert.Equal(errMessage, response.status);
         }
-    
+
         /********** Tests for province deletion**********/
         [Fact]
-        public async void DeleteAProvince_NullCheck_ReturnBadRequestException(){
+        public async void DeleteAProvince_NullCheck_ReturnBadRequestException()
+        {
             var errMessage = "Bad Request";
 
             var result = (await _controller.DeleteAProvince(null)) as ObjectResult;

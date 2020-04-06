@@ -82,11 +82,19 @@ namespace Web.API.Controllers
             page = (page == 0) ? 1 : page;
             try
             {
-                var users = await usersRepository.GetAllUserResources(searchWord, orderKey, order, page);
+                var rowsPerPage = 50;
+                var users = await usersRepository.GetAllUserResources(searchWord, orderKey, order, page, rowsPerPage);
                 if (users == null || !users.Any())
                 {
                     var error = new NotFoundException("No users data found");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
+                }
+                bool isLastPage = (users.Count() <= rowsPerPage);
+                if (!isLastPage)
+                {
+                    var usersList = users.ToList();
+                    usersList.RemoveAt(rowsPerPage);
+                    users = usersList;
                 }
                 var resource = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new
@@ -95,7 +103,9 @@ namespace Web.API.Controllers
                     page = page,
                     size = resource.Count(),
                     order = order,
-                    orderKey = orderKey
+                    orderKey = orderKey,
+                    isLastPage = isLastPage,
+                    maxPages = users.Select(u => u.MaxPages).FirstOrDefault()
                 };
                 var response = new OkResponse<IEnumerable<UserSummary>>(resource, "Everything is good", extra);
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -681,17 +691,27 @@ namespace Web.API.Controllers
 
             try
             {
-                var users = await usersRepository.GetAllUserResourcesOnFilter(req);
+                var rowsPerPage = 50;
+                var users = await usersRepository.GetAllUserResourcesOnFilter(req, rowsPerPage);
                 if (users == null || !users.Any())
                 {
                     var error = new NotFoundException("No users data found");
                     return StatusCode(StatusCodes.Status404NotFound, new CustomException<NotFoundException>(error).GetException());
                 }
+                bool isLastPage = (users.Count() <= rowsPerPage);
+                if (!isLastPage)
+                {
+                    var usersList = users.ToList();
+                    usersList.RemoveAt(rowsPerPage);
+                    users = usersList;
+                }
                 var usersSummary = mapper.Map<IEnumerable<UserResource>, IEnumerable<UserSummary>>(users);
                 var extra = new
                 {
                     requestBody = req,
-                    size = usersSummary.Count()
+                    size = usersSummary.Count(),
+                    isLastPage = isLastPage,
+                    maxPages = users.Select(u => u.MaxPages).FirstOrDefault()
                 };
                 var response = new OkResponse<IEnumerable<UserSummary>>(usersSummary, "Everything is Ok", extra);
                 return StatusCode(StatusCodes.Status200OK, response);
