@@ -2,6 +2,7 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadProjectsData = (action) => {
+  action.projects.isLastPage = action.isLastPage;
   return action.projects;
 };
 

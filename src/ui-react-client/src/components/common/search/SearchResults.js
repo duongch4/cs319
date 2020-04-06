@@ -52,6 +52,11 @@ class SearchResults extends Component {
                 }, () => (
                     this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))
+            }).catch(() => {
+                this.setState({
+                    ...this.state,
+                    noResults: true,
+                }, () => this.props.stopLoading())
             })
         }
     }
@@ -138,6 +143,7 @@ class SearchResults extends Component {
                 obj.resourceDiscipline[0].yearsOfExp = i.resourceDiscipline.yearsOfExp;
                 obj.utilization = i.utilization;
                 users.push(obj);
+                return users;
             } else {
                 let obj1 = users.find(o => o.userID === i.userID);
                 obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
@@ -146,6 +152,7 @@ class SearchResults extends Component {
                     var textB = b.discipline.toUpperCase();
                     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                 }); 
+                return obj1
             }
         });
         return users;
