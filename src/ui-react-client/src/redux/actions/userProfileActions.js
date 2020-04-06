@@ -7,6 +7,17 @@ import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/`;
 
+export const unassignUpdateUserData = (openingId, userId, confirmedUtilization, opening, projectName) => {
+  return {
+    type: types.UNASSIGN_UPDATE_USER_DATA,
+    openingId: openingId,
+    userId: userId,
+    confirmedUtilization: confirmedUtilization,
+    opening: opening,
+    projectName: projectName
+  };
+};
+
 export const loadUserProfileData = userProfile => {
   return {
     type: types.LOAD_USERS_SPECIFIC,
@@ -64,4 +75,3 @@ export const updateSpecificUser = (user, history, userRoles) => {
     }
   }
 };
-

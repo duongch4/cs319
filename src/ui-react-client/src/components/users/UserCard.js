@@ -56,7 +56,7 @@ class UserCard extends Component {
          //ideally we would compare disciplineID here instead of name, but positions
          //in userProfile only have name, not ID
          if (userProfileDisciplineName === userSummaryDisciplineName){
-           this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName);
+           this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName, projectTitle);
          }
        });
     });

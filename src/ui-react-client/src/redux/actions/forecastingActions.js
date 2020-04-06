@@ -3,6 +3,7 @@ import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import errorHandler from './errorHandler'
+import {unassignUpdateUserData} from './userProfileActions'
 
 const baseURL = `${SVC_ROOT}api/`;
 
@@ -26,7 +27,7 @@ export const confirmAssignOpening = (openingId, userId, confirmedUtilization, us
     }
 };
 
-export const unassignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName, opening) => {
+export const unassignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName, opening, projectName) => {
     return {
         type: types.UNASSIGN_OPENING,
         openingId: openingId,
@@ -34,11 +35,10 @@ export const unassignOpening = (openingId, userId, confirmedUtilization, userSum
         confirmedUtilization: confirmedUtilization,
         userSummaryDisciplineName: userSummaryDisciplineName,
         opening: opening
-
     }
 };
 
-export const unassignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName) => {
+export const unassignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName, projectName) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
             dispatch(unassignOpening(openingId, userID, confirmedUtilization, userSummaryDisciplineName));
@@ -47,6 +47,7 @@ export const unassignOpenings = (openingId, userID, confirmedUtilization, userRo
             return axios
                 .put(`${baseURL}positions/${openingId}/unassign`, {}, { headers })
                 .then(response => {
+                    dispatch(unassignUpdateUserData(openingId, response.data.userId, response.data.confirmedUtilization, response.data.opening, projectName))
                     dispatch(unassignOpening(openingId, response.data.userId, response.data.confirmedUtilization, userSummaryDisciplineName, response.data.opening))
                 })
                 .catch(error => {
