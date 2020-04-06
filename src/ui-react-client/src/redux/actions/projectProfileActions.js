@@ -4,6 +4,7 @@ import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState_client from '../reducers/_initialState_client';
 import errorHandler from './errorHandler'
+import {updateUserProjectsCreationData, updateUserProjectsDeletionData} from "./userProfileActions";
 
 const baseURL = `${SVC_ROOT}api/projects/`;
 
@@ -84,6 +85,7 @@ export const createProject = (project, history, userRoles) => {
             }).then(_ => {
                 dispatch(createProjectData(project));
                 dispatch(addProjectSummaryData(project.projectSummary));
+                dispatch(updateUserProjectsCreationData(project.projectSummary, project.projectManager.userID));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
                 errorHandler(error);
@@ -120,6 +122,7 @@ export const deleteProject = (number, history, userRoles) => {
             }).then(_ => {
                 dispatch(deleteProjectData());
                 dispatch(deleteProjectSummaryData(number));
+                dispatch(updateUserProjectsDeletionData(number));
                 history.push('/projects');
             }).catch(error => {
                 errorHandler(error);
