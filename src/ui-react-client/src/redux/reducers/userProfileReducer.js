@@ -10,41 +10,58 @@ const executeUpdateSpecificUserData = (action) => {
 };
 
 const executeUpdateUnassignUserData = (state, action) => {
-  if (action.userId == state.userSummary.userID){
-        let openings = state.positions.filter(openings => openings.positionID !== action.openingId);
-        let openingsInProject = openings.filter(openings => openings.projectTitle == action.projectTitle);
-        if (openingsInProject){
-          let newState = {
-              ...state,
-              positions: openings,
-              userSummary: {
-                ...state.userSummary,
-                utilization: action.confirmedUtilization
-              }
-          }
-          return newState;
-        }
-        else {
-          let updatedCurrentProjects = state.currentProjects.filter(currentProject => currentProject.title !== action.projectTitle);
-          let newState = {
-              ...state,
-              positions: openings,
-              userSummary: {
-                ...state.userSummary,
-                utilization: action.confirmedUtilization
-              },
-              currentProjects: updatedCurrentProjects
-          }
-          return newState;
-        }
-  }
+  if (action.userID === state.userSummary.userID) {
+    // remove the project summary from the user's current projects
+    let projectIndex = state.currentProjects.findIndex(project => {
+      return project.projectNumber === action.projectNumber
+    });
+    let updatedProjects = state.currentProjects.splice(projectIndex, 1);
 
-  return state;
+    // remove the position from the user's list of positions
+    let updatedPositions = state.positions.filter(position => position.positionID !== action.openingID);
+
+    // update the user's utilization, position and current projects
+    return {
+      ...state,
+      userSummary: {
+        ...state.userSummary,
+        utilization: action.confirmedUtilization
+      },
+      currentProjects: updatedProjects,
+      positions: updatedPositions
+    }
+  } else {
+    return state;
+  }
 };
 
 const executeUpdateAssignUserData = (state, action) => {
-//TODO add logic here
-
+  if (state.userSummary.userID === action.userID) {
+    // create a new position
+    let newPosition = {
+      positionID: action.opening.positionID,
+      positionName:action.opening.discipline,
+      projectTitle: action.projectSummary.title,
+      disciplineName: action.opening.discipline,
+      projectedMonthlyHours: action.opening.commitmentMonthlyHours
+    };
+    // update the user's utilization, project list, and position list
+    return {
+      ...state,
+      userSummary: {
+        ...state.userSummary,
+        utilization: action.confirmedUtilization
+      },
+      currentProjects: [
+          ...state.currentProjects,
+          action.projectSummary
+      ],
+      positions: [
+          ...state.positions,
+          newPosition
+      ]
+    }
+  }
   return state;
 };
 

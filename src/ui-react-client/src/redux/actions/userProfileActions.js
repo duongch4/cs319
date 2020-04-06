@@ -7,26 +7,24 @@ import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/`;
 
-export const unassignUpdateUserData = (openingId, userId, confirmedUtilization, opening, projectName) => {
+export const unassignUpdateUserData = (openingID, userID, confirmedUtilization, opening, projectNumber) => {
   return {
     type: types.UNASSIGN_UPDATE_USER_DATA,
-    openingId: openingId,
-    userId: userId,
+    openingID: openingID,
+    userID: userID,
     confirmedUtilization: confirmedUtilization,
     opening: opening,
-    projectName: projectName
+    projectNumber: projectNumber
   };
 };
 
-export const assignUpdateUserData = (openingId, userId, confirmedUtilization, opening, projectName) => {
-//TODO this may need to be updated
+export const assignUpdateUserData = (userID, confirmedUtilization, opening, projectSummary) => {
   return {
     type: types.ASSIGN_UPDATE_USER_DATA,
-    openingId: openingId,
-    userId: userId,
+    userID: userID,
     confirmedUtilization: confirmedUtilization,
     opening: opening,
-    projectName: projectName
+    projectSummary: projectSummary
   };
 };
 

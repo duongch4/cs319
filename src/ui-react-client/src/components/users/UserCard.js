@@ -46,6 +46,7 @@ class UserCard extends Component {
      const userRoles = getUserRoles(this.context);
      let userSummaryDisciplineName = user.resourceDiscipline.discipline;
      let projectTitle = this.props.projectDetails.projectSummary.title;
+     let projectNumber = this.props.projectDetails.projectSummary.projectNumber;
 
      //because userSummary doesn't include positionID, need to triage to get it from the usersProfile
      this.props.loadSpecificUser(user.userID, userRoles).then(() => {
@@ -56,7 +57,7 @@ class UserCard extends Component {
          //ideally we would compare disciplineID here instead of name, but positions
          //in userProfile only have name, not ID
          if (userProfileDisciplineName === userSummaryDisciplineName){
-           this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName, projectTitle);
+           this.props.unassignOpenings(position.positionID, user.userID, user.utilization, userRoles, userSummaryDisciplineName, projectNumber);
          }
        });
     });

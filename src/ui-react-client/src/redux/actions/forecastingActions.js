@@ -28,7 +28,7 @@ export const confirmAssignOpening = (openingId, userId, confirmedUtilization, us
     }
 };
 
-export const unassignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName, opening, projectName) => {
+export const unassignOpeningData = (openingId, userId, confirmedUtilization, userSummaryDisciplineName, opening) => {
     return {
         type: types.UNASSIGN_OPENING,
         openingId: openingId,
@@ -39,17 +39,17 @@ export const unassignOpening = (openingId, userId, confirmedUtilization, userSum
     }
 };
 
-export const unassignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName, projectName) => {
+export const unassignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName, projectNumber) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
-            dispatch(unassignOpening(openingId, userID, confirmedUtilization, userSummaryDisciplineName));
+            dispatch(unassignOpeningData(openingId, userID, confirmedUtilization, userSummaryDisciplineName));
         } else {
             return getHeaders(userRoles).then(headers => {
             return axios
                 .put(`${baseURL}positions/${openingId}/unassign`, {}, { headers })
                 .then(response => {
-                    dispatch(unassignUpdateUserData(openingId, response.data.userId, response.data.confirmedUtilization, response.data.opening, projectName))
-                    dispatch(unassignOpening(openingId, response.data.userId, response.data.confirmedUtilization, userSummaryDisciplineName, response.data.opening))
+                    dispatch(unassignUpdateUserData(openingId, response.data.userId, response.data.confirmedUtilization, response.data.opening, projectNumber));
+                    dispatch(unassignOpeningData(openingId, response.data.userId, response.data.confirmedUtilization, userSummaryDisciplineName, response.data.opening));
                 })
                 .catch(error => {
                     errorHandler(error);
@@ -79,19 +79,18 @@ export const confirmAssignOpenings = (openingId, userID, confirmedUtilization, u
 };
 
 
-export const createAssignOpenings = (openingId, userId, confirmedUtilization, user, userRoles, projectNumber, history) => {
+export const createAssignOpenings = (opening, userId, confirmedUtilization, user, userRoles, projectSummary, history) => {
     return dispatch => {
       if (CLIENT_DEV_ENV) {
-          dispatch(createAssignOpening(openingId, userId, confirmedUtilization, user))
+          dispatch(createAssignOpening(opening.positionID, userId, confirmedUtilization, user))
       } else {
         return getHeaders(userRoles).then(headers => {
             return axios
-            .put(`${baseURL}positions/${openingId}/assign/${userId}`, {}, { headers })
+            .put(`${baseURL}positions/${opening.positionID}/assign/${userId}`, {}, { headers })
                 .then(response => {
-                  console.log("here", response)
-                  dispatch(assignUpdateUserData(response.data.openingId, response.data.userID, response.data.confirmedUtilization, user, projectNumber))
+                  dispatch(assignUpdateUserData(response.data.userID, response.data.confirmedUtilization, opening, projectSummary))
                   dispatch(createAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, user))
-                  history.push('/projects/' + projectNumber);
+                  history.push('/projects/' + projectSummary.projectNumber);
                 })
                 .catch(error => {
                     errorHandler(error);
