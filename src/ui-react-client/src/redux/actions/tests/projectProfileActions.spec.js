@@ -136,6 +136,7 @@ describe('loadUsers', () => {
         expect(axios.get).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, { headers: { Authorization: `Bearer 100` } });
     });
 
+    // TODO: FIX YOUR TESTS!!!!
     // // createProject test
     // it('createProject: should successfully create project action', async () => {
     //     const history = createMemoryHistory('/projects')
@@ -158,6 +159,7 @@ describe('loadUsers', () => {
     //     expect(axios.post).toHaveBeenCalledWith(`${baseURL}`, projectProfile, {headers:{ Authorization: `Bearer 100` }});
     // });
 
+    // TODO: FIX YOUR TESTS!!!!
     // it('createProject: should handle error when create project action is rejected', async () => {
     //     let errorMessage = "Error message";
     //     axios.get.mockImplementationOnce(() =>
@@ -209,31 +211,24 @@ describe('loadUsers', () => {
 
     it('createProject: should handle error when create project action is rejected', async () => {
         let errorMessage = "Error message";
-        axios.get.mockImplementationOnce(() =>
-            Promise.reject(new Error(errorMessage)),
-        );
+        axios.post.mockImplementationOnce(() => Promise.reject(new Error(errorMessage)));
+        
         const history = createMemoryHistory('/projects')
-        const expectedAction = [{
-            type: types.UPDATE_PROJECT,
-            projectProfile: projectProfile,
-        }, {
-            type: types.UPDATE_PROJECT_SUMMARY,
-            projectSummary: projectProfile.projectSummary
-        }];
-        const resp = { data: { payload: projectProfile } };
+        const expectedAction = []; // since it's error
         authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
 
-        axios.post.mockResolvedValue(resp);
-
-        await store.dispatch(projectProfileActions.updateProject(projectProfile, history, adminRole));
-        let alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
-
-        expect(alert).toHaveBeenCalledTimes(1);
+        await store.dispatch(projectProfileActions.createProject(projectProfile, history, adminRole));
         expect(store.getActions()).toEqual(expectedAction);
-        expect(axios.put).toHaveBeenCalledTimes(1);
-        expect(axios.put).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, projectProfile, { headers: { Authorization: `Bearer 100` } });
+
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith(`${baseURL}`, projectProfile, { headers: { Authorization: `Bearer 100` } });
+
+        let alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
+        expect(alert).toHaveBeenCalled();
+
     });
 
+    // TODO: FIX YOUR TESTS!!!!
     // // deleteProject tests
     // it('createProject: should successfully create project action', async () => {
     //     const history = createMemoryHistory('/projects')
@@ -255,6 +250,7 @@ describe('loadUsers', () => {
     //     expect(axios.delete).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, { headers: { Authorization: `Bearer 100` } });
     // });
 
+    // TODO: FIX YOUR TESTS!!!!
     // it('createProject: should handle error when create project action is rejected', async () => {
     //     let errorMessage = "Error message";
     //     axios.get.mockImplementationOnce(() =>

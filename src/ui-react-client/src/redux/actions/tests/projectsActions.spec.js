@@ -37,6 +37,7 @@ const projects = [
   projectEndDate: "2021-12-31T00:00:00.0000000",
   projectNumber: "2009-VD9D-16"
 }];
+const isLastPage = false;
 
 describe('loadProjects', () => {
   afterEach(() => {
@@ -48,8 +49,9 @@ describe('loadProjects', () => {
     const expectedAction = {
       type: types.LOAD_PROJECTS_ALL,
       projects: projects,
+      isLastPage: isLastPage,
     };
-    const resp = {data: {payload: projects}};
+    const resp = {data: {payload: projects, extra: {isLastPage: isLastPage}}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
     axios.get.mockResolvedValue(resp);
@@ -59,7 +61,7 @@ describe('loadProjects', () => {
     expect(store.getActions()[0]).toEqual(expectedAction);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(`${baseURL}`, {headers:{ Authorization: `Bearer 100` }});
-    const action = projectsActions.loadProjectsData(projects);
+    const action = projectsActions.loadProjectsData(projects, isLastPage);
 
     expect(action).toEqual(expectedAction);
   });
@@ -87,8 +89,9 @@ describe('loadProjects', () => {
     const expectedAction = {
       type: types.LOAD_PROJECTS_ALL,
       projects: projects,
+      isLastPage: false,
     };
-    const resp = {data: {payload: projects}};
+    const resp = {data: {payload: projects, extra: {isLastPage: isLastPage}}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
     axios.get.mockResolvedValue(resp);
@@ -98,7 +101,7 @@ describe('loadProjects', () => {
     expect(store.getActions()[0]).toEqual(expectedAction);
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(`${baseURL}?&orderKey=utilization&order=desc&page=1`, {headers:{ Authorization: `Bearer 100` }});
-    const action = projectsActions.loadProjectsData(projects);
+    const action = projectsActions.loadProjectsData(projects, isLastPage);
 
     expect(action).toEqual(expectedAction);
   });

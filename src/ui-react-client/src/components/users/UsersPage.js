@@ -12,6 +12,7 @@ import Select from 'react-select';
 class UsersPage extends Component {
   constructor(props) {
     super(props);
+    this._ismounted = false;
     this.initialState = {
       users: [],
       filters: null,
@@ -33,73 +34,72 @@ class UsersPage extends Component {
   }
 
   componentDidMount() {
+    this._ismounted = true;
     if (CLIENT_DEV_ENV) {
       this.props.loadMasterlists(["adminUser"]);
-      this.setState({
-        ...this.state,
-        masterlist: this.props.masterlist,
-      })
+      if (this._ismounted) {
+        this.setState({
+          ...this.state,
+          masterlist: this.props.masterlist,
+        })
+      }
     } else {
       const userRoles = getUserRoles(this.context);
       this.props.loadMasterlists(userRoles)
           .then(() => {
-            this.setState({
-              ...this.state,
-              masterlist: this.props.masterlist,
-            })
+            if (this._ismounted) {
+              this.setState({
+                ...this.state,
+                masterlist: this.props.masterlist,
+              })
+            }  
           });
       this.props.loadUsers(this.state.url.concat("&page=1"), userRoles)
       .then(()=> {
-        this.setState({
-          ...this.state,
-          users: this.props.users,
-          usersAll: [this.props.users],
-        }, () => (
-          this.state.users.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-        ));
+        if (this._ismounted) {
+          this.setState({
+            ...this.state,
+            users: this.props.users,
+            usersAll: [this.props.users],
+          }, () => (
+            this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+          ));
+        } 
       })
-      .catch(error => {
-        this.setState({
-          ...this.state,
-          noResults: true,
-          loading: false,
-        });
-      });
     }
   }
 
   componentDidUpdate() {
-    if (!this.state.doneLoading && !this.state.loading && (Math.abs(this.state.lastPage - this.state.currPage) < 2)) {
-      this.setState({
-        ...this.state, 
-        loading: true,
-      }, () => this.getAll(getUserRoles(this.context), this.state.lastPage, this.state.offset));
-    }
+      if (!this.state.doneLoading && !this.state.loading && (Math.abs(this.state.lastPage - this.state.currPage) < 2)) {
+        if (this._ismounted) {
+          this.setState({
+            ...this.state, 
+            loading: true,
+          }, () => this.getAll(getUserRoles(this.context), this.state.lastPage, this.state.offset));
+        }
+      }
+  }
+
+  componentWillUnmount() {
+    this._ismounted = false;
   }
 
   restartLoad() {
     const userRoles = getUserRoles(this.context);
     this.props.loadUsers(this.state.url.concat("&page=1"), userRoles)
     .then(()=> {
-      this.setState({
-        ...this.state,
-        users: this.props.users,
-        usersAll: [this.props.users],
-        reloading: false,
-        noResultsNextPage: false,
-      }, () => (
-        this.state.users.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-      ));
+      if (this._ismounted) {
+        this.setState({
+          ...this.state,
+          users: this.props.users,
+          usersAll: [this.props.users],
+          reloading: false,
+          noResultsNextPage: false,
+        }, () => (
+          this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+        ));
+      }
     })
-    .catch(error => {
-      this.setState({
-        ...this.state,
-        noResults: true,
-        loading: false,
-        reloading: false,
-        noResultsNextPage: false,
-      });
-    });
   }
 
   getAll(userRoles, currPage, offset) {
@@ -111,26 +111,18 @@ class UsersPage extends Component {
         var url = this.state.url.concat("&page=").concat(newPage);
         this.props.loadUsers(url, userRoles)
         .then(()=> {
-          this.setState({
-            ...this.state,
-              usersAll: [...this.state.usersAll, this.props.users],
-              noResults: false,
-              loading: true,
-              lastPage: currPage,
-              noResultsNextPage: false,
-          }, () => this.getAll(userRoles, newPage, offset));
-        })
-        .catch(error => {
-          this.setState({
-            ...this.state,
-            noResultsNextPage: false,
-            loading: false,
-            lastPage: currPage,
-            doneLoading: true,
-            });
-        });
-        }
-      } else {
+          if (this._ismounted) {
+            this.setState({
+              ...this.state,
+                usersAll: [...this.state.usersAll, this.props.users],
+                noResults: false,
+                loading: true,
+                lastPage: currPage,
+                noResultsNextPage: false,
+            }, () => (this.props.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, newPage, offset)));
+          }})
+          }
+        } else {
         // stops loading after it loads 10 pages
           this.setState({
             ...this.state,
@@ -139,44 +131,73 @@ class UsersPage extends Component {
             offset: this.state.offset + 1,
             lastPage: currPage,
         });
-      }
-    }
+    }       
+  }
   
     toNextPage = () => {
       var new_page = this.state.currPage + 1;
       var page_index = this.state.currPage;
       if (this.state.usersAll[page_index] !== undefined && !this.state.noResultsNextPage) {
-        this.setState({
+          this.setState({
             ...this.state,
             users: this.state.usersAll[page_index],
             currPage: new_page,
-        })
+        }) 
       } else {
-        this.setState({
-          ...this.state,
-          noResultsNextPage: true,
-      })
-      } 
+          this.setState({
+            ...this.state,
+            noResultsNextPage: true,
+        })
+        }  
     }
   
   toPrevPage = () => {
     var new_page = this.state.currPage - 1;
     var page_index = new_page - 1;
-    this.setState({
-      ...this.state,
-      users: this.state.usersAll[page_index],
-      currPage: new_page,
-    })
+      this.setState({
+        ...this.state,
+        users: this.state.usersAll[page_index],
+        currPage: new_page,
+      })
   }
+
+  // combines users when there is a single user with more than one discipline
+  combineUsers = () => {
+    var users = [];
+    this.state.users.map(function(i) {
+        if (!users.some(e => e.userID === i.userID)) {
+            var obj = {userID: null, firstName: "", lastName: "", location: {}, resourceDiscipline: [{discipline: "", yearsOfExp: ""}], utilization: null};
+            obj.userID = i.userID;
+            obj.firstName = i.firstName;
+            obj.lastName = i.lastName;
+            obj.location = i.location;
+            obj.resourceDiscipline[0].discipline = i.resourceDiscipline.discipline;
+            obj.resourceDiscipline[0].yearsOfExp = i.resourceDiscipline.yearsOfExp;
+            obj.utilization = i.utilization;
+            users.push(obj);
+            return users;
+        } else {
+            let obj1 = users.find(o => o.userID === i.userID);
+            obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
+            obj1.resourceDiscipline.sort(function(a,b){
+                var textA = a.discipline.toUpperCase();
+                var textB = b.discipline.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            }); 
+            return obj1
+        }
+    });
+    return users;
+}
 
   sortUsers = (e) => {
     var sortBy = e.value;
     if (sortBy === "name-AZ"){
-      this.setState({
-        ...this.initialState,
-        reloading: true,
-        url: "?&orderKey=lastName&order=asc",
-      }, () => this.restartLoad());
+        this.setState({
+          ...this.initialState,
+          reloading: true,
+          url: "?&orderKey=lastName&order=asc",
+        }, () => this.restartLoad());
     } else if (sortBy === "name-ZA") {
       this.setState({
         ...this.initialState,
@@ -200,7 +221,7 @@ class UsersPage extends Component {
         ...this.initialState,
         reloading: true,
         url: "?&orderKey=province&order=asc",
-      }, () => this.restartLoad());       
+      }, () => this.restartLoad());     
     } else if (sortBy === "locations-ZA") {
       this.setState({
         ...this.initialState,
@@ -212,6 +233,8 @@ class UsersPage extends Component {
 
 
   render() {
+    var users = this.combineUsers();
+
     return (
       <div>
         {(this.props.showUsers) && (
@@ -247,7 +270,7 @@ class UsersPage extends Component {
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>
             <hr />
-          <UserList users={this.state.users}
+          <UserList users={users}
                     isAssignable={this.props.isAssignable}
                     projectNumber={this.props.projectNumber}
                     openingId={this.props.openingId}

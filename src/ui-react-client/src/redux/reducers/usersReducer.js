@@ -2,6 +2,7 @@ import * as types from '../actions/actionTypes';
 import initialState from './_initialState';
 
 const executeLoadUsersAllData = action => {
+  action.users.isLastPage = action.isLastPage;
   return action.users;
 };
 
