@@ -161,6 +161,35 @@ class UsersPage extends Component {
       })
   }
 
+  // combines users when there is a single user with more than one discipline
+  combineUsers = () => {
+    var users = [];
+    this.state.users.map(function(i) {
+        if (!users.some(e => e.userID === i.userID)) {
+            var obj = {userID: null, firstName: "", lastName: "", location: {}, resourceDiscipline: [{discipline: "", yearsOfExp: ""}], utilization: null};
+            obj.userID = i.userID;
+            obj.firstName = i.firstName;
+            obj.lastName = i.lastName;
+            obj.location = i.location;
+            obj.resourceDiscipline[0].discipline = i.resourceDiscipline.discipline;
+            obj.resourceDiscipline[0].yearsOfExp = i.resourceDiscipline.yearsOfExp;
+            obj.utilization = i.utilization;
+            users.push(obj);
+            return users;
+        } else {
+            let obj1 = users.find(o => o.userID === i.userID);
+            obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
+            obj1.resourceDiscipline.sort(function(a,b){
+                var textA = a.discipline.toUpperCase();
+                var textB = b.discipline.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            }); 
+            return obj1
+        }
+    });
+    return users;
+}
+
   sortUsers = (e) => {
     var sortBy = e.value;
     if (sortBy === "name-AZ"){
@@ -204,6 +233,8 @@ class UsersPage extends Component {
 
 
   render() {
+    var users = this.combineUsers();
+
     return (
       <div>
         {(this.props.showUsers) && (
@@ -239,7 +270,7 @@ class UsersPage extends Component {
             (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
             </div>
             <hr />
-          <UserList users={this.state.users}
+          <UserList users={users}
                     isAssignable={this.props.isAssignable}
                     projectNumber={this.props.projectNumber}
                     openingId={this.props.openingId}
