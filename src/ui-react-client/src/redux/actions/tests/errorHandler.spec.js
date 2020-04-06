@@ -24,18 +24,3 @@ it('should parse the response and return the message', () => {
     expect(alert).toHaveBeenCalled();
     expect(received).toEqual(error.response.data.message);
 });
-
-it('should parse the 500 response message and return the message', () => {
-    let errorMessage = 'This message should be returned';
-    let error = {response: {
-        status: 500, 
-        data: {
-            code: 500,
-            status: 'Internal Server Error',
-            message: `\"Source: Core .Net SqlClient Data Provider\n  Message:${errorMessage}StackTrace:    at System.Data.SqlClient.SqlConnection.OnError(SqlException exception)`}, 
-            statusText: 'this should be returned'}};
-    let received = errorHandler(error);
-
-    expect(alert).toHaveBeenCalled();
-    expect(received).toEqual(errorMessage);
-});

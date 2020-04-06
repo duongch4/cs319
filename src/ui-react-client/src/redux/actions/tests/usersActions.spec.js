@@ -14,7 +14,7 @@ jest.mock('../../../config/authUtils');
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
 const store = mockStore({});
-const users = [
+const userSummaries = [
   {
       firstName: "Jason",
       lastName: "Bourne",
@@ -49,6 +49,10 @@ const users = [
     isConfirmed: true
 }];
 
+const extra = {
+  isLastPage: false
+};
+
 describe('loadUsers', () => {
   afterEach(() => {
     store.clearActions();
@@ -60,9 +64,10 @@ describe('loadUsers', () => {
 
     const expectedAction = [{
       type: types.LOAD_USERS_ALL,
-      users: users
+      users: userSummaries,
+      isLastPage: extra.isLastPage,
     }];
-    const resp = {data: {payload: users}};
+    const resp = {data: {payload: userSummaries, extra: extra}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
     axios.get.mockResolvedValue(resp);
@@ -91,9 +96,10 @@ describe('loadUsers', () => {
 
     const expectedAction = [{
       type: types.LOAD_USERS_ALL,
-      users: users
+      users: userSummaries,
+      isLastPage: extra.isLastPage,
     }];
-    const resp = {data: {payload: users}};
+    const resp = {data: {payload: userSummaries, extra: extra}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
     axios.get.mockResolvedValue(resp);
