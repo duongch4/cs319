@@ -56,34 +56,16 @@ class UsersPage extends Component {
           });
       this.props.loadUsers(this.state.url.concat("&page=1"), userRoles)
       .then(()=> {
-<<<<<<< HEAD
-        this.setState({
-          ...this.state,
-          users: this.props.users,
-          usersAll: [this.props.users],
-        }, () => (
-          this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-        ));
-      })
-=======
         if (this._ismounted) {
           this.setState({
             ...this.state,
             users: this.props.users,
             usersAll: [this.props.users],
           }, () => (
-            this.state.users.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+            this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
           ));
         } 
       })
-      .catch(error => {
-          this.setState({
-            ...this.state,
-            noResults: true,
-            loading: false,
-          });
-      });
->>>>>>> console-warnings
     }
   }
 
@@ -106,18 +88,6 @@ class UsersPage extends Component {
     const userRoles = getUserRoles(this.context);
     this.props.loadUsers(this.state.url.concat("&page=1"), userRoles)
     .then(()=> {
-<<<<<<< HEAD
-      this.setState({
-        ...this.state,
-        users: this.props.users,
-        usersAll: [this.props.users],
-        reloading: false,
-        noResultsNextPage: false,
-      }, () => (
-        this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-      ));
-    })
-=======
       if (this._ismounted) {
         this.setState({
           ...this.state,
@@ -126,20 +96,10 @@ class UsersPage extends Component {
           reloading: false,
           noResultsNextPage: false,
         }, () => (
-          this.state.users.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+          this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
         ));
       }
     })
-    .catch(error => {
-        this.setState({
-          ...this.state,
-          noResults: true,
-          loading: false,
-          reloading: false,
-          noResultsNextPage: false,
-        });
-    }); 
->>>>>>> console-warnings
   }
 
   getAll(userRoles, currPage, offset) {
@@ -159,19 +119,10 @@ class UsersPage extends Component {
                 loading: true,
                 lastPage: currPage,
                 noResultsNextPage: false,
-            }, () => this.getAll(userRoles, newPage, offset));
+            }, () => (this.props.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, newPage, offset)));
           }})
-          .catch(error => {
-              this.setState({
-                ...this.state,
-                noResultsNextPage: false,
-                loading: false,
-                lastPage: currPage,
-                doneLoading: true,
-                });
-          });
           }
-          } else {
+        } else {
         // stops loading after it loads 10 pages
           this.setState({
             ...this.state,
