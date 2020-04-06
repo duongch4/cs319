@@ -326,6 +326,7 @@ namespace Web.API.Infrastructure.Data
             var filteredLocations = await GetFilteredLocations(connection, req.Filter.Locations);
             var filteredUtilization = GetFilteredUtilization(req.Filter.Utilization);
             var filteredDisciplinesSkills = await GetFilteredDisciplines(connection, req.Filter.Disciplines);
+            var filteredYearsOfExps = await GetFilteredYearsOfExps(connection, req.Filter.YearsOfExps);
 
             var sql = IsNoDisciplinesAndNoYearsOfExpFilters(req) ? GetSqlForOnlyLocationFilter() : GetSqlForMoreThanTwoFilters();
 
@@ -337,7 +338,7 @@ namespace Web.API.Infrastructure.Data
                 Disciplines = filteredDisciplinesSkills["disciplines"],
                 Skills = filteredDisciplinesSkills["skills"],
                 SearchWord = GetFilteredSearchWord(req.SearchWord),
-                YearsOfExps = await GetFilteredYearsOfExps(connection, req.Filter.YearsOfExps),
+                YearsOfExps = filteredYearsOfExps,
                 EndDate = GetFilteredEndDate(req.Filter.EndDate),
                 StartDate = GetFilteredStartDate(req.Filter.StartDate),
                 UtilMin = filteredUtilization.Min,
