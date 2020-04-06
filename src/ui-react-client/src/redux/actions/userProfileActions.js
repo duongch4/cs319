@@ -64,6 +64,14 @@ export const updateUserProjectsCreationData = (projectSummary, userID) => {
   }
 };
 
+export const updateUserUtilizationData = (userID, utilization) => {
+  return {
+    type: types.UPDATE_USER_UTILIZATION,
+    userID: userID,
+    utilization: utilization
+  }
+}
+
 export const loadSpecificUser = (userID, userRoles) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {

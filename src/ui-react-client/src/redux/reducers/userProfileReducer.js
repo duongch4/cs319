@@ -87,6 +87,19 @@ const executeUpdateAssignUserData = (state, action) => {
   return state;
 };
 
+const executeUpdateUserUtilizationData = (state, action) => {
+  if (state.userSummary.userID === action.userID) {
+    return {
+      ...state,
+      userSummary: {
+        ...state.userSummary,
+        utilization: action.utilization
+      }
+    }
+  }
+  return state;
+}
+
 export const userProfileReducer = (state = initialState.userProfile, action) => {
   switch (action.type) {
     case types.LOAD_USERS_SPECIFIC:
@@ -101,6 +114,8 @@ export const userProfileReducer = (state = initialState.userProfile, action) => 
       return executeUpdateUnassignUserData(state, action);
     case types.ASSIGN_UPDATE_USER_DATA:
       return executeUpdateAssignUserData(state, action);
+    case types.UPDATE_USER_UTILIZATION:
+      return executeUpdateUserUtilizationData(state, action);
     default:
       return state;
   }

@@ -3,7 +3,7 @@ import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import errorHandler from './errorHandler'
-import {unassignUpdateUserData} from './userProfileActions'
+import {unassignUpdateUserData, updateUserUtilizationData} from './userProfileActions'
 import {assignUpdateUserData} from './userProfileActions'
 
 const baseURL = `${SVC_ROOT}api/`;
@@ -69,6 +69,7 @@ export const confirmAssignOpenings = (openingId, userID, confirmedUtilization, u
             .put(`${baseURL}positions/${openingId}/confirm`, {}, { headers })
                 .then(response => {
                     dispatch(confirmAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, userSummaryDisciplineName))
+                    dispatch(updateUserUtilizationData(response.data.userID, response.data.confirmedUtilization))
                 })
                 .catch(error => {
                     errorHandler(error);
