@@ -155,7 +155,6 @@ class ProjectsPage extends Component {
         });
       }
     } else {
-      console.log("else");
       // stops loading after it loads 10 pages
         this.setState({
           ...this.state,
