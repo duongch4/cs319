@@ -5,7 +5,7 @@ import {createAssignOpenings} from '../../../redux/actions/forecastingActions';
 import Search from '../search/Search.js';
 import {loadMasterlists} from "../../../redux/actions/masterlistsActions";
 import Loading from '../Loading';
-import {UserContext, getUserRoles} from "../userContext/UserContext";
+import {UserContext} from "../userContext/UserContext";
 
 class Forecasting extends Component {
     state = {

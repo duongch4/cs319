@@ -212,6 +212,7 @@ class UsersPage extends Component {
 
 
   render() {
+    const userRoles = getUserRoles(this.context);
     return (
       <div>
         {(this.props.showUsers) && (
@@ -248,6 +249,7 @@ class UsersPage extends Component {
             </div>
             <hr />
           <UserList users={this.state.users}
+                    canEdit={userRoles.includes('adminUser')}
                     isAssignable={this.props.isAssignable}
                     projectNumber={this.props.projectNumber}
                     openingId={this.props.openingId}

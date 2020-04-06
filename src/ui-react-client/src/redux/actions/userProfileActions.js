@@ -49,6 +49,21 @@ export const updateUserSummary = userSummary => {
   }
 };
 
+export const updateUserProjectsDeletionData = projectNumber => {
+  return {
+    type: types.UPDATE_USER_PROJECTS_DELETION,
+    projectNumber: projectNumber
+  }
+};
+
+export const updateUserProjectsCreationData = (projectSummary, userID) => {
+  return {
+    type: types.UPDATE_USER_PROJECTS_CREATION,
+    projectSummary: projectSummary,
+    userID: userID
+  }
+};
+
 export const loadSpecificUser = (userID, userRoles) => {
   return dispatch => {
     if (CLIENT_DEV_ENV) {
