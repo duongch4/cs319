@@ -81,8 +81,7 @@ class SearchResults extends Component {
     }
 
     getAll(userRoles, currPage) {
-        if (!this.state.noResultsNextPage && this.state.userSummariesAll[0].length === 50 &&
-            (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length === 50) {
+        if (!this.state.userSummariesAll[this.state.userSummariesAll.length - 1].isLastPage) {
             var mock_data = JSON.parse(JSON.stringify(this.props.data));
             mock_data.page = currPage + 1;
             this.props.performUserSearch(mock_data, userRoles)
@@ -97,8 +96,7 @@ class SearchResults extends Component {
                 },() => this.props.stopLoading()) : this.getAll(userRoles, mock_data.page)))
             })
         }
-        // if the last page has less than 50 users, that means it is done and it will stop loading more pages
-        else if ( (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length < 50) {
+        else {
             this.setState({
                 ...this.state,
                 noResultsNextPage: true,
@@ -241,9 +239,9 @@ class SearchResults extends Component {
                     {(this.state.currPage > 1) && 
                     (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
                         Page {this.state.currPage}
-                    {(this.state.noResultsNextPage && (this.state.userSummaries).length === 50) && 
+                    {(this.state.noResultsNextPage && !this.state.userSummaries.isLastPage) && 
                     (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
-                    {(!this.state.noResultsNextPage || (this.state.userSummaries).length < 50) && 
+                    {(!this.state.noResultsNextPage || this.state.userSummaries.isLastPage) && 
                     (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
                     </div>
                     <hr />
