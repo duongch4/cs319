@@ -52,7 +52,13 @@ class SearchResults extends Component {
                 }, () => (
                     this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))
-            })
+            }).catch(err => {
+                this.setState({
+                    ...this.state,
+                    noResultsNextPage: true,
+                },() => this.props.stopLoading());
+            });
+
         }
     }
 
@@ -77,7 +83,13 @@ class SearchResults extends Component {
             }, () => (
                 this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                 ))
-        })
+        }).catch(err => {
+            this.setState({
+                ...this.state,
+                noResultsNextPage: true,
+            },() => this.props.stopLoading());
+        });
+
     }
 
     getAll(userRoles, currPage) {
@@ -95,6 +107,7 @@ class SearchResults extends Component {
                     noResultsNextPage: true,
                 },() => this.props.stopLoading()) : this.getAll(userRoles, mock_data.page)))
             })
+
         }
         else {
             this.setState({
