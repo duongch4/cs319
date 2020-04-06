@@ -4,6 +4,7 @@ import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import errorHandler from './errorHandler'
 import {unassignUpdateUserData} from './userProfileActions'
+import {assignUpdateUserData} from './userProfileActions'
 
 const baseURL = `${SVC_ROOT}api/`;
 
@@ -87,6 +88,8 @@ export const createAssignOpenings = (openingId, userId, confirmedUtilization, us
             return axios
             .put(`${baseURL}positions/${openingId}/assign/${userId}`, {}, { headers })
                 .then(response => {
+                  console.log("here", response)
+                  dispatch(assignUpdateUserData(response.data.openingId, response.data.userID, response.data.confirmedUtilization, user, projectNumber))
                   dispatch(createAssignOpening(response.data.openingId, response.data.userID, response.data.confirmedUtilization, user))
                   history.push('/projects/' + projectNumber);
                 })

@@ -18,6 +18,18 @@ export const unassignUpdateUserData = (openingId, userId, confirmedUtilization, 
   };
 };
 
+export const assignUpdateUserData = (openingId, userId, confirmedUtilization, opening, projectName) => {
+//TODO this may need to be updated
+  return {
+    type: types.ASSIGN_UPDATE_USER_DATA,
+    openingId: openingId,
+    userId: userId,
+    confirmedUtilization: confirmedUtilization,
+    opening: opening,
+    projectName: projectName
+  };
+};
+
 export const loadUserProfileData = userProfile => {
   return {
     type: types.LOAD_USERS_SPECIFIC,

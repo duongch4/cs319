@@ -9,15 +9,11 @@ const executeUpdateSpecificUserData = (action) => {
   return action.userProfile;
 };
 
-const executeUpdateUnassigncUserData = (state, action) => {
-  console.log("in unassign reducer action", action)
-  console.log("in unassign reducer state", state)
+const executeUpdateUnassignUserData = (state, action) => {
   if (action.userId == state.userSummary.userID){
-      console.log("IF STATEMENT TRUE")
         let openings = state.positions.filter(openings => openings.positionID !== action.openingId);
         let openingsInProject = openings.filter(openings => openings.projectTitle == action.projectTitle);
         if (openingsInProject){
-          console.log("person assigned to two positions in same project")
           let newState = {
               ...state,
               positions: openings,
@@ -26,11 +22,9 @@ const executeUpdateUnassigncUserData = (state, action) => {
                 utilization: action.confirmedUtilization
               }
           }
-          console.log("new state", newState)
           return newState;
         }
         else {
-          console.log("person NOT assigned to two positions in same project")
           let updatedCurrentProjects = state.currentProjects.filter(currentProject => currentProject.title !== action.projectTitle);
           let newState = {
               ...state,
@@ -41,11 +35,15 @@ const executeUpdateUnassigncUserData = (state, action) => {
               },
               currentProjects: updatedCurrentProjects
           }
-          console.log("new state", newState)
           return newState;
-
         }
   }
+
+  return state;
+};
+
+const executeUpdateAssignUserData = (state, action) => {
+//TODO add logic here
 
   return state;
 };
@@ -57,7 +55,9 @@ export const userProfileReducer = (state = initialState.userProfile, action) => 
     case types.UPDATE_USERS_SPECIFIC:
       return executeUpdateSpecificUserData(action);
     case types.UNASSIGN_UPDATE_USER_DATA:
-      return executeUpdateUnassigncUserData(state, action);
+      return executeUpdateUnassignUserData(state, action);
+    case types.ASSIGN_UPDATE_USER_DATA:
+      return executeUpdateAssignUserData(state, action);
     default:
       return state;
   }
