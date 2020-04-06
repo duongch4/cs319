@@ -15,7 +15,7 @@ const executeUpdateUnassignUserData = (state, action) => {
     let projectIndex = state.currentProjects.findIndex(project => {
       return project.projectNumber === action.projectNumber
     });
-    let updatedProjects = state.currentProjects.splice(projectIndex, 1);
+    let updatedProjects = state.currentProjects.splice(projectIndex - 1, 1);
 
     // remove the position from the user's list of positions
     let updatedPositions = state.positions.filter(position => position.positionID !== action.openingID);
