@@ -43,22 +43,16 @@ class SearchResults extends Component {
             const userRoles = getUserRoles(this.context);
             this.props.performUserSearch(data, userRoles)
             .then(() => {
-                var users = this.props.users.slice()
                 this.setState({
                     ...this.state,
-                    userSummaries: users,
+                    userSummaries: this.props.users,
                     noResults: false,
                     currPage: 1,
-                    userSummariesAll: [users],
+                    userSummariesAll: [this.props.users],
                 }, () => (
-                    users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                    this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))
-            }).catch(err => {
-                this.setState({
-                    ...this.state,
-                    noResults: true,
-                }, this.props.stopLoading());
-            });
+            })
         }
     }
 
@@ -74,22 +68,16 @@ class SearchResults extends Component {
         const userRoles = getUserRoles(this.context);
         this.props.performUserSearch(data, userRoles)
         .then(() => {
-            var users = this.props.users.slice()
             this.setState({
                 ...this.state,
-                userSummaries: users,
+                userSummaries: this.props.users,
                 noResults: false,
                 currPage: 1,
-                userSummariesAll: [users],
+                userSummariesAll: [this.props.users],
             }, () => (
-                users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                 ))
-        }).catch(err => {
-            this.setState({
-                ...this.state,
-                noResults: true,
-            }, this.props.stopLoading());
-        });
+        })
     }
 
     getAll(userRoles, currPage) {
@@ -99,18 +87,15 @@ class SearchResults extends Component {
             mock_data.page = currPage + 1;
             this.props.performUserSearch(mock_data, userRoles)
             .then(() => {
-                var users = (this.props.users).slice()
                 this.setState({
                     ...this.state,
-                    userSummariesAll: [...this.state.userSummariesAll, users],
+                    userSummariesAll: [...this.state.userSummariesAll, this.props.users],
                     noResults: false,
-                }, () => this.getAll(userRoles, mock_data.page))
-            }).catch(err => {
-                this.setState({
+                }, () => (this.props.users.isLastPage ? this.setState({
                     ...this.state,
                     noResultsNextPage: true,
-                },() => this.props.stopLoading());
-            });
+                },() => this.props.stopLoading()) : this.getAll(userRoles, mock_data.page)))
+            })
         }
         // if the last page has less than 50 users, that means it is done and it will stop loading more pages
         else if ( (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length < 50) {

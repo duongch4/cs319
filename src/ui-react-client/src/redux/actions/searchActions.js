@@ -7,10 +7,11 @@ import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/search`;
 
-export const getUsers = users => {
+export const getUsers = (users, isLastPage) => {
     return {
         type: types.PERFORM_USER_SEARCH,
-        users: users
+        users: users,
+        isLastPage: isLastPage,
     };
 };
 
@@ -29,7 +30,7 @@ export const performUserSearch = (filterParams, userRoles) => {
                 return axios
                 .post(`${baseURL}`, filterParams, { headers })
                 .then(response => {
-                    dispatch(getUsers(response.data.payload));
+                    dispatch(getUsers(response.data.payload, response.data.extra.isLastPage));
                 })
                 .catch(error => {
                     errorHandler(error);

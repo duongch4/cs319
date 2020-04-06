@@ -15,16 +15,9 @@ const executeUpdateUserSummaryData = (state, action) => {
   })
 };
 
-const executeSearch = (action, state) => {
+const executeSearch = (action) => {
+  action.users.isLastPage = action.isLastPage;
   return action.users;
-  /* TODO: Need to have cases for:
-    matching location - city and/or province
-    matching Name - first and/or last
-    matchings Discipline(s)
-    matchings Skills(s)
-    matching Years of Experience
-    Any combintation of the above
-*/ 
 };
 
 const executeClearSearchResultsData = () => {
