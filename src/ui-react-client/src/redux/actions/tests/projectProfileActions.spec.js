@@ -250,6 +250,9 @@ it('createProject: should successfully create project action', async () => {
     },{
         type: types.DELETE_PROJECT_SUMMARY,
         projectNumber: "2009-VD9D-15"
+    },{
+        type: types.UPDATE_USER_PROJECTS_DELETION,
+        projectNumber: "2009-VD9D-15"
     }];
     const resp = {data: {payload: projectProfile}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
@@ -273,6 +276,9 @@ it('createProject: should handle error when create project action is rejected', 
         type: types.DELETE_PROJECT
     },{
         type: types.DELETE_PROJECT_SUMMARY,
+        projectNumber: "2009-VD9D-15"
+    },{
+        type: types.UPDATE_USER_PROJECTS_DELETION,
         projectNumber: "2009-VD9D-15"
     }];
     const resp = {data: {payload: projectProfile}};
