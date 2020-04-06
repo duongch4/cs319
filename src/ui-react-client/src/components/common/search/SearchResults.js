@@ -106,7 +106,12 @@ class SearchResults extends Component {
                     ...this.state,
                     noResultsNextPage: true,
                 },() => this.props.stopLoading()) : this.getAll(userRoles, mock_data.page)))
-            })
+            }).catch(err => {
+                this.setState({
+                    ...this.state,
+                    noResultsNextPage: true,
+                },() => this.props.stopLoading());
+            });
 
         }
         else {
