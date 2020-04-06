@@ -12,12 +12,13 @@ import {
     HIGH_UTILIZATION_COLOUR,
     OVER_UTILIZATION_COLOUR
 } from '../../../config/config';
+import EditIcon from "@material-ui/icons/Edit";
 
 class SearchUserCard extends Component {
 
-  onSubmit = (openingId, userId, utilization, user, userRoles) => {
-     this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles);
-   };
+    onSubmit = (openingId, userId, utilization, user, userRoles) => {
+        this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles);
+    };
 
 
     render(){
@@ -57,13 +58,28 @@ class SearchUserCard extends Component {
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
                     {(!this.props.isUserPage) &&
                     (<p><b>Disciplines:</b> {disc_string}</p>)}
-                    {this.props.isAssignable &&
-                        (  <Button variant="contained"
+                    <div className="form-row">
+                        {this.props.isAssignable && (
+                            <Button variant="contained"
                                     style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                                    disableElevation onClick={() => this.onSubmit(this.props.openingId, user.userID, user.utilization, user, userRoles)}
-                                    >
+                                    disableElevation
+                                    onClick={() => this.onSubmit(this.props.openingId, user.userID, user.utilization, user, userRoles)}>
                                 Assign
-                            </Button>)}
+                            </Button>
+                        )}
+                        {
+                            (this.props.canEdit && userRoles.includes('adminUser')) && (
+                                <Link to={'/edituser/' + user.userID} className="action-link">
+                                    <Button>
+                                        <div className="action-link">
+                                            <EditIcon style={{fontSize: 'small'}}/> Manage User
+                                        </div>
+                                    </Button>
+                                </Link>
+                            )
+                        }
+                    </div>
+
                 </div>
                 <div className="card-summary-title utilization">
                     <p style={{color: colour}}>{user.utilization}%</p>

@@ -22,22 +22,22 @@ class ProjectsPage extends Component {
   }
 
     state = {
-      filter: "?searchWord=&orderKey=startDate&order=asc&page=1",
-      projects: [],
-      searchWord: null,
-      searchPressed: false,
-      sort_arr: [{label: "No filter", value: null}, {label: "Title", value: "title"}, {label: "Province", value: "province"},
-                {label: "City", value: "city"}, {label: "Start date", value: "startDate"},
-                {label: "End date", value: "endDate"}],
-      sort: null,
-      loading: true,
-      noResults: false,
-      projectsAll: [],
-      noResultsNextPage: false,
-      currPage: 1,
-      offset: 1,
-      lastPage: 1,
-      doneLoading: false,
+        filter: "?searchWord=&orderKey=startDate&order=asc&page=1",
+        projects: [],
+        searchWord: null,
+        searchPressed: false,
+        sort_arr: [{label: "No filter", value: null}, {label: "Title", value: "title"}, {label: "Province", value: "province"},
+            {label: "City", value: "city"}, {label: "Start date", value: "startDate"},
+            {label: "End date", value: "endDate"}],
+        sort: null,
+        loading: true,
+        noResults: false,
+        projectsAll: [],
+        noResultsNextPage: false,
+        currPage: 1,
+        offset: 1,
+        lastPage: 1,
+        doneLoading: false,
     };
 
   componentDidMount() {
@@ -71,14 +71,30 @@ class ProjectsPage extends Component {
           }   
         })
     }
-  };
 
-  componentDidUpdate() {
-    if (this.state.searchPressed) {
-      this.resetSearch();
-    } else if (!this.state.doneLoading && !this.state.loading && Math.abs(this.state.lastPage - this.state.currPage) < 2) {
-      // once the user 1 page away from the last loaded page, it will load 2 more
-      this.loadMore();
+    resetSearch = () => {
+        const userRoles = getUserRoles(this.context);
+        this.props.loadProjects(this.state.filter, userRoles).then(() => {
+            this.setState({
+                ...this.state,
+                projects: this.props.projects,
+                searchPressed: false,
+                noResults: false,
+                loading: true,
+                lastPage: 1,
+                projectsAll: [this.props.projects],
+                doneLoading: false,
+            }, ()=> (
+                this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+            ))
+        }).catch(err => {
+            this.setState({
+                ...this.state,
+                noResults: true,
+                searchPressed: false,
+                loading: false,
+            });
+        });
     }
   }
 
@@ -159,174 +175,178 @@ class ProjectsPage extends Component {
     }
 
     toNextPage = () => {
-      var new_page = this.state.currPage + 1;
-      var page_index = new_page - 1;
-      if (this.state.projectsAll[page_index] !== undefined) {
+        var new_page = this.state.currPage + 1;
+        var page_index = new_page - 1;
+        if (this.state.projectsAll[page_index] !== undefined) {
+            this.setState({
+                ...this.state,
+                projects: this.state.projectsAll[page_index],
+                currPage: new_page,
+                noResultsNextPage: false
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                noResultsNextPage: true,
+            })
+        }
+    }
+
+    toPrevPage = () => {
+        var new_page = this.state.currPage - 1;
+        var page_index = new_page - 1;
         this.setState({
             ...this.state,
             projects: this.state.projectsAll[page_index],
             currPage: new_page,
-            noResultsNextPage: false
         })
-      } else {
-        this.setState({
-          ...this.state,
-          noResultsNextPage: true,
-      })
-      } 
-    }
-
-    toPrevPage = () => {
-      var new_page = this.state.currPage - 1;
-      var page_index = new_page - 1;
-      this.setState({
-        ...this.state,
-        projects: this.state.projectsAll[page_index],
-        currPage: new_page,
-      })
     }
 
     handleChange = (e) => {
-      if (e.target.id === "search") {
-      this.setState({
-          ...this.state,
-          searchWord: e.target.value,
-          searchPressed: false,
-          });
-    }
+        if (e.target.id === "search") {
+            this.setState({
+                ...this.state,
+                searchWord: e.target.value,
+                searchPressed: false,
+            });
+        }
     };
 
     onFilterChange = (e) => {
-      this.setState({
-        ...this.state,
-        sort: e.value,
-        searchPressed: false,
-      });
+        this.setState({
+            ...this.state,
+            sort: e.value,
+            searchPressed: false,
+        });
     }
 
-  performSearch = () => {
-    if (this.state.sort != null || this.state.searchWord != null) {
-      var sort = null;
-      var searchWord = null;
-      if(this.state.sort === null) {
-        sort = "startDate";
-      } else {
-        sort = this.state.sort;
-      }
+    performSearch = () => {
+        if (this.state.sort != null || this.state.searchWord != null) {
+            var sort = null;
+            var searchWord = null;
+            if(this.state.sort === null) {
+                sort = "startDate";
+            } else {
+                sort = this.state.sort;
+            }
 
-      if (this.state.searchWord === null) {
-        searchWord = "";
-      } else {
-        searchWord = this.state.searchWord;
-      }
-  
-      this.setState({
-        ...this.state,
-        filter: "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(this.state.currPage),
-        searchPressed: true,
-        loading: true,
-        noResults: false,
-        currPage: 1,
-      }, () => this.setState({...this.state,loading:false}));
+            if (this.state.searchWord === null) {
+                searchWord = "";
+            } else {
+                searchWord = this.state.searchWord;
+            }
+
+            this.setState({
+                ...this.state,
+                filter: "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(this.state.currPage),
+                searchPressed: true,
+                loading: true,
+                noResults: false,
+                currPage: 1,
+            }, () => this.setState({...this.state,loading:false}));
+        }
     }
-  }
 
-  getFilterWithPage(currPage) {
-      var sort = "";
-      var searchWord = "";
-      
-      if(this.state.sort === null) {
-        sort = "startDate";
-      } else {
-        sort = this.state.sort;
-      }
+    getFilterWithPage(currPage) {
+        var sort = "";
+        var searchWord = "";
 
-      if (this.state.searchWord === null) {
-        searchWord = "";
-      } else {
-        searchWord = this.state.searchWord;
-      }
-      var filter = "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(currPage);
-      return filter;
-  }
+        if(this.state.sort === null) {
+            sort = "startDate";
+        } else {
+            sort = this.state.sort;
+        }
 
-  render() {
-    return (
-      <div className="activity-container">
-      <div className="form-row">
-              <input className="input-box" type="text" id="search" placeholder="Search" style={{height: "25px"}}onChange={this.handleChange}/>
-              <Select id="sort" className="input-box" options={this.state.sort_arr} onChange={this.onFilterChange}
-                      placeholder='Sort by:'/>
-              <Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}} disableElevation onClick={() => this.performSearch()}>Search</Button>
-          </div>
-          <div className="title-bar">
-            <h1 className="greenHeader">Manage Projects</h1>
-            <div className="fab-container">
-              <Link to={{
-                pathname: "/add_project",
-                state: {
-                  profile: this.props.profile
-                }
-              }}>
-              <Fab
-                  style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
-                  size={"small"}
-                  color="primary" aria-label="add">
-              <AddIcon />
-              </Fab>
-              </Link>
+        if (this.state.searchWord === null) {
+            searchWord = "";
+        } else {
+            searchWord = this.state.searchWord;
+        }
+        var filter = "?searchWord=".concat(searchWord) + "&orderKey=".concat(sort) + "&order=asc&page=".concat(currPage);
+        return filter;
+    }
+
+    render() {
+        return (
+            <div className="activity-container">
+                <div className="title-bar">
+                    <h1 className="greenHeader">Manage Projects</h1>
+                    <div className="fab-container">
+                        <Link to={{
+                            pathname: "/add_project",
+                            state: {
+                                profile: this.props.profile
+                            }
+                        }}>
+                            <Fab
+                                style={{ backgroundColor: "#87c34b", boxShadow: "none"}}
+                                size={"small"}
+                                color="primary" aria-label="add">
+                                <AddIcon />
+                            </Fab>
+                        </Link>
+                    </div>
+                </div>
+                <div className="form-row">
+                    <input className="input-box" type="text" id="search"
+                           placeholder="Search" style={{height: "25px"}}onChange={this.handleChange}/>
+                    <Select id="sort" className="input-box" options={this.state.sort_arr} onChange={this.onFilterChange}
+                            placeholder='Sort by:'/>
+                    <Button variant="contained"  disableElevation
+                            style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}}
+                            onClick={() => this.performSearch()}>Search</Button>
+                </div>
+                <div>
+                    <div className="pagination-controls">
+                        {(this.state.currPage === 1) &&
+                        (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
+
+                        {(this.state.currPage> 1) &&
+                        (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
+
+                        Page {this.state.currPage}
+
+                        {(this.state.projectsAll[this.state.currPage - 1] !== undefined) &&
+                        (!this.state.noResultsNextPage) && (this.state.currPage !== this.state.lastPage) &&
+                        (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
+
+                        {((this.state.projectsAll[this.state.currPage - 1] === undefined)
+                            || (this.state.currPage === this.state.lastPage) || (this.state.projects.length < 50) ||
+                            (this.state.noResultsNextPage)) &&
+                        (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
+                    </div>
+                    <hr />
+                    {(this.state.projects.length === 0) &&
+                    <div>
+                        <Loading/>
+                    </div>}
+                    {(this.state.projects.length > 0) &&
+                    <ProjectList projects={this.state.projects}/>}
+                </div>
+                {(this.state.noResults) &&
+                <div className="darkGreenHeader">There are no projects that match your search</div>}
             </div>
-          </div>
-          <div>
-              <div className="pagination-controls">
-              {(this.state.currPage === 1) && 
-              (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
-
-              {(this.state.currPage> 1) && 
-              (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
-
-                  Page {this.state.currPage}
-
-              {(this.state.projectsAll[this.state.currPage - 1] !== undefined) && 
-                (!this.state.noResultsNextPage) && (this.state.currPage !== this.state.lastPage) &&
-              (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
-
-              {((this.state.projectsAll[this.state.currPage - 1] === undefined)
-              || (this.state.currPage === this.state.lastPage) || (this.state.projects.length < 50) ||
-              (this.state.noResultsNextPage)) && 
-              (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
-              </div>
-              {(this.state.projects.length === 0) &&
-              <div>
-                <Loading/>
-              </div>}
-            {(this.state.projects.length > 0) &&
-            <ProjectList projects={this.state.projects}/>}
-          </div>
-          {(this.state.noResults) && 
-          <div className="darkGreenHeader">There are no projects that match your search</div>}
-      </div>
-    );
+        );
     }
-  }
- 
+}
+
 ProjectsPage.contextType = UserContext;
 
 ProjectsPage.propTypes = {
-  props: PropTypes.object,
+    props: PropTypes.object,
 };
 
 const mapStateToProps = state => {
-  return {
-    projects: state.projects,
-  };
+    return {
+        projects: state.projects,
+    };
 };
 
 const mapDispatchToProps = {
-  loadProjects
+    loadProjects
 };
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
+    mapStateToProps,
+    mapDispatchToProps,
 )(ProjectsPage);
