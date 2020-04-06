@@ -70,32 +70,19 @@ class ProjectsPage extends Component {
             ))
           }   
         })
-    }
+      }
+  }
 
-    resetSearch = () => {
-        const userRoles = getUserRoles(this.context);
-        this.props.loadProjects(this.state.filter, userRoles).then(() => {
-            this.setState({
-                ...this.state,
-                projects: this.props.projects,
-                searchPressed: false,
-                noResults: false,
-                loading: true,
-                lastPage: 1,
-                projectsAll: [this.props.projects],
-                doneLoading: false,
-            }, ()=> (
-                this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
-            ))
-        }).catch(err => {
-            this.setState({
-                ...this.state,
-                noResults: true,
-                searchPressed: false,
-                loading: false,
-            });
-        });
-    }
+    componentDidUpdate() {
+      if (this.state.searchPressed) {
+        this.setState({
+          ...this.state,
+          searchPressed: false,
+        }, () => this.resetSearch())
+      } else if (!this.state.doneLoading && !this.state.loading && Math.abs(this.state.lastPage - this.state.currPage) < 2) {
+          // once the user 1 page away from the last loaded page, it will load 2 more
+          this.loadMore();
+      }
   }
 
   componentWillUnmount() {
@@ -119,41 +106,46 @@ class ProjectsPage extends Component {
         this.setState({
           ...this.state,
           projects: this.props.projects,
-          searchPressed: false,
           noResults: false,
           loading: true,
           lastPage: 1,
           projectsAll: [this.props.projects],
           doneLoading: false,
         }, ()=> (
-          this.state.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+          this.props.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
         ))
       }      
+    }).catch(() => {
+      this.setState({
+        ...this.state,
+        noResults: true,
+        loading: false,
+        doneLoading: true,
+      })
     })
   }
 
   getAll(userRoles, currPage, offset) {
     // only loads 2 pages at a time so that it doesnt take as long
     if (currPage <= (offset * 3)) {
-      if (!this.state.noResultsNextPage && this.state.projectsAll[0].length === 50 && !this.state.searchPressed) {
+      if (!this.state.projectsAll[this.state.projectsAll.length - 1].isLastPage) {
         var newPage = currPage + 1
         var filter = this.getFilterWithPage(newPage);
         this.props.loadProjects(filter, userRoles)
         .then(() => {
-            var projects = (this.props.projects).slice()
             if (this._ismounted) {
               this.setState({
                 ...this.state,
-                projectsAll: [...this.state.projectsAll, projects],
+                projectsAll: [...this.state.projectsAll, this.props.projects],
                 noResults: false,
                 loading: true,
                 lastPage: currPage,
-            }, () => (this.props.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}): this.getAll(userRoles, newPage, offset)))
+            }, () => (this.props.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, newPage, offset)))
             }       
         })
         // if the last page of projects has less than 50 projects, that means it's at the end 
         // and there are no more projects to load
-      } else if (this.state.projectsAll[this.state.projectsAll.length - 1].length < 50) {
+      } else if (this.state.projectsAll[this.state.projectsAll.length - 1].isLastPage) {
           this.setState({
             ...this.state,
             noResultsNextPage: false,
@@ -163,6 +155,7 @@ class ProjectsPage extends Component {
         });
       }
     } else {
+      console.log("else");
       // stops loading after it loads 10 pages
         this.setState({
           ...this.state,
@@ -296,7 +289,8 @@ class ProjectsPage extends Component {
                             style={{backgroundColor: "#2c6232", color: "#ffffff", size: "small"}}
                             onClick={() => this.performSearch()}>Search</Button>
                 </div>
-                <div>
+                {(!this.state.noResults) &&
+                (<div>
                     <div className="pagination-controls">
                         {(this.state.currPage === 1) &&
                         (<ChevronLeftIcon style={{color: "#E8E8E8"}}/>)}
@@ -322,7 +316,7 @@ class ProjectsPage extends Component {
                     </div>}
                     {(this.state.projects.length > 0) &&
                     <ProjectList projects={this.state.projects}/>}
-                </div>
+                </div>)}
                 {(this.state.noResults) &&
                 <div className="darkGreenHeader">There are no projects that match your search</div>}
             </div>

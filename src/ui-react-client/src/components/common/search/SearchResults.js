@@ -52,6 +52,11 @@ class SearchResults extends Component {
                 }, () => (
                     this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))
+            }).catch(() => {
+                this.setState({
+                    ...this.state,
+                    noResults: true,
+                }, () => this.props.stopLoading())
             })
         }
     }
