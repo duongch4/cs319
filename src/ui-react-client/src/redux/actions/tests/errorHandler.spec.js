@@ -16,13 +16,13 @@ it('should parse the response and return the message', () => {
         data: { 
             code: 400,
             status: "Bad Request",
-            message: 'this should not be returned'
+            message: 'this should be returned'
         }, 
-        statusText: 'this should be returned'}};
+        statusText: 'this should not be returned'}};
     let received = errorHandler(error);
 
     expect(alert).toHaveBeenCalled();
-    expect(received).toEqual(error.response.statusText);
+    expect(received).toEqual(error.response.data.message);
 });
 
 it('should parse the 500 response message and return the message', () => {
