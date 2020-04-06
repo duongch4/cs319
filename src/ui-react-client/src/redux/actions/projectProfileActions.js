@@ -3,7 +3,8 @@ import { SVC_ROOT, CLIENT_DEV_ENV } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState_client from '../reducers/_initialState_client';
-import { addProjectSummaryData, deleteProjectSummaryData, updateProjectSummaryData } from "./projectsActions";
+import errorHandler from './errorHandler'
+import {updateUserProjectsCreationData, updateUserProjectsDeletionData} from "./userProfileActions";
 
 const baseURL = `${SVC_ROOT}api/projects/`;
 
@@ -34,6 +35,27 @@ export const deleteProjectData = () => {
     };
 };
 
+export const deleteProjectSummaryData = projectNumber => {
+    return {
+        type: types.DELETE_PROJECT_SUMMARY,
+        projectNumber: projectNumber
+    }
+};
+
+export const addProjectSummaryData = projectSummary => {
+    return {
+        type: types.ADD_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
+};
+
+export const updateProjectSummaryData = projectSummary => {
+    return {
+        type: types.UPDATE_PROJECT_SUMMARY,
+        projectSummary: projectSummary
+    }
+};
+
 export const loadSingleProject = (projectNumber, userRoles) => {
     return dispatch => {
         if (CLIENT_DEV_ENV) {
@@ -46,17 +68,8 @@ export const loadSingleProject = (projectNumber, userRoles) => {
                 return axios.get(`${baseURL + projectNumber}`, { headers });
             }).then(response => {
                 dispatch(loadSingleProjectData(response.data.payload));
-            }) .catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed)
+            }).catch(error => {
+                errorHandler(error);
                 });
         }
     };
@@ -72,19 +85,11 @@ export const createProject = (project, history, userRoles) => {
             }).then(_ => {
                 dispatch(createProjectData(project));
                 dispatch(addProjectSummaryData(project.projectSummary));
+                dispatch(updateUserProjectsCreationData(project.projectSummary, project.projectManager.userID));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed)
-                })
+                errorHandler(error);
+            })
         }
     };
 };
@@ -101,17 +106,8 @@ export const updateProject = (project, history, userRoles) => {
                 dispatch(updateProjectSummaryData(project.projectSummary));
                 history.push('/projects/' + project.projectSummary.projectNumber);
             }).catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed)
-                })
+                errorHandler(error);
+            })
         }
     };
 };
@@ -126,19 +122,11 @@ export const deleteProject = (number, history, userRoles) => {
             }).then(_ => {
                 dispatch(deleteProjectData());
                 dispatch(deleteProjectSummaryData(number));
+                dispatch(updateUserProjectsDeletionData(number));
                 history.push('/projects');
             }).catch(error => {
-                    let errorParsed = ""
-                    console.log(error.response)
-                    if(error.response.status === 500){
-                        let err = error.response.data.message
-                        errorParsed = err.substr(err.indexOf('Message') + 8, err.indexOf('StackTrace') - err.indexOf('Message') - 8);
-                        console.log(err)
-                    } else {
-                        errorParsed = error.response.statusText
-                    }
-                    alert(errorParsed)
-                })
+                errorHandler(error);
+            })
         }
     };
 };
