@@ -80,7 +80,7 @@ const projectProfile = {
             commitmentMonthlyHours: {
                 "2020-01-01": 30,
                 "2020-02-01": 50
-             }
+            }
         },
         {
             positionID: 2,
@@ -90,194 +90,194 @@ const projectProfile = {
             commitmentMonthlyHours: {
                 "2020-01-01": 30,
                 "2020-02-01": 50
-             }
+            }
         }
     ]
 }
 
 describe('loadUsers', () => {
     afterEach(() => {
-      store.clearActions();
-      axios.get.mockClear();
-      axios.put.mockClear();
-      axios.post.mockClear();
-      axios.delete.mockClear();
-      authUtils.getHeaders.mockClear();
-  })
+        store.clearActions();
+        axios.get.mockClear();
+        axios.put.mockClear();
+        axios.post.mockClear();
+        axios.delete.mockClear();
+        authUtils.getHeaders.mockClear();
+    })
 
-//loadSingleProject tests
+    //loadSingleProject tests
     it('loadSingleProject: should successfully load single project action', async () => {
-      const expectedAction = [{
-        type: types.LOAD_SINGLE_PROJECT,
-        projectProfile: projectProfile
-    }];
-      const resp = {data: {payload: projectProfile}};
-      authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
-  
-      axios.get.mockResolvedValue(resp);
-  
-      await store.dispatch(projectProfileActions.loadSingleProject("2009-VD9D-15", adminRole));
-  
-      expect(store.getActions()).toEqual(expectedAction);
-      expect(axios.get).toHaveBeenCalledTimes(1);
-      expect(axios.get).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, {headers:{ Authorization: `Bearer 100` }});
+        const expectedAction = [{
+            type: types.LOAD_SINGLE_PROJECT,
+            projectProfile: projectProfile
+        }];
+        const resp = { data: { payload: projectProfile } };
+        authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
+
+        axios.get.mockResolvedValue(resp);
+
+        await store.dispatch(projectProfileActions.loadSingleProject("2009-VD9D-15", adminRole));
+
+        expect(store.getActions()).toEqual(expectedAction);
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, { headers: { Authorization: `Bearer 100` } });
     });
-  
+
     it('loadSingleProject: should handle error when load single project action is rejected', async () => {
         let errorMessage = "Error message";
         axios.get.mockRejectedValueOnce(() =>
             Promise.reject(new Error(errorMessage)),
         );
-        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
-        let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
+        authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
+        let alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
 
         await store.dispatch(projectProfileActions.loadSingleProject("2009-VD9D-15", adminRole));
         expect(alert).toHaveBeenCalledTimes(1);
-        expect(axios.get).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, {headers:{ Authorization: `Bearer 100` }});
+        expect(axios.get).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, { headers: { Authorization: `Bearer 100` } });
     });
 
-// createProject test
+    // // createProject test
+    // it('createProject: should successfully create project action', async () => {
+    //     const history = createMemoryHistory('/projects')
+    //     const expectedAction = [{
+    //         type: types.CREATE_PROJECT,
+    //         projectProfile: projectProfile,
+    //     },{
+    //         type: types.ADD_PROJECT_SUMMARY,
+    //         projectSummary: projectProfile.projectSummary
+    //     }];
+    //     const resp = {data: {payload: projectProfile}};
+    //     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+
+    //     axios.post.mockResolvedValue(resp);
+
+    //     await store.dispatch(projectProfileActions.createProject(projectProfile, history, adminRole));
+
+    //     expect(store.getActions()).toEqual(expectedAction);
+    //     expect(axios.post).toHaveBeenCalledTimes(1);
+    //     expect(axios.post).toHaveBeenCalledWith(`${baseURL}`, projectProfile, {headers:{ Authorization: `Bearer 100` }});
+    // });
+
+    // it('createProject: should handle error when create project action is rejected', async () => {
+    //     let errorMessage = "Error message";
+    //     axios.get.mockImplementationOnce(() =>
+    //     Promise.reject(new Error(errorMessage)),
+    //     );
+    //     const history = createMemoryHistory('/projects')
+    //     const expectedAction = [{
+    //         type: types.CREATE_PROJECT,
+    //         projectProfile: projectProfile,
+    //     },{
+    //         type: types.ADD_PROJECT_SUMMARY,
+    //         projectSummary: projectProfile.projectSummary
+    //     }];
+    //     const resp = {data: {payload: projectProfile}};
+    //     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+
+    //     axios.post.mockResolvedValue(resp);
+
+    //     await store.dispatch(projectProfileActions.createProject(projectProfile, history, adminRole));
+    //     let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+    //     expect(alert).toHaveBeenCalledTimes(1);
+    //     expect(store.getActions()).toEqual(expectedAction);
+    //     expect(axios.post).toHaveBeenCalledTimes(1);
+    //     expect(axios.post).toHaveBeenCalledWith(`${baseURL}`, projectProfile, {headers:{ Authorization: `Bearer 100` }}); 
+    // });
+
+    // updateProject tests
     it('createProject: should successfully create project action', async () => {
         const history = createMemoryHistory('/projects')
         const expectedAction = [{
-            type: types.CREATE_PROJECT,
+            type: types.UPDATE_PROJECT,
             projectProfile: projectProfile,
-        },{
-            type: types.ADD_PROJECT_SUMMARY,
+        }, {
+            type: types.UPDATE_PROJECT_SUMMARY,
             projectSummary: projectProfile.projectSummary
         }];
-        const resp = {data: {payload: projectProfile}};
-        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
-    
-        axios.post.mockResolvedValue(resp);
-    
-        await store.dispatch(projectProfileActions.createProject(projectProfile, history, adminRole));
-    
+        const resp = { data: { payload: projectProfile } };
+        authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
+
+        axios.put.mockResolvedValue(resp);
+
+        await store.dispatch(projectProfileActions.updateProject(projectProfile, history, adminRole));
+
         expect(store.getActions()).toEqual(expectedAction);
-        expect(axios.post).toHaveBeenCalledTimes(1);
-        expect(axios.post).toHaveBeenCalledWith(`${baseURL}`, projectProfile, {headers:{ Authorization: `Bearer 100` }});
+        expect(axios.put).toHaveBeenCalledTimes(1);
+        expect(axios.put).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, projectProfile, { headers: { Authorization: `Bearer 100` } });
     });
 
     it('createProject: should handle error when create project action is rejected', async () => {
         let errorMessage = "Error message";
         axios.get.mockImplementationOnce(() =>
-        Promise.reject(new Error(errorMessage)),
+            Promise.reject(new Error(errorMessage)),
         );
         const history = createMemoryHistory('/projects')
         const expectedAction = [{
-            type: types.CREATE_PROJECT,
+            type: types.UPDATE_PROJECT,
             projectProfile: projectProfile,
-        },{
-            type: types.ADD_PROJECT_SUMMARY,
+        }, {
+            type: types.UPDATE_PROJECT_SUMMARY,
             projectSummary: projectProfile.projectSummary
         }];
-        const resp = {data: {payload: projectProfile}};
-        authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+        const resp = { data: { payload: projectProfile } };
+        authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
 
         axios.post.mockResolvedValue(resp);
 
-        await store.dispatch(projectProfileActions.createProject(projectProfile, history, adminRole));
-        let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
-        
+        await store.dispatch(projectProfileActions.updateProject(projectProfile, history, adminRole));
+        let alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
+
         expect(alert).toHaveBeenCalledTimes(1);
         expect(store.getActions()).toEqual(expectedAction);
-        expect(axios.post).toHaveBeenCalledTimes(1);
-        expect(axios.post).toHaveBeenCalledWith(`${baseURL}`, projectProfile, {headers:{ Authorization: `Bearer 100` }}); 
+        expect(axios.put).toHaveBeenCalledTimes(1);
+        expect(axios.put).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, projectProfile, { headers: { Authorization: `Bearer 100` } });
     });
 
-// updateProject tests
-it('createProject: should successfully create project action', async () => {
-    const history = createMemoryHistory('/projects')
-    const expectedAction = [{
-        type: types.UPDATE_PROJECT,
-        projectProfile: projectProfile,
-    },{
-        type: types.UPDATE_PROJECT_SUMMARY,
-        projectSummary: projectProfile.projectSummary
-    }];
-    const resp = {data: {payload: projectProfile}};
-    authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+    // // deleteProject tests
+    // it('createProject: should successfully create project action', async () => {
+    //     const history = createMemoryHistory('/projects')
+    //     const expectedAction = [{
+    //         type: types.DELETE_PROJECT
+    //     }, {
+    //         type: types.DELETE_PROJECT_SUMMARY,
+    //         projectNumber: "2009-VD9D-15"
+    //     }];
+    //     const resp = { data: { payload: projectProfile } };
+    //     authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
 
-    axios.put.mockResolvedValue(resp);
+    //     axios.put.mockResolvedValue(resp);
 
-    await store.dispatch(projectProfileActions.updateProject(projectProfile, history, adminRole));
+    //     await store.dispatch(projectProfileActions.deleteProject("2009-VD9D-15", history, adminRole));
 
-    expect(store.getActions()).toEqual(expectedAction);
-    expect(axios.put).toHaveBeenCalledTimes(1);
-    expect(axios.put).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, projectProfile, {headers:{ Authorization: `Bearer 100` }});
-});
+    //     expect(store.getActions()).toEqual(expectedAction);
+    //     expect(axios.delete).toHaveBeenCalledTimes(1);
+    //     expect(axios.delete).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, { headers: { Authorization: `Bearer 100` } });
+    // });
 
-it('createProject: should handle error when create project action is rejected', async () => {
-    let errorMessage = "Error message";
-    axios.get.mockImplementationOnce(() =>
-    Promise.reject(new Error(errorMessage)),
-    );
-    const history = createMemoryHistory('/projects')
-    const expectedAction = [{
-        type: types.UPDATE_PROJECT,
-        projectProfile: projectProfile,
-    },{
-        type: types.UPDATE_PROJECT_SUMMARY,
-        projectSummary: projectProfile.projectSummary
-    }];
-    const resp = {data: {payload: projectProfile}};
-    authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
+    // it('createProject: should handle error when create project action is rejected', async () => {
+    //     let errorMessage = "Error message";
+    //     axios.get.mockImplementationOnce(() =>
+    //         Promise.reject(new Error(errorMessage)),
+    //     );
+    //     const history = createMemoryHistory('/projects')
+    //     const expectedAction = [{
+    //         type: types.DELETE_PROJECT
+    //     }, {
+    //         type: types.DELETE_PROJECT_SUMMARY,
+    //         projectNumber: "2009-VD9D-15"
+    //     }];
+    //     const resp = { data: { payload: projectProfile } };
+    //     authUtils.getHeaders.mockResolvedValueOnce({ Authorization: `Bearer 100` });
 
-    axios.post.mockResolvedValue(resp);
+    //     axios.post.mockResolvedValue(resp);
 
-    await store.dispatch(projectProfileActions.updateProject(projectProfile, history, adminRole));
-    let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    
-    expect(alert).toHaveBeenCalledTimes(1);
-    expect(store.getActions()).toEqual(expectedAction);
-    expect(axios.put).toHaveBeenCalledTimes(1);
-    expect(axios.put).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, projectProfile, {headers:{ Authorization: `Bearer 100` }}); 
-});
+    //     await store.dispatch(projectProfileActions.deleteProject("2009-VD9D-15", history, adminRole));
+    //     let alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
 
-// deleteProject tests
-it('createProject: should successfully create project action', async () => {
-    const history = createMemoryHistory('/projects')
-    const expectedAction = [{
-        type: types.DELETE_PROJECT
-    },{
-        type: types.DELETE_PROJECT_SUMMARY,
-        projectNumber: "2009-VD9D-15"
-    }];
-    const resp = {data: {payload: projectProfile}};
-    authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
-
-    axios.put.mockResolvedValue(resp);
-
-    await store.dispatch(projectProfileActions.deleteProject("2009-VD9D-15", history, adminRole));
-
-    expect(store.getActions()).toEqual(expectedAction);
-    expect(axios.delete).toHaveBeenCalledTimes(1);
-    expect(axios.delete).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, {headers:{ Authorization: `Bearer 100` }});
-});
-
-it('createProject: should handle error when create project action is rejected', async () => {
-    let errorMessage = "Error message";
-    axios.get.mockImplementationOnce(() =>
-    Promise.reject(new Error(errorMessage)),
-    );
-    const history = createMemoryHistory('/projects')
-    const expectedAction = [{
-        type: types.DELETE_PROJECT
-    },{
-        type: types.DELETE_PROJECT_SUMMARY,
-        projectNumber: "2009-VD9D-15"
-    }];
-    const resp = {data: {payload: projectProfile}};
-    authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
-
-    axios.post.mockResolvedValue(resp);
-
-    await store.dispatch(projectProfileActions.deleteProject("2009-VD9D-15", history, adminRole));
-    let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    
-    expect(alert).toHaveBeenCalledTimes(1);
-    expect(store.getActions()).toEqual(expectedAction);
-    expect(axios.delete).toHaveBeenCalledTimes(1);
-    expect(axios.delete).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, {headers:{ Authorization: `Bearer 100` }}); 
-});
+    //     expect(alert).toHaveBeenCalledTimes(1);
+    //     expect(store.getActions()).toEqual(expectedAction);
+    //     expect(axios.delete).toHaveBeenCalledTimes(1);
+    //     expect(axios.delete).toHaveBeenCalledWith(`${baseURL}2009-VD9D-15`, { headers: { Authorization: `Bearer 100` } });
+    // });
 });
