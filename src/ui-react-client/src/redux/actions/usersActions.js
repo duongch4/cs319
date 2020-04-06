@@ -7,10 +7,11 @@ import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/`;
 
-export const loadUsersAllData = userSummaries => {
+export const loadUsersAllData = (userSummaries, isLastPage) => {
   return {
       type: types.LOAD_USERS_ALL,
-      users: userSummaries
+      users: userSummaries,
+      isLastPage: isLastPage,
   };
 };
 
@@ -23,7 +24,7 @@ export const loadUsers = (filter, userRoles) => {
             return getHeaders(userRoles).then(headers => {
                 return axios.get(url, { headers });
             }).then(response => {
-                dispatch(loadUsersAllData(response.data.payload));
+                dispatch(loadUsersAllData(response.data.payload, response.data.extra.isLastPage));
             }).catch(error => {
                 errorHandler(error);
                 throw(error);

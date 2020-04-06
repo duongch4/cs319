@@ -55,16 +55,9 @@ class UsersPage extends Component {
           users: this.props.users,
           usersAll: [this.props.users],
         }, () => (
-          this.state.users.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+          this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
         ));
       })
-      .catch(error => {
-        this.setState({
-          ...this.state,
-          noResults: true,
-          loading: false,
-        });
-      });
     }
   }
 
@@ -88,18 +81,9 @@ class UsersPage extends Component {
         reloading: false,
         noResultsNextPage: false,
       }, () => (
-        this.state.users.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+        this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
       ));
     })
-    .catch(error => {
-      this.setState({
-        ...this.state,
-        noResults: true,
-        loading: false,
-        reloading: false,
-        noResultsNextPage: false,
-      });
-    });
   }
 
   getAll(userRoles, currPage, offset) {
