@@ -44,10 +44,30 @@ namespace Web.API.Infrastructure.Data
             return await connection.QueryAsync<ProjectResource>(sql, new { DateTimeNow = DateTime.Today });
         }
 
+        public async Task<IEnumerable<string>> GetAllProjectNumbersOfManager(string managerId)
+        {
+            var sql = @"
+                SELECT
+                    p.Number
+                FROM
+                    Projects p
+                WHERE
+                    p.ManagerId = @ManagerId
+            ;";
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var projectNumbers = await connection.QueryAsync<string>(sql, new
+            {
+                ManagerId = managerId
+            });
+            connection.Close();
+            return projectNumbers;
+        }
+
         private IEnumerable<ProjectResource> GetSorted(IEnumerable<ProjectResource> projects, string orderKey, string order)
         {
-            orderKey = String.IsNullOrEmpty(orderKey) ? "utilization" : orderKey.ToLower();
-            order = String.IsNullOrEmpty(order) ? "desc" : order.ToLower();
+            orderKey = String.IsNullOrEmpty(orderKey) ? "startdate" : orderKey.ToLower();
+            order = String.IsNullOrEmpty(order) ? "asc" : order.ToLower();
             switch (order)
             {
                 case "desc":
@@ -106,7 +126,21 @@ namespace Web.API.Infrastructure.Data
                 SELECT *
                 FROM Data_CTE
                 CROSS JOIN Count_CTE
-                ORDER BY Data_CTE.Id
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'asc') THEN Data_CTE.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'desc') THEN Data_CTE.ProjectStartDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'asc') THEN Data_CTE.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'desc') THEN Data_CTE.ProjectEndDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN Data_CTE.Title END ASC,
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN Data_CTE.Title END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN Data_CTE.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN Data_CTE.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN Data_CTE.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN Data_CTE.City END DESC
                 OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                 FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
             ;";
@@ -116,29 +150,13 @@ namespace Web.API.Infrastructure.Data
             {
                 DateTimeSpecific = DateTime.Today,
                 PageNumber = page,
-                RowsPerPage = rowsPerPage
-            });
-            return GetSorted(projects, orderKey, order);
-        }
-
-        public async Task<IEnumerable<string>> GetAllProjectNumbersOfManager(string managerId)
-        {
-            var sql = @"
-                SELECT
-                    p.Number
-                FROM
-                    Projects p
-                WHERE
-                    p.ManagerId = @ManagerId
-            ;";
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-            var projectNumbers = await connection.QueryAsync<string>(sql, new
-            {
-                ManagerId = managerId
+                RowsPerPage = rowsPerPage,
+                OrderKey = GetFilteredOrderKey(orderKey),
+                Order = GetFilteredOrder(order)
             });
             connection.Close();
-            return projectNumbers;
+            return projects;
+            // return GetSorted(projects, orderKey, order);
         }
 
         public async Task<IEnumerable<ProjectResource>> GetAllProjectResourcesWithTitle(
@@ -168,7 +186,21 @@ namespace Web.API.Infrastructure.Data
                 SELECT *
                 FROM Data_CTE
                 CROSS JOIN Count_CTE
-                ORDER BY Data_CTE.Id
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'asc') THEN Data_CTE.ProjectStartDate END ASC,
+                    CASE WHEN (@OrderKey = 'startdate' AND @Order = 'desc') THEN Data_CTE.ProjectStartDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'asc') THEN Data_CTE.ProjectEndDate END ASC,
+                    CASE WHEN (@OrderKey = 'enddate' AND @Order = 'desc') THEN Data_CTE.ProjectEndDate END DESC,
+
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'asc') THEN Data_CTE.Title END ASC,
+                    CASE WHEN (@OrderKey = 'title' AND @Order = 'desc') THEN Data_CTE.Title END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN Data_CTE.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN Data_CTE.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN Data_CTE.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN Data_CTE.City END DESC
                 OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
                 FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
             ;";
@@ -178,9 +210,23 @@ namespace Web.API.Infrastructure.Data
             {
                 SearchWord = GetFilteredSearchWord(searchWord),
                 PageNumber = page,
-                RowsPerPage = rowsPerPage
+                RowsPerPage = rowsPerPage,
+                OrderKey = GetFilteredOrderKey(orderKey),
+                Order = GetFilteredOrder(order)
             });
-            return GetSorted(projects, orderKey, order);
+            connection.Close();
+            return projects;
+            // return GetSorted(projects, orderKey, order);
+        }
+
+        private string GetFilteredOrder(string order)
+        {
+            return String.IsNullOrEmpty(order) ? "asc" : order.ToLower();
+        }
+
+        private string GetFilteredOrderKey(string orderKey)
+        {
+            return String.IsNullOrEmpty(orderKey) ? "startdate" : orderKey.ToLower();
         }
 
         private string GetFilteredSearchWord(string searchWordReq)
