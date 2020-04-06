@@ -145,6 +145,10 @@ describe('loadUsers', () => {
         },{
             type: types.ADD_PROJECT_SUMMARY,
             projectSummary: projectProfile.projectSummary
+        },{
+            type: types.UPDATE_USER_PROJECTS_CREATION,
+            projectSummary: projectProfile.projectSummary,
+            userID: projectProfile.projectManager.userID
         }];
         const resp = {data: {payload: projectProfile}};
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
@@ -170,6 +174,10 @@ describe('loadUsers', () => {
         },{
             type: types.ADD_PROJECT_SUMMARY,
             projectSummary: projectProfile.projectSummary
+        },{
+            type: types.UPDATE_USER_PROJECTS_CREATION,
+            projectSummary: projectProfile.projectSummary,
+            userID: projectProfile.projectManager.userID
         }];
         const resp = {data: {payload: projectProfile}};
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
