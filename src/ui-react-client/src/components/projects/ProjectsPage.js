@@ -66,17 +66,10 @@ class ProjectsPage extends Component {
               projectsAll: [this.props.projects],
               doneLoading: false,
             }, ()=> (
-              this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+              this.state.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
             ))
           }   
-        }).catch(err => {
-          this.setState({
-            ...this.state,
-            noResults: true,
-            searchPressed: false,
-            loading: false,
-          });
-        });
+        })
     }
   };
 
@@ -117,17 +110,10 @@ class ProjectsPage extends Component {
           projectsAll: [this.props.projects],
           doneLoading: false,
         }, ()=> (
-          this.state.projects.length < 50 ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
+          this.state.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
         ))
       }      
-    }).catch(err => {
-      this.setState({
-        ...this.state,
-        noResults: true,
-        searchPressed: false,
-        loading: false,
-      });
-    });
+    })
   }
 
   getAll(userRoles, currPage, offset) {
@@ -146,17 +132,9 @@ class ProjectsPage extends Component {
                 noResults: false,
                 loading: true,
                 lastPage: currPage,
-            }, () => this.getAll(userRoles, newPage, offset))
+            }, () => (this.props.projects.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}): this.getAll(userRoles, newPage, offset)))
             }       
-        }).catch(err => {
-            this.setState({
-                ...this.state,
-                noResultsNextPage: false,
-                loading: false,
-                lastPage: currPage,
-                doneLoading: true,
-            });
-        });
+        })
         // if the last page of projects has less than 50 projects, that means it's at the end 
         // and there are no more projects to load
       } else if (this.state.projectsAll[this.state.projectsAll.length - 1].length < 50) {

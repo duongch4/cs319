@@ -7,10 +7,11 @@ import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/projects/`;
 
-export const loadProjectsData = projectSummaries => {
+export const loadProjectsData = (projectSummaries, isLastPage) => {
   return {
     type: types.LOAD_PROJECTS_ALL,
     projects: projectSummaries,
+    isLastPage: isLastPage,
   };
 };
 
@@ -24,7 +25,7 @@ export const loadProjects = (filterParams, userRoles) => {
           return axios
           .get(`${url}`, { headers })
           .then(response => {
-              dispatch(loadProjectsData(response.data.payload));
+              dispatch(loadProjectsData(response.data.payload, response.data.extra.isLastPage));
           })
           .catch(error => {
             errorHandler(error);
