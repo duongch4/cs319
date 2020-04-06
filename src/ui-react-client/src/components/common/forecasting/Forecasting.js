@@ -63,7 +63,7 @@ class Forecasting extends Component {
             let selectedOpening = {};
 
             openings.forEach((opening, index) => {
-                if (opening.positionID === this.state.openingId) {
+                if (opening.positionID === parseInt(this.state.openingId)) {
                     selectedOpening = opening;
                 }
             });
