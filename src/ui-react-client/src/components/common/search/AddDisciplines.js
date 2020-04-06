@@ -41,7 +41,7 @@ class AddDisciplines extends Component {
       addDisciplines = (state) => {
             var key = state.key;
             var disciplines = state.disciplines;
-            if (key != undefined) {
+            if (key !== undefined) {
                 this.setState({
                     status: Object.assign({}, this.state.status, {[key]: disciplines}),
                 }, () => this.props.updateDisciplines(Object.entries(this.state.status)));

@@ -23,35 +23,51 @@ class ProjectDetails extends Component {
             var projectProfile = this.props.projectProfile;
             if (projectProfile) {
                 this.setState({
+                    ...this.state,
                     projectProfile
                 })
             }
         } else {
-            // if (Object.keys(this.props.projectProfile).length > 0 &&
-            // this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
-            //     this.setState({
-            //         ...this.state,
-            //         projectProfile: this.props.projectProfile
-            //     })
-            // } else {
+            // checks if there is a newly added opening to the project, if there is, it makes a server call to get
+            // the correct openingID for the project
+            if (Object.keys(this.props.projectProfile).length > 0 &&
+            this.props.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id
+            && this.props.projectProfile.openings.findIndex(opening => opening.openingID === 0) !== -1) {
+                this.setState({
+                    ...this.state,
+                    projectProfile: this.props.projectProfile
+                })
+            } else {
             const userRoles = getUserRoles(this.context);
             this.props.loadSingleProject(this.props.match.params.project_id, userRoles)
                 .then(res => {
                     var projectProfile = this.props.projectProfile;
                     if (projectProfile) {
                         this.setState({
+                            ...this.state,
                             projectProfile
                         })
                     }
                 })
                 .catch(err => console.log(err));
-            // }
+            }
         }
     };
 
+    componentDidUpdate = (prevProps) => {
+        if(prevProps.projectProfile !== this.props.projectProfile){
+            var projectProfile = this.props.projectProfile;
+            if (projectProfile) {
+                this.setState({
+                    ...this.state,
+                    projectProfile,
+                })
+            }
+        }
+    }
+
     render() {
         let userRoles = getUserRoles(this.context);
-        let userID = this.context.profile.userID;
         if (Object.keys(this.state.projectProfile).length !== 0 &&
             this.state.projectProfile.projectSummary.projectNumber === this.props.match.params.project_id) {
             var openingsRender = [];
@@ -60,7 +76,7 @@ class ProjectDetails extends Component {
                 openings.forEach((opening, index) => {
                     openingsRender.push(<Openings opening={opening}
                                                   index={index} commitment={opening.commitmentMonthlyHours}
-                                                  isAssignable={true} key={openingsRender.length}/>);
+                                                  isAssignable={userRoles.includes('adminUser')} key={openingsRender.length}/>);
                     if (openings.length - 1 !== index) {
                         openingsRender.push(<hr key={openingsRender.length}/>)
                     }
@@ -74,15 +90,16 @@ class ProjectDetails extends Component {
             const userSummaries = this.state.projectProfile.usersSummary;
             const projectManager = this.state.projectProfile.projectManager;
             const projectDetails = this.state.projectProfile;
-            teamMembersRender.push(<ProjectManagerCard projectManager={projectManager} key={teamMembersRender.length}/>);
+            teamMembersRender.push(<ProjectManagerCard userRoles={userRoles} projectManager={projectManager} key={teamMembersRender.length}/>);
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
                     <UserCard user={userSummary}
-                    canEdit={false}
+                    canEdit={userRoles.includes('adminUser')}
                     key={teamMembersRender.length}
-                    canConfirm={true}
+                    canConfirm={userRoles.includes('adminUser')}
                     projectDetails={projectDetails}
-                    showOpeningInfo={true}/>)
+                    showOpeningInfo={true}
+                    canUnassign={userRoles.includes('adminUser')}/>)
             });
 
             if (this.state.projectProfile === null) {

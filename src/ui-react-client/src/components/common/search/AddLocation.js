@@ -11,6 +11,7 @@ class AddLocation extends Component {
             status: {"locationSearch": {province: null, city: null}},
             count: 1,
             view: [],
+            cityFilledIn: true,
         }
       }
 
@@ -34,14 +35,23 @@ class AddLocation extends Component {
       addLocations = (state) => {
             var key = state.key;
             var location = state.locations;
-            if (key != undefined) {
+            var cityFilledIn = true;
+
+            if (key !== undefined) {
+                if ((state.locations.cities.length === 0) && (state.locations.province === null)) {
+                    cityFilledIn = true;
+                } else if (state.locations.cities.length === 0) {
+                    cityFilledIn = false;
+                }
                 this.setState({
                     status: Object.assign({}, this.state.status, {[key]: location}),
-                }, () => this.props.updateLocations(Object.values(this.state.status)));
+                    cityFilledIn: cityFilledIn,
+                }, () => this.props.updateLocations(Object.values(this.state.status), this.state.cityFilledIn));
             } else {
                 this.setState({
                     ...this.state,
-                }, () => this.props.updateLocations(Object.values(this.state.status)));
+                    cityFilledIn: cityFilledIn,
+                }, () => this.props.updateLocations(Object.values(this.state.status), this.state.cityFilledIn));
             }
         }
 

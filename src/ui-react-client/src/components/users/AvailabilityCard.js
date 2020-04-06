@@ -4,7 +4,7 @@ import './UserStyles.css';
 import {formatDate} from "../../util/dateFormatter";
 import DeleteIcon from '@material-ui/icons/Delete'
 
-const AvailabilityCard = ({availability, removeAvailability}) => {
+const AvailabilityCard = ({edit, availability, removeAvailability}) => {
     let fromDate = formatDate(availability.fromDate);
     let toDate = formatDate(availability.toDate);
   return (
@@ -17,7 +17,7 @@ const AvailabilityCard = ({availability, removeAvailability}) => {
         <div className="card-summary-title">
             <p>{availability.reason}</p>
         </div>
-        <DeleteIcon onClick={()=>removeAvailability(availability)}/>
+        {edit && <DeleteIcon onClick={()=>removeAvailability(availability)}/>}
     </div>
   )
 }
