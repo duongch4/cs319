@@ -7,6 +7,27 @@ import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/`;
 
+export const unassignUpdateUserData = (openingID, userID, confirmedUtilization, opening, projectNumber) => {
+  return {
+    type: types.UNASSIGN_UPDATE_USER_DATA,
+    openingID: openingID,
+    userID: userID,
+    confirmedUtilization: confirmedUtilization,
+    opening: opening,
+    projectNumber: projectNumber
+  };
+};
+
+export const assignUpdateUserData = (userID, confirmedUtilization, opening, projectSummary) => {
+  return {
+    type: types.ASSIGN_UPDATE_USER_DATA,
+    userID: userID,
+    confirmedUtilization: confirmedUtilization,
+    opening: opening,
+    projectSummary: projectSummary
+  };
+};
+
 export const loadUserProfileData = userProfile => {
   return {
     type: types.LOAD_USERS_SPECIFIC,
@@ -42,6 +63,14 @@ export const updateUserProjectsCreationData = (projectSummary, userID) => {
     userID: userID
   }
 };
+
+export const updateUserUtilizationData = (userID, utilization) => {
+  return {
+    type: types.UPDATE_USER_UTILIZATION,
+    userID: userID,
+    utilization: utilization
+  }
+}
 
 export const loadSpecificUser = (userID, userRoles) => {
   return dispatch => {
@@ -79,4 +108,3 @@ export const updateSpecificUser = (user, history, userRoles) => {
     }
   }
 };
-

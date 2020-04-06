@@ -149,7 +149,7 @@ class UserDetails extends Component {
                         )}
                     </div>
                     <div className="section-container">
-                        <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>
+                        <p><b>Utilization:</b> {userDetails.userSummary.utilization}%</p>
                         <p><b>Location:</b> {userDetails.userSummary.location.city}, {userDetails.userSummary.location.province}</p>
                     </div>
                     <div className="section-container">

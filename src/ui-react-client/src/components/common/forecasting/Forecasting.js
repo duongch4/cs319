@@ -63,13 +63,14 @@ class Forecasting extends Component {
             let selectedOpening = {};
 
             openings.forEach((opening, index) => {
-                if (opening.positionID === this.state.openingId) {
+                if (opening.positionID === parseInt(this.state.openingId)) {
                     selectedOpening = opening;
                 }
             });
 
             let discipline_name = selectedOpening.discipline;
             const project_number = this.state.projectProfile.projectSummary.projectNumber;
+            const projectSummary = this.state.projectProfile.projectSummary;
 
             return (
                 <div>
@@ -86,7 +87,7 @@ class Forecasting extends Component {
                             isAssignable={true}
                             openingId={this.state.openingId}
                             projectNumber={project_number}
-                            createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles, project_number, this.props.history)}/>
+                            createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(selectedOpening, userId, utilization, user, userRoles, projectSummary, this.props.history)}/>
                 </div>
             )
         }
