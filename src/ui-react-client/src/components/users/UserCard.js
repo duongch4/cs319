@@ -65,7 +65,7 @@ class UserCard extends Component {
     }
 
     render(){
-        const {user, canEdit, canConfirm, showOpeningInfo, canUnassign, canUnassignEditProject} = this.props;
+        const {user, canEdit, canConfirm, showOpeningInfo, canUnassign} = this.props;
         let isUserConfirmed = user.isConfirmed;
 
         let colour = ""
@@ -99,23 +99,13 @@ class UserCard extends Component {
                     <p><b>Location:</b> {user.location.city}, {user.location.province}</p>
 
                     <div className="form-row">
-                        { canUnassign && (
-                            <Button onClick={() => this.onUnassign(user)}>
-                                <div className="action-link">
-                                    <ClearIcon style={{fontSize: 'small', color: '#87C34B'}}/> Unassign
-                                </div>
-                            </Button>
-                        )}
-
-                        {canUnassignEditProject && (
-                            <div>
-                                <Button variant="contained" onClick={() => this.onUnassign(user)}
-                                        style={{backgroundColor: "rgb(235, 87, 87)", color: "#ffffff", size: "small" }}
-                                        disableElevation>
-                                    Unassign
-                                </Button>
-                            </div>
-                        )}
+                    {canUnassign && (
+                     <Button onClick={() => this.onUnassign(user)}>
+                      <div className="action-link">
+                        <ClearIcon style={{fontSize: 'small', color: '#87C34B'}}/> Unassign
+                      </div>
+                      </Button>
+                    )}
 
                         { canEdit && (
                             <Link to={'/edituser/' + user.userID} className="action-link">

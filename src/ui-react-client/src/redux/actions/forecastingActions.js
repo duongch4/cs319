@@ -26,20 +26,34 @@ export const confirmAssignOpening = (openingId, userId, confirmedUtilization, us
     }
 };
 
-export const unassignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName) => {
+export const unassignOpening = (openingId, userId, confirmedUtilization, userSummaryDisciplineName, opening) => {
     return {
         type: types.UNASSIGN_OPENING,
         openingId: openingId,
         userId: userId,
         confirmedUtilization: confirmedUtilization,
-        userSummaryDisciplineName: userSummaryDisciplineName
+        userSummaryDisciplineName: userSummaryDisciplineName,
+        opening: opening
+
     }
 };
 
 export const unassignOpenings = (openingId, userID, confirmedUtilization, userRoles, userSummaryDisciplineName) => {
     return dispatch => {
-      dispatch(unassignOpening(openingId, userID, confirmedUtilization, userSummaryDisciplineName))
-      // TODO once backend unassign API done add proper code below
+        if (CLIENT_DEV_ENV) {
+            dispatch(unassignOpening(openingId, userID, confirmedUtilization, userSummaryDisciplineName));
+        } else {
+            return getHeaders(userRoles).then(headers => {
+            return axios
+                .put(`${baseURL}positions/${openingId}/unassign`, {}, { headers })
+                .then(response => {
+                    dispatch(unassignOpening(openingId, response.data.userId, response.data.confirmedUtilization, userSummaryDisciplineName, response.data.opening))
+                })
+                .catch(error => {
+                    errorHandler(error);
+                })
+            })
+        }
     }
 };
 

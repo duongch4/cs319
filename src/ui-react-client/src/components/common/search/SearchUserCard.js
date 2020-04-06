@@ -16,9 +16,9 @@ import EditIcon from "@material-ui/icons/Edit";
 
 class SearchUserCard extends Component {
 
-  onSubmit = (openingId, userId, utilization, user, userRoles) => {
-     this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles);
-   };
+    onSubmit = (openingId, userId, utilization, user, userRoles) => {
+        this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles);
+    };
 
 
     render(){
@@ -61,21 +61,21 @@ class SearchUserCard extends Component {
                     <div className="form-row">
                         {this.props.isAssignable && (
                             <Button variant="contained"
-                                   style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                                   disableElevation
-                                   onClick={() => this.onSubmit(this.props.openingId, user.userID, user.utilization, user, userRoles)}>
+                                    style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                    disableElevation
+                                    onClick={() => this.onSubmit(this.props.openingId, user.userID, user.utilization, user, userRoles)}>
                                 Assign
                             </Button>
                         )}
                         {
                             (this.props.canEdit && userRoles.includes('adminUser')) && (
                                 <Link to={'/edituser/' + user.userID} className="action-link">
-                                <Button>
-                                    <div className="action-link">
-                                        <EditIcon style={{fontSize: 'small'}}/> Manage User
-                                    </div>
-                                </Button>
-                            </Link>
+                                    <Button>
+                                        <div className="action-link">
+                                            <EditIcon style={{fontSize: 'small'}}/> Manage User
+                                        </div>
+                                    </Button>
+                                </Link>
                             )
                         }
                     </div>
