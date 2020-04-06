@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
 import { RequestButton } from "./RequestButton";
+import {isAdminUser} from "./userContext/UserContext";
 
 class Header extends React.Component {
     render() {
@@ -40,7 +41,7 @@ class Header extends React.Component {
 
     isAdmin() {
         let roles = this.props.appProps.account.idToken.roles;
-        return (roles && roles.length > 0 && roles.includes('adminUser'));
+        return (roles && roles.length > 0 && isAdminUser(roles));
     }
 }
 

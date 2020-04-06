@@ -1,6 +1,7 @@
 import { UserAgentApplication } from "msal";
 import { UI_ROOT, AUTHORITY, CLIENT_ID, API_ID } from "./config.js";
 import axios from "axios";
+import {isAdminUser} from "../components/common/userContext/UserContext";
 
 export const requiresInteraction = errorMessage => {
     if (!errorMessage || !errorMessage.length) {
@@ -124,7 +125,7 @@ export const acquireToken = async (tokenReqScopes, isRedirectOnInteractionError)
 
 export const getHeaders = async (userRoles) => {
     try {
-        const tokenRequest = (userRoles.includes("adminUser")) ? GRAPH_REQUESTS.API_ADMIN : GRAPH_REQUESTS.API_REGULAR;
+        const tokenRequest = (isAdminUser(userRoles)) ? GRAPH_REQUESTS.API_ADMIN : GRAPH_REQUESTS.API_REGULAR;
         const tokenResponse = await acquireToken(tokenRequest, isIE());
         // console.log("MY TOKEN RESPONSE", tokenResponse); // TODO: Lots of Info here!!!
         return { Authorization: `Bearer ${tokenResponse.accessToken}` };

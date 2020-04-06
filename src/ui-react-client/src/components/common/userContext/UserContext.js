@@ -66,4 +66,8 @@ export const getUserRoles = (userContext) => {
     return userContext.profile.userRoles;
 }
 
+export const isAdminUser = (roles) => {
+    return roles.includes('adminUser')
+}
+
 export { UserProvider, Consumer as UserContextConsumer };
