@@ -170,8 +170,7 @@ class EditProject extends Component {
                         canEdit={false}
                         key={teamMembersRender.length}
                         showOpeningInfo={true}
-                        projectDetails={projectProfile}
-                        canUnassignEditProject={true}/>
+                        projectDetails={projectProfile}/>
                     )
                 })
             } else {
@@ -197,13 +196,13 @@ class EditProject extends Component {
             }
 
             return (
-                <LoadingOverlay 
+                <LoadingOverlay
                 styles={{
                     overlay: (base) => ({
                       ...base,
                       background: 'rgba(169,169,169, 0.5)'
                     })
-                  }} 
+                  }}
                   active={this.state.sending} spinner={<div className="spinner"><Loading/><p>Loading...</p></div>}>
                 <div className="activity-container">
                     <h1 className="greenHeader">Edit project</h1>

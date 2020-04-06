@@ -3,7 +3,6 @@ import { CLIENT_DEV_ENV, SVC_ROOT } from '../../config/config';
 import { getHeaders } from '../../config/authUtils';
 import axios from 'axios';
 import _initialState from '../reducers/_initialState';
-import {updateUserSummary} from "./usersActions";
 import errorHandler from './errorHandler'
 
 const baseURL = `${SVC_ROOT}api/users/`;
@@ -19,6 +18,28 @@ export const updateUserProfileData = userProfile => {
   return {
     type: types.UPDATE_USERS_SPECIFIC,
     userProfile: userProfile
+  }
+};
+
+export const updateUserSummary = userSummary => {
+  return {
+      type: types.UPDATE_USER_SUMMARIES,
+      userSummary: userSummary
+  }
+};
+
+export const updateUserProjectsDeletionData = projectNumber => {
+  return {
+    type: types.UPDATE_USER_PROJECTS_DELETION,
+    projectNumber: projectNumber
+  }
+};
+
+export const updateUserProjectsCreationData = (projectSummary, userID) => {
+  return {
+    type: types.UPDATE_USER_PROJECTS_CREATION,
+    projectSummary: projectSummary,
+    userID: userID
   }
 };
 

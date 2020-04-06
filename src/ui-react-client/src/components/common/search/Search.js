@@ -28,6 +28,7 @@ class Search extends Component {
       search: false,
       loading: true,
       showUsers: true,
+      clearFilters: false,
     };
     this.handleResultChange = this.handleResultChange.bind(this);
   }
@@ -87,7 +88,9 @@ class Search extends Component {
     this.setState({
       ...this.state,
       showUsers: true,
-    })
+      filters: null,
+      clearFilters: true,
+    }, () => this.setState({...this.state, clearFilters: false}))
   }
 
   render() {
@@ -102,9 +105,14 @@ class Search extends Component {
       <div className="activity-container">
         <h1 className="greenHeader">All Users</h1>
         <FilterTab onDataFetched={this.handleResultChange}
-                      masterlist={this.state.masterlist} 
-                      isClosed={this.state.showUsers}/>
-        <UsersPage showUsers={this.state.showUsers}/>
+                      masterlist={this.state.masterlist}
+                      clear={this.state.clearFilters}/>
+        <UsersPage data={this.state.filters}
+                  showUsers={this.state.showUsers}
+                  isAssignable={this.props.isAssignable}
+                  projectNumber={this.props.projectNumber}
+                  openingId={this.props.openingId}
+                  createAssignOpenings={(openingId, userId, utilization, user, userRoles) => this.props.createAssignOpenings(openingId, userId, utilization, user, userRoles)}/>
         </div>)
       } else {
       const {showing} = (this.state.filters != null);
@@ -114,10 +122,11 @@ class Search extends Component {
         <h1 className="greenHeader">Users</h1>
         {(!this.state.loading) && (!this.state.showUsers) &&
        (<Button variant="contained" style={{backgroundColor: "#2c6232", color: "#ffffff", position: "absolute", right: "50px", size: "small",  display:(showing ? 'none' : 'block')}} disableElevation 
-        onClick={()=> this.showAllUsers()}>Show all users</Button>)}
+        onClick={()=> this.showAllUsers()}>Remove All Filters</Button>)}
         </div>
           <FilterTab onDataFetched={this.handleResultChange}
-                      masterlist={this.state.masterlist} />
+                      masterlist={this.state.masterlist}
+                      clear={this.state.clearFilters} />
           {(this.state.filters != null) && (this.state.search) &&
             (<div>
               <div className="form-row">

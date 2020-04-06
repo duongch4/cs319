@@ -328,11 +328,11 @@ namespace Web.API.Infrastructure.Data
                             o.FromDate > @EndDate
                             OR o.ToDate < @StartDate
                         )
-                INNER JOIN ResourceDiscipline rd
+                LEFT JOIN ResourceDiscipline rd
                     ON
                         rd.ResourceId = ul.Id
                         AND rd.YearsOfExperience IN @YearsOfExps
-                INNER JOIN Disciplines d
+                LEFT JOIN Disciplines d
                     ON
                         rd.DisciplineId = d.Id
                         AND d.Name IN @Disciplines

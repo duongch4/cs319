@@ -40,7 +40,6 @@ namespace Web.API.Authorization
                     context.Items[contextKey] = new ForbiddenException(GetExceptionMessageFromHttpContext());
                     return PolicyAuthorizationResult.Forbid();
                 }
-
             }
             return result;
         }
