@@ -43,22 +43,22 @@ class SearchResults extends Component {
             const userRoles = getUserRoles(this.context);
             this.props.performUserSearch(data, userRoles)
             .then(() => {
-                var users = this.props.users.slice()
                 this.setState({
                     ...this.state,
-                    userSummaries: users,
+                    userSummaries: this.props.users,
                     noResults: false,
                     currPage: 1,
-                    userSummariesAll: [users],
+                    userSummariesAll: [this.props.users],
                 }, () => (
-                    users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                    this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                     ))
             }).catch(err => {
                 this.setState({
                     ...this.state,
-                    noResults: true,
-                }, this.props.stopLoading());
+                    noResultsNextPage: true,
+                },() => this.props.stopLoading());
             });
+
         }
     }
 
@@ -74,46 +74,42 @@ class SearchResults extends Component {
         const userRoles = getUserRoles(this.context);
         this.props.performUserSearch(data, userRoles)
         .then(() => {
-            var users = this.props.users.slice()
             this.setState({
                 ...this.state,
-                userSummaries: users,
+                userSummaries: this.props.users,
                 noResults: false,
                 currPage: 1,
-                userSummariesAll: [users],
+                userSummariesAll: [this.props.users],
             }, () => (
-                users.length < 50 ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
+                this.props.users.isLastPage ? (this.props.stopLoading()) : (this.getAll(userRoles, 1))
                 ))
         }).catch(err => {
             this.setState({
                 ...this.state,
-                noResults: true,
-            }, this.props.stopLoading());
+                noResultsNextPage: true,
+            },() => this.props.stopLoading());
         });
+
     }
 
     getAll(userRoles, currPage) {
-        if (!this.state.noResultsNextPage && this.state.userSummariesAll[0].length === 50 &&
-            (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length === 50) {
+        if (!this.state.userSummariesAll[this.state.userSummariesAll.length - 1].isLastPage) {
             var mock_data = JSON.parse(JSON.stringify(this.props.data));
             mock_data.page = currPage + 1;
             this.props.performUserSearch(mock_data, userRoles)
             .then(() => {
-                var users = (this.props.users).slice()
                 this.setState({
                     ...this.state,
-                    userSummariesAll: [...this.state.userSummariesAll, users],
+                    userSummariesAll: [...this.state.userSummariesAll, this.props.users],
                     noResults: false,
-                }, () => this.getAll(userRoles, mock_data.page))
-            }).catch(err => {
-                this.setState({
+                }, () => (this.props.users.isLastPage ? this.setState({
                     ...this.state,
                     noResultsNextPage: true,
-                },() => this.props.stopLoading());
-            });
+                },() => this.props.stopLoading()) : this.getAll(userRoles, mock_data.page)))
+            })
+
         }
-        // if the last page has less than 50 users, that means it is done and it will stop loading more pages
-        else if ( (this.state.userSummariesAll[this.state.userSummariesAll.length - 1]).length < 50) {
+        else {
             this.setState({
                 ...this.state,
                 noResultsNextPage: true,
@@ -155,6 +151,7 @@ class SearchResults extends Component {
                 obj.resourceDiscipline[0].yearsOfExp = i.resourceDiscipline.yearsOfExp;
                 obj.utilization = i.utilization;
                 users.push(obj);
+                return users;
             } else {
                 let obj1 = users.find(o => o.userID === i.userID);
                 obj1.resourceDiscipline.push({discipline: i.resourceDiscipline.discipline, yearsOfExp: i.resourceDiscipline.yearsOfExp});
@@ -163,6 +160,7 @@ class SearchResults extends Component {
                     var textB = b.discipline.toUpperCase();
                     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                 }); 
+                return obj1;
             }
         });
         return users;
@@ -256,9 +254,9 @@ class SearchResults extends Component {
                     {(this.state.currPage > 1) && 
                     (<ChevronLeftIcon onClick={() => this.toPrevPage()}/>)}
                         Page {this.state.currPage}
-                    {(this.state.noResultsNextPage && (this.state.userSummaries).length === 50) && 
+                    {(this.state.noResultsNextPage && !this.state.userSummaries.isLastPage) && 
                     (<ChevronRightIcon onClick={() => this.toNextPage()}/>)}
-                    {(!this.state.noResultsNextPage || (this.state.userSummaries).length < 50) && 
+                    {(!this.state.noResultsNextPage || this.state.userSummaries.isLastPage) && 
                     (<ChevronRightIcon style={{color: "#E8E8E8"}} />)}
                     </div>
                     <hr />

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ProjectStyles.css';
 import {Link} from "react-router-dom";
+import {Button} from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import {formatDate} from "../../util/dateFormatter";
 
@@ -45,8 +46,14 @@ const ProjectCard = (props) => {
                     <h2 className="blueHeader">{project.title}</h2>
                 </Link>
                 {details}
-                {canEditProject && (<Link to={'/editproject/' + project.projectNumber} className="action-link">
-                    <EditIcon style={{fontSize: 'small'}}/> Edit </Link>)}
+                {canEditProject && (
+                    <Link to={'/editproject/' + project.projectNumber} className="action-link">
+                        <Button>
+                            <div className="action-link">
+                                <EditIcon style={{fontSize: 'small'}}/> Edit
+                            </div>
+                        </Button>
+                    </Link>)}
             </div>
         </div>
     )
