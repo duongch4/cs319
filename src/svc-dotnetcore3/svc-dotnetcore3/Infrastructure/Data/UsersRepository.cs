@@ -189,16 +189,20 @@ namespace Web.API.Infrastructure.Data
                 (
                     SELECT
                         u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u. Utilization,
-                        l.Province, l.City
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name AS DisciplineName
                     FROM
-                        Users u, Locations l
+                        Users u
+                    INNER JOIN Locations l
+                        ON u.LocationId = l.Id
+                    LEFT JOIN ResourceDiscipline rd
+                        ON rd.ResourceId = u.Id
+                    LEFT JOIN Disciplines d
+                        ON rd.DisciplineId = d.Id
                     WHERE
-                        u.LocationId = l.Id
-                        AND
-                        (
-                            LOWER(TRIM(u.FirstName)) LIKE @SearchWord
-                            OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
-                        )
+                        LOWER(TRIM(u.FirstName)) LIKE @SearchWord
+                        OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
                 ), 
                 Count_CTE AS 
                 (
