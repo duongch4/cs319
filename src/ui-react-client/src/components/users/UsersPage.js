@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import UserList from './UserList';
 import { loadUsers } from '../../redux/actions/usersActions';
 import {CLIENT_DEV_ENV} from '../../config/config';
-import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles, isAdminUser} from "../common/userContext/UserContext";
 import {loadMasterlists} from "../../redux/actions/masterlistsActions";
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -52,7 +52,7 @@ class UsersPage extends Component {
                 ...this.state,
                 masterlist: this.props.masterlist,
               })
-            }  
+            }
           });
       this.props.loadUsers(this.state.url.concat("&page=1"), userRoles)
       .then(()=> {
@@ -64,7 +64,7 @@ class UsersPage extends Component {
           }, () => (
             this.state.users.isLastPage ? this.setState({...this.state, loading: false, doneLoading: true}) : this.getAll(userRoles, this.state.currPage, this.state.offset)
           ));
-        } 
+        }
       })
     }
   }
@@ -73,7 +73,7 @@ class UsersPage extends Component {
       if (!this.state.doneLoading && !this.state.loading && (Math.abs(this.state.lastPage - this.state.currPage) < 2)) {
         if (this._ismounted) {
           this.setState({
-            ...this.state, 
+            ...this.state,
             loading: true,
           }, () => this.getAll(getUserRoles(this.context), this.state.lastPage, this.state.offset));
         }
@@ -131,7 +131,7 @@ class UsersPage extends Component {
             offset: this.state.offset + 1,
             lastPage: currPage,
         });
-    }       
+    }
   }
   
     toNextPage = () => {
@@ -142,13 +142,13 @@ class UsersPage extends Component {
             ...this.state,
             users: this.state.usersAll[page_index],
             currPage: new_page,
-        }) 
+        })
       } else {
           this.setState({
             ...this.state,
             noResultsNextPage: true,
         })
-        }  
+        }
     }
   
   toPrevPage = () => {
@@ -183,7 +183,7 @@ class UsersPage extends Component {
                 var textA = a.discipline.toUpperCase();
                 var textB = b.discipline.toUpperCase();
                 return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-            }); 
+            });
             return obj1
         }
     });
@@ -221,7 +221,7 @@ class UsersPage extends Component {
         ...this.initialState,
         reloading: true,
         url: "?&orderKey=province&order=asc",
-      }, () => this.restartLoad());     
+      }, () => this.restartLoad());
     } else if (sortBy === "locations-ZA") {
       this.setState({
         ...this.initialState,
@@ -234,7 +234,7 @@ class UsersPage extends Component {
 
   render() {
     var users = this.combineUsers();
-
+    const userRoles = getUserRoles(this.context);
     return (
       <div>
         {(this.props.showUsers) && (
@@ -271,6 +271,7 @@ class UsersPage extends Component {
             </div>
             <hr />
           <UserList users={users}
+                    canEdit={isAdminUser(userRoles) && !this.props.isForecasting}
                     isAssignable={this.props.isAssignable}
                     projectNumber={this.props.projectNumber}
                     openingId={this.props.openingId}

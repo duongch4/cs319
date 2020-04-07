@@ -4,7 +4,7 @@ import axios from 'axios';
 import * as authUtils from '../../../config/authUtils';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { SVC_ROOT, CLIENT_DEV_ENV } from '../../../config/config';
+import { SVC_ROOT } from '../../../config/config';
 
 jest.mock('axios');
 jest.mock('../../../config/authUtils');
@@ -13,7 +13,6 @@ const mockStore = configureStore(middlewares);
 const store = mockStore({});
 
 const adminRole = ["adminUser", "regularUser"];
-const regularRole = ["regularUser"];
 const baseURL = `${SVC_ROOT}api/`;
 let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
@@ -68,7 +67,7 @@ describe('Create Disciplines', () => {
 
         const expectedAction = [{
             type: types.ERROR_CREATING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
 
         await store.dispatch(masterlistsActions.createDiscpline(discipline, adminRole));
@@ -113,7 +112,7 @@ describe('Delete Disciplines', () => {
         let id = 1;
         const expectedAction = [{
             type: types.ERROR_DELETING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
       await store.dispatch(masterlistsActions.deleteDiscipline(id, adminRole));
 
@@ -166,7 +165,7 @@ describe('Create Skills', () => {
         };
         let expectedAction = [{
             type: types.ERROR_CREATING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
 
         await store.dispatch(masterlistsActions.createSkill(skill, adminRole));
@@ -220,7 +219,7 @@ describe('Delete Skills', () => {
         };
         let expectedAction = [{
             type: types.ERROR_DELETING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
       await store.dispatch(masterlistsActions.deleteSkill(skill.disciplineID, skill.name, adminRole));
 
@@ -273,7 +272,7 @@ describe('Create Provinces', () => {
         }
         let expectedAction = [{
             type: types.ERROR_CREATING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
 
         await store.dispatch(masterlistsActions.createProvince(location, adminRole));
@@ -316,7 +315,7 @@ describe('Delete Provinces', () => {
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
         const expectedAction = [{
             type: types.ERROR_DELETING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
       await store.dispatch(masterlistsActions.deleteProvince('test_province', adminRole));
 
@@ -370,7 +369,7 @@ describe('Create City', () => {
         }
         let expectedAction = [{
             type: types.ERROR_CREATING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
 
         await store.dispatch(masterlistsActions.createCity(location, adminRole));
@@ -415,7 +414,7 @@ describe('Delete Disciplines', () => {
     })
 
     it('should properly handle error from server', async () => {
-        let error = new Error({status: 500})
+        let error = new Error({message: "Error Message"})
         axios.delete.mockRejectedValueOnce(error);
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
         let location = {
@@ -425,7 +424,7 @@ describe('Delete Disciplines', () => {
         }
         const expectedAction = [{
             type: types.ERROR_DELETING,
-            error: error
+            error: (error.stack) ? error.stack : error
         }];
       await store.dispatch(masterlistsActions.deleteCity(location.city, location.locationID, adminRole));
 

@@ -9,7 +9,7 @@ import {loadSingleProject} from "../../redux/actions/projectProfileActions";
 import {formatDate} from "../../util/dateFormatter";
 import {CLIENT_DEV_ENV} from '../../config/config';
 import ProjectManagerCard from "../users/ProjectManagerCard";
-import {UserContext, getUserRoles} from "../common/userContext/UserContext";
+import {UserContext, getUserRoles, isAdminUser} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class ProjectDetails extends Component {
@@ -76,7 +76,7 @@ class ProjectDetails extends Component {
                 openings.forEach((opening, index) => {
                     openingsRender.push(<Openings opening={opening}
                                                   index={index} commitment={opening.commitmentMonthlyHours}
-                                                  isAssignable={userRoles.includes('adminUser')} key={openingsRender.length}/>);
+                                                  isAssignable={isAdminUser(userRoles)} key={openingsRender.length}/>);
                     if (openings.length - 1 !== index) {
                         openingsRender.push(<hr key={openingsRender.length}/>)
                     }
@@ -94,12 +94,12 @@ class ProjectDetails extends Component {
             userSummaries.forEach(userSummary => {
                 teamMembersRender.push(
                     <UserCard user={userSummary}
-                    canEdit={userRoles.includes('adminUser')}
+                    canEdit={isAdminUser(userRoles)}
                     key={teamMembersRender.length}
-                    canConfirm={userRoles.includes('adminUser')}
+                    canConfirm={isAdminUser(userRoles)}
                     projectDetails={projectDetails}
                     showOpeningInfo={true}
-                    canUnassign={userRoles.includes('adminUser')}/>)
+                    canUnassign={isAdminUser(userRoles)}/>)
             });
 
             if (this.state.projectProfile === null) {
@@ -117,7 +117,7 @@ class ProjectDetails extends Component {
                 <div className="activity-container">
                     <div className="title-bar">
                         <h1 className="blueHeader">{projectDetails.projectSummary.title}</h1>
-                        { userRoles.includes('adminUser') && (
+                        { isAdminUser(userRoles) && (
                             <Link to={'/editproject/' + projectDetails.projectSummary.projectNumber} className="action-link">
                                 <Button variant="contained"
                                         style={{backgroundColor: "#87c34b", color: "#ffffff", size: "small"}}

@@ -18,7 +18,7 @@ const executeUpdateUserProjectsDeletionData = (state, action) => {
 };
 
 const executeUpdateUserProjectsCreationData = (state, action) => {
-  if (action.userID === state.userSummary.userID) {
+  if (state.userSummary && action.userID === state.userSummary.userID) {
     return {
       ...state,
       currentProjects: [
@@ -32,7 +32,7 @@ const executeUpdateUserProjectsCreationData = (state, action) => {
 };
 
 const executeUpdateUnassignUserData = (state, action) => {
-  if (action.userID === state.userSummary.userID) {
+  if (state.userSummary && action.userID === state.userSummary.userID) {
     // remove the project summary from the user's current projects
     let projectIndex = state.currentProjects.findIndex(project => {
       return project.projectNumber === action.projectNumber
@@ -58,7 +58,7 @@ const executeUpdateUnassignUserData = (state, action) => {
 };
 
 const executeUpdateAssignUserData = (state, action) => {
-  if (state.userSummary.userID === action.userID) {
+  if (state.userSummary && state.userSummary.userID === action.userID) {
     // create a new position
     let newPosition = {
       positionID: action.opening.positionID,
@@ -88,7 +88,7 @@ const executeUpdateAssignUserData = (state, action) => {
 };
 
 const executeUpdateUserUtilizationData = (state, action) => {
-  if (state.userSummary.userID === action.userID) {
+  if (state.userSummary && state.userSummary.userID === action.userID) {
     return {
       ...state,
       userSummary: {
