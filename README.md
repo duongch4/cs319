@@ -258,3 +258,7 @@ Insert into Users values (N'f58a0b92-ff23-4bc3-9382-2bd80cfbc3ed',N'Natasha', N'
 
 1. Ensure that all the setup necessary for live sites (see above) has been completed
 2. For rest of the steps see [DeploymentSetup](docs/DeploymentSetup.pdf)
+
+#### Using the Application
+
+1. See [User Guide](docs/JSON Bourne - Resource Utilization User Guide.pdf)
