@@ -473,7 +473,10 @@ namespace Web.API.Infrastructure.Data
             {
                 var projectId = await this.GetProjectId(connection, projectSummary.ProjectNumber);
                 var currentOpeningIds = await this.GetCurrentOpeningIdsForProject(connection, projectId);
-                if ((projectProfile.Openings == null) || (projectProfile.Openings.Count() == 0))
+                if (
+                    (currentOpeningIds != null && currentOpeningIds.Any()) &&
+                    (projectProfile.Openings == null || !projectProfile.Openings.Any())
+                )
                 {
                     var deletedCount = await this.DeleteAllOpeningPositions(connection, projectId);
                     if (deletedCount != currentOpeningIds.Count())
@@ -560,6 +563,7 @@ namespace Web.API.Infrastructure.Data
                     Positions
                 WHERE
                     ProjectId = @ProjectId
+                    AND ResourceId is NULL
             ";
             connection.Open();
             var deletedCount = await connection.ExecuteAsync(sql, new { ProjectId = projectId });
@@ -664,6 +668,17 @@ namespace Web.API.Infrastructure.Data
             ProjectSummary projectSummary, ProjectManager projectManager
         )
         {
+            string currentManagerId = await GetCurrentManagerIdOfProject(connection, projectSummary.ProjectNumber);
+            if (!String.Equals(currentManagerId, projectManager.UserID))
+            {
+                var updatedUserCount = await UpdateOneUser(connection, projectManager.UserID);
+                if (updatedUserCount != 1)
+                {
+                    var error = new InternalServerException("New Manager is not updated! Please check server!");
+                    throw new CustomException<InternalServerException>(error);
+                }
+            }
+
             var sql = @"
                 UPDATE Projects 
                 SET 
@@ -677,7 +692,7 @@ namespace Web.API.Infrastructure.Data
             ;";
 
             connection.Open();
-            int success = await connection.ExecuteAsync(sql, new
+            int updatedCount = await connection.ExecuteAsync(sql, new
             {
                 Number = projectSummary.ProjectNumber,
                 Title = projectSummary.Title,
@@ -688,7 +703,36 @@ namespace Web.API.Infrastructure.Data
             });
             connection.Close();
 
-            return success;
+            return updatedCount;
+        }
+
+        private async Task<int> UpdateOneUser(SqlConnection connection, string managerId)
+        {
+            var sql = @"
+                UPDATE Users
+                SET
+                    IsManager = 1
+                WHERE
+                    Id = @ManagerId
+            ";
+            connection.Open();
+            int updatedCount = await connection.ExecuteAsync(sql, new { ManagerId = managerId });
+            connection.Close();
+            return updatedCount;
+        }
+
+        private async Task<string> GetCurrentManagerIdOfProject(SqlConnection connection, string projectNumber)
+        {
+            var sql = @"
+                SELECT ManagerId
+                FROM Projects
+                WHERE Number = @ProjectNumber
+            ";
+            connection.Open();
+            var managerId = await connection.QueryFirstOrDefaultAsync<string>(sql, new { ProjectNumber = projectNumber });
+            connection.Close();
+
+            return managerId;
         }
 
         private async Task<int> GetProjectId(SqlConnection connection, string projectNumber)
