@@ -33,16 +33,15 @@ class UserDetails extends Component {
             } else {
                 userRoles = getUserRoles(this.context);
             }
-
-            if (this.props.match &&
-                Object.keys(this.props.userProfile).length > 0 &&
-                this.props.userProfile.userSummary.userID === this.props.match.params.user_id) {
+            let id = this.props.match ? this.props.match.params.user_id : this.props.id;
+            if (Object.keys(this.props.userProfile).length > 0 &&
+                this.props.userProfile.userSummary.userID === id) {
                 this.setState({
                     ...this.state,
                     userProfile: this.props.userProfile
                 })
             } else {
-                this.props.loadSpecificUser(this.props.match ? this.props.match.params.user_id : this.props.id, userRoles)
+                this.props.loadSpecificUser(id, userRoles)
                     .then(() => {
                         var userProfile = this.props.userProfile;
                         if (userProfile) {
@@ -54,7 +53,17 @@ class UserDetails extends Component {
                     })
             }
         }
-    };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.userProfile !== prevProps.userProfile) {
+            this.setState({
+                ...this.state,
+                userProfile: this.props.userProfile
+            })
+        }
+    }
+
 
     render() {
         let userRoles;
@@ -80,14 +89,36 @@ class UserDetails extends Component {
             }
 
             const currentProjects = [];
+            let counter = 1;
             if (userDetails.currentProjects && userDetails.currentProjects.length > 0) {
-                userDetails.currentProjects.forEach((project, index) => {
-                    let projectRole = userDetails.positions.filter((position => position.projectTitle === project.title));
-                    currentProjects.push(
-                        <ProjectCard number={index + 1} project={project} canEditProject={false}
-                            onUserCard={true} userRole={projectRole[0]} key={currentProjects.length} />
-                    )
-                })
+                // we want to get only the unique project titles from the list of projects.
+                let uniqueProjects = [];
+                userDetails.currentProjects.forEach(project => {
+                    if (uniqueProjects.length === 0 ||
+                        uniqueProjects.find(proj => proj.projectNumber === project.projectNumber) === undefined) {
+                        uniqueProjects.push(project)
+                    }
+                });
+                uniqueProjects.forEach(project => {
+                    let projectRoles = userDetails.positions.filter((position => position.projectTitle === project.title));
+                    if (projectRoles.length === 0) {
+                        // if a position doesn't exist, then the project is one that the user is a project manager for
+                        currentProjects.push(
+                            <ProjectCard number={counter} project={project} canEditProject={false} onUserCard={true}
+                                         userRole={{disciplineName: "Project Manager"}} key={currentProjects.length} />
+                        )
+                        counter++
+                    } else {
+                        // we find all the positions related to the project and create a card for each one
+                        projectRoles.forEach(role => {
+                            currentProjects.push(
+                                <ProjectCard number={counter} project={project} canEditProject={false}
+                                             onUserCard={true} userRole={role} key={currentProjects.length} />
+                            )
+                            counter++
+                        })
+                    }
+                });
             } else {
                 currentProjects.push(<p className="empty-statements" key={currentProjects.length}>There are currently no projects assigned to this resource.</p>)
             }
@@ -110,15 +141,15 @@ class UserDetails extends Component {
                         {(userRoles.includes("adminUser") || userDetails.userSummary.userID === currUserID) && (
                             <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
                                 <Button variant="contained"
-                                    style={{ backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
-                                    disableElevation>
+                                        style={{ backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
+                                        disableElevation>
                                     Edit
-                            </Button>
+                                </Button>
                             </Link>
                         )}
                     </div>
                     <div className="section-container">
-                        <p><b>Utilization:</b> {userDetails.userSummary.utilization}</p>
+                        <p><b>Utilization:</b> {userDetails.userSummary.utilization}%</p>
                         <p><b>Location:</b> {userDetails.userSummary.location.city}, {userDetails.userSummary.location.province}</p>
                     </div>
                     <div className="section-container">

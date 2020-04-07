@@ -182,25 +182,56 @@ namespace Web.API.Infrastructure.Data
             });
         }
 
-        public async Task<IEnumerable<UserResource>> GetAllUserResources(string searchWord, string orderKey, string order, int page)
+        public async Task<IEnumerable<UserResource>> GetAllUserResources(string searchWord, string orderKey, string order, int page, int rowsPerPage)
         {
             var sql = @"
-                SELECT
-                    u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u. Utilization,
-                    l.Province, l.City
-                FROM
-                    Users u, Locations l
-                WHERE
-                    u.LocationId = l.Id
-                    AND
-                    (
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u. Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name AS DisciplineName
+                    FROM
+                        Users u
+                    INNER JOIN Locations l
+                        ON u.LocationId = l.Id
+                    LEFT JOIN ResourceDiscipline rd
+                        ON rd.ResourceId = u.Id
+                    LEFT JOIN Disciplines d
+                        ON rd.DisciplineId = d.Id
+                    WHERE
                         LOWER(TRIM(u.FirstName)) LIKE @SearchWord
                         OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
-                    )
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
                 ORDER BY
-                    u.Id
-                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
-                    FETCH NEXT @RowsPerPage ROWS ONLY
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN Data_CTE.Utilization END ASC,
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN Data_CTE.Utilization END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN Data_CTE.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN Data_CTE.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN Data_CTE.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN Data_CTE.City END DESC,
+
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'asc') THEN Data_CTE.DisciplineName END ASC,
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'desc') THEN Data_CTE.DisciplineName END DESC,
+
+                    CASE WHEN (@OrderKey = 'lastname' AND @Order = 'asc') THEN Data_CTE.LastName END ASC,
+                    CASE WHEN (@OrderKey = 'lastname' AND @Order = 'desc') THEN Data_CTE.LastName END DESC,
+
+                    CASE WHEN (@OrderKey = 'firstname' AND @Order = 'asc') THEN Data_CTE.FirstName END ASC,
+                    CASE WHEN (@OrderKey = 'firstname' AND @Order = 'desc') THEN Data_CTE.FirstName END DESC
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
             ;";
 
             using var connection = new SqlConnection(connectionString);
@@ -209,9 +240,13 @@ namespace Web.API.Infrastructure.Data
             {
                 SearchWord = GetFilteredSearchWord(searchWord),
                 PageNumber = page,
-                RowsPerPage = 50
+                RowsPerPage = rowsPerPage,
+                OrderKey = GetFilteredOrderKey(orderKey),
+                Order = GetFilteredOrder(order)
             });
-            return GetSorted(users, orderKey, order);
+            connection.Close();
+            return users;
+            // return GetSorted(users, orderKey, order);
         }
 
         private IEnumerable<UserResource> GetSorted(IEnumerable<UserResource> users, string orderKey, string order)
@@ -279,106 +314,218 @@ namespace Web.API.Infrastructure.Data
             }
         }
 
-        public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req)
+        public async Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req, int rowsPerPage)
         {
-            if (req.Filter == null) return await GetAllUserResources(req.SearchWord, req.OrderKey, req.Order, req.Page);
+            if (req.Filter == null || (IsNoDisciplinesAndNoYearsOfExpFilters(req) && IsNoLocationFilter(req)))
+            {
+                return await GetAllUserResources(req.SearchWord, req.OrderKey, req.Order, req.Page, rowsPerPage);
+            }
 
             using var connection = new SqlConnection(connectionString);
-
-            var filteredSearchWord = GetFilteredSearchWord(req.SearchWord);
-
+            
             var filteredLocations = await GetFilteredLocations(connection, req.Filter.Locations);
-            var filteredProvinces = filteredLocations["provinces"];
-            var filteredCities = filteredLocations["cities"];
-
             var filteredUtilization = GetFilteredUtilization(req.Filter.Utilization);
-
             var filteredDisciplinesSkills = await GetFilteredDisciplines(connection, req.Filter.Disciplines);
-            var filteredDisciplines = filteredDisciplinesSkills["disciplines"];
-            var filteredSkills = filteredDisciplinesSkills["skills"];
-
             var filteredYearsOfExps = await GetFilteredYearsOfExps(connection, req.Filter.YearsOfExps);
 
-            var filteredStartDate = GetFilteredStartDate(req.Filter.StartDate);
-            var filteredEndDate = GetFilteredEndDate(req.Filter.EndDate);
-
-            var sql = @"
-                SELECT
-                    Utilization,
-                    ul.Id, FirstName, LastName, Username,
-                    rd.DisciplineId, rd.YearsOfExperience, 
-                    LocationId, Province, City,
-                    d.Name AS DisciplineName,
-                    STRING_AGG (s.Name, ',') as Skills
-                FROM
-                (
-                    SELECT
-                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
-                        l.Province, l.City
-                    FROM
-                        Users u, Locations l
-                    WHERE
-                        u.LocationId = l.Id
-                ) AS ul
-                LEFT JOIN OutOfOffice o
-                    ON
-                        o.ResourceId = ul.Id
-                        AND
-                        (
-                            o.FromDate > @EndDate
-                            OR o.ToDate < @StartDate
-                        )
-                INNER JOIN ResourceDiscipline rd
-                    ON
-                        rd.ResourceId = ul.Id
-                        AND rd.YearsOfExperience IN @YearsOfExps
-                INNER JOIN Disciplines d
-                    ON
-                        rd.DisciplineId = d.Id
-                        AND d.Name IN @Disciplines
-                LEFT JOIN Skills s
-                    ON
-                        s.DisciplineId = d.Id
-                        AND s.Name IN @Skills
-                WHERE
-                    (
-                        LOWER(TRIM(ul.FirstName)) LIKE @SearchWord
-                        OR LOWER(TRIM(ul.LastName)) LIKE @SearchWord
-                    )
-                    AND ul.Province IN @Provinces
-                    AND ul.City IN @Cities
-                    AND ul.Utilization >= @UtilMin
-                    AND ul.Utilization <= @UtilMax
-                GROUP BY
-                    Utilization,
-                    ul.Id, FirstName, LastName, Username,
-                    rd.DisciplineId, rd.YearsOfExperience,
-                    LocationId, Province, City,
-                    d.Name
-                ORDER BY
-                    ul.Id
-                    OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
-                    FETCH NEXT @RowsPerPage ROWS ONLY
-            ;";
+            var sql = IsNoDisciplinesAndNoYearsOfExpFilters(req) ? GetSqlForOnlyLocationFilter() : GetSqlForMoreThanTwoFilters();
 
             connection.Open();
             var users = await connection.QueryAsync<UserResource>(sql, new
             {
-                Provinces = filteredProvinces,
-                Cities = filteredCities,
-                Disciplines = filteredDisciplines,
-                Skills = filteredSkills,
-                SearchWord = filteredSearchWord,
+                Provinces = filteredLocations["provinces"],
+                Cities = filteredLocations["cities"],
+                Disciplines = filteredDisciplinesSkills["disciplines"],
+                Skills = filteredDisciplinesSkills["skills"],
+                SearchWord = GetFilteredSearchWord(req.SearchWord),
                 YearsOfExps = filteredYearsOfExps,
-                EndDate = filteredEndDate,
-                StartDate = filteredStartDate,
+                EndDate = GetFilteredEndDate(req.Filter.EndDate),
+                StartDate = GetFilteredStartDate(req.Filter.StartDate),
                 UtilMin = filteredUtilization.Min,
                 UtilMax = filteredUtilization.Max,
                 PageNumber = (req.Page == 0) ? 1 : req.Page,
-                RowsPerPage = 50
+                RowsPerPage = rowsPerPage,
+                OrderKey = GetFilteredOrderKey(req.OrderKey),
+                Order = GetFilteredOrder(req.Order)
             });
+            connection.Close();
+            return users;
+            // return GetSorted(users, req.OrderKey, req.Order);
+        }
 
-            return GetSorted(users, req.OrderKey, req.Order);
+        private bool IsNoDisciplinesAndNoYearsOfExpFilters(RequestSearchUsers req)
+        {
+            return (
+                req.Filter.Disciplines == null &&
+                (req.Filter.YearsOfExps == null || !req.Filter.YearsOfExps.Any())
+            );
+        }
+
+        private bool IsNoLocationFilter(RequestSearchUsers req)
+        {
+            return (req.Filter.Locations == null || !req.Filter.Locations.Any());
+        }
+
+        private string GetSqlForMoreThanTwoFilters()
+        {
+            var sql = @"
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience, 
+                        d.Name AS DisciplineName,
+                        STRING_AGG (s.Name, ',') AS Skills
+                    FROM 
+                        Users u
+                    INNER JOIN Locations l
+                        ON
+                            u.LocationId = l.Id
+                            AND l.Province IN @Provinces
+                            AND l.City IN @Cities
+                    INNER JOIN ResourceDiscipline rd
+                        ON
+                            rd.ResourceId = u.Id
+                            AND rd.YearsOfExperience IN @YearsOfExps
+                    INNER JOIN Disciplines d
+                        ON
+                            rd.DisciplineId = d.Id
+                            AND d.Name IN @Disciplines
+                    LEFT JOIN Skills s
+                        ON
+                            s.DisciplineId = d.Id
+                            AND s.Name IN @Skills
+                    LEFT JOIN OutOfOffice o
+                        ON
+                            o.ResourceId = u.Id
+                            AND
+                            (
+                                o.FromDate > @EndDate
+                                OR o.ToDate < @StartDate
+                            )
+                    WHERE
+                        (
+                            LOWER(TRIM(u.FirstName)) LIKE @SearchWord
+                            OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
+                        )
+                        AND u.Utilization >= @UtilMin
+                        AND u.Utilization <= @UtilMax
+                    GROUP BY
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN Data_CTE.Utilization END ASC,
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN Data_CTE.Utilization END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN Data_CTE.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN Data_CTE.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN Data_CTE.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN Data_CTE.City END DESC,
+
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'asc') THEN Data_CTE.DisciplineName END ASC,
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'desc') THEN Data_CTE.DisciplineName END DESC,
+
+                    CASE WHEN (@OrderKey = 'lastname' AND @Order = 'asc') THEN Data_CTE.LastName END ASC,
+                    CASE WHEN (@OrderKey = 'lastname' AND @Order = 'desc') THEN Data_CTE.LastName END DESC,
+
+                    CASE WHEN (@OrderKey = 'firstname' AND @Order = 'asc') THEN Data_CTE.FirstName END ASC,
+                    CASE WHEN (@OrderKey = 'firstname' AND @Order = 'desc') THEN Data_CTE.FirstName END DESC
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
+            ;";
+            return sql;
+        }
+
+        private string GetSqlForOnlyLocationFilter()
+        {
+            var sql = @"
+                WITH Data_CTE AS
+                (
+                    SELECT
+                        u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
+                        l.Province, l.City,
+                        rd.DisciplineId, rd.YearsOfExperience,
+                        d.Name AS DisciplineName
+                    FROM 
+                        Users u
+                    INNER JOIN Locations l
+                        ON
+                            u.LocationId = l.Id
+                            AND l.Province IN @Provinces
+                            AND l.City IN @Cities
+                    LEFT JOIN ResourceDiscipline rd
+                        ON rd.ResourceId = u.Id
+                    LEFT JOIN Disciplines d
+                        ON rd.DisciplineId = d.Id
+                    LEFT JOIN OutOfOffice o
+                        ON
+                            o.ResourceId = u.Id
+                            AND
+                            (
+                                o.FromDate > @EndDate
+                                OR o.ToDate < @StartDate
+                            )
+                    WHERE
+                        (
+                            LOWER(TRIM(u.FirstName)) LIKE @SearchWord
+                            OR LOWER(TRIM(u.LastName)) LIKE @SearchWord
+                        )
+                        AND u.Utilization >= @UtilMin
+                        AND u.Utilization <= @UtilMax
+                ), 
+                Count_CTE AS 
+                (
+                    SELECT CEILING(CAST(COUNT(*) AS FLOAT) / @RowsPerPage) AS MaxPages FROM Data_CTE
+                )
+
+                SELECT *
+                FROM Data_CTE
+                CROSS JOIN Count_CTE
+                ORDER BY
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'asc') THEN Data_CTE.Utilization END ASC,
+                    CASE WHEN (@OrderKey = 'utilization' AND @Order = 'desc') THEN Data_CTE.Utilization END DESC,
+
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'asc') THEN Data_CTE.Province END ASC,
+                    CASE WHEN (@OrderKey = 'province' AND @Order = 'desc') THEN Data_CTE.Province END DESC,
+
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'asc') THEN Data_CTE.City END ASC,
+                    CASE WHEN (@OrderKey = 'city' AND @Order = 'desc') THEN Data_CTE.City END DESC,
+
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'asc') THEN Data_CTE.DisciplineName END ASC,
+                    CASE WHEN (@OrderKey = 'discipline' AND @Order = 'desc') THEN Data_CTE.DisciplineName END DESC,
+
+                    CASE WHEN (@OrderKey = 'lastname' AND @Order = 'asc') THEN Data_CTE.LastName END ASC,
+                    CASE WHEN (@OrderKey = 'lastname' AND @Order = 'desc') THEN Data_CTE.LastName END DESC,
+
+                    CASE WHEN (@OrderKey = 'firstname' AND @Order = 'asc') THEN Data_CTE.FirstName END ASC,
+                    CASE WHEN (@OrderKey = 'firstname' AND @Order = 'desc') THEN Data_CTE.FirstName END DESC
+                OFFSET (@PageNumber - 1) * @RowsPerPage ROWS
+                FETCH NEXT (@RowsPerPage + 1) ROWS ONLY
+            ;";
+            return sql;
+        }
+
+        private string GetFilteredOrder(string order)
+        {
+            return String.IsNullOrEmpty(order) ? "desc" : order.ToLower();
+        }
+
+        private string GetFilteredOrderKey(string orderKey)
+        {
+            return String.IsNullOrEmpty(orderKey) ? "utilization" : orderKey.ToLower();
         }
 
         private string GetFilteredSearchWord(string searchWordReq)
@@ -450,11 +597,11 @@ namespace Web.API.Infrastructure.Data
             {
                 disciplines = disciplinesReq.Keys.ToHashSet();
                 skills = disciplinesReq.Values.SelectMany(x => x).ToHashSet();
-                foreach(var discipline in disciplinesReq.Keys.ToList())
+                foreach (var discipline in disciplines)
                 {
                     if (disciplinesReq[discipline] == null || !disciplinesReq[discipline].Any())
                     {
-                        var sqlGetSkillsForDiscipline = @"
+                        var sqlGetAllSkillsForDiscipline = @"
                             SELECT
                                 s.Name
                             FROM
@@ -465,7 +612,8 @@ namespace Web.API.Infrastructure.Data
                         ";
                         connection.Open();
                         skills.UnionWith(
-                            (await connection.QueryAsync<Skill>(sqlGetSkillsForDiscipline, new {
+                            (await connection.QueryAsync<Skill>(sqlGetAllSkillsForDiscipline, new
+                            {
                                 DisciplineName = discipline
                             })).Select(x => x.Name).ToHashSet()
                         );
@@ -487,11 +635,11 @@ namespace Web.API.Infrastructure.Data
             {
                 yearsOfExpsReq = new HashSet<string>();
                 var sqlGetAllUsersYearsOfExps = @"
-                    SELECT YearsOfExperience
+                    SELECT DISTINCT YearsOfExperience
                     FROM ResourceDiscipline
                 ";
                 connection.Open();
-                yearsOfExpsReq = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience).ToHashSet();
+                yearsOfExpsReq = (await connection.QueryAsync<ResourceDiscipline>(sqlGetAllUsersYearsOfExps)).Select(x => x.YearsOfExperience);
                 connection.Close();
             }
             return yearsOfExpsReq;
@@ -555,7 +703,7 @@ namespace Web.API.Infrastructure.Data
             return result == 1 ? user.UserID : "-1";
         }
 
-        public async Task<User> UpdateUtilizationOfUser(int util, string userId) 
+        public async Task<User> UpdateUtilizationOfUser(int util, string userId)
         {
             var sql = @"
                 update Users
@@ -570,8 +718,11 @@ namespace Web.API.Infrastructure.Data
 
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            return await connection.QuerySingleAsync<User>(sql, new {Util = util, 
-                                                                     Id = userId});
+            return await connection.QuerySingleAsync<User>(sql, new
+            {
+                Util = util,
+                Id = userId
+            });
         }
 
 

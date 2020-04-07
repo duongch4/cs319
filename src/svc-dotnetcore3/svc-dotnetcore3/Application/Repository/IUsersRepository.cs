@@ -10,8 +10,8 @@ namespace Web.API.Application.Repository
     {
         //GET
         Task<IEnumerable<User>> GetAllUsers();
-        Task<IEnumerable<UserResource>> GetAllUserResources(string searchWord, string orderKey, string order, int page);
-        Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req);
+        Task<IEnumerable<UserResource>> GetAllUserResources(string searchWord, string orderKey, string order, int page, int rowsPerPage);
+        Task<IEnumerable<UserResource>> GetAllUserResourcesOnFilter(RequestSearchUsers req, int rowsPerPage);
 
         Task<User> GetAUser(string userId);
         Task<UserResource> GetAUserResource(string userId);

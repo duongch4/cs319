@@ -16,6 +16,7 @@ namespace Tests.Integration
     [TestCaseOrderer("Tests.Integration.Utils.PriorityOrderer", "Tests")]
     public class ProjectsControllerIntegrationTests : IntegrationTestBase
     {
+        // User: integrationTestingAdmin@chibangduong1993gmail501.onmicrosoft.com
         private static readonly string managerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
         public ProjectsControllerIntegrationTests(AppFixture app) : base(app)
         { }
@@ -109,11 +110,6 @@ namespace Tests.Integration
         public static IEnumerable<object[]> Data_POST_PUT(int numTests, string title)
         {
             var url = "/api/projects";
-            // var createdTitle = "Created-Title";
-            // var updatedTitle = "Updated-Title";
-            // var managerId = "c14b2f4d-a8f0-4c35-b8d6-5c657cdc76b5";
-            // var discipline = "Automation";
-            // var skills = new HashSet<string> { "Automated teller machines", "Digital labor" };
 
             var allData = new List<object[]>
             {

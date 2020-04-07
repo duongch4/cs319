@@ -224,3 +224,13 @@ input.add:hover {
     position: sticky;
     top: 250px;
 }
+
+.confirmAssign {
+    display: flex;
+    flex-direction: row;
+}
+.manager-button{
+    margin-left: 25px;
+    margin-top: 10px;
+}
+
