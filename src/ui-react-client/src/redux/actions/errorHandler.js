@@ -1,9 +1,9 @@
 export default function errorHandler(error) {
-    let errorParsed = "";
+    let errorParsed = undefined;
     if(error.response && error.response.data && error.response.data.message){
         errorParsed = error.response.data.message;
     } else {
-        errorParsed = error;
+        errorParsed = (error.stack) ? error.stack : error;
     }
     alert(errorParsed);
     return errorParsed;
