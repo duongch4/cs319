@@ -128,7 +128,11 @@ export const getHeaders = async (userRoles) => {
         const tokenRequest = (isAdminUser(userRoles)) ? GRAPH_REQUESTS.API_ADMIN : GRAPH_REQUESTS.API_REGULAR;
         const tokenResponse = await acquireToken(tokenRequest, isIE());
         // console.log("MY TOKEN RESPONSE", tokenResponse); // TODO: Lots of Info here!!!
-        return { Authorization: `Bearer ${tokenResponse.accessToken}` };
+        return {
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
+            "Cache-Control": "no-cache, no-store",
+            Pragma: "no-cache"
+        };
     }
     catch (error) {
         throw error;
