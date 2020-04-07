@@ -58,7 +58,7 @@ const executeUpdateUnassignUserData = (state, action) => {
 };
 
 const executeUpdateAssignUserData = (state, action) => {
-  if (state.userSummary.userID === action.userID) {
+  if (state.userSummary && state.userSummary.userID === action.userID) {
     // create a new position
     let newPosition = {
       positionID: action.opening.positionID,
