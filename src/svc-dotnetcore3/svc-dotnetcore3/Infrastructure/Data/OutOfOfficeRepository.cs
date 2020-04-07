@@ -33,13 +33,17 @@ namespace Web.API.Infrastructure.Data
 
         public async Task<OutOfOffice> DeleteOutOfOffice(OutOfOffice avail) {
             var sql = @"
-                delete from OutOfOffice where ResourceId = @ResourceId AND FromDate = @FromDate AND ToDate = @ToDate";
+                DELETE FROM OutOfOffice
+                WHERE 
+                    ResourceId = @ResourceId
+                    AND FromDate > @FromDateMinusTwoMins
+                    AND ToDate < @ToDateAddTwoMins";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             await connection.ExecuteAsync(sql, new {
                 ResourceId = avail.ResourceId,
-                FromDate = avail.FromDate,
-                ToDate = avail.ToDate
+                FromDateMinusTwoMins = avail.FromDate.AddMinutes(-2),
+                ToDateAddTwoMins = avail.ToDate.AddMinutes(2)
             });
             return avail;
         }
