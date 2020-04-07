@@ -4,7 +4,7 @@ import axios from 'axios';
 import * as authUtils from '../../../config/authUtils';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { SVC_ROOT, CLIENT_DEV_ENV } from '../../../config/config';
+import { SVC_ROOT } from '../../../config/config';
 
 jest.mock('axios');
 jest.mock('../../../config/authUtils');
@@ -13,7 +13,6 @@ const mockStore = configureStore(middlewares);
 const store = mockStore({});
 
 const adminRole = ["adminUser", "regularUser"];
-const regularRole = ["regularUser"];
 const baseURL = `${SVC_ROOT}api/`;
 let alert = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
