@@ -108,7 +108,8 @@ class Search extends Component {
                       masterlist={this.state.masterlist}
                       clear={this.state.clearFilters}/>
         <UsersPage data={this.state.filters}
-                  showUsers={this.state.showUsers}
+                   showUsers={this.state.showUsers}
+                   isForecasting={this.props.isForecasting}
                   isAssignable={this.props.isAssignable}
                   projectNumber={this.props.projectNumber}
                   openingId={this.props.openingId}
@@ -145,6 +146,7 @@ class Search extends Component {
                              pageLeft={this.pageLeft}
                              pageRight={this.pageRight}
                              master={this.props.masterlist}
+                             isForecasting={this.props.isForecasting}
                              isAssignable={this.props.isAssignable}
                              projectNumber={this.props.projectNumber}
                              openingId={this.props.openingId}

@@ -59,10 +59,11 @@ describe('loadUsers', () => {
   it('should successfully load users action', async () => {
 
     const expectedAction = [{
-      type: types.LOAD_USERS_ALL,
-      users: users
+        type: types.LOAD_USERS_ALL,
+        users: users,
+        isLastPage: true
     }];
-    const resp = {data: {payload: users}};
+    const resp = {data: {payload: users, extra: {isLastPage: true}}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
     axios.get.mockResolvedValue(resp);
@@ -90,10 +91,11 @@ describe('loadUsers', () => {
   it('should successfully load users action with search filters', async () => {
 
     const expectedAction = [{
-      type: types.LOAD_USERS_ALL,
-      users: users
+        type: types.LOAD_USERS_ALL,
+        users: users,
+        isLastPage: true
     }];
-    const resp = {data: {payload: users}};
+    const resp = {data: {payload: users, extra: { isLastPage: true }}};
     authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
     axios.get.mockResolvedValue(resp);
