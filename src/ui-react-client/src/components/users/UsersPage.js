@@ -271,7 +271,7 @@ class UsersPage extends Component {
             </div>
             <hr />
           <UserList users={users}
-                    canEdit={isAdminUser(userRoles)}
+                    canEdit={isAdminUser(userRoles) && !this.props.isForecasting}
                     isAssignable={this.props.isAssignable}
                     projectNumber={this.props.projectNumber}
                     openingId={this.props.openingId}

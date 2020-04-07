@@ -5,7 +5,7 @@ import { performUserSearch } from "../../../redux/actions/searchActions";
 import {CLIENT_DEV_ENV} from '../../../config/config';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import {UserContext, getUserRoles} from "../userContext/UserContext";
+import {UserContext, getUserRoles, isAdminUser} from "../userContext/UserContext";
 
 class SearchResults extends Component {
     constructor(props) {
@@ -228,6 +228,7 @@ class SearchResults extends Component {
 
     render(){
         var users = this.combineUsers();
+        const userRoles = getUserRoles(this.context);
 
         if (this.props.sortBy != null) {
             this.sortUsers(users, this.yearsMap);
@@ -243,7 +244,7 @@ class SearchResults extends Component {
                 userCards.push(
                     <SearchUserCard user={user}
                     key={userCards.length}
-                    canEdit={false}
+                    canEdit={isAdminUser(userRoles) && !this.props.isForecasting}
                     isAssignable={this.props.isAssignable}
                     projectNumber={this.props.projectNumber}
                     openingId={this.props.openingId}
