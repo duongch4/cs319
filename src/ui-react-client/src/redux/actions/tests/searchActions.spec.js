@@ -128,14 +128,11 @@ describe('User Search', () => {
 
     it('should handle error when user search is rejected', async () => {
         const expectedActions = [];
-        let errorMessage = 'Error';
-        axios.post.mockImplementationOnce(() =>
-            Promise.reject(new Error(errorMessage)),
-        );
-
+        const errMessage = 'Error';
+        axios.post.mockRejectedValueOnce(new Error(errMessage));
         authUtils.getHeaders.mockResolvedValueOnce({Authorization: `Bearer 100`});
 
-        await store.dispatch(searchActions.performUserSearch(filterParams, adminRole));
+        await expect(store.dispatch(searchActions.performUserSearch(filterParams, adminRole))).rejects.toThrow(errMessage);
        
         expect(alert).toHaveBeenCalledTimes(1);
         expect(store.getActions()).toEqual(expectedActions);
