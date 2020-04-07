@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {Button} from "@material-ui/core";
+import {isAdminUser} from "../common/userContext/UserContext";
 
 const ProjectManagerCard = ({projectNumber, projectManager, userRoles}) => {
     return (
@@ -12,7 +13,7 @@ const ProjectManagerCard = ({projectNumber, projectManager, userRoles}) => {
                 </Link>
                 <p><b>Project Manager</b></p>
             </div>
-            {userRoles.indexOf('adminUser') !== -1 && 
+            {isAdminUser(userRoles) &&
             <div className="manager-button">
                 <Link to={"/editmanager/" + projectNumber} className="action-link">
                     <Button variant="contained"

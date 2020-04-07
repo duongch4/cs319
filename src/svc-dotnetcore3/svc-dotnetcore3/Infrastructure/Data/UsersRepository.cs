@@ -163,7 +163,6 @@ namespace Web.API.Infrastructure.Data
                         AND ps.SkillDisciplineId = s.DisciplineId
                 WHERE
                     p.ProjectId = @ProjectId
-                    AND u.Id != @ProjectManagerId
                 GROUP BY
                     u.Id, u.FirstName, u.LastName, u.Username, u.LocationId, u.Utilization,
                     l.Province, l.City,

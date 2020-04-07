@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../../users/UserStyles.css'
 import {Link} from "react-router-dom";
-import { UserContext, getUserRoles } from "../userContext/UserContext";
+import {UserContext, getUserRoles, isAdminUser} from "../userContext/UserContext";
 import {Button} from "@material-ui/core";
 import {
     LOW_UTILIZATION,
@@ -68,7 +68,7 @@ class SearchUserCard extends Component {
                             </Button>
                         )}
                         {
-                            (this.props.canEdit && userRoles.includes('adminUser')) && (
+                            (this.props.canEdit && isAdminUser(userRoles)) && (
                                 <Link to={'/edituser/' + user.userID} className="action-link">
                                     <Button>
                                         <div className="action-link">

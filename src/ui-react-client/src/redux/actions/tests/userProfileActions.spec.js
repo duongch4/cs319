@@ -5,7 +5,6 @@ import * as authUtils from '../../../config/authUtils';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import axios from 'axios';
-// import MockAdapter from 'axios-mock-adapter';
 import { createMemoryHistory } from 'history'
 
 const adminRole = ["adminUser", "regularUser"];
@@ -13,7 +12,6 @@ const baseURL = `${SVC_ROOT}api/users/`;
 
 jest.mock('axios');
 jest.mock('../../../config/authUtils');
-// const mockAxios = new MockAdapter(axios);
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
 const store = mockStore({});
