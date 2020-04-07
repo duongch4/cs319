@@ -21,7 +21,11 @@ const MonthlyDetails = ({commitment}) => {
     while((startIndex <= endIndex || startYear < endYear) && !(startYear > endYear)){
         const year = 1900 + startYear;
         months.push(monthNames[startIndex] + " " + year);
-        hours.push(commitment[hoursCount][1]);
+        if(commitment[hoursCount]){
+            hours.push(commitment[hoursCount][1]);
+        } else {
+            hours.push(0)
+        }
         startIndex++;
         if(startIndex > 11){
             startIndex = 0;
@@ -31,12 +35,14 @@ const MonthlyDetails = ({commitment}) => {
     }
 
     months.forEach((month, index) => {
-        monthArr.push(
-        <div className="entry" key={monthArr.length} >
-            <p className="label"  style={{color: "#2c6232"}}><b>{month}</b></p>
-            <p className="label">{hours[index]} hrs</p>
-        </div>
-        )
+        if(hours[index] > 0) {
+            monthArr.push(
+                <div className="entry" key={monthArr.length} >
+                    <p className="label"  style={{color: "#2c6232"}}><b>{month}</b></p>
+                    {hours[index] && <p className="label">{hours[index]} hrs</p>}
+                </div>
+                )
+        }
     })
 
     return (
