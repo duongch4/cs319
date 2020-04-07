@@ -9,7 +9,7 @@ import { Button } from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import { loadSpecificUser } from "../../redux/actions/userProfileActions";
 import { CLIENT_DEV_ENV } from '../../config/config';
-import { UserContext, getUserRoles } from "../common/userContext/UserContext";
+import {UserContext, getUserRoles, isAdminUser} from "../common/userContext/UserContext";
 import Loading from '../common/Loading';
 
 class UserDetails extends Component {
@@ -138,7 +138,7 @@ class UserDetails extends Component {
                         )}
                     <div className="title-bar">
                         <h1 className="blueHeader">{userDetails.userSummary.firstName + " " + userDetails.userSummary.lastName}</h1>
-                        {(userRoles.includes("adminUser") || userDetails.userSummary.userID === currUserID) && (
+                        {(isAdminUser(userRoles) || userDetails.userSummary.userID === currUserID) && (
                             <Link to={'/edituser/' + userDetails.userSummary.userID} className="action-link">
                                 <Button variant="contained"
                                         style={{ backgroundColor: "#87c34b", color: "#ffffff", size: "small" }}
